@@ -1,0 +1,49 @@
+# ?? ??
+server:
+  port: 9999
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+# MySQL
+spring:
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+
+  # datasource
+  datasource:
+    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: cos
+    password: cos1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Jpa
+  jpa:
+    show-sql: true
+
+    # Hibernate
+    database: mysql
+    hibernate:
+      # ?? ?? ? create ? DB??? ???.
+      ddl-auto: update
+      # camelcase ??
+      strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    # ddl-auto ?? ?? ??
+    generate-ddl: false
+    # SQL? ?? ??
+    properties:
+      hibernate:
+        format_sql: true
+      # LazyInitializationException ??
+      enable_lazy_load_no_trans: true
+
+# H2 ??? ??? ?? ???
+#spring.datasource.driver-class-name=org.h2.Driver
+#spring.datasource.username=sa
+#spring.jpa.show-sql=true
+#spring.hibernate.ddl-auto=none

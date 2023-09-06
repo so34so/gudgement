@@ -9,12 +9,12 @@ export default function ShopNavigator() {
       <Stack.Screen
         name="Shop"
         component={Shop}
-        options={{ title: 'Shop' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Inventory"
         component={Inventory}
-        options={{ title: 'Inventory' }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   )

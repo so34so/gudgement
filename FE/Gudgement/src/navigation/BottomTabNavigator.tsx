@@ -13,6 +13,7 @@ import TabBarItem from '../components/TabBarItem'
 
 function BottomTabNavigator() {
   const Tab = createBottomTabNavigator<CommonType.RootStackParamList>();
+  const BottomTabComponents = [Home, ShopNavigator, Play, MyPage, Ranking]
   return (
     <Tab.Navigator initialRouteName="홈" screenOptions={{
       tabBarStyle: { backgroundColor: 'transparent', elevation: 0, borderTopWidth: 0, marginBottom: 80 }
@@ -30,8 +31,9 @@ function BottomTabNavigator() {
         )
       }
     }}>
-      {BOTTOM_TAB_MENU.map((ele) => {
-        return (<Tab.Screen name={ele as keyof CommonType.RootStackParamList} component={Home} options={{
+      {BOTTOM_TAB_MENU.map((ele, idx) => {
+        return (<Tab.Screen name={ele as keyof CommonType.RootStackParamList} component={BottomTabComponents[idx]} options={{
+          headerShown: false,
           tabBarIcon: (props) => {
             return (<TabBarItem item={ele} />)
           }

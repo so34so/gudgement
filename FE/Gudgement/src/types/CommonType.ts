@@ -2,7 +2,11 @@ export declare module CommonType {
   export type RootStackParamList = {
     default: undefined;
 
+    /**
+     * BottomTab Type
+     */
     홈: undefined;
+    상점: undefined;
     플레이: undefined;
     "내 정보": undefined;
     랭킹: undefined;
@@ -17,7 +21,7 @@ export declare module CommonType {
      * ShopScreen child Type
      */
     ShopNavigator: undefined;
-    상점: undefined;
+    Shop: undefined;
     Inventory: undefined;
   };
 }

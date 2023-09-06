@@ -1,17 +1,17 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from './Home';
-import MyInfo from './MyPage';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { CommonType } from '../types/CommonType';
+import { Text, TouchableOpacity, View } from 'react-native';
 function Shop() {
-  const Stack = createNativeStackNavigator();
+  const navigation = useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={Home} options={{ title: '내 오더' }} />
-      <Stack.Screen
-        name="MyInfo"
-        component={MyInfo}
-        options={{ title: '내 정보' }}
-      />
-    </Stack.Navigator>
+    <View className='w-full h-full flex justify-center items-center'>
+      <TouchableOpacity onPress={
+        () => navigation.navigate('Inventory')}
+      >
+        <Text>Inventory</Text>
+      </TouchableOpacity>
+    </View>
   )
 }
 

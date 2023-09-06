@@ -6,11 +6,11 @@ export default function Home() {
   const navigation = useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   return (
     <View className='w-full h-full flex justify-center items-center'>
-      <TouchableOpacity onPress={
+      {/* <TouchableOpacity onPress={
         () => navigation.navigate('MyPage')}
       >
         <Text>이동</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   )
 }

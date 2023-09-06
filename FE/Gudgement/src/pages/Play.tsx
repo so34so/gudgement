@@ -10,11 +10,7 @@ export default function Play() {
   const navigation = useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   return (
     <View className='w-full h-full flex justify-center items-center'>
-      <TouchableOpacity onPress={() => {
-        navigation.navigate('Single');
-      }}>
-        <Text>싱글</Text>
-      </TouchableOpacity>
+
     </View>
 
   );

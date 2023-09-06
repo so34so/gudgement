@@ -16,9 +16,12 @@ function BottomTabNavigator() {
   const BottomTabComponents = [Home, ShopNavigator, Play, MyPage, Ranking]
   return (
     <Tab.Navigator initialRouteName="홈" screenOptions={{
-      tabBarStyle: { backgroundColor: 'transparent', elevation: 0, borderTopWidth: 0, marginBottom: 80 }
+      tabBarStyle: {
+        backgroundColor: "#4a4a4a"
+        , elevation: 0, borderTopWidth: 0, marginBottom: 80
+      }
       , tabBarItemStyle: {
-        backgroundColor: 'rgb(242,242,242)',
+        backgroundColor: '#4a4a4a',
         height: 110,
       },
       tabBarLabel: (props) => {

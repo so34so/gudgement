@@ -5,7 +5,6 @@ import { QueryClientProvider } from "react-query";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
-import StackNavigation from "./src/navigation/StackNavigator";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 
 if (__DEV__) {

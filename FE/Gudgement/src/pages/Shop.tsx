@@ -1,19 +1,26 @@
+import { useCallback, useEffect, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
-
 import {
   Image,
+  ImageSourcePropType,
   Pressable,
   SafeAreaView,
   ScrollView,
+  Text,
   TouchableOpacity,
   View,
-  Text,
-  ImageSourcePropType,
 } from "react-native";
-import MyCharacter from "../assets/images/character.png";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
+import { CommonType } from "../types/CommonType";
+import MyCharacter from "../assets/images/character.png";
 import ShopItems from "../components/ShopItems";
+import Reactotron from "reactotron-react-native";
 
 const DATA = Array.from({ length: 20 }, (_, idx) => {
   return {
@@ -27,6 +34,29 @@ function Shop() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const myCharacter: ImageSourcePropType = MyCharacter as ImageSourcePropType;
+  const offset = useSharedValue(5);
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+  const [category, setCategory] = useState("치장");
+
+  const categoryStyle = (select: string) => `rounded-[8px] border-2 
+  ${category === select ? "border-main" : "border-black"} bg-darkgray50`;
+  useEffect(() => {
+    offset.value = withRepeat(
+      withTiming(-offset.value, { duration: 500 }),
+      -5,
+      true,
+    );
+  }, [offset]);
+
+  const handleBuy = useCallback(() => {
+    Reactotron.log!("구매 완료");
+  }, []);
+  const handleCategory = useCallback((select: string) => {
+    Reactotron.log!(select);
+    setCategory(select);
+  }, []);
 
   return (
     <SafeAreaView>
@@ -56,7 +86,9 @@ function Shop() {
         </View>
         <View className="w-full h-60  flex flex-row justify-center space-x-24 mt-12">
           <View className="w-1/4 h-fit items-center ">
-            <Image source={myCharacter} />
+            <Animated.View style={[animatedStyles]}>
+              <Image source={myCharacter} />
+            </Animated.View>
             <Pressable className="w-fit bg-sub01 border-2 border-black rounded-[4px]">
               <Text className="px-2 py-[2px] font-PretendardExtraBold text-white">
                 캐릭터 선택
@@ -100,25 +132,41 @@ function Shop() {
             <Text className="text-white font-PretendardMedium">
               아이템 상세 설명
             </Text>
-            <Pressable className="w-fit bg-buy rounded-[8px] mt-7">
+            <TouchableOpacity
+              activeOpacity={0.5}
+              className="w-fit bg-buy rounded-[8px] mt-7"
+              onPress={handleBuy}
+            >
               <Text className="px-4 py-[4px] font-PretendardExtraBold text-black">
                 구매하기
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
         <View className="w-full h-16" />
         <View className="ml-5 w-full h-fit flex-row space-x-2">
-          <Pressable className="rounded-[8px] border-2 border-black bg-darkgray50">
-            <Text className="text-white px-2 font-PretendardMedium text-[18px]">
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              handleCategory("치장");
+            }}
+            className={categoryStyle("치장")}
+          >
+            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               치장
             </Text>
-          </Pressable>
-          <Pressable className="rounded-[8px] border-2 border-black bg-darkgray50">
-            <Text className="text-white px-2 font-PretendardMedium text-[18px]">
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              handleCategory("칭호");
+            }}
+            className={categoryStyle("칭호")}
+          >
+            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               칭호
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View className="w-full h-fit justify-center flex-row flex-wrap mb-10 mt-4">
           <ShopItems items={DATA} />

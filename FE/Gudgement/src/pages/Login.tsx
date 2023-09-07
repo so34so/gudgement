@@ -15,7 +15,7 @@ function Login() {
 
   const handleLogin = () => {
     setShowWebView(true);
-  }  
+  }
 
   const getCode = (target: string) => {
     const exp = 'code=';

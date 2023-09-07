@@ -35,7 +35,7 @@ function BottomTabNavigator() {
       }
     }}>
       {BOTTOM_TAB_MENU.map((ele, idx) => {
-        return (<Tab.Screen name={ele as keyof CommonType.RootStackParamList} component={BottomTabComponents[idx]} options={{
+        return (<Tab.Screen key={ele} name={ele as keyof CommonType.RootStackParamList} component={BottomTabComponents[idx]} options={{
           headerShown: false,
           tabBarIcon: (props) => {
             return (<TabBarItem item={ele} />)

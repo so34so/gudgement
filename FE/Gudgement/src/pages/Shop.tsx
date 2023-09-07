@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
+  Alert,
   Image,
   ImageSourcePropType,
+  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -39,6 +41,7 @@ function Shop() {
     transform: [{ translateY: offset.value }],
   }));
   const [category, setCategory] = useState("치장");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const categoryStyle = (select: string) => `rounded-[8px] border-2 
   ${category === select ? "border-main" : "border-black"} bg-darkgray50`;
@@ -169,9 +172,43 @@ function Shop() {
           </TouchableOpacity>
         </View>
         <View className="w-full h-fit justify-center flex-row flex-wrap mb-10 mt-4">
-          <ShopItems items={DATA} />
+          <ShopItems
+            items={DATA}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+          />
         </View>
       </ScrollView>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+        className="opacity-80"
+      >
+        <Pressable
+          // eslint-disable-next-line react-native/no-inline-styles
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+          onPress={() => setModalVisible(!modalVisible)}
+        >
+          <View className="flex flex-1 justify-start items-center">
+            <View className="mt-[60%] bg-white rounded-[6px] p-10 items-center shadow-lg">
+              <Text>Hello World!</Text>
+              <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                <Text>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

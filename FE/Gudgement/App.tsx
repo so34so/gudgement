@@ -11,10 +11,7 @@ if (__DEV__) {
   import("./reactotron");
 }
 
-
-
 function App(): JSX.Element {
-
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-sub01">
@@ -25,6 +22,5 @@ function App(): JSX.Element {
     </QueryClientProvider>
   );
 }
-
 
 export default App;

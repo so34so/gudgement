@@ -1,8 +1,9 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { View, Text, Pressable } from 'react-native'
-import { CommonType } from '../types/CommonType';
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { View, Text, Pressable } from "react-native";
+import { CommonType } from "../types/CommonType";
 function Inventory() {
-  const navigation = useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   return (
     <View>
       <Pressable onPress={() => navigation.goBack()}>
@@ -10,7 +11,7 @@ function Inventory() {
       </Pressable>
       <Text>Inventory</Text>
     </View>
-  )
+  );
 }
 
 export default Inventory;

@@ -42,4 +42,5 @@ public class ShopDto {
                 .progressAchieve(shop.getProgressAchieve())
                 .build();
     }
+
 }

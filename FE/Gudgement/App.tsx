@@ -7,7 +7,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import Login from "./src/pages/Login";
-
 if (__DEV__) {
   import("./reactotron");
 }

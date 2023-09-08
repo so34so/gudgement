@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
-  Alert,
   Image,
   ImageSourcePropType,
-  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -23,6 +21,8 @@ import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
 import ShopItems from "../components/ShopItems";
 import Reactotron from "reactotron-react-native";
+import BuyModal from "../components/BuyModal";
+import Shoes from "../assets/images/item.svg";
 
 const DATA = Array.from({ length: 20 }, (_, idx) => {
   return {
@@ -54,10 +54,10 @@ function Shop() {
   }, [offset]);
 
   const handleBuy = useCallback(() => {
+    setModalVisible(!modalVisible);
     Reactotron.log!("구매 완료");
-  }, []);
+  }, [modalVisible]);
   const handleCategory = useCallback((select: string) => {
-    Reactotron.log!(select);
     setCategory(select);
   }, []);
 
@@ -92,8 +92,8 @@ function Shop() {
             <Animated.View style={[animatedStyles]}>
               <Image source={myCharacter} />
             </Animated.View>
-            <Pressable className="w-fit bg-sub01 border-2 border-black rounded-[4px]">
-              <Text className="px-2 py-[2px] font-PretendardExtraBold text-white">
+            <Pressable className="w-fit bg-black50 border-2 border-black rounded-[6px]">
+              <Text className="px-3 py-[2px] text-[16px] font-PretendardExtraBold text-white">
                 캐릭터 선택
               </Text>
             </Pressable>
@@ -137,10 +137,10 @@ function Shop() {
             </Text>
             <TouchableOpacity
               activeOpacity={0.5}
-              className="w-fit bg-buy rounded-[8px] mt-7"
+              className="w-fit bg-buy rounded-[15px] mt-7  border-2 border-[#6f530d]"
               onPress={handleBuy}
             >
-              <Text className="px-4 py-[4px] font-PretendardExtraBold text-black">
+              <Text className="px-4 py-[4px] font-PretendardExtraBold text-black text-[20px]">
                 구매하기
               </Text>
             </TouchableOpacity>
@@ -172,43 +172,19 @@ function Shop() {
           </TouchableOpacity>
         </View>
         <View className="w-full h-fit justify-center flex-row flex-wrap mb-10 mt-4">
-          <ShopItems
-            items={DATA}
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-          />
+          <ShopItems items={DATA} />
         </View>
       </ScrollView>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
+      <BuyModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        item={{
+          image: Shoes as ImageSourcePropType,
+          title: "컨버스화",
+          description: "어쩌고 저쩌고",
+          price: 100,
         }}
-        className="opacity-80"
-      >
-        <Pressable
-          // eslint-disable-next-line react-native/no-inline-styles
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-          onPress={() => setModalVisible(!modalVisible)}
-        >
-          <View className="flex flex-1 justify-start items-center">
-            <View className="mt-[60%] bg-white rounded-[6px] p-10 items-center shadow-lg">
-              <Text>Hello World!</Text>
-              <Pressable onPress={() => setModalVisible(!modalVisible)}>
-                <Text>Hide Modal</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+      />
     </SafeAreaView>
   );
 }

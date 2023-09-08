@@ -27,6 +27,7 @@ function BottomTabNavigator() {
           backgroundColor: "#4a4a4a",
           height: 110,
         },
+        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarLabel: props => {
           return (
             <TouchableOpacity className="w-16 h-8 rounded-md bg-black flex justify-center items-center">
@@ -48,7 +49,8 @@ function BottomTabNavigator() {
             component={BottomTabComponents[idx]}
             options={{
               headerShown: false,
-              tabBarIcon: props => {
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: () => {
                 return <TabBarItem item={ele} />;
               },
             }}

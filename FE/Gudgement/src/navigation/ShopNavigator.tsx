@@ -2,7 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Shop from "../pages/Shop";
 import Inventory from "../pages/Inventory";
 import { CommonType } from "../types/CommonType";
-export default function ShopNavigator(): JSX.Element {
+
+function ShopNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
     <Stack.Navigator
@@ -22,3 +23,4 @@ export default function ShopNavigator(): JSX.Element {
     </Stack.Navigator>
   );
 }
+export default ShopNavigator;

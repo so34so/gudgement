@@ -15,13 +15,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InventoryService {
 
-    private final InventoryRepository inventoryRepository;
+/*    private final InventoryRepository inventoryRepository;
 
     @Transactional(readOnly = true)
-    public List<InventoryDto> getAll(){
-        return inventoryRepository.findAll().stream()
-                .map(InventoryDto::toInven)
-                .collect(Collectors.toList());
-    }
-    
+    public List<InventoryDto> findInventoryItemsByMember(Member memberId){
+        return inventoryRepository.findByMemberId(memberId);
+    }*/
+
 }

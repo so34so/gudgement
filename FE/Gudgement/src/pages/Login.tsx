@@ -23,6 +23,7 @@ function Login() {
     const searchIdx = codeUrl.indexOf(exp);
     if (searchIdx !== -1) {
       const code = codeUrl.substring(searchIdx + exp.length);
+      console.log(code);
     }
   }
 

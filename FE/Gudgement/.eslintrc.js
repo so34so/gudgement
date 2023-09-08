@@ -48,6 +48,7 @@ module.exports = {
     "prettier/prettier": "error",
     "no-empty-function": "off",
     "@typescript-eslint/no-empty-function": "off",
+    "react/react-in-jsx-scope": "off",
     "react/display-name": "off",
     "react/prop-types": "off",
     "@tanstack/query/exhaustive-deps": "error",

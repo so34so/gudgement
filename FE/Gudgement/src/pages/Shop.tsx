@@ -23,6 +23,7 @@ import ShopItems from "../components/ShopItems";
 import Reactotron from "reactotron-react-native";
 import BuyModal from "../components/BuyModal";
 import Shoes from "../assets/images/item.svg";
+import CompleteModal from "../components/CompleteModal";
 
 const DATA = Array.from({ length: 20 }, (_, idx) => {
   return {
@@ -41,7 +42,10 @@ function Shop() {
     transform: [{ translateY: offset.value }],
   }));
   const [category, setCategory] = useState("치장");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState({
+    buy: false,
+    complete: false,
+  });
 
   const categoryStyle = (select: string) => `rounded-[8px] border-2 
   ${category === select ? "border-main" : "border-black"} bg-darkgray50`;
@@ -54,7 +58,7 @@ function Shop() {
   }, [offset]);
 
   const handleBuy = useCallback(() => {
-    setModalVisible(!modalVisible);
+    setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
     Reactotron.log!("구매 완료");
   }, [modalVisible]);
   const handleCategory = useCallback((select: string) => {
@@ -99,7 +103,7 @@ function Shop() {
             </Pressable>
           </View>
           <View className="items-center">
-            <Svg height="80" width="140">
+            <Svg height="73" width="140">
               <SvgText
                 fill="white"
                 stroke="black"
@@ -123,21 +127,21 @@ function Shop() {
                 100티끌
               </SvgText>
             </Svg>
-            <Text className="text-white font-PretendardMedium">
+            <Text className="text-white font-PretendardMedium text-[16px]">
               아이템 상세 설명
             </Text>
-            <Text className="text-white font-PretendardMedium">
+            <Text className="text-white font-PretendardMedium text-[16px]">
               아이템 상세 설명
             </Text>
-            <Text className="text-white font-PretendardMedium">
+            <Text className="text-white font-PretendardMedium text-[16px]">
               아이템 상세 설명
             </Text>
-            <Text className="text-white font-PretendardMedium">
+            <Text className="text-white font-PretendardMedium text-[16px]">
               아이템 상세 설명
             </Text>
             <TouchableOpacity
               activeOpacity={0.5}
-              className="w-fit bg-buy rounded-[15px] mt-7  border-2 border-[#6f530d]"
+              className="w-fit bg-buy rounded-[15px] mt-5 border-2 border-[#6f530d]"
               onPress={handleBuy}
             >
               <Text className="px-4 py-[4px] font-PretendardExtraBold text-black text-[20px]">
@@ -171,13 +175,23 @@ function Shop() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View className="w-full h-fit justify-center flex-row flex-wrap mb-10 mt-4">
+        <View className="w-full h-fit justify-center flex-row flex-wrap mb-[35%] mt-4">
           <ShopItems items={DATA} />
         </View>
       </ScrollView>
       <BuyModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        item={{
+          image: Shoes as ImageSourcePropType,
+          title: "컨버스화",
+          description: "어쩌고 저쩌고",
+          price: 100,
+        }}
+      />
+      <CompleteModal
+        completeModalVisible={modalVisible}
+        setCompleteModalVisible={setModalVisible}
         item={{
           image: Shoes as ImageSourcePropType,
           title: "컨버스화",

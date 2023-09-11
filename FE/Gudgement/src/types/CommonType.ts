@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+
 export declare module CommonType {
   export type RootStackParamList = {
     default: undefined;
@@ -21,7 +23,14 @@ export declare module CommonType {
      * ShopScreen child Type
      */
     ShopNavigator: undefined;
+    ShopEntrance: undefined;
     Shop: undefined;
     Inventory: undefined;
+  };
+  export type Titem = {
+    title: string;
+    description: string;
+    image: ImageSourcePropType;
+    price: number;
   };
 }

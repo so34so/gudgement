@@ -9,30 +9,38 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Svg, { WithLocalSvg, Text as SvgText } from "react-native-svg";
-interface Iitem {
-  title: string;
-  description: string;
-  image: ImageSourcePropType;
-  price: number;
-}
+import CloseIcon from "../assets/icons/closeModal.svg";
+import { CommonType } from "../types/CommonType";
+
 function BuyModal({
   item,
   modalVisible,
   setModalVisible,
 }: {
-  item: Iitem;
-  modalVisible: boolean;
-  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  item: CommonType.Titem;
+  modalVisible: {
+    buy: boolean;
+    complete: boolean;
+  };
+  setModalVisible: React.Dispatch<
+    React.SetStateAction<{
+      buy: boolean;
+      complete: boolean;
+    }>
+  >;
 }) {
-  const shoesImage: ImageSourcePropType = item.image;
+  const closeModal: ImageSourcePropType = CloseIcon as ImageSourcePropType;
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      visible={modalVisible}
+      visible={modalVisible.buy}
       onRequestClose={() => {
         Alert.alert("Modal has been closed.");
-        setModalVisible(!modalVisible);
+        setModalVisible({
+          ...modalVisible,
+          buy: !modalVisible.buy,
+        });
       }}
       className="opacity-80"
     >
@@ -44,11 +52,17 @@ function BuyModal({
       >
         <View className="mt-[43%] bg-sub01 rounded-[20px] px-10 py-8 border-2 border-white items-center shadow-lg">
           <Pressable
-            className="absolute right-3 top-2 bg-red border-2 border-black rounded-[10px]"
-            onPress={() => setModalVisible(!modalVisible)}
+            className="absolute right-1 top-1"
+            onPress={() =>
+              setModalVisible({
+                ...modalVisible,
+                buy: !modalVisible.buy,
+              })
+            }
           >
-            <Text className="py-[2px] px-2 font-PretendardExtraBold">X</Text>
+            <WithLocalSvg width={40} height={40} asset={closeModal} />
           </Pressable>
+          <View className="h-6" />
           <Text className="text-white text-[16px] font-PretendardExtraBold">
             {item.description}
           </Text>
@@ -59,7 +73,7 @@ function BuyModal({
             className="left-4 top-6"
             width={220}
             height={200}
-            asset={shoesImage}
+            asset={item.image}
           />
           <Svg height="80" width="140">
             <SvgText
@@ -77,7 +91,12 @@ function BuyModal({
           </Svg>
           <TouchableOpacity
             className="w-32 flex justify-center items-center h-12 bg-buy rounded-[10px] border-2 border-[#6f530d]"
-            onPress={() => setModalVisible(!modalVisible)}
+            onPress={() =>
+              setModalVisible({
+                buy: !modalVisible.buy,
+                complete: !modalVisible.complete,
+              })
+            }
           >
             <Text className="font-PretendardExtraBold text-black text-[24px] top-[-1]">
               구매하기

@@ -14,7 +14,7 @@ if (__DEV__) {
 function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }} className="bg-sub01">
+      <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
           <BottomTabNavigator />
         </NavigationContainer>

@@ -18,13 +18,15 @@ function BottomTabNavigator() {
       initialRouteName="홈"
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "#4a4a4a",
+          position: "absolute",
+          backgroundColor: "transparent",
           elevation: 0,
           borderTopWidth: 0,
           marginBottom: 80,
         },
         tabBarItemStyle: {
-          backgroundColor: "#4a4a4a",
+          display: "flex",
+          backgroundColor: "transparent",
           height: 110,
         },
         // eslint-disable-next-line react/no-unstable-nested-components

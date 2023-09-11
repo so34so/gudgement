@@ -9,9 +9,10 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Shop {
+public class Item {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="item_id")
     private long id;
 
@@ -21,13 +22,17 @@ public class Shop {
     @Column(nullable=false)
     private String itemContent;
 
+    @Column
     private String itemEffect;
 
+    @Column
+    private String image;
+
     @Column(nullable=false)
-    private int amount;
+    private int price;
 
     @Column(nullable = false)
-    private String category;
+    private String type;
 
     @Column(nullable = false)
     private int progress;
@@ -36,13 +41,13 @@ public class Shop {
     private String progressAchieve;
 
     @Builder
-    public Shop(long id, String itemName, String itemContent, String itemEffect, int amount, String category, int progress, String progressAchieve){
-        this.id = id;
+    public Item(String itemName, String itemContent, String itemEffect, String image, int price, String type, int progress, String progressAchieve){
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
-        this.amount = amount;
-        this.category = category;
+        this.image = image;
+        this.price = price;
+        this.type = type;
         this.progress = progress;
         this.progressAchieve = progressAchieve;
     }

@@ -21,22 +21,24 @@ function ShopEntrance() {
         resizeMode="cover"
         className="flex-1"
       >
-        <Pressable
-          className="absolute bg-pink-500 top-1/3 left-[20%] rounded-[20px]"
-          onPress={() => navigation.navigate("Shop")}
-        >
-          <Text className=" font-PretendardBold text-[16px] p-5 text-black">
-            치장
-          </Text>
-        </Pressable>
-        <Pressable
-          className="absolute bg-blue-500 top-1/3 right-[20%] rounded-[20px]"
-          onPress={() => navigation.navigate("Shop")}
-        >
-          <Text className=" font-PretendardBold text-[16px] p-5 text-black">
-            캐릭터
-          </Text>
-        </Pressable>
+        <View className="top-2/3">
+          <Pressable
+            className="absolute bg-pink-500 left-[5%] rounded-[20px]"
+            onPress={() => navigation.navigate("Shop")}
+          >
+            <Text className=" font-PretendardBold text-[16px] p-5 text-black">
+              치장
+            </Text>
+          </Pressable>
+          <Pressable
+            className="absolute bg-blue-500 right-[5%] rounded-[20px]"
+            onPress={() => navigation.navigate("Shop")}
+          >
+            <Text className=" font-PretendardBold text-[16px] p-5 text-black">
+              캐릭터
+            </Text>
+          </Pressable>
+        </View>
       </ImageBackground>
     </View>
   );

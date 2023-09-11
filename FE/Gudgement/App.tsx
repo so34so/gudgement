@@ -25,7 +25,7 @@ function App(): JSX.Element {
           {isLoggedIn ? (
             <BottomTabNavigator />
           ) : (
-            <Login />
+            <Login onLogin={handleLogin} />
           )}
         </NavigationContainer>
       </GestureHandlerRootView>

@@ -2,15 +2,21 @@ import { useState } from 'react';
 import { Image, View, Text, Pressable } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from '@env';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { CommonType } from '../types/CommonType';
+
 import Reactotron from 'reactotron-react-native';
 
 // 상단에 적어 탈취하여 웹뷰에 값을 가져오기
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
-function Login() {
-  
+
+interface LoginProps {
+  onLogin: () => void; // onLogin의 타입을 명시
+}
+
+function Login({ onLogin }: LoginProps) {
   const KakaoLogoImg = require('../assets/images/kakaologo.png')
-  
   const [showWebView, setShowWebView] = useState(false);
 
   const handleLogin = () => {
@@ -24,6 +30,7 @@ function Login() {
     if (searchIdx !== -1) {
       const code = codeUrl.substring(searchIdx + exp.length);
       console.log(code);
+      onLogin(); // 로그인 성공 시
     }
   }
 

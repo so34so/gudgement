@@ -28,6 +28,7 @@ module.exports = {
         white: "#ffffff",
         white10: "#ffffff1a",
         white70: "#ffffffb2",
+        deepgreen: "#34B859",
       },
       fontSize: {
         "2xs": 14,

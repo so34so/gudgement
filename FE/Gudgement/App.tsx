@@ -14,7 +14,7 @@ if (__DEV__) {
   import("./reactotron");
 }
 
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   console.log("Message handled in the background!", remoteMessage);
 });
 PushNotification.configure({
@@ -86,7 +86,7 @@ PushNotification.createChannel(
     vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
   },
   (created: boolean) =>
-    console.log(`createChannel riders returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    console.log(`createChannel riders returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
 );
 
 // const codePushOptions: CodePushOptions = {
@@ -116,7 +116,7 @@ function App(): JSX.Element {
       }
     }
     getToken();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       console.log("[Remote Message] ", JSON.stringify(remoteMessage));
     });
     return unsubscribe;

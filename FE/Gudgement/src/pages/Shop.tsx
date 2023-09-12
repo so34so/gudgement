@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
   Image,
+  ImageBackground,
   ImageSourcePropType,
   Pressable,
   SafeAreaView,
@@ -24,6 +25,8 @@ import Reactotron from "reactotron-react-native";
 import BuyModal from "../components/BuyModal";
 import Shoes from "../assets/images/item.svg";
 import CompleteModal from "../components/CompleteModal";
+import ShopBackground from "../assets/images/shopBackground.png";
+import PointHeader from "../components/PointHeader";
 
 const DATA = Array.from({ length: 20 }, (_, idx) => {
   return {
@@ -46,6 +49,8 @@ function Shop() {
     buy: false,
     complete: false,
   });
+  const shopBackground: ImageSourcePropType =
+    ShopBackground as ImageSourcePropType;
 
   const categoryStyle = (select: string) => `rounded-[8px] border-2 
   ${category === select ? "border-main" : "border-black"} bg-darkgray50`;
@@ -67,7 +72,14 @@ function Shop() {
 
   return (
     <SafeAreaView>
-      <ScrollView className="w-full bg-sub01 pt-5">
+      <ImageBackground
+        source={shopBackground}
+        resizeMode="cover"
+        style={{ opacity: 0.7, backgroundColor: "black" }}
+        className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
+      />
+      <PointHeader />
+      <ScrollView className="w-full bg-transpraent pt-5">
         <View className="w-full h-12 justify-around space-x-36 flex flex-row top-2">
           <View className="bg-white border-2 border-black w-28 h-8 flex justify-center items-center rounded-[4px]">
             <View className="bg-black w-[96%] h-[88%] rounded-[4px]">
@@ -175,7 +187,7 @@ function Shop() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View className="w-full h-fit justify-center flex-row flex-wrap mb-[35%] mt-4">
+        <View className="w-full h-fit justify-center flex-row flex-wrap mb-[45%] mt-4">
           <ShopItems items={DATA} />
         </View>
       </ScrollView>

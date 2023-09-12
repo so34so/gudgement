@@ -1,5 +1,3 @@
-import { ImageSourcePropType } from "react-native";
-
 export declare module CommonType {
   export type RootStackParamList = {
     default: undefined;
@@ -37,11 +35,5 @@ export declare module CommonType {
     Analyze: undefined;
     SingleRecords: undefined;
     MultiRecords: undefined;
-  };
-  export type Titem = {
-    title: string;
-    description: string;
-    image: ImageSourcePropType;
-    price: number;
   };
 }

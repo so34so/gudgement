@@ -1,42 +1,46 @@
-import { useState } from 'react';
-import { Image, View, Text, Pressable } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from '@env';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { CommonType } from '../types/CommonType';
-
-import Reactotron from 'reactotron-react-native';
-
+import { useState } from "react";
+import {
+  Image,
+  View,
+  Text,
+  Pressable,
+  ImageSourcePropType,
+} from "react-native";
+import { WebView } from "react-native-webview";
+import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
+import KakaoLogoImg from "../assets/images/kakaologo.png";
 // 상단에 적어 탈취하여 웹뷰에 값을 가져오기
-const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
+// eslint-disable-next-line quotes
+const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage("messge from webView")`;
 
 interface LoginProps {
   onLogin: () => void; // onLogin의 타입을 명시
 }
 
 function Login({ onLogin }: LoginProps) {
-  const KakaoLogoImg = require('../assets/images/kakaologo.png');
+  const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
 
   const handleLogin = () => {
     setShowWebView(true);
-  }
+  };
 
   const getCode = async (codeUrl: string) => {
     // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
-    const exp = 'code=';
+    const exp = "code=";
     const searchIdx = codeUrl.indexOf(exp);
     if (searchIdx !== -1) {
       const code = codeUrl.substring(searchIdx + exp.length);
       console.log(code);
       onLogin(); // 로그인 성공 시
     }
-  }
+  };
 
   if (showWebView) {
     return (
-      <WebView className='flex' 
+      <WebView
+        className="flex"
         // 웹뷰 보여줄 페이지 주소
         source={{
           uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
@@ -48,21 +52,24 @@ function Login({ onLogin }: LoginProps) {
         onMessage={event => {
           const data = event.nativeEvent.url;
           getCode(data);
-        }} 
+        }}
       />
     );
   }
 
   return (
-    <View className='flex flex-row justify-center items-end h-full pb-20'>
-      <Pressable onPress={handleLogin} className='flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray'>
-        <Image source={KakaoLogoImg} className='h-8 w-9 mr-6'/>
-        <Text className='text-center text-darkgray text-md font-PretendardExtraBold'>
+    <View className="flex flex-row justify-center items-end h-full pb-20">
+      <Pressable
+        onPress={handleLogin}
+        className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
+      >
+        <Image source={kakaoLogoImg} className="h-8 w-9 mr-6" />
+        <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
           카카오로 시작하기
         </Text>
       </Pressable>
     </View>
-  )
+  );
 }
 
 export default Login;

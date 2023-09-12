@@ -31,6 +31,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
     project: "./tsconfig.json",
+    tsconfigRootDir: __dirname
   },
   plugins: [
     "react",
@@ -47,6 +48,8 @@ module.exports = {
     semi: ["error", "always"],
     "prettier/prettier": ["error", { endOfLine: "auto" }],
     "no-empty-function": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-namespace": "off",
     "react/react-in-jsx-scope": "off",

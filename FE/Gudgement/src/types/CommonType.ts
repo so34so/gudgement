@@ -1,4 +1,3 @@
-
 export declare module CommonType {
   export type RootStackParamList = {
     default: undefined;
@@ -26,8 +25,8 @@ export declare module CommonType {
     Inventory: undefined;
 
     /**
-    * ShopScreen child Type
-    */
+     * MyPage child Type
+     */
     MyPageNavigator: undefined;
     MyPage: undefined;
     MyPageDetail: undefined;
@@ -35,7 +34,5 @@ export declare module CommonType {
     Analyze: undefined;
     SingleRecords: undefined;
     MultiRecords: undefined;
-    
   };
-
 }

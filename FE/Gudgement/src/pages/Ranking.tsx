@@ -71,7 +71,7 @@ export default function Ranking() {
               </Svg>
               <View
                 className={`relative ${styleLevel(
-                  item.rank
+                  item.rank,
                 )} flex flex-row justify-center items-center rounded-[20px] w-fit bg-white
       box-border h-8 text-center text-black border-[2px] border-solid border-black`}
               >

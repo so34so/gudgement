@@ -187,7 +187,7 @@ function Shop() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View className="w-full h-fit justify-center flex-row flex-wrap mb-[45%] mt-4">
+        <View className="w-full h-fit justify-center flex-row flex-wrap mb-[50%] mt-4">
           <ShopItems items={DATA} />
         </View>
       </ScrollView>

@@ -31,7 +31,7 @@ function BottomTabNavigator() {
           height: 110,
         },
         // eslint-disable-next-line react/no-unstable-nested-components
-        tabBarLabel: (props) => {
+        tabBarLabel: props => {
           return (
             <TouchableOpacity className="w-16 h-8 rounded-md bg-black flex justify-center items-center">
               <View className="w-[95%] h-[92%] border-[1px] border-white rounded-md">

@@ -58,7 +58,7 @@ function Shop() {
     offset.value = withRepeat(
       withTiming(-offset.value, { duration: 500 }),
       -5,
-      true
+      true,
     );
   }, [offset]);
 

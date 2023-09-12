@@ -21,7 +21,7 @@ interface Irank {
 }
 const RANKING = Array.from({ length: 10 }, (_, i) => {
   return {
-    rank: i,
+    rank: i + 1,
     name: `player${i}`,
     image: Jilta as ImageSourcePropType,
     level: 300 - i * 10,
@@ -32,6 +32,9 @@ export default function Ranking() {
   const jilta: ImageSourcePropType = Jilta as ImageSourcePropType;
   const rankingBackground: ImageSourcePropType =
     RankingBackground as ImageSourcePropType;
+  const styleLevel = (rank: number) => {
+    return `${rank >= 10 ? "right-[-30px]" : "right-[-40px]"}`;
+  };
   const flatListProps: FlatListProps<Irank> = {
     data: RANKING.slice(3, RANKING.length),
     renderItem: ({ item }) => {
@@ -56,7 +59,12 @@ export default function Ranking() {
                   {item.name}
                 </SvgText>
               </Svg>
-              <View className="relative right-[-40px] flex flex-row justify-center items-center rounded-[20px] w-fit bg-white box-border h-8 text-center text-black border-[2px] border-solid border-black">
+              <View
+                className={`relative ${styleLevel(
+                  item.rank,
+                )} flex flex-row justify-center items-center rounded-[20px] w-fit bg-white
+      box-border h-8 text-center text-black border-[2px] border-solid border-black`}
+              >
                 <Text className="text-white w-10 rounded-l-[20px] h-full bg-black text-center text-[18px] font-PretendardMedium">
                   Lv
                 </Text>

@@ -19,16 +19,18 @@ public class ItemDto implements Serializable {
     private String itemEffect;
     private String image;
     private int price;
+    private boolean isUnlocked;
     private boolean isSold;
 
     @Builder
-    public itemDto(Long id, String itemName, String itemContent, String itemEffect, byte[] image, int price, boolean isSold){
+    public itemDto(Long id, String itemName, String itemContent, String itemEffect, byte[] image, int price, boolean isUnlocked, boolean isSold){
         this.id = id;
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
         this.image = Base64.getEncoder().encodeToString(image);
         this.price = price;
+        this.isUnlocked = isUnlocked;
         this.isSold = isSold;
     }
 

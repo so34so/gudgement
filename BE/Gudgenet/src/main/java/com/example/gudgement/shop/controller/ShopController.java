@@ -31,7 +31,7 @@ public class ShopController {
 
     @Operation(summary = "카테고리 별 아이템 목록 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아이템 목록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "카테고리 아이템 목록 조회 성공")
     })
     @GetMapping("/{type}")
     public ResponseEntity<List<ItemDto>> getItems(@PathVariable String type){
@@ -41,7 +41,7 @@ public class ShopController {
 
     @Operation(summary = "아이템 구매")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아이템 목록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "아이템 구매 성공")
     })
     @PostMapping("/buy")
     public ResponseEntity<Void> buyItem(@RequestBody String itemName){
@@ -49,7 +49,11 @@ public class ShopController {
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/unlock")
+    public ResponseEntity<Void> unlockItem(@RequestBody String itemName){
+        shopService.unlockItem(itemName);
+        return ResponseEntity.ok().build();
+    }
 
 
 }

@@ -1,8 +1,11 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.progress.service.ProgressService;
 import com.example.gudgement.shop.dto.ItemDto;
+import com.example.gudgement.shop.entity.Condition;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.shop.entity.Price;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,22 +13,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShopService {
 
     private final String IMAGE_PATH = "static/item_images/";
+
+    private final ProgressService progressService;
 
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
@@ -95,12 +96,24 @@ public class ShopService {
 
                 boolean isSold = userItems.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getId()));
 
-                itemDTOS.add(ItemDto.builder()
+                ItemDto.ItemDtoBuilder builder = ItemDto.builder()
                         .id(item.getId())
-                        .price(item.getPrice())
                         .image(imageData)
-                        .isSold(isSold)
-                        .build());
+                        .isSold(isSold);
+
+                if (item instanceof Price) {
+                    builder.price(((Price) item).getPrice());
+                } else if (item instanceof Condition) {
+                    String conditionName = ((Condition) item).getConditionName();
+                    int conditionValue = ((Condition) item).getCondition();
+
+                    // member progress에서 conditionName이 동일하고 condition의 수가 같거나 높은지 확인
+                    boolean isUnlocked = progressService.checkUnlockStatus(memberId, conditionName, conditionValue);
+
+                    builder.isUnlocked(isUnlocked);
+                }
+
+                itemDTOS.add(builder.build());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,4 +146,20 @@ public class ShopService {
         inventoryRepository.save(Inventory.builder().itemId(item).memberId(memberId).build());
     }
 
+    public void unlockItem(String itemName) {
+        Member memberId = memberService.getLoginUser();
+        if (memberId == null) {
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        Item item = itemRepository.findByName(itemName);
+
+        // 이미 구매한 아이템인지 확인
+        if (inventoryRepository.countByMemberAndItem(memberId, item) != 0) {
+            throw new AlreadyPurchasedException("이미 구매한 아이템입니다.");
+        }
+
+        // 아이템 추가
+        inventoryRepository.save(Inventory.builder().itemId(item).memberId(memberId).build());
+    }
 }

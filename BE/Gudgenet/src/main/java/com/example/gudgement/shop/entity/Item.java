@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Item {
 
     @Id
@@ -28,31 +29,17 @@ public class Item {
     @Column
     private String image;
 
-    @Column(nullable=false)
-    private int price;
-
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = false)
-    private int progress;
-
-    @Column(nullable = false)
-    private String progressAchieve;
-
     @Builder
-    public Item(String itemName, String itemContent, String itemEffect, String image, int price, String type, int progress, String progressAchieve){
+    public Item(String itemName, String itemContent, String itemEffect, String image, String type){
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
         this.image = image;
-        this.price = price;
         this.type = type;
-        this.progress = progress;
-        this.progressAchieve = progressAchieve;
+
     }
-
-
-
 
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MemberCreateDto {
     private String email;
+    private String name;
     private String password;
     private int gender;
     private int age;
@@ -16,6 +17,7 @@ public class MemberCreateDto {
     public Member toEntity() {
         return Member.builder()
                 .email(email)
+                .name(name)
                 .password(password)
                 .gender(gender)
                 .age(age)

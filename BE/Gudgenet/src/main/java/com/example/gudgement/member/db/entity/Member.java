@@ -6,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /*
 *  사용자 (멤버) 관리 Entity 입니다.
@@ -23,15 +22,15 @@ public class Member implements Serializable {
     private Long memberId;
 
     @NotNull
-    @Column(length = 20)
+    @Column(length = 50)
     private String email;
 
     @NotNull
-    @Column(length = 10)
+    @Column(length = 50)
     private String password;
 
     @NotNull
-    @Column(length = 10)
+    @Column(length = 20)
     private String name;
 
     private int gender;

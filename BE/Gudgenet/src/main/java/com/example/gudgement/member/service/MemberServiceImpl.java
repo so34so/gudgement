@@ -37,6 +37,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponseDto memberCreate(MemberCreateDto memberCreateDto) {
         Member member = memberRepository.saveAndFlush(Member.builder()
                 .email(memberCreateDto.getEmail())
+                .name(memberCreateDto.getName())
                 .password(passwordEncoder.encrypt(memberCreateDto.getEmail(), memberCreateDto.getPassword()))
                 .gender(memberCreateDto.getGender())
                 .age(memberCreateDto.getAge())

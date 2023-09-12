@@ -16,7 +16,7 @@ interface LoginProps {
 }
 
 function Login({ onLogin }: LoginProps) {
-  const KakaoLogoImg = require('../assets/images/kakaologo.png')
+  const KakaoLogoImg = require('../assets/images/kakaologo.png');
   const [showWebView, setShowWebView] = useState(false);
 
   const handleLogin = () => {

@@ -35,6 +35,16 @@ export default function Ranking() {
   const styleLevel = (rank: number) => {
     return `${rank >= 10 ? "right-[-30px]" : "right-[-40px]"}`;
   };
+  const topRankColor = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return "bg-red";
+      case 2:
+        return "bg-buy";
+      case 3:
+        return "bg-deepgreen";
+    }
+  };
   const flatListProps: FlatListProps<Irank> = {
     data: RANKING.slice(3, RANKING.length),
     renderItem: ({ item }) => {
@@ -83,14 +93,18 @@ export default function Ranking() {
       <ImageBackground
         source={rankingBackground}
         resizeMode="cover"
-        style={{ opacity: 0.7, backgroundColor: "black" }}
+        style={{ opacity: 0.9, backgroundColor: "black" }}
         className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
       />
       <View className="w-full h-full bg-transparent">
         <View className="flex flex-row w-full justify-center space-x-10 mt-8 p-4 left-1">
           {RANKING.slice(0, 3).map((ele: Irank) => (
             <View key={ele.rank}>
-              <View className="bg-main border-2 border-black w-20 h-20 justify-center items-center rounded-[10px]">
+              <View
+                className={`${topRankColor(
+                  ele.rank
+                )} border-2 border-black w-20 h-20 justify-center items-center rounded-[10px]`}
+              >
                 <View className="absolute top-[-17px] left-[-17px] flex justify-center items-center w-10 h-10 rounded-[99px] bg-white border-solid border-2 border-black">
                   <View className="absolute w-9 h-9 bg-black border-2 flex justify-center items-center border-white rounded-[99px]">
                     <Text className="text-white font-PretendardBold text-[22px]">

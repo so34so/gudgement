@@ -6862,7 +6862,7 @@ react-native-svg@^13.10.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
 
-react-native-webview@^13.4.0:
+react-native-webview@^13.5.1:
   version "13.5.1"
   resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.5.1.tgz"
   integrity sha512-SZQJqFUMxYYj1xYWy1Z48WcHpqOGvbXKS5R1cnaLQY/JxefS+1NOVMqWxy1Zwmc128vqtRklES8l9Jus8tKSLg==

@@ -26,6 +26,17 @@ export declare module CommonType {
     ShopEntrance: undefined;
     Shop: undefined;
     Inventory: undefined;
+
+    /**
+     * ShopScreen child Type
+     */
+    MyPageNavigator: undefined;
+    MyPage: undefined;
+    MyPageDetail: undefined;
+    Pedometer: undefined;
+    Analyze: undefined;
+    SingleRecords: undefined;
+    MultiRecords: undefined;
   };
   export type Titem = {
     title: string;

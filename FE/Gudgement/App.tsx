@@ -8,13 +8,14 @@ import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
+import Login from "./src/pages/Login";
 if (__DEV__) {
   import("./reactotron");
 }
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log("Message handled in the background!", remoteMessage);
 });
 PushNotification.configure({
@@ -86,7 +87,7 @@ PushNotification.createChannel(
     vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
   },
   (created: boolean) =>
-    console.log(`createChannel riders returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    console.log(`createChannel riders returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
 );
 
 // const codePushOptions: CodePushOptions = {
@@ -116,16 +117,26 @@ function App(): JSX.Element {
       }
     }
     getToken();
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log("[Remote Message] ", JSON.stringify(remoteMessage));
     });
     return unsubscribe;
   }, []);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          <BottomTabNavigator />
+          {isLoggedIn ? (
+            <BottomTabNavigator />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
         </NavigationContainer>
       </GestureHandlerRootView>
     </QueryClientProvider>

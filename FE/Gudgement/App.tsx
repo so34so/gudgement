@@ -132,11 +132,11 @@ function App(): JSX.Element {
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          {isLoggedIn ? (
-            <BottomTabNavigator />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )}
+          {/* {isLoggedIn ? ( */}
+          <BottomTabNavigator />
+          {/* ) : ( */}
+          {/* <Login onLogin={handleLogin} /> */}
+          {/* )} */}
         </NavigationContainer>
       </GestureHandlerRootView>
     </QueryClientProvider>

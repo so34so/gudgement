@@ -1,32 +1,38 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Shop from "../pages/Shop";
-import Inventory from "../pages/Inventory";
+import Low from "../pages/Low";
+import Middle from "../pages/Middle";
+import Play from "../pages/Play";
 import { CommonType } from "../types/CommonType";
-import ShopEntrance from "../pages/ShopEntrance";
+import PlaySelect from "../pages/PlaySelect";
 
-function ShopNavigator() {
+function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
     <Stack.Navigator
-      initialRouteName="ShopEntrance"
+      initialRouteName="Play"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen
-        name="ShopEntrance"
-        component={ShopEntrance}
+        name="Play"
+        component={Play}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Shop"
-        component={Shop}
+        name="PlaySelect"
+        component={PlaySelect}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Inventory"
-        component={Inventory}
+        name="Low"
+        component={Low}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Middle"
+        component={Middle}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
 }
-export default ShopNavigator;
+export default PlayNavigator;

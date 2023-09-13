@@ -55,6 +55,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberVerifyResponseDto verifyMember(LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).orElseThrow();
 
@@ -84,5 +85,14 @@ public class MemberServiceImpl implements MemberService {
                 .level(member.getLevel())
                 .exp(member.getExp())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void updateRefreshToken(String email, String refreshToken) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+            return new IllegalArgumentException("회원이 존재하지 않습니다.");
+        });
+        member.updateRefreshToken(refreshToken);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.entity;
+package com.example.gudgement.member.entity;
 
 import lombok.*;
 
@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 *  사용자 (멤버) 관리 Entity 입니다.
@@ -49,7 +51,7 @@ public class Member implements Serializable {
     private long exp;
 
     @NotNull
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 1")
     private int level;
 
     @NotNull
@@ -65,19 +67,19 @@ public class Member implements Serializable {
     private String refreshToken;
 
     // 연결 관계
-
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<item> set_item = new ArrayList<item>()
-
-//    @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private GameRoom roomId;
+//    private List<Item> set_item = new ArrayList<Item>();
 
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
 //    private List<Progress> progressList = new ArrayList<>();
 
+    // 미구현
+//     @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+//    private GameRoom roomId;
+//
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
 //    private List<PaymentHistory> paymentHistoryList = new ArrayList<>();
-
+//
 //    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE)
 //    private List<Account> accounts = new ArrayList<>();
 
@@ -99,5 +101,8 @@ public class Member implements Serializable {
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    private class PaymentHistory {
     }
 }

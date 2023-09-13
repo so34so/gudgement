@@ -1,13 +1,12 @@
 package com.example.gudgement.member.service;
 
 import com.example.gudgement.member.common.PasswordEncoder;
-import com.example.gudgement.member.db.dto.request.LoginDto;
-import com.example.gudgement.member.db.dto.request.MemberCreateDto;
-import com.example.gudgement.member.db.dto.response.MemberResponseDto;
-import com.example.gudgement.member.db.dto.response.MemberVerifyResponseDto;
-import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
-import com.example.gudgement.member.common.jwt.JwtProvider;
+import com.example.gudgement.member.dto.request.LoginDto;
+import com.example.gudgement.member.dto.request.MemberCreateDto;
+import com.example.gudgement.member.dto.response.MemberResponseDto;
+import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
-    private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 

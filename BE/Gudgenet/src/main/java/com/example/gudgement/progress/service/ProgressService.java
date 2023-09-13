@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ProgressService {
-    
+
     private final ProgressRepository progressRepository;
 
     public boolean checkUnlockStatus(Member memberId, String conditionName, int conditionValue) {

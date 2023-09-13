@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProgressController {
     private final ProgressService progressService;
-    
+
 
 }

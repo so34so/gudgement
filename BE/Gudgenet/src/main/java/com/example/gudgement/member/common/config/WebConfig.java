@@ -1,6 +1,7 @@
 package com.example.gudgement.member.common.config;
 
-import com.example.gudgement.member.common.filter.JwtAuthFilter;
+import com.example.gudgement.member.common.filter.JwtAuthorizationFilter;
+import com.example.gudgement.member.common.filter.JwtFilter;
 import com.example.gudgement.member.common.filter.MemberVerifyFilter;
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.service.MemberService;
@@ -23,11 +24,21 @@ public class WebConfig {
     }
 
     @Bean
-    public FilterRegistrationBean JwtAuthFilter(JwtProvider jwtProvider, ObjectMapper mapper, MemberService memberService) {
+    public FilterRegistrationBean JwtFilter(JwtProvider jwtProvider, ObjectMapper mapper, MemberService memberService) {
         FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-        filterFilterRegistrationBean.setFilter(new JwtAuthFilter(jwtProvider, mapper, memberService));
+        filterFilterRegistrationBean.setFilter(new JwtFilter(jwtProvider, mapper, memberService));
         filterFilterRegistrationBean.setOrder(2);
         filterFilterRegistrationBean.addUrlPatterns("/api/member/login");
+        return filterFilterRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, ObjectMapper mapper) {
+        FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+
+        filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
+        filterFilterRegistrationBean.setOrder(3);
+
         return filterFilterRegistrationBean;
     }
 }

@@ -1,6 +1,6 @@
-package com.example.gudgement.member.db.dto.request;
+package com.example.gudgement.member.dto.request;
 
-import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

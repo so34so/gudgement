@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.dto;
+package com.example.gudgement.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,6 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class AccessTokenDto {
-    private String email;
     private String accessToken;
 }

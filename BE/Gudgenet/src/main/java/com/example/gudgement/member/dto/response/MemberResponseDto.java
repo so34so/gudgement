@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.dto.response;
+package com.example.gudgement.member.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -45,9 +45,4 @@ export declare module CommonType {
     image: ImageSourcePropType;
     price: number;
   };
-  export type TShopItem = {
-    id: number;
-    title: string;
-    image: string;
-  };
 }

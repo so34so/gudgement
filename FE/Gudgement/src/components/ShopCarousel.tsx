@@ -14,7 +14,7 @@ import { CommonType } from "../types/CommonType";
 interface ICarousel {
   gap: number;
   offset: number;
-  items: CommonType.TShopItem[];
+  items: CommonType.Titem[];
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -27,7 +27,7 @@ function ShopCarousel({
   setSelectItem,
 }: ICarousel) {
   const [page, setPage] = useState(0);
-  const renderItem: ListRenderItem<CommonType.TShopItem> = ({ item }) => {
+  const renderItem: ListRenderItem<CommonType.Titem> = ({ item }) => {
     return <ShopItems item={item} page={page} />;
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -53,7 +53,7 @@ function ShopCarousel({
         data={items}
         decelerationRate="fast"
         horizontal
-        keyExtractor={(item: CommonType.TShopItem) => `${item.id}`}
+        keyExtractor={(item: CommonType.Titem) => `${item.id}`}
         onScroll={onScroll}
         pagingEnabled
         renderItem={renderItem}

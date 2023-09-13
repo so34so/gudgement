@@ -5,6 +5,7 @@ import Analyze from "../pages/Analyze";
 import SingleRecords from "../pages/SingleRecords";
 import MultiRecords from "../pages/MultiRecords";
 import { CommonType } from "../types/CommonType";
+
 function MyPageNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (

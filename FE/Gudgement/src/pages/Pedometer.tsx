@@ -1,11 +1,11 @@
 import { View, Text } from "react-native";
 
-function Pedeometer() {
+function Pedometer() {
   return (
     <View>
-      <Text>Pedeometer</Text>
+      <Text>Pedometer</Text>
     </View>
   );
 }
 
-export default Pedeometer;
+export default Pedometer;

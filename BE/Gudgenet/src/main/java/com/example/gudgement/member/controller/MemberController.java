@@ -1,6 +1,8 @@
 package com.example.gudgement.member.controller;
 
+import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.db.dto.AccessTokenDto;
+import com.example.gudgement.member.db.dto.RefreshTokenDto;
 import com.example.gudgement.member.db.dto.request.LoginDto;
 import com.example.gudgement.member.db.dto.request.MemberCreateDto;
 import com.example.gudgement.member.db.dto.response.MemberResponseDto;
@@ -24,6 +26,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/member")
 public class MemberController {
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/create")
     public ResponseEntity<MemberResponseDto> createMember(@RequestBody @Valid MemberCreateDto memberCreateDto) {
@@ -38,4 +41,9 @@ public class MemberController {
         return null;
     }
 
+    @PostMapping("/refresh/token")
+    public ResponseEntity<AccessTokenDto> tokenRefresh(@RequestBody RefreshTokenDto refreshTokenDto) {
+        AccessTokenDto accessTokendto = jwtProvider.tokenRefresh(refreshTokenDto.getRefreshToken());
+        return ResponseEntity.ok(accessTokendto);
+    }
 }

@@ -11,4 +11,5 @@ public interface MemberService {
     MemberResponseDto memberCreate(MemberCreateDto memberCreateDto);
     MemberVerifyResponseDto verifyMember(LoginDto loginDto);
     MemberResponseDto loadInfo(String email);
+    void updateRefreshToken(String email, String refreshToken);
 }

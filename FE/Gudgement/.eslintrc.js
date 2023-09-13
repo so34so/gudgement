@@ -4,10 +4,9 @@ module.exports = {
     browser: true,
     es2021: true,
     node: true,
-    jest: true,
   },
   extends: [
-    "@react-native",
+    "@react-native-community",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -32,6 +31,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
     project: "./tsconfig.json",
+    tsconfigRootDir: __dirname
   },
   plugins: [
     "react",
@@ -43,11 +43,16 @@ module.exports = {
   rules: {
     indent: ["error", 2, { SwitchCase: 1 }],
     quotes: ["error", "double", { avoidEscape: true }],
-    "linebreak-style": ["error", "unix"],
+    "react/react-in-jsx-scope": "off",
+    "linebreak-style": ["error", "windows"],
     semi: ["error", "always"],
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", { endOfLine: "auto" }],
     "no-empty-function": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "react/react-in-jsx-scope": "off",
     "react/display-name": "off",
     "react/prop-types": "off",
     "@tanstack/query/exhaustive-deps": "error",

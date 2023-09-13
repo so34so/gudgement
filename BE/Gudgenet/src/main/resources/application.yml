@@ -10,15 +10,18 @@ server:
 
 # MySQL
 spring:
+  main:
+    allow-bean-definition-overriding: true
+
   mvc:
     path match:
       matching-strategy: ant_path_matcher
 
   # datasource
   datasource:
-    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: root
-    password: ssafy
+    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: cos
+    password: cos1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa
@@ -56,6 +59,7 @@ springdoc:
 jwt:
   secret:
     key: "asdasaskdljasklkjlw"
+
 
 
 # H2 ??? ??? ?? ???

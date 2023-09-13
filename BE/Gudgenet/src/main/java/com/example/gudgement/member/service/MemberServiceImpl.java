@@ -7,7 +7,6 @@ import com.example.gudgement.member.db.dto.response.MemberResponseDto;
 import com.example.gudgement.member.db.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.member.db.repository.MemberRepository;
-import com.example.gudgement.member.common.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
-    private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -55,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberVerifyResponseDto verifyMember(LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).orElseThrow();
 
@@ -84,5 +82,14 @@ public class MemberServiceImpl implements MemberService {
                 .level(member.getLevel())
                 .exp(member.getExp())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void updateRefreshToken(String email, String refreshToken) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+            return new IllegalArgumentException("회원이 존재하지 않습니다.");
+        });
+        member.updateRefreshToken(refreshToken);
     }
 }

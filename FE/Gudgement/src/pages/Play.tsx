@@ -17,6 +17,7 @@ import Animated, {
 
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import PlayBackground from "../assets/images/playBackground.png";
+import Fin from "../assets/images/finfinee.png";
 import FlameEntrance from "../assets/images/flame.gif";
 
 import { CommonType } from "../types/CommonType";
@@ -26,7 +27,9 @@ function Play() {
     PlayBackground as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
+  const flameEntrance: ImageSourcePropType =
+    FlameEntrance as ImageSourcePropType;
+  const fin: ImageSourcePropType = Fin as ImageSourcePropType;
   const offset = useSharedValue(5);
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -42,29 +45,31 @@ function Play() {
   }, [offset]);
 
   return (
-    <View className="flex flex-1 w-full h-full">
+    <View className=" flex w-full h-full">
       <ImageBackground
         source={playBackground}
         resizeMode="cover"
         className="flex-1"
       >
-        <View className="">
+        <Image className="h-15 w-15" source={fin} width={100} height={100} />
+        <View className="flex-1">
           <Animated.View style={[animatedStyles]}>
             <Pressable
-              className="absolute justify-center items-center"
+              className=" justify-center items-center "
               onPress={() => navigation.navigate("PlaySelect")}
             >
               <Image
-                source={require("../assets/images/flame.gif")} // first way (local)
-                width={500}
-                height={500}
+                className="flex-2 h-10 w-10"
+                source={flameEntrance} // first way (local)
+                width={100}
+                height={100}
               />
 
-              <FastImage
+              {/* <FastImage
                 source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
                 style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.
                 resizeMode={FastImage.resizeMode.contain} // resize mode 설정
-              />
+              /> */}
             </Pressable>
 
             {/* <FastImage

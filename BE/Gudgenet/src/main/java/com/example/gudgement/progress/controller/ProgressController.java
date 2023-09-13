@@ -1,6 +1,6 @@
 package com.example.gudgement.progress.controller;
 
-import com.example.gudgement.progress.service.ProgressService;
+import com.example.gudgement.progress.service.ProgressServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/progress")
 @RequiredArgsConstructor
 public class ProgressController {
-    private final ProgressService progressService;
+    private final ProgressServiceImpl progressServiceImpl;
 
 
 }

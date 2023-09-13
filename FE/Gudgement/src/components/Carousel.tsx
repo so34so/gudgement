@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import React, { useState } from "react";
-import ShopItems from "./ShopItems";
+import RenderItems from "./RenderItems";
 import { CommonType } from "../types/CommonType";
 
 interface ICarousel {
@@ -17,18 +17,29 @@ interface ICarousel {
   items: CommonType.Titem[];
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
+  itemWidth: number;
+  component: string;
 }
 
-function ShopCarousel({
+function Carousel({
   offset,
   pageWidth,
   gap,
   items,
   setSelectItem,
+  itemWidth,
+  component,
 }: ICarousel) {
   const [page, setPage] = useState(0);
   const renderItem: ListRenderItem<CommonType.Titem> = ({ item }) => {
-    return <ShopItems item={item} page={page} />;
+    return (
+      <RenderItems
+        item={item}
+        page={page}
+        itemWidth={itemWidth}
+        component={component}
+      />
+    );
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newPage = Math.round(
@@ -74,4 +85,4 @@ function ShopCarousel({
   );
 }
 
-export default ShopCarousel;
+export default Carousel;

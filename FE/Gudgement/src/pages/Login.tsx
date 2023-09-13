@@ -9,7 +9,6 @@ import {
 import { WebView, WebViewNavigation } from "react-native-webview";
 import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
 import KakaoLogoImg from "../assets/images/kakaologo.png";
-import Reactotron from "reactotron-react-native";
 
 interface LoginProps {
   onLogin: () => void; // onLogin의 타입을 명시
@@ -24,7 +23,6 @@ function Login({ onLogin }: LoginProps) {
   };
 
   const handleShouldStartLoad = (event: WebViewNavigation) => {
-    Reactotron.log!("시작");
     const url = event.url;
     // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
     const exp = "code=";
@@ -33,7 +31,6 @@ function Login({ onLogin }: LoginProps) {
       const code = url.substring(searchIdx + exp.length);
       console.log("인가 코드", code);
       onLogin(); // 로그인 성공 시
-      Reactotron.log!("성공");
       return false;
     }
     return true;

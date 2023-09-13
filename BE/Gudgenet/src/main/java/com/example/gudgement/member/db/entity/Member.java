@@ -49,7 +49,7 @@ public class Member implements Serializable {
     private long exp;
 
     @NotNull
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 1")
     private int level;
 
     @NotNull
@@ -65,19 +65,19 @@ public class Member implements Serializable {
     private String refreshToken;
 
     // 연결 관계
-
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<item> set_item = new ArrayList<item>()
-
-//    @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private GameRoom roomId;
+//    private List<Item> set_item = new ArrayList<Item>();
 
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
 //    private List<Progress> progressList = new ArrayList<>();
 
+    // 미구현
+//     @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+//    private GameRoom roomId;
+//
 //    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
 //    private List<PaymentHistory> paymentHistoryList = new ArrayList<>();
-
+//
 //    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE)
 //    private List<Account> accounts = new ArrayList<>();
 
@@ -101,8 +101,6 @@ public class Member implements Serializable {
         this.refreshToken = refreshToken;
     }
 
-    public void useTiggle(Long tiggle) {
-        this.tiggle -= tiggle;
+    private class PaymentHistory {
     }
-
 }

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
 
 
-
 @OpenAPIDefinition(
         info = @Info(
                 title = "거지먼트 API 명세서",
@@ -28,9 +27,13 @@ import org.springframework.context.annotation.Configuration;
         tags = {
                 @Tag(name = "Common", description = "공통 기능"),
                 @Tag(name = "User", description = "사용자 기능"),
+                @Tag(name = "Shop", description = "상점 기능"),
+                @Tag(name = "Inventory", description = "인벤토리 기능"),
+                @Tag(name = "Progress", description = "진행도 기능"),
                 @Tag(name = "Undefined", description = "미정의 기능"),
         }
 )
 @Configuration
 public class SpringDocConfig {
 }
+

@@ -1,5 +1,6 @@
 package com.example.gudgement.progress.dto;
 
+import com.example.gudgement.member.db.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,9 @@ public class ProgressDto {
     private int progressValue;
 
     @Builder
-    public progressDto (Long id, Member memberId, String progressName, String progressContent, int progressValue){
+    public ProgressDto (Long id, Member memberId, String progressName, String progressContent, int progressValue){
         this.id = id;
-        this.memberId = memberid;
+        this.memberId = memberId;
         this.progressName = progressName;
         this.progressContent = progressContent;
         this.progressValue = progressValue;

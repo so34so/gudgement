@@ -1,5 +1,6 @@
 package com.example.gudgement.progress.entity;
 
+import com.example.gudgement.member.db.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

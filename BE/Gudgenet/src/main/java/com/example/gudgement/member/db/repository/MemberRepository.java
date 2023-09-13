@@ -1,5 +1,6 @@
 package com.example.gudgement.member.db.repository;
 
+import com.example.gudgement.member.db.dto.response.MemberResponseDto;
 import com.example.gudgement.member.db.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 

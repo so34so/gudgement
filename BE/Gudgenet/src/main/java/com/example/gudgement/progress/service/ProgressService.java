@@ -1,5 +1,6 @@
 package com.example.gudgement.progress.service;
 
+import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,10 @@ public class ProgressService {
 
     private final ProgressRepository progressRepository;
 
-    public boolean checkUnlockStatus(Member memberId, String conditionName, int conditionValue) {
-       Progress progress =  progressRepository.findByMemberIdAndConditionName(memberId, conditionName);
+    public boolean checkUnlockStatus(Member memberId, String progressName, int progressValue) {
+       Progress progress =  progressRepository.findByMemberIdAndProgressName(memberId, progressName);
 
-       if(progress != null && progress.getProgressValue()>=conditionValue) {
+       if(progress != null && progress.getProgressValue()>=progressValue) {
            return true;
        }else{
            return false;

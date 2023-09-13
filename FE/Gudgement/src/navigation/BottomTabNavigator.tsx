@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../pages/Home";
-import MyPage from "../pages/MyPage";
 import Play from "../pages/Play";
+import MyPageNavigator from "./MyPageNavigator";
 import Ranking from "../pages/Ranking";
 import { CommonType } from "../types/CommonType";
 import ShopNavigator from "./ShopNavigator";
@@ -12,7 +12,13 @@ import TabBarItem from "../components/TabBarItem";
 
 function BottomTabNavigator() {
   const Tab = createBottomTabNavigator<CommonType.RootStackParamList>();
-  const BottomTabComponents = [Home, ShopNavigator, Play, MyPage, Ranking];
+  const BottomTabComponents = [
+    Home,
+    ShopNavigator,
+    Play,
+    MyPageNavigator,
+    Ranking,
+  ];
 
   return (
     <Tab.Navigator

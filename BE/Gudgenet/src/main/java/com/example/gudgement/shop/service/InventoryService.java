@@ -1,5 +1,9 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.member.db.dto.response.MemberResponseDto;
+import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.db.repository.MemberRepository;
+import com.example.gudgement.member.exception.UserNotFoundException;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.dto.ItemListDto;
@@ -19,10 +23,11 @@ import java.util.stream.Collectors;
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final MemberRepository memberRepository;
 
     public List<InventoryDto> findMemberitems(Member member) {
         // 멤버 아이디를 사용하여 해당 멤버의 아이템 목록을 조회
-        List<Inventory> inventoryList = inventoryRepository.findAllByMember(member);
+        List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
 
         // Inventory 엔티티를 InventoryDto로 변환
         List<InventoryDto> inventoryDtoList = inventoryList.stream()
@@ -32,13 +37,16 @@ public class InventoryService {
         return inventoryDtoList;
     }
 
-    public void equipItem(ItemListDto equippedItemListDto) {
-        Member memberId = memberService.getLoginUser();
-        if (memberId == null) {
+    public void equipItem(ItemListDto equippedItemListDto, Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        List<Inventory> userItems = inventoryRepository.findAllByMember(memberId).orElse(new ArrayList<>());
+        List<Inventory> userItems = inventoryRepository.findAllByMemberId(member);
+        if (userItems == null) {
+            userItems = new ArrayList<>();
+        }
 
         List<Long> equippedItemList = equippedItemListDto.getItems()
                 .stream()

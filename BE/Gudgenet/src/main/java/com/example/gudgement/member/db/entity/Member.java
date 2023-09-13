@@ -100,4 +100,9 @@ public class Member implements Serializable {
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+    public void useTiggle(Long tiggle) {
+        this.tiggle -= tiggle;
+    }
+
 }

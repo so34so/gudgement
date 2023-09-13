@@ -9,5 +9,5 @@ public interface ItemRepository extends JpaRepository<Item,Long> {
     List<Item> findAll();
     List<Item> findAllByType(String type);
 
-    Item findByName(String itemName);
+    Item findByItemName(String itemName);
 }

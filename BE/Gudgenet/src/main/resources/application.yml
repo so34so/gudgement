@@ -19,9 +19,9 @@ spring:
 
   # datasource
   datasource:
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: cos
-    password: cos1234
+    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa

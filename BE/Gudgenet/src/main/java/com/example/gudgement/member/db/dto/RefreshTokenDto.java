@@ -1,4 +1,4 @@
-package com.example.gudgement.member.dto;
+package com.example.gudgement.member.db.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

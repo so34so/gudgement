@@ -1,8 +1,8 @@
 package com.example.gudgement.member.common.jwt;
 
-import com.example.gudgement.member.dto.AccessTokenDto;
-import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.member.db.dto.AccessTokenDto;
+import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.db.repository.MemberRepository;
 import com.example.gudgement.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

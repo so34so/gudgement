@@ -103,4 +103,8 @@ public class Member implements Serializable {
 
     private class PaymentHistory {
     }
+    
+    public void useTiggle(Long tiggle) {
+        this.tiggle -= tiggle;
+    }
 }

@@ -6,13 +6,9 @@ import {
   Pressable,
   ImageSourcePropType,
 } from "react-native";
-import { WebView } from "react-native-webview";
+import { WebView, WebViewNavigation } from "react-native-webview";
 import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
 import KakaoLogoImg from "../assets/images/kakaologo.png";
-// 상단에 적어 탈취하여 웹뷰에 값을 가져오기
-
-// eslint-disable-next-line quotes
-const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage("messge from webView")`;
 
 interface LoginProps {
   onLogin: () => void; // onLogin의 타입을 명시
@@ -26,15 +22,18 @@ function Login({ onLogin }: LoginProps) {
     setShowWebView(true);
   };
 
-  const getCode = async (codeUrl: string) => {
+  const handleShouldStartLoad = (event: WebViewNavigation) => {
+    const url = event.url;
     // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
     const exp = "code=";
-    const searchIdx = codeUrl.indexOf(exp);
+    const searchIdx = url.indexOf(exp);
     if (searchIdx !== -1) {
-      const code = codeUrl.substring(searchIdx + exp.length);
-      console.log(code);
+      const code = url.substring(searchIdx + exp.length);
+      console.log("인가 코드", code);
       onLogin(); // 로그인 성공 시
+      return false;
     }
+    return true;
   };
 
   if (showWebView) {
@@ -45,14 +44,7 @@ function Login({ onLogin }: LoginProps) {
         source={{
           uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
         }}
-        // 웹뷰로 열리는 모든 페이지에서 실행될 자바스크립트 코드
-        injectedJavaScript={INJECTED_JAVASCRIPT}
-        javaScriptEnabled
-        // 웹뷰에서 window.ReactNativeWebView.postMessage 함수가 호출될때 실행되는 이벤트 함수
-        onMessage={event => {
-          const data = event.nativeEvent.url;
-          getCode(data);
-        }}
+        onShouldStartLoadWithRequest={handleShouldStartLoad}
       />
     );
   }

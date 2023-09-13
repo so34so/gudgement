@@ -24,7 +24,7 @@ import BuyModal from "../components/BuyModal";
 import Shoes from "../assets/images/item.svg";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
-import ShopCarousel from "../components/ShopCarousel";
+import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
@@ -93,7 +93,9 @@ function Shop({ route }: ShopProps) {
           </View>
           <TouchableOpacity
             className="bg-green h-8 rounded-[4px] border-2 border-darkgray50"
-            onPress={() => navigation.navigate("Inventory")}
+            onPress={() =>
+              navigation.navigate("Inventory", { category: selectCategory })
+            }
           >
             <Text className="p-1 font-PretendardExtraBold text-darkgray text-[16px]">
               인벤토리 보기
@@ -195,14 +197,15 @@ function Shop({ route }: ShopProps) {
             </Text>
           </TouchableOpacity>
         </View>
-        <ShopCarousel
+        <Carousel
           gap={16}
           offset={30}
           items={DATA}
-          pageWidth={screenWidth - (16 + 30) * 2}
+          pageWidth={screenWidth - (16 + 45) * 2}
           setSelectItem={setSelectItem}
+          itemWidth={300}
+          component="Shop"
         />
-        {/* <ShopItems items={DATA} /> */}
         <BuyModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}

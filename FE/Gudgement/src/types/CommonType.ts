@@ -25,7 +25,7 @@ export declare module CommonType {
     ShopNavigator: undefined;
     ShopEntrance: undefined;
     Shop: { category: string };
-    Inventory: undefined;
+    Inventory: { category: string };
 
     /**
      * ShopScreen child Type
@@ -39,10 +39,10 @@ export declare module CommonType {
     MultiRecords: undefined;
   };
   export type Titem = {
-    id: number;
+    id?: number;
     title: string;
     description: string;
-    image: ImageSourcePropType;
+    image: string | ImageSourcePropType;
     price: number;
   };
 }

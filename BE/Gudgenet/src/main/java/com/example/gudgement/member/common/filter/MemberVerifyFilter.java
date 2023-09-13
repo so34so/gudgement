@@ -51,6 +51,7 @@
 //            } catch (Exception e) {
 //                logger.info("Fail Member Verify");
 //                response.sendError(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.");
+//                filterChain.doFilter(request, response);
 //            }
 //        }
 //

@@ -3,11 +3,13 @@ package com.example.gudgement.shop.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Item {
@@ -32,7 +34,7 @@ public class Item {
     @Column(nullable = false)
     private String type;
 
-    @Builder
+
     public Item(String itemName, String itemContent, String itemEffect, String image, String type){
         this.itemName = itemName;
         this.itemContent = itemContent;

@@ -18,12 +18,12 @@ public class ItemDto implements Serializable {
     private String itemContent;
     private String itemEffect;
     private String image;
-    private int price;
+    private Long price;
     private boolean isUnlocked;
     private boolean isSold;
 
     @Builder
-    public itemDto(Long id, String itemName, String itemContent, String itemEffect, byte[] image, int price, boolean isUnlocked, boolean isSold){
+    public ItemDto(Long id, String itemName, String itemContent, String itemEffect, byte[] image, Long price, boolean isUnlocked, boolean isSold) {
         this.id = id;
         this.itemName = itemName;
         this.itemContent = itemContent;
@@ -33,17 +33,5 @@ public class ItemDto implements Serializable {
         this.isUnlocked = isUnlocked;
         this.isSold = isSold;
     }
-
-/*    public static ItemDto toDto(Item item) {
-
-        return ItemDto.builder()
-                .id(item.getId())
-                .itemName(item.getItemName())
-                .itemContent(item.getItemContent())
-                .itemEffect(item.getItemEffect())
-                .image(item.getImage())
-                .price(item.getPrice())
-                .build();
-    }*/
 
 }

@@ -1,4 +1,6 @@
 package com.example.gudgement.shop.repository;
+import com.example.gudgement.member.db.dto.response.MemberResponseDto;
+import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
@@ -9,13 +11,13 @@ import java.util.Optional;
 
 
 public interface InventoryRepository extends JpaRepository<Inventory,Long> {
-    int countByMemberAndItem(Member memberId, Item item);
+    int countByMemberIdAndItemId(Member memberId, Item itemId);
 
-    List<Inventory> findAllByMember(Member memberId);
+    List<Inventory> findAllByMemberId(Member memberId);
 
-    List<Inventory> findAllByMemberIdAndEquipped(Member memberId, boolean b);
+/*    List<Inventory> findAllByMemberIdAndEquipped(Member memberId, boolean b);
 
     Inventory findByMemberMemberIdAndShopTypeAndEquipped(Long memberId, String type, boolean equipped);
 
-    List<InventoryDto> findItemsByMember(Long memberId);
+    List<InventoryDto> findItemsByMemberId(Long memberId);*/
 }

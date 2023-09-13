@@ -1,10 +1,10 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View } from "react-native";
 import { CommonType } from "../types/CommonType";
 export default function Home() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  console.log(navigation);
   return (
     <View className="w-full h-full flex justify-center items-center">
       {/* <TouchableOpacity onPress={

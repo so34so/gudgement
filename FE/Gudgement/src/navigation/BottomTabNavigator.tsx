@@ -13,6 +13,7 @@ import TabBarItem from "../components/TabBarItem";
 function BottomTabNavigator() {
   const Tab = createBottomTabNavigator<CommonType.RootStackParamList>();
   const BottomTabComponents = [Home, ShopNavigator, Play, MyPage, Ranking];
+
   return (
     <Tab.Navigator
       initialRouteName="홈"
@@ -55,6 +56,7 @@ function BottomTabNavigator() {
               tabBarIcon: () => {
                 return <TabBarItem item={ele} />;
               },
+              unmountOnBlur: true,
             }}
           />
         );

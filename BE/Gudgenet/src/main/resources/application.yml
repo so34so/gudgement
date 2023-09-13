@@ -16,9 +16,9 @@ spring:
 
   # datasource
   datasource:
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: cos
-    password: cos1234
+    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa
@@ -34,13 +34,29 @@ spring:
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # ddl-auto ?? ?? ??
-    generate-ddl: false
+    generate-ddl: true
     # SQL? ?? ??
     properties:
       hibernate:
         format_sql: true
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
+
+# spring-docs
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    tagsSorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+
+# jwt
+jwt:
+  secret:
+    key: "asdasaskdljasklkjlw"
+
 
 # H2 ??? ??? ?? ???
 #spring.datasource.driver-class-name=org.h2.Driver

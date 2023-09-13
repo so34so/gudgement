@@ -1,5 +1,6 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
+  "typeRoots": ["types"],
   "compilerOptions": {
     "lib": ["es6", "es2017"]
   }

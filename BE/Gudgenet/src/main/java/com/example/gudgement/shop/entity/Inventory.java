@@ -24,7 +24,7 @@ public class Inventory {
     @JoinColumn(name = "item_id")
     private Item itemId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member memberId;
 

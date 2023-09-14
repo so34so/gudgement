@@ -56,7 +56,7 @@ public class InventoryServiceImpl implements InventoryService{
 
         userItems.forEach(userItem -> {
             boolean isEquipped = userItem.isEquipped();
-            boolean shouldEquip = equippedItemList.contains(userItem.getItemId().getId());
+            boolean shouldEquip = equippedItemList.contains(userItem.getItemId().getItemId());
 
             if (isEquipped != shouldEquip) {
                 if (shouldEquip) {

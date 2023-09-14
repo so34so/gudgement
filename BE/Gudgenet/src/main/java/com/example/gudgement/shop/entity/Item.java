@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Base64;
 
 @Getter
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="item_id")
-    private long id;
+    private long itemId;
 
     @Column(nullable=false)
     private String itemName;

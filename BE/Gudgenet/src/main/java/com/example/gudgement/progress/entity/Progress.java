@@ -17,6 +17,8 @@ public class Progress {
     @Column(name = "progress_id")
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name="member_id")
     private Member memberId;
 
     private String progressName;

@@ -49,7 +49,7 @@ public class Member implements Serializable {
     private long exp;
 
     @NotNull
-    @Column(columnDefinition = "integer default 1")
+    @Column(columnDefinition = "int default 1")
     private int level;
 
     @NotNull

@@ -5,6 +5,8 @@ import {
   ImageSourcePropType,
 } from "react-native";
 
+import { ProgressChart } from "react-native-chart-kit";
+
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
 import TagBoxSmall from "../components/TagBoxSmall";
@@ -21,6 +23,11 @@ function MyPage() {
   const mypageIcon: ImageSourcePropType = MypageIcon as ImageSourcePropType;
   const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
   const character: ImageSourcePropType = Character as ImageSourcePropType;
+
+  const data = {
+    labels: ["Swim", "Bike", "Run"], // optional
+    data: [0.4, 0.6, 0.8],
+  };
 
   return (
     <View className="w-full h-full flex justify-center items-center">
@@ -40,7 +47,34 @@ function MyPage() {
             <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
           </View>
           <View>
-            <Image source={character} />
+            <ProgressChart
+              data={data}
+              width={200}
+              height={220}
+              strokeWidth={16}
+              radius={32}
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: "2",
+                  stroke: "#ffa726",
+                },
+              }}
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+              hideLegend={false}
+            />
           </View>
         </View>
         <TagBoxSmall text={"이번달 소비 추이"} img={analysisIcon} />

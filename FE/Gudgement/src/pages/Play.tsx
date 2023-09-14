@@ -51,7 +51,7 @@ function Play() {
         resizeMode="cover"
         className="flex-1"
       >
-        <Image className="h-15 w-15" source={fin} width={100} height={100} />
+        <Image className="h-100 w-100" source={fin} width={100} height={100} />
         <View className="flex-1">
           <Animated.View style={[animatedStyles]}>
             <Pressable

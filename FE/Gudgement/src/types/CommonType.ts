@@ -40,9 +40,9 @@ export declare module CommonType {
   };
   export type Titem = {
     id?: number;
-    title: string;
-    description: string;
-    image: string | ImageSourcePropType;
-    price: number;
+    title?: string;
+    description?: string;
+    image?: string | ImageSourcePropType;
+    price?: number;
   };
 }

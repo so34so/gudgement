@@ -22,6 +22,7 @@ import Reactotron from "reactotron-react-native";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
+import CompleteModal from "../components/CompleteModal";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -64,6 +65,12 @@ function Inventory({ route }: InventoryProps) {
 
   const [selectItem, setSelectItem] = useState(0);
   const [selectCategory, setSelectCategory] = useState(route.params.category);
+  const [modalVisible, setModalVisible] = useState({ complete: false });
+
+  const handleApply = useCallback(() => {
+    setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
+  }, [modalVisible]);
+
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -81,17 +88,6 @@ function Inventory({ route }: InventoryProps) {
         </View>
 
         <View className="w-full h-[340px] flex flex-col justify-center items-center mt-4">
-          {/* <TouchableOpacity
-            onPress={() => Reactotron.log!("캐릭터 선택")}
-            className="mb-8"
-            style={{
-              elevation: 8,
-            }}
-          >
-            <Text className="bg-sky font-PretendardBlack text-white border-2 border-darkgray50 px-2 py-1 rounded-[10px]">
-              캐릭터 선택
-            </Text>
-          </TouchableOpacity> */}
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
               <Image source={myCharacter} />
@@ -110,6 +106,18 @@ function Inventory({ route }: InventoryProps) {
               옥계공주
             </Text>
           </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={{
+              elevation: 8,
+            }}
+            className="w-fit bg-buy rounded-[10px] mt-5 border-2 border-[#6f530d]"
+            onPress={handleApply}
+          >
+            <Text className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]">
+              적용
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View className="w-full h-4" />
@@ -133,13 +141,19 @@ function Inventory({ route }: InventoryProps) {
           </TouchableOpacity>
         </View>
         <Carousel
-          gap={60}
-          offset={60}
+          gap={55}
+          offset={70}
           items={DATA}
-          pageWidth={screenWidth - (65 + 60) * 2}
+          pageWidth={screenWidth - (55 + 72) * 2}
           setSelectItem={setSelectItem}
-          itemWidth={210}
           component="Inventory"
+        />
+        <CompleteModal
+          completeModalVisible={modalVisible}
+          setCompleteModalVisible={setModalVisible}
+          item={{
+            description: "적용 완료",
+          }}
         />
       </View>
     </SafeAreaView>

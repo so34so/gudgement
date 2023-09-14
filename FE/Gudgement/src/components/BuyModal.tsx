@@ -19,12 +19,12 @@ function BuyModal({
 }: {
   item: CommonType.Titem;
   modalVisible: {
-    buy: boolean;
+    buy?: boolean;
     complete: boolean;
   };
   setModalVisible: React.Dispatch<
     React.SetStateAction<{
-      buy: boolean;
+      buy?: boolean;
       complete: boolean;
     }>
   >;
@@ -73,7 +73,7 @@ function BuyModal({
             className="left-4 top-6"
             width={220}
             height={200}
-            asset={item.image}
+            asset={item.image as ImageSourcePropType}
           />
           <Svg height="80" width="140">
             <SvgText

@@ -3,7 +3,6 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
   Dimensions,
   Image,
-  // ImageBackground,
   ImageSourcePropType,
   SafeAreaView,
   Text,
@@ -55,7 +54,10 @@ function Shop({ route }: ShopProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
-  const [modalVisible, setModalVisible] = useState({
+  const [modalVisible, setModalVisible] = useState<{
+    buy?: boolean;
+    complete: boolean;
+  }>({
     buy: false,
     complete: false,
   });
@@ -73,6 +75,11 @@ function Shop({ route }: ShopProps) {
 
   const handleBuy = useCallback(() => {
     setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
+    Reactotron.log!("구매 완료");
+  }, [modalVisible]);
+
+  const handleGetTitle = useCallback(() => {
+    setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
     Reactotron.log!("구매 완료");
   }, [modalVisible]);
 
@@ -181,6 +188,18 @@ function Shop({ route }: ShopProps) {
                 칭호 어떻게 얻을 수 있는지 적어라
               </Text>
             </View>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={{
+                elevation: 8,
+              }}
+              className="w-fit bg-gray-500 rounded-[10px] border-2 border-[#6f530d]"
+              onPress={handleGetTitle}
+            >
+              <Text className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]">
+                획득
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
         <View className="w-full h-4" />
@@ -203,7 +222,6 @@ function Shop({ route }: ShopProps) {
           items={DATA}
           pageWidth={screenWidth - (16 + 45) * 2}
           setSelectItem={setSelectItem}
-          itemWidth={300}
           component="Shop"
         />
         <BuyModal

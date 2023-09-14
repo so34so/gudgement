@@ -17,7 +17,6 @@ interface ICarousel {
   items: CommonType.Titem[];
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
-  itemWidth: number;
   component: string;
 }
 
@@ -27,19 +26,11 @@ function Carousel({
   gap,
   items,
   setSelectItem,
-  itemWidth,
   component,
 }: ICarousel) {
   const [page, setPage] = useState(0);
   const renderItem: ListRenderItem<CommonType.Titem> = ({ item }) => {
-    return (
-      <RenderItems
-        item={item}
-        page={page}
-        itemWidth={itemWidth}
-        component={component}
-      />
-    );
+    return <RenderItems item={item} page={page} component={component} />;
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newPage = Math.round(

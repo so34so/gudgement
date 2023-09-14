@@ -6,12 +6,10 @@ import { useEffect, useState } from "react";
 function RenderItems({
   item,
   page,
-  itemWidth,
   component,
 }: {
   item: CommonType.Titem;
   page: number;
-  itemWidth: number;
   component: string;
 }) {
   const [translateY, setTranslateY] = useState(new Animated.Value(-5));
@@ -29,13 +27,14 @@ function RenderItems({
       setTranslateY(new Animated.Value(-5));
     }
   }, [page, item.id]);
+  const itemWidth = component === "Shop" ? "w-[300px]" : "w-[200px]";
   return (
     <Animated.View
       style={{
         elevation: 5,
         transform: [{ translateY: translateY }], // translateY로 margin-y 적용
       }}
-      className={`h-36 mx-[5px] w-[${itemWidth}px] my-8 justify-center items-center bg-white rounded-[10px] flex-row space-x-10`}
+      className={`h-36 mx-[5px] ${itemWidth} my-8 justify-center items-center bg-white rounded-[10px] flex-row space-x-10`}
     >
       <View className="w-16 h-16 bg-black rounded-xl" />
       {component === "Shop" ? (

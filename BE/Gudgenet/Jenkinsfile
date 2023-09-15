@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    tools {
+        gradle 'gradle'
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'feature-cicdtest-be', url: 'https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D106.git'
+            }
+        }
+        stage('BE-Build') {
+            steps {
+                dir("./BE/Gudgenet") {
+                    sh "./gradlew clean build"
+                }
+            }
+        }
+    }
+}

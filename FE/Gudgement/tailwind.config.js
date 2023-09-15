@@ -31,6 +31,7 @@ module.exports = {
         sub03: "#d9d9d9",
         white: "#ffffff",
         white10: "#ffffff1a",
+        white20: "rgba(255, 255, 255, 0.2)",
         white70: "#ffffffb2",
         white90: "#ffffffe5",
       },

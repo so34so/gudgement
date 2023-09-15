@@ -24,6 +24,7 @@ function Login({ onLogin }: LoginProps) {
 
   const handleShouldStartLoad = (event: WebViewNavigation) => {
     const url = event.url;
+    console.log(url);
     // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
     const exp = "code=";
     const searchIdx = url.indexOf(exp);

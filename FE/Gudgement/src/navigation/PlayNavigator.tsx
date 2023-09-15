@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Low from "../pages/Low";
-import Middle from "../pages/Middle";
+
 import Play from "../pages/Play";
 import { CommonType } from "../types/CommonType";
 import PlaySelect from "../pages/PlaySelect";
@@ -20,16 +19,6 @@ function PlayNavigator() {
       <Stack.Screen
         name="PlaySelect"
         component={PlaySelect}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Low"
-        component={Low}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Middle"
-        component={Middle}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

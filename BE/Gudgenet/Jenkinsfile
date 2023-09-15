@@ -12,6 +12,7 @@ pipeline {
         stage('BE-Build') {
             steps {
                 dir("./BE/Gudgenet") {
+                    sh "chmod +x ./gradlew"
                     sh "./gradlew clean build"
                 }
             }

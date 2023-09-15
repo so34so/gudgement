@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService{
 
-    private final String IMAGE_PATH = "static/item_images/";
+    private final String IMAGE_PATH = "https://d15h0ofj6la3lc.cloudfront.net/";
 
     private final ProgressService progressService;
 

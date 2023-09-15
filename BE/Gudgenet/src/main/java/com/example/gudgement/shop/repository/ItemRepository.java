@@ -3,13 +3,16 @@ import com.example.gudgement.shop.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ItemRepository extends JpaRepository<Item,Long> {
     List<Item> findAll();
     List<Item> findAllByType(String type);
 
-    Item findByItemName(String itemName);
+/*    Optional<Item> findByTypeAndEquipped(String type, boolean equipped);
+
+    Item findByItemName(String itemName);*/
 
     Item findByItemId(Long itemId);
 

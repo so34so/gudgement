@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Objects;
 
@@ -23,8 +27,25 @@ import java.util.Objects;
 public class OauthServiceImpl implements OauthService{
 
     private final ObjectMapper objectMapper;
+    private final WebClient webClient;
 
-    private final static RestTemplate rt = new RestTemplate();
+    @Value("${spring.oauth2.client.registration.kakao.authorization-grant-type}")
+    private String GRANT_TYPE;
+
+    @Value("${spring.oauth2.client.registration.kakao.client-id}")
+    private String CLIENT_ID;
+
+    @Value("${spring.oauth2.client.registration.kakao.redirect-uri}")
+    private String REDIRECT_URI;
+
+    @Value("${spring.oauth2.client.registration.kakao.client-secret}")
+    private String CLIENT_SECRET;
+
+    @Value("${spring.oauth2.client.registration.kakao.token-uri}")
+    private String TOKEN_URI;
+
+    @Value("${spring.oauth2.client.registration.kakao.user-info-uri}")
+    private String USER_INFO_URI;
 
     @Override
     public KakaoProfile kakaoMemberInfo(String code) {
@@ -37,32 +58,26 @@ public class OauthServiceImpl implements OauthService{
         HttpEntity<MultiValueMap<String, String>> kakaoResourceProfileRequest = new HttpEntity<>(headersForRequestProfile);
 
         // Http 요청하기 - POST 방식으로 - 그리고 response 변수의 응답을 받음.
-        ResponseEntity<String> resourceProfileResponse = rt.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                kakaoResourceProfileRequest,
-                String.class
-        );
 
         KakaoProfile profile = null;
 
-        try {
-            profile = objectMapper.readValue(resourceProfileResponse.getBody(), KakaoProfile.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
+//        try {
+//            profile = objectMapper.readValue(resourceProfileResponse.getBody(), KakaoProfile.class);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
         return profile;
     }
 
     @Override
     public OAuthToken receiveToken(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", "4cd45261b839373b375e0766220b3428");
-        params.add("redirect_uri", "http:/login/auth/kakao/callback");
+        params.add("grant_type", GRANT_TYPE);
+        params.add("client_id", CLIENT_ID);
+        params.add("redirect_uri", REDIRECT_URI);
         params.add("code", code);
-        params.add("client", "IxXm1l2rPYcLXojdZmL9MXr8bmTkEmPQ");
+        params.add("client_secret", CLIENT_SECRET);
 
         // HttpHeader 생성
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -73,20 +88,21 @@ public class OauthServiceImpl implements OauthService{
 
         log.info("토큰을 요청하는 중...");
         // POST 방식으로 key-value 데이터 요청
-        ResponseEntity<String> accessTokenRes = rt.exchange(
-                "http://kauth.kakao.com/oauth/token",
-                HttpMethod.POST,
-                tokenRequest,
-                String.class
-        );
-        System.out.println(accessTokenRes.getBody());
+
+        String accessTokenRes = webClient.mutate()
+                .baseUrl(TOKEN_URI).build().post()
+                        .body(BodyInserters.fromFormData(params))
+                        .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
+                        .retrieve()
+                        .bodyToMono(String.class).block();
+        System.out.println(accessTokenRes);
         log.info("토큰 발급 완료!");
 
 
         // JSON 응답을 객체로
         OAuthToken oauthToken = null;
         try {
-            oauthToken = objectMapper.readValue(accessTokenRes.getBody(), OAuthToken.class);
+            oauthToken = objectMapper.readValue(accessTokenRes, OAuthToken.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

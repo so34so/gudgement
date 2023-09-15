@@ -1,7 +1,6 @@
 package com.example.gudgement.member.controller;
 
 import com.example.gudgement.member.db.auth.KakaoProfile;
-import com.example.gudgement.member.db.auth.OAuthToken;
 import com.example.gudgement.member.service.OauthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

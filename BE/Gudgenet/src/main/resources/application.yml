@@ -1,6 +1,6 @@
 # ?? ??
 server:
-  port: 8081
+  port: 9999
   servlet:
     context-path: /
     encoding:
@@ -45,6 +45,19 @@ spring:
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
 
+  oauth2:
+    client:
+      registration:
+        kakao:
+          client-id: 4cd45261b839373b375e0766220b3428
+          redirect-uri: http:/login/auth/kakao/callback
+          client-authentication-method: POST
+          authorization-grant-type: authorization_code
+          scope: account_email
+          client-secret: IxXm1l2rPYcLXojdZmL9MXr8bmTkEmPQ
+          token-uri: https://kauth.kakao.com/oauth/token
+          user-info-uri: https://kapi.kakao.com/v2/user/me
+
 # spring-docs
 springdoc:
   api-docs:
@@ -57,10 +70,7 @@ springdoc:
 
 # jwt
 jwt:
-  secret:
-    key: "asdasaskdljasklkjlw"
-
-
+  secret-key: no_asahck_no_asahck_no_asahck_no_asahck_no_asahck
 
 # H2 ??? ??? ?? ???
 #spring.datasource.driver-class-name=org.h2.Driver

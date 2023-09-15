@@ -36,7 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("JwtAuthorizationFilter : 권한 인증 중입니다.");
         log.info(httpServletRequest.getRequestURI());
         if (!authListCheck(httpServletRequest.getRequestURI())) {
-            log.info("인증 완료. 허가된 접근입니다.");
+            log.info("인증 완료. permitAll 접근입니다.");
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }

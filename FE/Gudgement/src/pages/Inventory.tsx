@@ -23,6 +23,7 @@ import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import CompleteModal from "../components/CompleteModal";
+import { INVENTORY_CATEGORY } from "../utils/common";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -51,9 +52,13 @@ function Inventory({ route }: InventoryProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
+  const [selectItem, setSelectItem] = useState(0);
+  const [selectCategory, setSelectCategory] = useState(route.params.category);
+  const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const categoryStyle = () =>
-    "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
+  const categoryStyle = (category: string) =>
+    `rounded-[8px] py-[1px] border-2 bg-darkgray50 
+    ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
 
   useEffect(() => {
     offset.value = withRepeat(
@@ -63,13 +68,15 @@ function Inventory({ route }: InventoryProps) {
     );
   }, [offset]);
 
-  const [selectItem, setSelectItem] = useState(0);
-  const [selectCategory, setSelectCategory] = useState(route.params.category);
-  const [modalVisible, setModalVisible] = useState({ complete: false });
+  useEffect(() => {
+    // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
+    Reactotron.log!(selectCategory);
+  }, [selectCategory]);
 
   const handleApply = useCallback(() => {
+    Reactotron.log!(DATA[selectItem]);
     setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
-  }, [modalVisible]);
+  }, [modalVisible, selectItem]);
 
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
@@ -124,21 +131,20 @@ function Inventory({ route }: InventoryProps) {
       </View>
       <View className="mt-10">
         <View className="ml-5 w-full h-fit flex-row space-x-2">
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              캐릭터
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              치장
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              칭호
-            </Text>
-          </TouchableOpacity>
+          {INVENTORY_CATEGORY.map((category: string) => {
+            return (
+              <TouchableOpacity
+                key={category}
+                activeOpacity={0.8}
+                className={categoryStyle(category)}
+                onPress={() => setSelectCategory(category)}
+              >
+                <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <Carousel
           gap={55}

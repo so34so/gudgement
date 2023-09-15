@@ -170,19 +170,21 @@ function Shop({ route }: ShopProps) {
           </View>
         ) : (
           <View className="w-full h-60 flex flex-col top-6 items-center space-y-12 mt-8">
-            <View
-              className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
-              style={{
-                elevation: 10,
-              }}
-            >
-              <Text className="font-PretendardExtraBold text-white bg-black py-1 px-2 rounded-[6px] text-[16px]">
-                인동파 행동대장
-              </Text>
-              <Text className="font-PretendardExtraBold text-black text-[16px]">
-                옥계공주
-              </Text>
-            </View>
+            <Animated.View style={[animatedStyles]}>
+              <View
+                className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
+                style={{
+                  elevation: 10,
+                }}
+              >
+                <Text className="font-PretendardExtraBold text-white bg-black py-1 px-2 rounded-[6px] text-[16px]">
+                  인동파 행동대장
+                </Text>
+                <Text className="font-PretendardExtraBold text-black text-[16px]">
+                  옥계공주
+                </Text>
+              </View>
+            </Animated.View>
             <View>
               <Text className=" font-PretendardBlack text-white text-[20px]">
                 칭호 어떻게 얻을 수 있는지 적어라

@@ -3,6 +3,7 @@ package com.example.gudgement.shop.controller;
 import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.member.db.repository.MemberRepository;
 import com.example.gudgement.member.exception.UserNotFoundException;
+import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemListDto;
 import com.example.gudgement.shop.repository.InventoryRepository;
@@ -28,14 +29,14 @@ public class InventoryController {
 
     //보유 아이템 조회
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<InventoryDto>> getItems(@PathVariable Long memberId){
+    public ResponseEntity<List<EquippedDto>> getItems(@PathVariable Long memberId){
         // 멤버 아이디로 멤버 조회
         Member member = memberRepository.findByMemberId(memberId);
         if (member == null) {
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        List<InventoryDto> itemList = inventoryService.getAllinventory(member);
+        List<EquippedDto> itemList = inventoryService.findMemberitems(member);
 
         return ResponseEntity.ok(itemList);
     }

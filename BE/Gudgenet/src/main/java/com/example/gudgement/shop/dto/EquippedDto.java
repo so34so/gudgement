@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class EquippedDto implements Serializable {
     private Long id;
+    private Long itemId;
     private String itemName;
     private String itemContent;
     private String itemEffect;
@@ -19,8 +20,9 @@ public class EquippedDto implements Serializable {
     private boolean isEquipped;
 
     @Builder
-    public EquippedDto(Long id, String itemName, String itemContent, String itemEffect, String image, boolean isEquipped) {
+    public EquippedDto(Long id, Long itemId, String itemName, String itemContent, String itemEffect, String image, boolean isEquipped) {
         this.id = id;
+        this.itemId = itemId;
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;

@@ -19,6 +19,8 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
 
     Optional<Inventory> findByItemId_TypeAndEquipped(String type, boolean b);
 
+    Optional<Inventory> findByItemId(Long inventoryId);
+
 /*    Inventory findByMemberIdAndShopTypeAndEquipped(Long memberId, String type, boolean equipped);
 
     List<InventoryDto> findItemsByMemberId(Long memberId);*/

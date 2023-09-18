@@ -13,6 +13,7 @@ import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.shop.entity.Price;
 import com.example.gudgement.shop.exception.AlreadyPurchasedException;
 import com.example.gudgement.shop.exception.InsufficientPointsException;
+import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -173,7 +174,9 @@ public class ShopServiceImpl implements ShopService{
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        Item item = itemRepository.findByItemId(itemId);
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+
 
         // 이미 구매한 아이템인지 확인
         if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {
@@ -198,7 +201,8 @@ public class ShopServiceImpl implements ShopService{
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        Item item = itemRepository.findByItemId(itemId);
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
 
         // 이미 해금한 아이템인지 확인
         if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {

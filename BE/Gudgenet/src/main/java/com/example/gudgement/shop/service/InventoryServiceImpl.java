@@ -52,19 +52,35 @@ public class InventoryServiceImpl implements InventoryService{
         return equippedList;
     }
 
-    public InventoryDto  equipItem(Long inventoryId) {
-        // 먼저 아이템을 조회합니다.
-        Item item = itemRepository.findById(inventoryId)
+    public List<EquippedDto> findMemberTypeitems(String type, Member member) {
+        List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
+
+        List<EquippedDto> equippedList = inventoryList.stream()
+                .filter(inventory -> type.equals(inventory.getItemId().getType()))
+                .map(inventory -> EquippedDto.builder()
+                        .id(inventory.getId())
+                        .itemId(inventory.getItemId().getItemId())
+                        .itemName(inventory.getItemId().getItemName())
+                        .itemContent(inventory.getItemId().getItemContent())
+                        .itemEffect(inventory.getItemId().getItemEffect())
+                        .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
+                        .isEquipped(inventory.isEquipped())
+                        .build())
+                .collect(Collectors.toList());
+
+        return equippedList;
+    }
+
+    public InventoryDto equipItem(Long inventoryId) {
+        // 먼저 아이템 및 멤버 객체를 조회합니다.
+        Item item = itemRepository.findByItemId(inventoryId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+/*        Member member = memberRepository.findById(inventoryId)
+                .orElseThrow(() -> new NotFoundMemberException("해당 멤버가 없습니다."));*/
 
-        // 그 다음에 인벤토리를 조회합니다.
-        Inventory selectedInventory = inventoryRepository.findByItemId(item.getItemId())
+        // 그런 다음에 인벤토리를 조회합니다.
+        Inventory selectedInventory = inventoryRepository.findByItemId(item)
                 .orElseThrow(() -> new NotFoundItemException("해당 인벤토리가 없습니다."));
-
-        // If the item is already equipped, throw an exception.
-        if (selectedInventory.isEquipped()) {
-            throw new AlreadyPurchasedException("이미 장착한 아이템입니다.");
-        }
 
         // Find an already equipped item of the same type and unequip it.
         Optional<Inventory> equippedInventoryOpt =

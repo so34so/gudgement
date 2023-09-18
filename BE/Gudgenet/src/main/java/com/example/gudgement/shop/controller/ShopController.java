@@ -31,8 +31,8 @@ public class ShopController {
 
 
     //카테고리 별 아이템 목록 조회
-    @GetMapping("/{type}")
-    public ResponseEntity<List<ItemDto>> getItems(@PathVariable String type, @RequestParam Long memberId){
+    @GetMapping("/type")
+    public ResponseEntity<List<ItemDto>> getItems(@RequestParam String type, @RequestParam Long memberId){
         // 상점의 아이템 가져오기
         List<ItemDto> shopItems = shopServiceImpl.getTypeItems(type, memberId);
 

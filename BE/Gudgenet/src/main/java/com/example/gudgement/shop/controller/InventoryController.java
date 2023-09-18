@@ -28,8 +28,8 @@ public class InventoryController {
     private final MemberRepository memberRepository;
 
     //보유 아이템 조회
-    @GetMapping("/{memberId}")
-    public ResponseEntity<List<EquippedDto>> getItems(@PathVariable Long memberId){
+    @GetMapping
+    public ResponseEntity<List<EquippedDto>> getItems(@RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회
         Member member = memberRepository.findByMemberId(memberId);
         if (member == null) {
@@ -41,16 +41,23 @@ public class InventoryController {
         return ResponseEntity.ok(itemList);
     }
 
-    //아이템장착
-/*    @PatchMapping("/equipped")
-    public ResponseEntity<Void> equipItem(@RequestBody InventoryDto inventoryDto) {
-        inventoryServiceImpl.equipItem(inventoryDto);
-        return ResponseEntity.ok().build();
-    }*/
+    @GetMapping("/type")
+    public ResponseEntity<List<EquippedDto>> getTypeItems(@RequestParam String type, @RequestParam Long memberId){
+        // 멤버 아이디로 멤버 조회
+        Member member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
+        }
 
-    @PutMapping("/{itemId}")
-    public ResponseEntity<InventoryDto> equip(@PathVariable Long itemId) {
-        return ResponseEntity.ok(inventoryService.equipItem(itemId));
+        List<EquippedDto> itemList = inventoryService.findMemberTypeitems(type, member);
+
+        return ResponseEntity.ok(itemList);
+    }
+
+    @PutMapping
+    public ResponseEntity<InventoryDto> equip(@RequestParam Long itemId) {
+        inventoryService.equipItem(itemId);
+        return ResponseEntity.ok().build();
 
     }
 

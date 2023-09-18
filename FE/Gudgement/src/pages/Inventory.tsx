@@ -15,6 +15,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+
 import { WithLocalSvg } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
@@ -22,6 +23,8 @@ import Reactotron from "reactotron-react-native";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -54,16 +57,50 @@ function Inventory({ route }: InventoryProps) {
   const categoryStyle = () =>
     "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
 
+  async function fetchInventoryItem() {
+    try {
+      const response: CommonType.Titem = await axios.get("/shop/type", {
+        params: {
+          type: selectCategory,
+          memberId: 0,
+        },
+      });
+      Reactotron.log!("fetchShopItem", response);
+      return response;
+    } catch (errorResponse) {
+      if (axios.isAxiosError(errorResponse)) {
+        Reactotron.log!("fetchShopItemError", errorResponse);
+      }
+    }
+  }
+
+  const [selectItem, setSelectItem] = useState(0);
+  const [selectCategory, setSelectCategory] = useState(route.params.category);
+  const {
+    data: fetchItem,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchInventoryItem"],
+    queryFn: () => fetchInventoryItem(),
+    enabled: false,
+  });
+
   useEffect(() => {
     offset.value = withRepeat(
       withTiming(-offset.value, { duration: 500 }),
       -5,
       true,
     );
-  }, [offset]);
-
-  const [selectItem, setSelectItem] = useState(0);
-  const [selectCategory, setSelectCategory] = useState(route.params.category);
+    refetch();
+  }, [offset, refetch]);
+  if (error) {
+    return (
+      <View>
+        <Text>error</Text>
+      </View>
+    );
+  }
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -135,7 +172,7 @@ function Inventory({ route }: InventoryProps) {
         <Carousel
           gap={60}
           offset={60}
-          items={DATA}
+          items={DATA || fetchItem}
           pageWidth={screenWidth - (65 + 60) * 2}
           setSelectItem={setSelectItem}
           itemWidth={210}

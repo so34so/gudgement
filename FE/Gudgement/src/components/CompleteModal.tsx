@@ -68,16 +68,16 @@ function CompleteModal({
             </SvgText>
           </Svg>
           <Text className="text-white text-[16px] font-PretendardExtraBold">
-            {item.description}
+            {item.itemContent}
           </Text>
           <Text className="text-main text-[32px] font-PretendardExtraBold">
-            {item.title}
+            {item.itemName}
           </Text>
           <WithLocalSvg
             className="left-4 top-6"
             width={220}
             height={200}
-            asset={item.image}
+            asset={item.image as ImageSourcePropType}
           />
         </View>
       </View>

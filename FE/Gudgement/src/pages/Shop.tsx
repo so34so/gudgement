@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
   Dimensions,
@@ -26,26 +26,30 @@ import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "../../queryClient";
+import { textShadow } from "../utils/common";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-const DATA: Array<IShopItem> = Array.from({ length: 6 }, (_, idx) => {
+const DATA: Array<CommonType.Titem> = Array.from({ length: 6 }, (_, idx) => {
   return {
     id: idx,
-    title: `${idx}번째 아이템`,
+    itemName: `${idx}번째 아이템`,
     image: `${idx}번째 이미지`,
     price: idx * 100 + 1000,
-    description:
+    itemContent:
       "Quis minim deserunt veniam anim dolore minim Lorem magna ad et incididunt consequat eiusmod.",
+    equipped: false,
+    sold: false,
+    unlocked: false,
   };
 });
-type IShopItem = {
-  id: number;
-  title: string;
-  image: string;
-  price: number;
-  description: string;
-};
+interface IresponseParams {
+  itemId: number;
+  memberId: number;
+}
 type ShopProps = NativeStackScreenProps<CommonType.RootStackParamList, "Shop">;
 function Shop({ route }: ShopProps) {
   const navigation =
@@ -59,9 +63,59 @@ function Shop({ route }: ShopProps) {
     buy: false,
     complete: false,
   });
+  const [imageDirection, setImageDirection] = useState<{
+    dx: number;
+    dy: number;
+  }>({ dx: 0, dy: 0 });
+  const [selectItem, setSelectItem] = useState(0);
+  const selectCategory = route.params.category;
+  const imageRef: RefObject<Image> = useRef(null);
+  const {
+    data: fetchItem,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchShopItem"],
+    queryFn: () => fetchShopItem(),
+    enabled: false,
+  });
 
   const categoryStyle = () =>
     "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
+
+  async function fetchShopItem() {
+    try {
+      const response: CommonType.Titem = await axios.get("/shop/type", {
+        params: {
+          type: selectCategory,
+          memberId: 0,
+        },
+      });
+      Reactotron.log!("fetchShopItem", response);
+      return response;
+    } catch (errorResponse) {
+      if (axios.isAxiosError(errorResponse)) {
+        Reactotron.log!("fetchShopItemError", errorResponse);
+      }
+    }
+  }
+
+  const initializeImagePosition = () => {
+    const { current } = imageRef;
+    if (current) {
+      current.measureInWindow((x, y, width, height) => {
+        console.log("x, y", width, height, x, y);
+        setImageDirection({
+          dx: x - 20,
+          dy: height / 2 - y / 4,
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    initializeImagePosition();
+  }, []);
 
   useEffect(() => {
     offset.value = withRepeat(
@@ -69,16 +123,27 @@ function Shop({ route }: ShopProps) {
       -5,
       true,
     );
-  }, [offset]);
+    refetch();
+  }, [offset, refetch]);
+
+  const { mutate } = useMutation({
+    mutationFn: (params: IresponseParams) =>
+      axios.post("/shop/buy", { params }),
+    onSuccess: () => queryClient.invalidateQueries(["fetchShopItem"]),
+  });
 
   const handleBuy = useCallback(() => {
+    mutate({ itemId: selectItem, memberId: 0 });
     setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
     Reactotron.log!("구매 완료");
-  }, [modalVisible]);
+  }, [modalVisible, mutate, selectItem]);
 
-  const [selectItem, setSelectItem] = useState(0);
-  const selectCategory = route.params.category;
-
+  if (error) {
+    <View>
+      <Text>error</Text>
+    </View>;
+  }
+  Reactotron.log!("ShopImageDirection", imageDirection);
   return (
     <SafeAreaView className="bg-sky w-full h-full">
       <View className="w-full h-fit bg-deepgreen">
@@ -112,7 +177,19 @@ function Shop({ route }: ShopProps) {
           <View className="w-full h-60 flex flex-row justify-center space-x-24 mt-8">
             <View className="w-1/4 h-fit items-center ">
               <Animated.View style={[animatedStyles]}>
-                <Image source={myCharacter} />
+                <Image source={myCharacter} ref={imageRef} />
+                <View
+                  className="z-10"
+                  style={{
+                    position: "absolute",
+                    top: imageDirection.dx,
+                    left: imageDirection.dy,
+                    width: 100,
+                    height: 100,
+                  }}
+                >
+                  <Image source={myCharacter} className="w-10 h-10 z-10" />
+                </View>
               </Animated.View>
             </View>
             <View className="items-center">
@@ -126,7 +203,7 @@ function Shop({ route }: ShopProps) {
                   y="20"
                   textAnchor="middle"
                 >
-                  {DATA[selectItem].title}
+                  {DATA[selectItem].itemName}
                 </SvgText>
                 <SvgText
                   fill="#ffb800"
@@ -145,7 +222,7 @@ function Shop({ route }: ShopProps) {
                 ellipsizeMode="tail"
                 className="text-white font-PretendardMedium text-[16px] w-28"
               >
-                {DATA[selectItem].description}
+                {DATA[selectItem].itemContent}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.5}
@@ -155,7 +232,10 @@ function Shop({ route }: ShopProps) {
                 className="w-fit bg-red rounded-[10px] mt-5 border-2 border-[#6f530d]"
                 onPress={handleBuy}
               >
-                <Text className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]">
+                <Text
+                  style={textShadow}
+                  className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
+                >
                   구매
                 </Text>
               </TouchableOpacity>
@@ -181,6 +261,21 @@ function Shop({ route }: ShopProps) {
                 칭호 어떻게 얻을 수 있는지 적어라
               </Text>
             </View>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={{
+                elevation: 8,
+              }}
+              className="w-fit bg-red rounded-[10px] border-2 border-[#6f530d]"
+              onPress={handleBuy}
+            >
+              <Text
+                style={textShadow}
+                className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
+              >
+                획득
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
         <View className="w-full h-4" />
@@ -200,7 +295,7 @@ function Shop({ route }: ShopProps) {
         <Carousel
           gap={16}
           offset={30}
-          items={DATA}
+          items={DATA || fetchItem}
           pageWidth={screenWidth - (16 + 45) * 2}
           setSelectItem={setSelectItem}
           itemWidth={300}
@@ -211,9 +306,12 @@ function Shop({ route }: ShopProps) {
           setModalVisible={setModalVisible}
           item={{
             image: Shoes as ImageSourcePropType,
-            title: "컨버스화",
-            description: "어쩌고 저쩌고",
+            itemName: "컨버스화",
+            itemContent: "어쩌고 저쩌고",
             price: 100,
+            equipped: false,
+            sold: false,
+            unlocked: false,
           }}
         />
         <CompleteModal
@@ -221,9 +319,12 @@ function Shop({ route }: ShopProps) {
           setCompleteModalVisible={setModalVisible}
           item={{
             image: Shoes as ImageSourcePropType,
-            title: "컨버스화",
-            description: "어쩌고 저쩌고",
+            itemName: "컨버스화",
+            itemContent: "어쩌고 저쩌고",
             price: 100,
+            equipped: false,
+            sold: false,
+            unlocked: false,
           }}
         />
       </View>

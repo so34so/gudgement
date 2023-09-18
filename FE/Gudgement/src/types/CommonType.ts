@@ -38,11 +38,15 @@ export declare module CommonType {
     SingleRecords: undefined;
     MultiRecords: undefined;
   };
+
   export type Titem = {
     id?: number;
-    title: string;
-    description: string;
+    itemName: string;
+    itemContent: string;
     image: string | ImageSourcePropType;
     price: number;
+    equipped: boolean;
+    sold: boolean;
+    unlocked: boolean;
   };
 }

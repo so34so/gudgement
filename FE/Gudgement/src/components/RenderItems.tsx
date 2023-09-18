@@ -50,7 +50,7 @@ function RenderItems({
               y="40"
               textAnchor="middle"
             >
-              {item.title}
+              {item.itemName}
             </SvgText>
             <SvgText
               fill="#ffb800"

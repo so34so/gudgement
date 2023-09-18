@@ -3,7 +3,6 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
   Dimensions,
   Image,
-  // ImageBackground,
   ImageSourcePropType,
   SafeAreaView,
   Text,
@@ -59,7 +58,10 @@ function Shop({ route }: ShopProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
-  const [modalVisible, setModalVisible] = useState({
+  const [modalVisible, setModalVisible] = useState<{
+    buy?: boolean;
+    complete: boolean;
+  }>({
     buy: false,
     complete: false,
   });
@@ -137,6 +139,11 @@ function Shop({ route }: ShopProps) {
     setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
     Reactotron.log!("구매 완료");
   }, [modalVisible, mutate, selectItem]);
+
+  const handleGetTitle = useCallback(() => {
+    setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
+    Reactotron.log!("구매 완료");
+  }, [modalVisible]);
 
   if (error) {
     <View>
@@ -243,19 +250,21 @@ function Shop({ route }: ShopProps) {
           </View>
         ) : (
           <View className="w-full h-60 flex flex-col top-6 items-center space-y-12 mt-8">
-            <View
-              className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
-              style={{
-                elevation: 10,
-              }}
-            >
-              <Text className="font-PretendardExtraBold text-white bg-black py-1 px-2 rounded-[6px] text-[16px]">
-                인동파 행동대장
-              </Text>
-              <Text className="font-PretendardExtraBold text-black text-[16px]">
-                옥계공주
-              </Text>
-            </View>
+            <Animated.View style={[animatedStyles]}>
+              <View
+                className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
+                style={{
+                  elevation: 10,
+                }}
+              >
+                <Text className="font-PretendardExtraBold text-white bg-black py-1 px-2 rounded-[6px] text-[16px]">
+                  인동파 행동대장
+                </Text>
+                <Text className="font-PretendardExtraBold text-black text-[16px]">
+                  옥계공주
+                </Text>
+              </View>
+            </Animated.View>
             <View>
               <Text className=" font-PretendardBlack text-white text-[20px]">
                 칭호 어떻게 얻을 수 있는지 적어라
@@ -266,14 +275,14 @@ function Shop({ route }: ShopProps) {
               style={{
                 elevation: 8,
               }}
-              className="w-fit bg-red rounded-[10px] border-2 border-[#6f530d]"
-              onPress={handleBuy}
+              className="w-fit bg-red rounded-[10px] mt-5 border-2 border-[#6f530d]"
+              onPress={handleGetTitle}
             >
               <Text
                 style={textShadow}
                 className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
               >
-                획득
+                구매
               </Text>
             </TouchableOpacity>
           </View>
@@ -298,7 +307,6 @@ function Shop({ route }: ShopProps) {
           items={DATA || fetchItem}
           pageWidth={screenWidth - (16 + 45) * 2}
           setSelectItem={setSelectItem}
-          itemWidth={300}
           component="Shop"
         />
         <BuyModal

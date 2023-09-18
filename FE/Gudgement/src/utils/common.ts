@@ -4,3 +4,4 @@ export const textShadow = {
   textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
   textShadowRadius: 5, // 그림자의 블러 정도
 };
+export const INVENTORY_CATEGORY = ["캐릭터", "치장", "칭호", "소모품"];

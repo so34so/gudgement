@@ -25,6 +25,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import CompleteModal from "../components/CompleteModal";
+import { INVENTORY_CATEGORY } from "../utils/common";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -53,9 +55,13 @@ function Inventory({ route }: InventoryProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
+  const [selectItem, setSelectItem] = useState(0);
+  const [selectCategory, setSelectCategory] = useState(route.params.category);
+  const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const categoryStyle = () =>
-    "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
+  const categoryStyle = (category: string) =>
+    `rounded-[8px] py-[1px] border-2 bg-darkgray50 
+    ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
 
   async function fetchInventoryItem() {
     try {
@@ -73,9 +79,6 @@ function Inventory({ route }: InventoryProps) {
       }
     }
   }
-
-  const [selectItem, setSelectItem] = useState(0);
-  const [selectCategory, setSelectCategory] = useState(route.params.category);
   const {
     data: fetchItem,
     error,
@@ -92,8 +95,19 @@ function Inventory({ route }: InventoryProps) {
       -5,
       true,
     );
-    refetch();
-  }, [offset, refetch]);
+  }, [offset]);
+
+  useEffect(() => {
+    // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
+    Reactotron.log!(selectCategory);
+  }, [selectCategory]);
+
+  const handleApply = useCallback(() => {
+    Reactotron.log!(DATA[selectItem]);
+    setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
+  }, [modalVisible, selectItem]);
+
+  refetch();
   if (error) {
     return (
       <View>
@@ -118,17 +132,6 @@ function Inventory({ route }: InventoryProps) {
         </View>
 
         <View className="w-full h-[340px] flex flex-col justify-center items-center mt-4">
-          {/* <TouchableOpacity
-            onPress={() => Reactotron.log!("캐릭터 선택")}
-            className="mb-8"
-            style={{
-              elevation: 8,
-            }}
-          >
-            <Text className="bg-sky font-PretendardBlack text-white border-2 border-darkgray50 px-2 py-1 rounded-[10px]">
-              캐릭터 선택
-            </Text>
-          </TouchableOpacity> */}
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
               <Image source={myCharacter} />
@@ -147,23 +150,44 @@ function Inventory({ route }: InventoryProps) {
               옥계공주
             </Text>
           </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={{
+              elevation: 8,
+            }}
+            className="w-fit bg-buy rounded-[10px] mt-5 border-2 border-[#6f530d]"
+            onPress={handleApply}
+          >
+            <Text className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]">
+              적용
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View className="w-full h-4" />
       </View>
       <View className="mt-10">
         <View className="ml-5 w-full h-fit flex-row space-x-2">
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className={categoryStyle(selectCategory)}
+          >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               캐릭터
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className={categoryStyle(selectCategory)}
+          >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               치장
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} className={categoryStyle()}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className={categoryStyle(selectCategory)}
+          >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               칭호
             </Text>
@@ -175,7 +199,6 @@ function Inventory({ route }: InventoryProps) {
           items={DATA || fetchItem}
           pageWidth={screenWidth - (65 + 60) * 2}
           setSelectItem={setSelectItem}
-          itemWidth={210}
           component="Inventory"
         />
       </View>

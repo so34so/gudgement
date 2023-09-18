@@ -19,12 +19,12 @@ function BuyModal({
 }: {
   item: CommonType.Titem;
   modalVisible: {
-    buy: boolean;
+    buy?: boolean;
     complete: boolean;
   };
   setModalVisible: React.Dispatch<
     React.SetStateAction<{
-      buy: boolean;
+      buy?: boolean;
       complete: boolean;
     }>
   >;

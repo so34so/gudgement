@@ -38,15 +38,23 @@ public class InventoryServiceImpl implements InventoryService{
         List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
 
         List<EquippedDto> equippedList = inventoryList.stream()
-                .map(inventory -> EquippedDto.builder()
-                        .id(inventory.getId())
-                        .itemId(inventory.getItemId().getItemId())
-                        .itemName(inventory.getItemId().getItemName())
-                        .itemContent(inventory.getItemId().getItemContent())
-                        .itemEffect(inventory.getItemId().getItemEffect())
-                        .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
-                        .isEquipped(inventory.isEquipped())
-                        .build())
+                .map(inventory -> {
+                    EquippedDto.EquippedDtoBuilder builder = EquippedDto.builder()
+                            .invenId(inventory.getInvenId())
+                            .itemId(inventory.getItemId().getItemId())
+                            .itemName(inventory.getItemId().getItemName())
+                            .itemContent(inventory.getItemId().getItemContent())
+                            .itemEffect(inventory.getItemId().getItemEffect())
+                            .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
+                            .isEquipped(inventory.isEquipped());
+
+                    // If the item is a consumable, add its quantity.
+                    if ("consumable".equals(inventory.getItemId().getType())) {
+                        builder.quantity(inventory.getQuantity());
+                    }
+
+                    return builder.build();
+                })
                 .collect(Collectors.toList());
 
         return equippedList;
@@ -57,29 +65,32 @@ public class InventoryServiceImpl implements InventoryService{
 
         List<EquippedDto> equippedList = inventoryList.stream()
                 .filter(inventory -> type.equals(inventory.getItemId().getType()))
-                .map(inventory -> EquippedDto.builder()
-                        .id(inventory.getId())
-                        .itemId(inventory.getItemId().getItemId())
-                        .itemName(inventory.getItemId().getItemName())
-                        .itemContent(inventory.getItemId().getItemContent())
-                        .itemEffect(inventory.getItemId().getItemEffect())
-                        .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
-                        .isEquipped(inventory.isEquipped())
-                        .build())
+                .map(inventory -> {
+                    EquippedDto.EquippedDtoBuilder builder = EquippedDto.builder()
+                            .invenId(inventory.getInvenId())
+                            .itemId(inventory.getItemId().getItemId())
+                            .itemName(inventory.getItemId().getItemName())
+                            .itemContent(inventory.getItemId().getItemContent())
+                            .itemEffect(inventory.getItemId().getItemEffect())
+                            .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
+                            .isEquipped(inventory.isEquipped());
+
+                    // If the item is a consumable, add its quantity.
+                    if ("consumable".equals(type)) {
+                        builder.quantity(inventory.getQuantity());
+                    }
+
+                    return builder.build();
+                })
                 .collect(Collectors.toList());
 
         return equippedList;
     }
 
-    public InventoryDto equipItem(Long inventoryId) {
-        // 먼저 아이템 및 멤버 객체를 조회합니다.
-        Item item = itemRepository.findByItemId(inventoryId)
-                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
-/*        Member member = memberRepository.findById(inventoryId)
-                .orElseThrow(() -> new NotFoundMemberException("해당 멤버가 없습니다."));*/
 
+    public InventoryDto equipItem(Long invenId) {
         // 그런 다음에 인벤토리를 조회합니다.
-        Inventory selectedInventory = inventoryRepository.findByItemId(item)
+        Inventory selectedInventory = inventoryRepository.findByInvenId(invenId)
                 .orElseThrow(() -> new NotFoundItemException("해당 인벤토리가 없습니다."));
 
         // Find an already equipped item of the same type and unequip it.

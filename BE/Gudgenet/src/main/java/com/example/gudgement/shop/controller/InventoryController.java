@@ -9,6 +9,7 @@ import com.example.gudgement.shop.dto.ItemListDto;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.service.InventoryService;
 import com.example.gudgement.shop.service.InventoryServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,10 @@ import java.util.List;
 public class InventoryController {
 
     private final InventoryService inventoryService;
-    private final InventoryRepository inventoryRepository;
     private final MemberRepository memberRepository;
 
     //보유 아이템 조회
+    @Operation(summary = "보유 아이템 전체 조회")
     @GetMapping
     public ResponseEntity<List<EquippedDto>> getItems(@RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회
@@ -41,6 +42,7 @@ public class InventoryController {
         return ResponseEntity.ok(itemList);
     }
 
+    @Operation(summary = "보유 아이템 타입별 조회")
     @GetMapping("/type")
     public ResponseEntity<List<EquippedDto>> getTypeItems(@RequestParam String type, @RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회
@@ -54,11 +56,11 @@ public class InventoryController {
         return ResponseEntity.ok(itemList);
     }
 
+    @Operation(summary = "아이템 장착")
     @PutMapping
-    public ResponseEntity<InventoryDto> equip(@RequestParam Long itemId) {
-        inventoryService.equipItem(itemId);
+    public ResponseEntity<InventoryDto> equip(@RequestParam Long invenId) {
+        inventoryService.equipItem(invenId);
         return ResponseEntity.ok().build();
-
     }
 
 

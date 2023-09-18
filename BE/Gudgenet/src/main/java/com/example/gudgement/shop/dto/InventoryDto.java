@@ -27,7 +27,7 @@ public class InventoryDto {
 
     public static InventoryDto invenDto(Inventory inventory){
         return InventoryDto.builder()
-                .invenId(inventory.getId())
+                .invenId(inventory.getInvenId())
                 .itemId(inventory.getItemId().getItemId())
                 .memberId(inventory.getMemberId().getMemberId())
                 .equipped(inventory.isEquipped())

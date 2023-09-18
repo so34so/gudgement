@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Progress {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "progress_id")
     private Long id;
 

@@ -15,5 +15,7 @@ public interface ShopService {
 
     void unlockItem(Long itemId, Long memberId);
 
+    void buyConsumableItem(Long itemId, Long memberId, int quantity);
+
     //List<ItemDto> getEquippedItems(Long memberId);
 }

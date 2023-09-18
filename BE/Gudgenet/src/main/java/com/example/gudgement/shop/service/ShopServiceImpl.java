@@ -124,20 +124,17 @@ public class ShopServiceImpl implements ShopService{
                 .map(InventoryDto::invenDto)
                 .collect(Collectors.toList());
         for (Item item : items) {
-/*            try {*/
-                // 이미지를 byte[]로 변환
-/*                Path imageFilePath = Paths.get(IMAGE_PATH + type).resolve(item.getImage());
-                Resource resource = new ClassPathResource(imageFilePath.toString());
 
-                byte[] imageData = null;
-                if (resource != null) {
-                    imageData = resource.getInputStream().readAllBytes();
-                }*/
                 String imageData = IMAGE_PATH + type +"/"+ item.getImage();
 
+                boolean isSold = false;
 
-                boolean isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
-                boolean isEquipped = userItems.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
+                if(!"consumable".equals(type)){
+                    isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
+                }
+
+
+                boolean isEquipped = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
 
                 ItemDto.ItemDtoBuilder builder = ItemDto.builder()
                         .id(item.getItemId())
@@ -192,7 +189,7 @@ public class ShopServiceImpl implements ShopService{
         member.useTiggle(((Price) item).getPrice());
 
         // 아이템 추가
-        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).build());
+        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).quantity(1).build());
     }
 
     public void unlockItem(Long itemId, Long memberId) {
@@ -213,59 +210,41 @@ public class ShopServiceImpl implements ShopService{
         inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).build());
     }
 
-/*
-    public List<ItemDto> getEquippedItems(Long memberId) {
+    public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
         Member member = memberRepository.findByMemberId(memberId);
-        if(member == null) {
+        if (member == null) {
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        List<Inventory> userEquippedItems = inventoryRepository.findAllByMemberIdAndEquipped(member, true);
-        if (userEquippedItems == null) {
-            userEquippedItems = new ArrayList<>();
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+
+        // 포인트가 부족한지 확인
+        if (((Price) item).getPrice() * quantity > member.getTiggle()) {
+            throw new InsufficientPointsException("티끌이 부족합니다.");
         }
 
-        return userItemsToItemListDTOs(userEquippedItems);
+        // 티끌 차감
+        member.useTiggle(((Price) item).getPrice() * quantity);
+
+        // Find the inventory item for this user and this consumable.
+        Inventory inventory = inventoryRepository.findByMemberIdAndItemId(member, item)
+                .orElseGet(() -> {
+                    // If the inventory does not exist yet, create a new one.
+                    Inventory newInventory = Inventory.builder()
+                            .itemId(item)
+                            .memberId(member)
+                            .quantity(quantity)
+                            .build();
+
+                    return inventoryRepository.save(newInventory);
+                });
+
+        // If the inventory already exists, increase its quantity.
+        inventory.increaseQuantity(quantity);
+
+        inventoryRepository.save(inventory);
     }
-
-    private List<ItemDto> userItemsToItemListDTOs(List<Inventory> items) {
-        // Inventory Dto 리스트에서 아이템 ID 추출
-        List<Long> itemIds = items.stream().map(inventory -> inventory.getItemId().getId()).collect(Collectors.toList());
-
-        // 아이템 ID를 기반으로 Item 엔티티 조회
-        List<Item> itemList = itemRepository.findAllById(itemIds);
-
-        // Item 엔티티 리스트를 Map으로 변환 (Key: 아이템 ID, Value: Item 엔티티)
-        Map<Long, Item> itemMap = itemList.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
-
-        List<ItemDto> itemDTOS = new ArrayList<>();
-        for (Inventory inventory : items) {
-            try {
-                Item item = itemMap.get(inventory.getItemId());
-                if (item == null) continue;
-
-                // 이미지를 byte[]로 변환
-                Path imageFilePath = Paths.get(IMAGE_PATH + inventory.getItemId()).resolve(item.getImage());
-                Resource resource = new ClassPathResource(imageFilePath.toString());
-
-                byte[] imageData = null;
-                if(resource != null) {
-                    imageData = resource.getInputStream().readAllBytes();
-                }
-
-                itemDTOS.add(ItemDto.builder()
-                        .itemName(item.getItemName())
-                        .image(imageData)
-                        .isSold(true)
-                        .build());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return itemDTOS;
-    }
-*/
 
 
 

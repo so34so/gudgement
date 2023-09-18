@@ -37,6 +37,13 @@ export declare module CommonType {
     Analyze: undefined;
     SingleRecords: undefined;
     MultiRecords: undefined;
+
+    /**
+     * Login child Type
+     */
+    Login: undefined;
+    SettingLoggedIn: undefined;
+    BottomTabNavigator: undefined;
   };
   export type Titem = {
     title: string;

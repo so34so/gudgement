@@ -51,27 +51,35 @@ function Play() {
         resizeMode="cover"
         className="flex-1"
       >
-        <Image
-          className="flex flex-row relative  h-[200] w-[200]"
-          source={fin}
-        />
         <View className="flex-1">
           <Pressable
-            className=" justify-center items-center "
+            className="items-center"
             onPress={() => navigation.navigate("PlaySelect")}
           >
             <Animated.View style={[animatedStyles]}>
               <Image
-                className="flex-2 h-[350] w-[450]"
+                className="justify-center top-[150] flex-2 h-[350] w-[450]"
                 source={flameEntrance} // 로컬 이미지 불러오는 방법
               />
             </Animated.View>
+
             {/* <FastImage
                 source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
                 style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.
                 resizeMode={FastImage.resizeMode.contain} // resize mode 설정
               /> */}
           </Pressable>
+          <Image
+            className=" "
+            style={{
+              position: "absolute",
+              bottom: 200,
+              right: 0,
+              width: 200,
+              height: 200,
+            }}
+            source={fin}
+          />
         </View>
       </ImageBackground>
     </View>

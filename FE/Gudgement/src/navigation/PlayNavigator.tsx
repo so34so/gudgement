@@ -9,7 +9,7 @@ function PlayNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Play"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, animation: "none" }} // 전환 효과 사용 안 함
     >
       <Stack.Screen
         name="Play"

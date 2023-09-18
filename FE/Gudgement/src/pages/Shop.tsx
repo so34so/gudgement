@@ -25,26 +25,13 @@ import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../queryClient";
 import { textShadow } from "../utils/common";
-
+import { API_URL } from "@env";
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-const DATA: Array<CommonType.Titem> = Array.from({ length: 6 }, (_, idx) => {
-  return {
-    id: idx,
-    itemName: `${idx}번째 아이템`,
-    image: `${idx}번째 이미지`,
-    price: idx * 100 + 1000,
-    itemContent:
-      "Quis minim deserunt veniam anim dolore minim Lorem magna ad et incididunt consequat eiusmod.",
-    equipped: false,
-    sold: false,
-    unlocked: false,
-  };
-});
 interface IresponseParams {
   itemId: number;
   memberId: number;
@@ -70,6 +57,7 @@ function Shop({ route }: ShopProps) {
     dy: number;
   }>({ dx: 0, dy: 0 });
   const [selectItem, setSelectItem] = useState(0);
+  const [itemStatus, setItemStatus] = useState(true);
   const selectCategory = route.params.category;
   const imageRef: RefObject<Image> = useRef(null);
   const {
@@ -87,14 +75,17 @@ function Shop({ route }: ShopProps) {
 
   async function fetchShopItem() {
     try {
-      const response: CommonType.Titem = await axios.get("/shop/type", {
-        params: {
-          type: selectCategory,
-          memberId: 0,
+      const response: AxiosResponse<CommonType.Titem[]> = await axios.get(
+        `${API_URL}/shop/type`,
+        {
+          params: {
+            type: "character",
+            memberId: 1,
+          },
         },
-      });
-      Reactotron.log!("fetchShopItem", response);
-      return response;
+      );
+      Reactotron.log!("fetchShopItem", response.data);
+      return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
         Reactotron.log!("fetchShopItemError", errorResponse);
@@ -120,6 +111,12 @@ function Shop({ route }: ShopProps) {
   }, []);
 
   useEffect(() => {
+    if (fetchItem) {
+      setItemStatus(fetchItem[selectItem].sold);
+    }
+  }, [selectItem]);
+
+  useEffect(() => {
     offset.value = withRepeat(
       withTiming(-offset.value, { duration: 500 }),
       -5,
@@ -130,20 +127,32 @@ function Shop({ route }: ShopProps) {
 
   const { mutate } = useMutation({
     mutationFn: (params: IresponseParams) =>
-      axios.post("/shop/buy", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["fetchShopItem"]),
+      axios.post(`${API_URL}/shop`, null, {
+        params: {
+          itemId: params.itemId,
+          memberId: params.memberId,
+        },
+      }),
+    onSuccess: () => {
+      setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
+      queryClient.invalidateQueries(["fetchShopItem"]);
+      Reactotron.log!("구매 완료");
+    },
   });
 
   const handleBuy = useCallback(() => {
-    mutate({ itemId: selectItem, memberId: 0 });
-    setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
-    Reactotron.log!("구매 완료");
-  }, [modalVisible, mutate, selectItem]);
+    if (fetchItem) {
+      mutate({ itemId: fetchItem[selectItem].id, memberId: 1 });
+    }
+  }, [fetchItem, mutate, selectItem]);
 
   const handleGetTitle = useCallback(() => {
     setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
     Reactotron.log!("구매 완료");
   }, [modalVisible]);
+  const buttonColor = () => {
+    return itemStatus ? "bg-sub02" : "bg-red";
+  };
 
   if (error) {
     <View>
@@ -200,44 +209,53 @@ function Shop({ route }: ShopProps) {
               </Animated.View>
             </View>
             <View className="items-center">
-              <Svg height="73" width="140">
-                <SvgText
-                  fill="white"
-                  stroke="black"
-                  fontSize="24"
-                  fontFamily="Pretendard-ExtraBold"
-                  x="70"
-                  y="20"
-                  textAnchor="middle"
-                >
-                  {DATA[selectItem].itemName}
-                </SvgText>
-                <SvgText
-                  fill="#ffb800"
-                  x="70"
-                  y="50"
-                  fontSize="20"
-                  stroke="black"
-                  fontFamily="Pretendard-ExtraBold"
-                  textAnchor="middle"
-                >
-                  {`${DATA[selectItem].price} 티끌`}
-                </SvgText>
-              </Svg>
-              <Text
-                numberOfLines={4}
-                ellipsizeMode="tail"
-                className="text-white font-PretendardMedium text-[16px] w-28"
-              >
-                {DATA[selectItem].itemContent}
-              </Text>
+              {fetchItem?.length ? (
+                <>
+                  <Svg height="73" width="140">
+                    <SvgText
+                      fill="white"
+                      stroke="black"
+                      fontSize="24"
+                      fontFamily="Pretendard-ExtraBold"
+                      x="70"
+                      y="20"
+                      textAnchor="middle"
+                    >
+                      {fetchItem && fetchItem[selectItem].itemName}
+                    </SvgText>
+                    <SvgText
+                      fill="#ffb800"
+                      x="70"
+                      y="50"
+                      fontSize="20"
+                      stroke="black"
+                      fontFamily="Pretendard-ExtraBold"
+                      textAnchor="middle"
+                    >
+                      {fetchItem && `${fetchItem[selectItem].price} 티끌`}
+                    </SvgText>
+                  </Svg>
+                  <Text
+                    numberOfLines={4}
+                    ellipsizeMode="tail"
+                    className="text-white font-PretendardMedium text-[16px] w-28"
+                  >
+                    {fetchItem && fetchItem[selectItem].itemContent}
+                  </Text>
+                </>
+              ) : (
+                <View>
+                  <Text>선택한 아이템이 없습니다.</Text>
+                </View>
+              )}
               <TouchableOpacity
                 activeOpacity={0.5}
                 style={{
                   elevation: 8,
                 }}
-                className="w-fit bg-red rounded-[10px] mt-5 border-2 border-[#6f530d]"
+                className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
                 onPress={handleBuy}
+                disabled={itemStatus}
               >
                 <Text
                   style={textShadow}
@@ -304,7 +322,7 @@ function Shop({ route }: ShopProps) {
         <Carousel
           gap={16}
           offset={30}
-          items={DATA || fetchItem}
+          items={fetchItem}
           pageWidth={screenWidth - (16 + 45) * 2}
           setSelectItem={setSelectItem}
           component="Shop"
@@ -313,6 +331,7 @@ function Shop({ route }: ShopProps) {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           item={{
+            id: 0,
             image: Shoes as ImageSourcePropType,
             itemName: "컨버스화",
             itemContent: "어쩌고 저쩌고",
@@ -326,6 +345,7 @@ function Shop({ route }: ShopProps) {
           completeModalVisible={modalVisible}
           setCompleteModalVisible={setModalVisible}
           item={{
+            id: 0,
             image: Shoes as ImageSourcePropType,
             itemName: "컨버스화",
             itemContent: "어쩌고 저쩌고",

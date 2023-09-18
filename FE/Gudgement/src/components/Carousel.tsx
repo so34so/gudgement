@@ -14,7 +14,7 @@ import { CommonType } from "../types/CommonType";
 interface ICarousel {
   gap: number;
   offset: number;
-  items: CommonType.Titem[];
+  items?: CommonType.Titem[];
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
   component: string;
@@ -65,12 +65,16 @@ function Carousel({
         showsHorizontalScrollIndicator={false}
       />
       <View className="w-full justify-center h-fit flex flex-row items-center mt-2 space-x-4">
-        {Array.from({ length: items.length }, (_, i) => i).map(i => (
-          <View
-            key={`indicator_${i}`}
-            className={`${setIndicatorColor(i)} w-2 h-2 rounded-full`}
-          />
-        ))}
+        {items ? (
+          Array.from({ length: items.length }, (_, i) => i).map(i => (
+            <View
+              key={`indicator_${i}`}
+              className={`${setIndicatorColor(i)} w-2 h-2 rounded-full`}
+            />
+          ))
+        ) : (
+          <View />
+        )}
       </View>
     </View>
   );

@@ -29,6 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 import { INVENTORY_CATEGORY } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
 import Shoes from "../assets/images/item.svg";
+import { API_URL } from "@env";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -70,12 +71,15 @@ function Inventory({ route }: InventoryProps) {
 
   async function fetchInventoryItem() {
     try {
-      const response: CommonType.Titem = await axios.get("/shop/type", {
-        params: {
-          type: selectCategory,
-          memberId: 0,
+      const response: CommonType.Titem = await axios.get(
+        `${API_URL}/inventory/type`,
+        {
+          params: {
+            type: selectCategory,
+            memberId: 0,
+          },
         },
-      });
+      );
       Reactotron.log!("fetchShopItem", response);
       return response;
     } catch (errorResponse) {

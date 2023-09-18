@@ -1,3 +1,5 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import {
   Image,
@@ -10,13 +12,16 @@ import { WebView, WebViewNavigation } from "react-native-webview";
 import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
 import KakaoLogoImg from "../assets/images/kakaologo.png";
 
-interface LoginProps {
-  onLogin: () => void; // onLogin의 타입을 명시
-}
+// interface LoginProps {
+//   onLogin: () => void; // onLogin의 타입을 명시
+// }
+//{ onLogin }: LoginProps
 
-function Login({ onLogin }: LoginProps) {
+function Login() {
   const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -31,7 +36,9 @@ function Login({ onLogin }: LoginProps) {
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
       console.log("인가 코드", code);
-      onLogin(); // 로그인 성공 시
+
+      navigation.navigate("SettingLoggedIn");
+
       return false;
     }
     return true;

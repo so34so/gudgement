@@ -52,23 +52,24 @@ function Play() {
         className="flex-1"
       >
         <View className="flex-1">
-          <Pressable
-            className="items-center"
-            onPress={() => navigation.navigate("PlaySelect")}
-          >
-            <Animated.View style={[animatedStyles]}>
-              <Image
-                className="justify-center top-[150] flex-2 h-[350] w-[450]"
-                source={flameEntrance} // 로컬 이미지 불러오는 방법
-              />
-            </Animated.View>
+          <Animated.View style={[animatedStyles]}>
+            <Image
+              className="justify-center top-[150] flex-2 h-[350] w-[450]"
+              source={flameEntrance} // 로컬 이미지 불러오는 방법
+            />
+          </Animated.View>
 
-            {/* <FastImage
+          {/* <FastImage
                 source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
                 style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.
                 resizeMode={FastImage.resizeMode.contain} // resize mode 설정
               /> */}
-          </Pressable>
+
+          {/* 실제 불의 선택 영역 */}
+          <Pressable
+            className="flex-1 absolute left-[35%] top-[30%] w-[150] h-[150]"
+            onPress={() => navigation.navigate("PlaySelect")}
+          />
           <Image
             className=" "
             style={{

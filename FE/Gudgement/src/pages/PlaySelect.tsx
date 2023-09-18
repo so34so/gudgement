@@ -2,6 +2,7 @@ import PlayBackground2 from "../assets/images/playBackground2.png";
 import MapType from "../assets/images/maptype.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
+import BettingMachine from "../components/BettingMachine";
 import {
   ImageBackground,
   Image,
@@ -11,12 +12,16 @@ import {
   View,
   StyleSheet,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 
 function PlaySelect() {
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
   const mapyType: ImageSourcePropType = MapType as ImageSourcePropType;
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   return (
     <View style={styles.container}>
@@ -43,7 +48,10 @@ function PlaySelect() {
         <View style={styles.cards}>
           <Image source={cards} />
         </View>
-        <CloseButton />
+        <Pressable onPress={() => navigation.navigate("Play")}>
+          <CloseButton />
+        </Pressable>
+        <BettingMachine />
       </ImageBackground>
     </View>
   );
@@ -62,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     top: "60%",
-    left: "5%",
+    left: 0,
     right: 0,
     bottom: 0,
     zIndex: 10,

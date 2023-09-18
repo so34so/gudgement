@@ -2,7 +2,7 @@ FROM openjdk:11-jdk
 
 WORKDIR /app
 
-COPY build/libs/*.jar application.jar
+COPY ./build/libs/*.jar application.jar
 
 EXPOSE 9999
 

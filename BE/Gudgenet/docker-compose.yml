@@ -2,6 +2,6 @@ version: "3"
 services:
   spring:
     build:
-      context: ./backend
+      context: .
     ports:
       - 8082:9999 #로컬포트:컨테이너포트

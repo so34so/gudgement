@@ -17,11 +17,6 @@ pipeline {
                 }
             }
         }
-        stage('Check Directory Structure') {  // 추가된 단계
-            steps{
-                sh "ls -R ./BE/Gudgenet"  // 또는 다른 적절한 경로
-            }
-        }
         stage('deploy'){
             steps{
                 dir("./BE/Gudgenet") {

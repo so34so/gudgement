@@ -25,19 +25,24 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import CompleteModal from "../components/CompleteModal";
+// import CompleteModal from "../components/CompleteModal";
 import { INVENTORY_CATEGORY } from "../utils/common";
+import CompleteModal from "../components/CompleteModal";
+import Shoes from "../assets/images/item.svg";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
 const DATA: Array<CommonType.Titem> = Array.from({ length: 6 }, (_, idx) => {
   return {
     id: idx,
-    title: `${idx}번째 아이템`,
+    itemName: `${idx}번째 아이템`,
     image: `${idx}번째 이미지`,
     price: idx * 100 + 1000,
-    description:
+    itemContent:
       "Quis minim deserunt veniam anim dolore minim Lorem magna ad et incididunt consequat eiusmod.",
+    equipped: false,
+    sold: false,
+    unlocked: false,
   };
 });
 
@@ -100,6 +105,7 @@ function Inventory({ route }: InventoryProps) {
   useEffect(() => {
     // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
     Reactotron.log!(selectCategory);
+    refetch();
   }, [selectCategory]);
 
   const handleApply = useCallback(() => {
@@ -107,14 +113,13 @@ function Inventory({ route }: InventoryProps) {
     setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
   }, [modalVisible, selectItem]);
 
-  refetch();
-  if (error) {
-    return (
-      <View>
-        <Text>error</Text>
-      </View>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <View>
+  //       <Text>error</Text>
+  //     </View>
+  //   );
+  // }
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -170,7 +175,8 @@ function Inventory({ route }: InventoryProps) {
         <View className="ml-5 w-full h-fit flex-row space-x-2">
           <TouchableOpacity
             activeOpacity={0.8}
-            className={categoryStyle(selectCategory)}
+            onPress={() => setSelectCategory("캐릭터")}
+            className={categoryStyle("캐릭터")}
           >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               캐릭터
@@ -178,7 +184,8 @@ function Inventory({ route }: InventoryProps) {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
-            className={categoryStyle(selectCategory)}
+            onPress={() => setSelectCategory("치장")}
+            className={categoryStyle("치장")}
           >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               치장
@@ -186,7 +193,8 @@ function Inventory({ route }: InventoryProps) {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
-            className={categoryStyle(selectCategory)}
+            onPress={() => setSelectCategory("칭호")}
+            className={categoryStyle("칭호")}
           >
             <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
               칭호
@@ -196,10 +204,23 @@ function Inventory({ route }: InventoryProps) {
         <Carousel
           gap={60}
           offset={60}
-          items={DATA || fetchItem}
+          items={DATA}
           pageWidth={screenWidth - (65 + 60) * 2}
           setSelectItem={setSelectItem}
           component="Inventory"
+        />
+        <CompleteModal
+          completeModalVisible={modalVisible}
+          setCompleteModalVisible={setModalVisible}
+          item={{
+            image: Shoes as ImageSourcePropType,
+            itemName: "컨버스화",
+            itemContent: "어쩌고 저쩌고",
+            price: 100,
+            equipped: false,
+            sold: false,
+            unlocked: false,
+          }}
         />
       </View>
     </SafeAreaView>

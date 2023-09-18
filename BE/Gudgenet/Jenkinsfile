@@ -18,8 +18,10 @@ pipeline {
             }
         }
         stage('deploy'){
-                steps{
+            steps{
+                dir("./BE/Gudgenet") {
                     sh 'docker-compose up -d --build'
+                }
             }
         }
     }

@@ -20,21 +20,10 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public MemberResponseDto login(LoginDto loginDto) {
-        return null;
-    }
-
-    @Override
-    public void logout() {
-
-    }
-
-    @Override
     @Transactional
     public MemberResponseDto memberCreate(MemberCreateDto memberCreateDto) {
         Member member = memberRepository.saveAndFlush(Member.builder()
                 .email(memberCreateDto.getEmail())
-                .name(memberCreateDto.getName())
                 .password(passwordEncoder.encrypt(memberCreateDto.getEmail(), memberCreateDto.getPassword()))
                 .gender(memberCreateDto.getGender())
                 .age(memberCreateDto.getAge())
@@ -63,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return MemberVerifyResponseDto.builder()
+                .id(member.getMemberId())
                 .isValid(true)
                 .role(member.getRole())
                 .build();

@@ -1,6 +1,7 @@
 package com.example.gudgement.member.db.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class Member implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private Long memberId;
 
     @NotNull
@@ -29,16 +30,15 @@ public class Member implements Serializable {
     @Column(length = 50)
     private String password;
 
-    @NotNull
-    @Column(length = 20)
-    private String name;
-
     private int gender;
 
     private int age;
 
     @NotNull
     private String nickname;
+
+    @NotNull
+    private boolean approve;
 
     @NotNull
     @Column(columnDefinition = "bigint default 500")
@@ -49,7 +49,7 @@ public class Member implements Serializable {
     private long exp;
 
     @NotNull
-    @Column(columnDefinition = "int default 1")
+    @Column
     private int level;
 
     @NotNull
@@ -82,18 +82,23 @@ public class Member implements Serializable {
 //    private List<Account> accounts = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String name, int gender, int age, String nickname) {
+    public Member(Long id, String email, String password, int gender, int age, String nickname) {
+        this.memberId = id;
         this.email = email;
         this.password = password;
-        this.name = name;
         this.gender = gender;
         this.age = age;
         this.nickname = nickname;
-        this.role = Role.ROLE_USER;
-        this.createAt = LocalDateTime.now();
     }
 
-    public void nameUpdate(String nickname) {
+    @PrePersist
+    public void prePersist() {
+        this.createAt = LocalDateTime.now();
+        this.role = Role.ROLE_USER;
+        this.level = 1;
+    }
+
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 

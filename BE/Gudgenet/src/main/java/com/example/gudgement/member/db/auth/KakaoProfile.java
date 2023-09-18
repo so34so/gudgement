@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class KakaoProfile {
-    private int id;
+    private Long id;
     private String connected_at;
     private Properties properties;
     private KakaoAccount kakao_account;

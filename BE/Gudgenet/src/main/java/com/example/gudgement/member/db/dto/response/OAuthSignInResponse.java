@@ -1,5 +1,6 @@
 package com.example.gudgement.member.db.dto.response;
 
+import com.example.gudgement.member.db.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,7 +8,7 @@ import java.util.Date;
 
 @Getter
 public class OAuthSignInResponse {
-    private String id;
+    private Long id;
     private String nickname;
     private String email;
     private String accessToken;
@@ -15,7 +16,7 @@ public class OAuthSignInResponse {
     private Date refreshTokenExpiration;
 
     @Builder
-    public OAuthSignInResponse(String id, String nickname, String email, String accessToken, String refreshToken, Date refreshTokenExpiration) {
+    public OAuthSignInResponse(Long id, String nickname, String email, String accessToken, String refreshToken, Date refreshTokenExpiration) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
@@ -24,4 +25,13 @@ public class OAuthSignInResponse {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
+    public Member toMemberEntity() {
+        String password = "asdw";
+        return Member.builder()
+                .id(id)
+                .email(email)
+                .nickname(nickname)
+                .password(password)
+                .build();
+    }
 }

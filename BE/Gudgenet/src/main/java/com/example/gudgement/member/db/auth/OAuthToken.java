@@ -1,13 +1,19 @@
 package com.example.gudgement.member.db.auth;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OAuthToken {
     private String accessToken;
     private String tokenType;
     private String refreshToken;
-    private int expiresIn;
-    private String scope;
-    private int refreshTokenExpiresIn;
+    private Integer expiresIn;
+    private Integer refreshTokenExpiresIn;
+    private String error;
+    private String errorDescription;
 }

@@ -1,16 +1,19 @@
 /// <reference types="nativewind/types" />
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CommonType } from "./src/types/CommonType";
 import { QueryClientProvider } from "react-query";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import Login from "./src/pages/Login";
+import SettingLoggedIn from "./src/pages/SettingLoggedIn";
 
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import Login from "./src/pages/Login";
 if (__DEV__) {
   import("./reactotron");
 }
@@ -122,21 +125,30 @@ function App(): JSX.Element {
     });
     return unsubscribe;
   }, []);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+  const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          {isLoggedIn ? (
-            <BottomTabNavigator />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )}
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SettingLoggedIn"
+              component={SettingLoggedIn}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="BottomTabNavigator"
+              component={BottomTabNavigator}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>
     </QueryClientProvider>

@@ -1,6 +1,6 @@
 package com.example.gudgement.member.common.config;
 
-import com.example.gudgement.member.common.filter.JwtAuthorizationFilter;
+//import com.example.gudgement.member.common.filter.JwtAuthorizationFilter;
 import com.example.gudgement.member.common.filter.JwtFilter;
 import com.example.gudgement.member.common.filter.MemberVerifyFilter;
 import com.example.gudgement.member.common.jwt.JwtProvider;
@@ -32,13 +32,13 @@ public class WebConfig {
         return filterFilterRegistrationBean;
     }
 
-    @Bean
-    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, ObjectMapper mapper) {
-        FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-
-        filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
-        filterFilterRegistrationBean.setOrder(3);
-
-        return filterFilterRegistrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, ObjectMapper mapper) {
+//        FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+//
+//        filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
+//        filterFilterRegistrationBean.setOrder(3);
+//
+//        return filterFilterRegistrationBean;
+//    }
 }

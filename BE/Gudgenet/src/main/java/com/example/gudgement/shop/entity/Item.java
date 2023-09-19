@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Base64;
 
 @Getter
 @NoArgsConstructor
@@ -15,9 +16,9 @@ import javax.persistence.*;
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="item_id")
-    private long id;
+    private long itemId;
 
     @Column(nullable=false)
     private String itemName;
@@ -34,14 +35,17 @@ public class Item {
     @Column(nullable = false)
     private String type;
 
+    @Column(nullable = true)
+    private String subtype;
 
-    public Item(String itemName, String itemContent, String itemEffect, String image, String type){
+
+    public Item(String itemName, String itemContent, String itemEffect, String image, String type, String subtype){
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
         this.image = image;
         this.type = type;
-
+        this.subtype = subtype;
     }
 
 }

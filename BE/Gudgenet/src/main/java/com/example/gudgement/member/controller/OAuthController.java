@@ -1,8 +1,8 @@
 package com.example.gudgement.member.controller;
 
-import com.example.gudgement.member.db.dto.AccessTokenDto;
-import com.example.gudgement.member.db.dto.RefreshTokenDto;
-import com.example.gudgement.member.db.dto.response.OAuthSignInResponse;
+import com.example.gudgement.member.dto.AccessTokenDto;
+import com.example.gudgement.member.dto.RefreshTokenDto;
+import com.example.gudgement.member.dto.response.OAuthSignInResponse;
 import com.example.gudgement.member.service.OauthServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

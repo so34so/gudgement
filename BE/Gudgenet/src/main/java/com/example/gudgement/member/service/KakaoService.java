@@ -2,11 +2,11 @@ package com.example.gudgement.member.service;
 
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.common.jwt.JwtToken;
-import com.example.gudgement.member.db.auth.KakaoProfile;
-import com.example.gudgement.member.db.auth.OAuthToken;
-import com.example.gudgement.member.db.dto.response.OAuthSignInResponse;
-import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
+import com.example.gudgement.member.auth.KakaoProfile;
+import com.example.gudgement.member.auth.OAuthToken;
+import com.example.gudgement.member.dto.response.OAuthSignInResponse;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

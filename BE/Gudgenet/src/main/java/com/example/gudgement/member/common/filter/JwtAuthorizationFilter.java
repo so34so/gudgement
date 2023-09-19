@@ -2,7 +2,7 @@ package com.example.gudgement.member.common.filter;
 
 import com.example.gudgement.member.common.jwt.Authentication;
 import com.example.gudgement.member.common.jwt.JwtProvider;
-import com.example.gudgement.member.db.entity.Role;
+import com.example.gudgement.member.entity.Role;
 import com.example.gudgement.member.exception.AuthorizationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;

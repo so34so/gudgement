@@ -2,10 +2,10 @@ package com.example.gudgement.member.service;
 
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.common.jwt.JwtToken;
-import com.example.gudgement.member.db.auth.OAuthToken;
-import com.example.gudgement.member.db.dto.AccessTokenDto;
-import com.example.gudgement.member.db.dto.response.OAuthSignInResponse;
-import com.example.gudgement.member.db.repository.MemberRepository;
+import com.example.gudgement.member.auth.OAuthToken;
+import com.example.gudgement.member.dto.AccessTokenDto;
+import com.example.gudgement.member.dto.response.OAuthSignInResponse;
+import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;

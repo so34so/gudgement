@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.auth;
+package com.example.gudgement.member.auth;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

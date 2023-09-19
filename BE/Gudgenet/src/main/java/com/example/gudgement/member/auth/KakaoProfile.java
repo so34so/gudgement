@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.auth;
+package com.example.gudgement.member.auth;
 
 import lombok.Getter;
 

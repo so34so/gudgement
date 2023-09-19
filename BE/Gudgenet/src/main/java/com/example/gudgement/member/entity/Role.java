@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.entity;
+package com.example.gudgement.member.entity;
 
 public enum Role {
     ROLE_ADMIN, ROLE_USER

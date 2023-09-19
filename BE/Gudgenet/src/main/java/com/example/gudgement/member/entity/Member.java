@@ -1,4 +1,4 @@
-package com.example.gudgement.member.db.entity;
+package com.example.gudgement.member.entity;
 
 import lombok.*;
 

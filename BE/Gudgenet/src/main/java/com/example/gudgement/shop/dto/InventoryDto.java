@@ -1,8 +1,6 @@
 package com.example.gudgement.shop.dto;
 
-import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.shop.entity.Inventory;
-import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

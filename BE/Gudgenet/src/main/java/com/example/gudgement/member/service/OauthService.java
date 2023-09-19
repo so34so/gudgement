@@ -1,8 +1,8 @@
 package com.example.gudgement.member.service;
 
-import com.example.gudgement.member.db.auth.KakaoProfile;
-import com.example.gudgement.member.db.auth.OAuthToken;
-import com.example.gudgement.member.db.dto.response.OAuthSignInResponse;
+import com.example.gudgement.member.auth.KakaoProfile;
+import com.example.gudgement.member.auth.OAuthToken;
+import com.example.gudgement.member.dto.response.OAuthSignInResponse;
 
 public interface OauthService {
     OAuthSignInResponse redirect(String code);

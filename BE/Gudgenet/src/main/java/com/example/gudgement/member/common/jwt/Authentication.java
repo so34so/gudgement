@@ -1,6 +1,6 @@
 package com.example.gudgement.member.common.jwt;
 
-import com.example.gudgement.member.db.entity.Role;
+import com.example.gudgement.member.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

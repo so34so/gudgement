@@ -1,8 +1,8 @@
 package com.example.gudgement.member.common.filter;
 
 import com.example.gudgement.member.common.jwt.Authentication;
-import com.example.gudgement.member.db.dto.request.LoginDto;
-import com.example.gudgement.member.db.dto.response.MemberVerifyResponseDto;
+import com.example.gudgement.member.dto.request.LoginDto;
+import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

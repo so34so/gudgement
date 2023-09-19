@@ -1,6 +1,6 @@
 /// <reference types="nativewind/types" />
 import { NavigationContainer } from "@react-navigation/native";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
@@ -11,6 +11,9 @@ import PushNotification from "react-native-push-notification";
 import { useEffect, useState } from "react";
 
 import Login from "./src/pages/Login";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CommonType } from "./src/types/CommonType";
+import PlaySelect from "./src/pages/PlaySelect";
 if (__DEV__) {
   import("./reactotron");
 }
@@ -100,7 +103,7 @@ PushNotification.createChannel(
 //   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
 //   // 업데이트를 어떻게 설치할 것인지 (IMMEDIATE는 강제설치를 의미)
 // };
-
+const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
 function App(): JSX.Element {
   useEffect(() => {
     async function getToken() {
@@ -127,16 +130,18 @@ function App(): JSX.Element {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          {/* {isLoggedIn ? ( */}
-          <BottomTabNavigator />
-          {/* ) : ( */}
-          {/* <Login onLogin={handleLogin} /> */}
-          {/* )} */}
+          {!isLoggedIn ? (
+            <Stack.Navigator>
+              <Stack.Screen name="홈" component={BottomTabNavigator} />
+              <Stack.Screen name="PlaySelect" component={PlaySelect} />
+            </Stack.Navigator>
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
         </NavigationContainer>
       </GestureHandlerRootView>
     </QueryClientProvider>

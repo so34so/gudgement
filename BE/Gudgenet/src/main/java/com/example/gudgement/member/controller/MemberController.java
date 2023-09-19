@@ -44,9 +44,9 @@ public class MemberController {
 
     @PostMapping("/email/send")
     @Operation(summary = "인증 메일 요청", description = "기재하는 이메일로 인증을 요청합니다.")
-    public ResponseEntity<String> mailSend(@RequestBody EmailDto email) throws Exception {
+    public ResponseEntity<String> mailSend(@RequestBody EmailDto emailDto) throws Exception {
         String approveNumber = mailService.randomNumber();
-        mailService.sendEmail(email.getEmail(), approveNumber);
+        mailService.sendEmail(emailDto.getEmail(), approveNumber);
 
         return ResponseEntity.ok(approveNumber);
     }

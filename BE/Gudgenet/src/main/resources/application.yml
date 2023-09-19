@@ -10,6 +10,25 @@ server:
 
 # MySQL
 spring:
+  # 메일 요청을 위한 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: coala1080@gmail.com
+    # plz not update, don't remember
+    password: wousleleumelwfft
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 600000
+
   main:
     allow-bean-definition-overriding: true
 
@@ -49,29 +68,18 @@ spring:
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
 
-    # Jpa and Hibernate for CI Test
-#    datasource:
-#      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-#      username: sa
-#      password:
-#      driver-class-name: org.h2.Driver
-#
-#    jpa:
-#      show-sql: true
-#
-#      database-platform: org.hibernate.dialect.H2Dialect
-#
-#      hibernate:
-#        ddl-auto: create-drop
-#        naming:
-#          physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-#
-#        properties:
-#          hibernate:
-#            format_sql: true
-#
-#            # LazyInitializationException ??
-#            enable_lazy_load_no_trans: true
+  oauth2:
+    client:
+      registration:
+        kakao:
+          client-id: 4cd45261b839373b375e0766220b3428
+          redirect-uri: http://localhost:8081/oauth/kakao/callback
+          client-authentication-method: POST
+          authorization-grant-type: authorization_code
+          scope: account_email
+          client-secret: IxXm1l2rPYcLXojdZmL9MXr8bmTkEmPQ
+          token-uri: https://kauth.kakao.com/oauth/token
+          user-info-uri: https://kapi.kakao.com
 
 # spring-docs
 springdoc:
@@ -82,12 +90,6 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
-
-# jwt
-jwt:
-  secret:
-    key: "asdasaskdljasklkjlw"
-
 
 
 # H2 ??? ??? ?? ???

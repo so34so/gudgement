@@ -32,13 +32,14 @@ public class WebConfig {
         return filterFilterRegistrationBean;
     }
 
-//    @Bean
-//    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, ObjectMapper mapper) {
-//        FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-//
-//        filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
-//        filterFilterRegistrationBean.setOrder(3);
-//
-//        return filterFilterRegistrationBean;
-//    }
+    @Bean
+    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, ObjectMapper mapper) {
+        FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+
+        filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
+        filterFilterRegistrationBean.setOrder(3);
+        filterFilterRegistrationBean.addUrlPatterns("/api/member/login");
+
+        return filterFilterRegistrationBean;
+    }
 }

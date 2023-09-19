@@ -10,5 +10,5 @@ import java.util.Date;
 public class JwtToken {
     private String accessToken;
     private String refreshToken;
-    private Date tokenExpirationTime;
+    private Date refreshTokenExpirationTime;
 }

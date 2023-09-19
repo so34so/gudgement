@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   mapType: {
-    width: 360,
-    height: 260,
+    width: 330,
+    height: 245,
   },
   mapIcon: {
     width: 50,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 30, // 삼각형의 폭
     borderRightColor: "#ffffff75", // 삼각형의 색상
     transform: [{ rotate: "-180deg" }], // 90도 회전
-    clipPath: "polygon(0 0, 100% 50%, 0 100%)", // 삼각형 모양의 클리핑 경로
+    // clipPath: "polygon(0 0, 100% 50%, 0 100%)", // 삼각형 모양의 클리핑 경로
   },
   prevButton: {
     position: "absolute",
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 19, // 삼각형의 폭
     left: 7,
     borderRightColor: "#000000", // 삼각형의 색상
-    clipPath: "polygon(0 0, 100% 50%, 0 100%)", // 삼각형 모양의 클리핑 경로
+    // clipPath: "polygon(0 0, 100% 50%, 0 100%)", // 삼각형 모양의 클리핑 경로
   },
   nextButton: {
     position: "absolute",

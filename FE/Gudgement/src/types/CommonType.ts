@@ -42,7 +42,9 @@ export declare module CommonType {
      * Login child Type
      */
     Login: undefined;
-    SettingLoggedIn: undefined;
+    SettingEmail: undefined;
+    SettingName: undefined;
+    SettingAccount: undefined;
     BottomTabNavigator: undefined;
   };
   export type Titem = {

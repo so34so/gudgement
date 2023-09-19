@@ -8,27 +8,29 @@ import {
 } from "react-native";
 
 import React, { useState } from "react";
-import ShopItems from "./ShopItems";
+import RenderItems from "./RenderItems";
 import { CommonType } from "../types/CommonType";
 
 interface ICarousel {
   gap: number;
   offset: number;
-  items: CommonType.Titem[];
+  items?: CommonType.Titem[];
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
+  component: string;
 }
 
-function ShopCarousel({
+function Carousel({
   offset,
   pageWidth,
   gap,
   items,
   setSelectItem,
+  component,
 }: ICarousel) {
   const [page, setPage] = useState(0);
   const renderItem: ListRenderItem<CommonType.Titem> = ({ item }) => {
-    return <ShopItems item={item} page={page} />;
+    return <RenderItems item={item} page={page} component={component} />;
   };
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newPage = Math.round(
@@ -59,19 +61,27 @@ function ShopCarousel({
         renderItem={renderItem}
         snapToInterval={pageWidth + gap}
         snapToAlignment="start"
-        ListEmptyComponent={() => <Text>아무것도 없음</Text>}
+        ListEmptyComponent={() => (
+          <Text className="mt-20 font-PretendardBlack text-[16px] text-white">
+            아무것도 없음
+          </Text>
+        )}
         showsHorizontalScrollIndicator={false}
       />
       <View className="w-full justify-center h-fit flex flex-row items-center mt-2 space-x-4">
-        {Array.from({ length: items.length }, (_, i) => i).map(i => (
-          <View
-            key={`indicator_${i}`}
-            className={`${setIndicatorColor(i)} w-2 h-2 rounded-full`}
-          />
-        ))}
+        {items ? (
+          Array.from({ length: items.length }, (_, i) => i).map(i => (
+            <View
+              key={`indicator_${i}`}
+              className={`${setIndicatorColor(i)} w-2 h-2 rounded-full`}
+            />
+          ))
+        ) : (
+          <View />
+        )}
       </View>
     </View>
   );
 }
 
-export default ShopCarousel;
+export default Carousel;

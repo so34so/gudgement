@@ -31,7 +31,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
     project: "./tsconfig.json",
-    tsconfigRootDir: __dirname
+    tsconfigRootDir: __dirname,
   },
   plugins: [
     "react",
@@ -44,7 +44,6 @@ module.exports = {
     indent: ["error", 2, { SwitchCase: 1 }],
     quotes: ["error", "double", { avoidEscape: true }],
     "react/react-in-jsx-scope": "off",
-    "linebreak-style": ["error", "windows"],
     semi: ["error", "always"],
     "prettier/prettier": ["error", { endOfLine: "auto" }],
     "no-empty-function": "off",

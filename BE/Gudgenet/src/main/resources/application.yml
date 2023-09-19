@@ -38,9 +38,13 @@ spring:
 
   # datasource
   datasource:
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: cos
-    password: cos1234
+#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+#    username: root
+#    password: ssafy
+
+    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: gudgement
+    password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa

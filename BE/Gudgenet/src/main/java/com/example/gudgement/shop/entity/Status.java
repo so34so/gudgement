@@ -21,9 +21,9 @@ public class Status extends Item{
 
     public Status(String itemName, String itemContent,
                   String itemEffect, String image,
-                  String type, String statusName,
+                  String type, String subtype, String statusName,
                   String statusContent, int status) {
-        super(itemName,itemContent,itemEffect,image,type);
+        super(itemName,itemContent,itemEffect,image,type,subtype);
         this.statusName=statusName;
         this.statusContent=statusContent;
         this.status=status;

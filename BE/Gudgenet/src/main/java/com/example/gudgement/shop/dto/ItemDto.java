@@ -19,18 +19,20 @@ public class ItemDto implements Serializable {
     private String itemEffect;
     private String image;
     private Long price;
+    private Long typeId;
     private boolean isUnlocked;
     private boolean isSold;
     private boolean isEquipped;
 
     @Builder
-    public ItemDto(Long id, String itemName, String itemContent, String itemEffect, String image, Long price, boolean isUnlocked, boolean isSold, boolean isEquipped) {
+    public ItemDto(Long id, String itemName, String itemContent, String itemEffect, String image, Long price, Long typeId, boolean isUnlocked, boolean isSold, boolean isEquipped) {
         this.id = id;
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
         this.image = image;
         this.price = price;
+        this.typeId = typeId;
         this.isUnlocked = isUnlocked;
         this.isSold = isSold;
         this.isEquipped = isEquipped;

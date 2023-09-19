@@ -123,6 +123,7 @@ public class ShopServiceImpl implements ShopService{
         List<InventoryDto> userItemDtos = userItems.stream()
                 .map(InventoryDto::invenDto)
                 .collect(Collectors.toList());
+        long typeId = 1;
         for (Item item : items) {
 
                 String imageData = IMAGE_PATH + type +"/"+ item.getImage();
@@ -142,6 +143,7 @@ public class ShopServiceImpl implements ShopService{
                         .itemContent(item.getItemContent())
                         .itemEffect(item.getItemEffect())
                         .image(imageData)
+                        .typeId(typeId++)
                         .isSold(isSold)
                         .isEquipped(isEquipped);
 

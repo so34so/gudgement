@@ -16,8 +16,8 @@ public class Price extends Item{
     private Long price;
 
 
-    public Price(String itemName, String itemContent, String itemEffect, String image, String type, Long price) {
-        super(itemName, itemContent, itemEffect, image, type);
+    public Price(String itemName, String itemContent, String itemEffect, String image, String type, String subtype, Long price) {
+        super(itemName, itemContent, itemEffect, image, type, subtype);
         this.price = price;
     }
 }

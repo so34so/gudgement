@@ -1,17 +1,9 @@
 package com.example.gudgement.shop.service;
 
 import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
-import com.example.gudgement.member.exception.UserNotFoundException;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
-import com.example.gudgement.shop.dto.ItemDto;
-import com.example.gudgement.shop.dto.ItemListDto;
 import com.example.gudgement.shop.entity.Inventory;
-import com.example.gudgement.shop.entity.Item;
-import com.example.gudgement.shop.entity.Price;
-import com.example.gudgement.shop.entity.Status;
-import com.example.gudgement.shop.exception.AlreadyPurchasedException;
 import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
@@ -19,9 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,7 +54,7 @@ public class InventoryServiceImpl implements InventoryService{
 
     public List<EquippedDto> findMemberTypeitems(String type, Member member) {
         List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
-
+        AtomicLong typeId = new AtomicLong(1);
         List<EquippedDto> equippedList = inventoryList.stream()
                 .filter(inventory -> type.equals(inventory.getItemId().getType()))
                 .map(inventory -> {
@@ -72,6 +64,7 @@ public class InventoryServiceImpl implements InventoryService{
                             .itemName(inventory.getItemId().getItemName())
                             .itemContent(inventory.getItemId().getItemContent())
                             .itemEffect(inventory.getItemId().getItemEffect())
+                            .typeId(typeId.getAndIncrement())
                             .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
                             .isEquipped(inventory.isEquipped());
 

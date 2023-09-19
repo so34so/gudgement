@@ -39,14 +39,13 @@ public class Item {
     private String subtype;
 
 
-    public Item(String itemName, String itemContent, String itemEffect, String image, String type,String subtype){
+    public Item(String itemName, String itemContent, String itemEffect, String image, String type, String subtype){
         this.itemName = itemName;
         this.itemContent = itemContent;
         this.itemEffect = itemEffect;
         this.image = image;
         this.type = type;
         this.subtype = subtype;
-
     }
 
 }

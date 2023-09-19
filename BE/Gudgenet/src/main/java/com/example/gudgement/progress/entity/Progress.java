@@ -23,15 +23,12 @@ public class Progress {
 
     private String progressName;
 
-    private String progressContent;
-
     private int progressValue;
 
     @Builder
-    public Progress(Member memberId, String progressName, String progressContent, int progressValue){
+    public Progress(Member memberId, String progressName, int progressValue){
         this.memberId = memberId;
         this.progressName = progressName;
-        this.progressContent = progressContent;
         this.progressValue = progressValue;
     }
 }

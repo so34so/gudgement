@@ -7,7 +7,6 @@ import {
   Image,
   ImageSourcePropType,
   Text,
-  TouchableOpacity,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -31,17 +30,19 @@ const BettingMachine = () => {
     onStart: (_, context) => {
       context.startY = bettingAmount;
     },
-    onActive: (event, context) => {
-      // 톱니를 스크롤할 때 베팅 숫자를 변경합니다.
+    onActive: (
+      event: { translationY: number },
+      context: { startY: number },
+    ) => {
       const newYCoord = context.startY + event.translationY;
-      const newBettingAmount = Math.max(0, Math.min(newYCoord, 5)); // 베팅 숫자를 0에서 100 사이로 제한
+      const newBettingAmount = Math.max(0, Math.min(newYCoord / 6, 1));
       runOnJS(setBettingAmount)(newBettingAmount);
     },
     onEnd: () => {},
   });
 
   const translateY = useSharedValue(0);
-  translateY.value = bettingAmount; // translateY 값을 베팅 숫자에 연동
+  translateY.value = bettingAmount * 6; // translateY 값을 베팅 숫자에 연동
 
   const animatedMachineStyle = useAnimatedStyle(() => {
     return {
@@ -52,10 +53,10 @@ const BettingMachine = () => {
   return (
     <View className="items-center justify-center" style={styles.bettingMachine}>
       <View style={styles.machineContainer}>
-        <Image source={Bettingmachine} style={styles.machineImage} />
+        <Image source={bettingMachine} style={styles.machineImage} />
         <PanGestureHandler onGestureEvent={onGestureEvent}>
           <Animated.View style={[styles.bettingSawtooth, animatedMachineStyle]}>
-            <Image source={Bettingsawtooth} style={styles.sawtoothImage} />
+            <Image source={bettingSawtooth} style={styles.sawtoothImage} />
           </Animated.View>
         </PanGestureHandler>
       </View>
@@ -63,7 +64,7 @@ const BettingMachine = () => {
         className="color-white text-[50px] font-PretendardSemiBold"
         style={styles.bettingAmountText}
       >
-        {bettingAmount * 10}
+        {Math.round(bettingAmount * 60)} {/* 반올림하여 정수로 표시 */}
       </Text>
     </View>
   );

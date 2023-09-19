@@ -18,6 +18,7 @@ export declare module CommonType {
      */
     Single: undefined;
     Multi: undefined;
+    PlaySelect: undefined;
 
     /**
      * ShopScreen child Type

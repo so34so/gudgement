@@ -30,7 +30,7 @@ function PlaySelect() {
         resizeMode="cover"
         style={styles.background}
       >
-        <Pressable onPress={() => navigation.navigate("Play")}>
+        <Pressable onPress={() => navigation.navigate("플레이")}>
           <CloseButton />
         </Pressable>
         <PlayCarousel />

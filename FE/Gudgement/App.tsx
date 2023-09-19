@@ -8,7 +8,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import Login from "./src/pages/Login";
-import SettingLoggedIn from "./src/pages/SettingLoggedIn";
+import SettingEmail from "./src/pages/SettingEmail";
+import SettingName from "./src/pages/SettingName";
+import SettingAccount from "./src/pages/SettingAccount";
 
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
@@ -139,8 +141,18 @@ function App(): JSX.Element {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="SettingLoggedIn"
-              component={SettingLoggedIn}
+              name="SettingEmail"
+              component={SettingEmail}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SettingName"
+              component={SettingName}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SettingAccount"
+              component={SettingAccount}
               options={{ headerShown: false }}
             />
             <Stack.Screen

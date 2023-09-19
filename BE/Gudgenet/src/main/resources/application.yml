@@ -87,9 +87,6 @@ springdoc:
     operations-sorter: alpha
     display-request-duration: true
 
-# jwt
-jwt:
-  secret-key: no_asahck_no_asahck_no_asahck_no_asahck_no_asahck
 
 # H2 ??? ??? ?? ???
 #spring.datasource.driver-class-name=org.h2.Driver

@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 @Service
@@ -23,11 +25,21 @@ public class MailServiceImpl implements MailService{
         System.out.println("보내는 대상 : " + toEmail);
         System.out.println("보내는 내용 : " + text);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, 10);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
-        message.setFrom("GudgeMent-GM-Dogeza-Penguin");
+        message.setFrom("Dogeza_Penguin@Gudgement.net");
         message.setSubject("Gudgement 이메일 인증 요청입니다.");
-        message.setText(text);
+        message.setText(
+                "안녕하세요. Gudgement GM 도게자 펭귄입니다." +
+                "\n\n" +
+                "인증번호는 " + text + " 입니다." +
+                "\n\n" +
+                "해당 인증번호를 인증번호 확인란에 기입하여 주시기바랍니다." +
+                "\n\n" +
+                calendar.getTime() + " 까지 인증하셔야합니다.");
 
         try {
             emailSender.send(message);

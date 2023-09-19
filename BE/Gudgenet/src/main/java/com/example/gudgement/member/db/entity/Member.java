@@ -1,7 +1,6 @@
 package com.example.gudgement.member.db.entity;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,10 +24,6 @@ public class Member implements Serializable {
     @NotNull
     @Column(length = 50)
     private String email;
-
-    @NotNull
-    @Column(length = 50)
-    private String password;
 
     private int gender;
 
@@ -85,7 +80,6 @@ public class Member implements Serializable {
     public Member(Long id, String email, String password, int gender, int age, String nickname) {
         this.memberId = id;
         this.email = email;
-        this.password = password;
         this.gender = gender;
         this.age = age;
         this.nickname = nickname;

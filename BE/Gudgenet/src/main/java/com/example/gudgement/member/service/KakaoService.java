@@ -62,7 +62,7 @@ public class KakaoService implements OauthService{
         if (member.isPresent()) {
             email = member.get().getEmail();
         } else {
-            email = "Gudgement@naver.com";
+            email = "Gudgement";
         }
 
         JwtToken jwtToken = jwtProvider.createToken(id, email);

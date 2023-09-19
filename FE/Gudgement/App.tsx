@@ -1,6 +1,6 @@
 /// <reference types="nativewind/types" />
 import { NavigationContainer } from "@react-navigation/native";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
@@ -129,10 +129,10 @@ function App(): JSX.Element {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient} contextSharing={true}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          {isLoggedIn ? (
+          {!isLoggedIn ? (
             <BottomTabNavigator />
           ) : (
             <Login onLogin={handleLogin} />

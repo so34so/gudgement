@@ -15,7 +15,7 @@ function RenderItems({
   const [translateY, setTranslateY] = useState(new Animated.Value(-5));
   useEffect(() => {
     // page와 item.id가 같으면 translateY 애니메이션을 서서히 증가시킵니다.
-    if (page === item.id) {
+    if (page + 1 === item.typeId) {
       Animated.timing(translateY, {
         toValue: -16, // 원하는 margin 값으로 변경
         duration: 100, // 애니메이션 지속 시간 (밀리초)
@@ -56,11 +56,11 @@ function RenderItems({
               stroke="black"
               fontSize="20"
               fontFamily="Pretendard-ExtraBold"
-              x="110"
+              x="90"
               y="80"
               textAnchor="middle"
             >
-              {item.price}
+              {item.price || "해금 필요"}
             </SvgText>
           </Svg>
         </View>

@@ -9,20 +9,21 @@ import {
 import Svg, { WithLocalSvg, Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import CloseIcon from "../assets/icons/closeModal.svg";
+import { queryClient } from "../../queryClient";
 function CompleteModal({
   item,
   completeModalVisible,
   setCompleteModalVisible,
 }: {
-  item: CommonType.Titem;
+  item?: CommonType.Titem;
   completeModalVisible: { buy?: boolean; complete: boolean };
   setCompleteModalVisible: React.Dispatch<
     React.SetStateAction<{ buy?: boolean; complete: boolean }>
   >;
 }) {
   const closeModal: ImageSourcePropType = CloseIcon as ImageSourcePropType;
-  const modalDirection = item.image ? "mt-[43%]" : "mt-[80%]";
-  const textDirection = item.image ? "30" : "40";
+  const modalDirection = item?.image ? "mt-[43%]" : "mt-[80%]";
+  const textDirection = item?.image ? "30" : "40";
   return (
     <Modal
       animationType="fade"
@@ -48,12 +49,12 @@ function CompleteModal({
         >
           <Pressable
             className="absolute right-1 top-1"
-            onPress={() =>
+            onPress={() => {
               setCompleteModalVisible({
                 ...completeModalVisible,
                 complete: !completeModalVisible.complete,
-              })
-            }
+              });
+            }}
           >
             <WithLocalSvg width={40} height={40} asset={closeModal} />
           </Pressable>
@@ -68,10 +69,10 @@ function CompleteModal({
               y={textDirection}
               textAnchor="middle"
             >
-              {item.image ? "구매완료" : "적용완료"}
+              {item?.image ? "구매완료" : "적용완료"}
             </SvgText>
           </Svg>
-          {item.image ? (
+          {item?.image ? (
             <>
               <Text className="text-white text-[16px] font-PretendardExtraBold">
                 {item.itemContent}

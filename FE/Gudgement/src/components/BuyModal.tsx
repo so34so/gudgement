@@ -17,7 +17,7 @@ function BuyModal({
   modalVisible,
   setModalVisible,
 }: {
-  item: CommonType.Titem;
+  item?: CommonType.Titem;
   modalVisible: {
     buy?: boolean;
     complete: boolean;
@@ -64,16 +64,16 @@ function BuyModal({
           </Pressable>
           <View className="h-6" />
           <Text className="text-white text-[16px] font-PretendardExtraBold">
-            {item.itemContent}
+            {item?.itemContent}
           </Text>
           <Text className="text-main text-[32px] font-PretendardExtraBold">
-            {item.itemName}
+            {item?.itemName}
           </Text>
           <WithLocalSvg
             className="left-4 top-6"
             width={220}
             height={200}
-            asset={item.image as ImageSourcePropType}
+            asset={item?.image as ImageSourcePropType}
           />
           <Svg height="80" width="140">
             <SvgText
@@ -86,7 +86,7 @@ function BuyModal({
               y="30"
               textAnchor="middle"
             >
-              {item.price}
+              {item?.price}
             </SvgText>
           </Svg>
           <TouchableOpacity

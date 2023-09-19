@@ -1,6 +1,14 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ImageSourcePropType,
@@ -20,7 +28,6 @@ import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
 import Reactotron from "reactotron-react-native";
 import BuyModal from "../components/BuyModal";
-import Shoes from "../assets/images/item.svg";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
@@ -57,21 +64,32 @@ function Shop({ route }: ShopProps) {
     dy: number;
   }>({ dx: 0, dy: 0 });
   const [selectItem, setSelectItem] = useState(0);
-  const [itemStatus, setItemStatus] = useState(true);
   const selectCategory = route.params.category;
   const imageRef: RefObject<Image> = useRef(null);
+
   const {
     data: fetchItem,
     error,
+    isLoading,
     refetch,
   } = useQuery({
     queryKey: ["fetchShopItem"],
     queryFn: () => fetchShopItem(),
-    enabled: false,
+    refetchOnWindowFocus: true,
   });
+
+  const [itemStatus, setItemStatus] = useState(true);
 
   const categoryStyle = () =>
     "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
+  const buttonColor = () => {
+    return itemStatus ? "bg-sub02" : "bg-red";
+  };
+  const selectText = () => {
+    return fetchItem?.length && fetchItem[selectItem].price
+      ? +fetchItem[selectItem].price + " 티끌"
+      : "해금 필요";
+  };
 
   async function fetchShopItem() {
     try {
@@ -79,7 +97,7 @@ function Shop({ route }: ShopProps) {
         `${API_URL}/shop/type`,
         {
           params: {
-            type: "character",
+            type: "decor",
             memberId: 1,
           },
         },
@@ -97,7 +115,6 @@ function Shop({ route }: ShopProps) {
     const { current } = imageRef;
     if (current) {
       current.measureInWindow((x, y, width, height) => {
-        console.log("x, y", width, height, x, y);
         setImageDirection({
           dx: x - 20,
           dy: height / 2 - y / 4,
@@ -106,15 +123,15 @@ function Shop({ route }: ShopProps) {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     initializeImagePosition();
   }, []);
 
-  useEffect(() => {
-    if (fetchItem) {
+  useLayoutEffect(() => {
+    if (fetchItem?.length) {
       setItemStatus(fetchItem[selectItem].sold);
     }
-  }, [selectItem]);
+  }, [fetchItem, selectItem]);
 
   useEffect(() => {
     offset.value = withRepeat(
@@ -125,7 +142,7 @@ function Shop({ route }: ShopProps) {
     refetch();
   }, [offset, refetch]);
 
-  const { mutate } = useMutation({
+  const { mutate: buyItem } = useMutation({
     mutationFn: (params: IresponseParams) =>
       axios.post(`${API_URL}/shop`, null, {
         params: {
@@ -140,26 +157,49 @@ function Shop({ route }: ShopProps) {
     },
   });
 
-  const handleBuy = useCallback(() => {
-    if (fetchItem) {
-      mutate({ itemId: fetchItem[selectItem].id, memberId: 1 });
+  const { mutate: unlockItem } = useMutation({
+    mutationFn: (params: IresponseParams) =>
+      axios.post(`${API_URL}/shop/hidden`, null, {
+        params: {
+          itemId: params.itemId,
+          memberId: params.memberId,
+        },
+      }),
+    onSuccess: () => {
+      setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
+      queryClient.invalidateQueries(["fetchShopItem"]);
+      Reactotron.log!("해금 완료");
+    },
+  });
+
+  const handleItem = useCallback(() => {
+    if (fetchItem?.length) {
+      if (selectText() === "해금 필요") {
+        unlockItem({ itemId: fetchItem[selectItem].id, memberId: 1 });
+      } else {
+        buyItem({ itemId: fetchItem[selectItem].id, memberId: 1 });
+      }
     }
-  }, [fetchItem, mutate, selectItem]);
+  }, [fetchItem, buyItem, selectItem]);
 
   const handleGetTitle = useCallback(() => {
     setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
     Reactotron.log!("구매 완료");
   }, [modalVisible]);
-  const buttonColor = () => {
-    return itemStatus ? "bg-sub02" : "bg-red";
-  };
 
   if (error) {
     <View>
       <Text>error</Text>
     </View>;
   }
-  Reactotron.log!("ShopImageDirection", imageDirection);
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView className="bg-sky w-full h-full">
       <View className="w-full h-fit bg-deepgreen">
@@ -200,15 +240,13 @@ function Shop({ route }: ShopProps) {
                     position: "absolute",
                     top: imageDirection.dx,
                     left: imageDirection.dy,
-                    width: 100,
-                    height: 100,
                   }}
                 >
                   <Image source={myCharacter} className="w-10 h-10 z-10" />
                 </View>
               </Animated.View>
             </View>
-            <View className="items-center">
+            <View className="flex items-center">
               {fetchItem?.length ? (
                 <>
                   <Svg height="73" width="140">
@@ -232,38 +270,40 @@ function Shop({ route }: ShopProps) {
                       fontFamily="Pretendard-ExtraBold"
                       textAnchor="middle"
                     >
-                      {fetchItem && `${fetchItem[selectItem].price} 티끌`}
+                      {selectText()}
                     </SvgText>
                   </Svg>
                   <Text
                     numberOfLines={4}
                     ellipsizeMode="tail"
-                    className="text-white font-PretendardMedium text-[16px] w-28"
+                    className="text-white font-PretendardMedium text-[16px] w-24"
                   >
                     {fetchItem && fetchItem[selectItem].itemContent}
                   </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    style={{
+                      elevation: 8,
+                    }}
+                    className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
+                    onPress={handleItem}
+                    disabled={itemStatus}
+                  >
+                    <Text
+                      style={textShadow}
+                      className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
+                    >
+                      {selectText() === "해금 필요" ? "해금" : "구매"}
+                    </Text>
+                  </TouchableOpacity>
                 </>
               ) : (
                 <View>
-                  <Text>선택한 아이템이 없습니다.</Text>
+                  <Text className="top-10 font-PretendardBlack text-white text-[16px]">
+                    선택한 아이템이 없습니다.
+                  </Text>
                 </View>
               )}
-              <TouchableOpacity
-                activeOpacity={0.5}
-                style={{
-                  elevation: 8,
-                }}
-                className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
-                onPress={handleBuy}
-                disabled={itemStatus}
-              >
-                <Text
-                  style={textShadow}
-                  className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
-                >
-                  구매
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
         ) : (
@@ -330,30 +370,12 @@ function Shop({ route }: ShopProps) {
         <BuyModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          item={{
-            id: 0,
-            image: Shoes as ImageSourcePropType,
-            itemName: "컨버스화",
-            itemContent: "어쩌고 저쩌고",
-            price: 100,
-            equipped: false,
-            sold: false,
-            unlocked: false,
-          }}
+          item={fetchItem && fetchItem[selectItem]}
         />
         <CompleteModal
           completeModalVisible={modalVisible}
           setCompleteModalVisible={setModalVisible}
-          item={{
-            id: 0,
-            image: Shoes as ImageSourcePropType,
-            itemName: "컨버스화",
-            itemContent: "어쩌고 저쩌고",
-            price: 100,
-            equipped: false,
-            sold: false,
-            unlocked: false,
-          }}
+          item={fetchItem && fetchItem[selectItem]}
         />
       </View>
     </SafeAreaView>

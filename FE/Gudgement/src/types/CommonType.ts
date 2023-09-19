@@ -50,4 +50,14 @@ export declare module CommonType {
     sold: boolean;
     unlocked: boolean;
   };
+  export type TinvenItem = {
+    invenId: number;
+    itemId: number;
+    itemName: string;
+    itemContent: string;
+    itemEffect: boolean;
+    image: string;
+    typeId: number;
+    equipped: false;
+  };
 }

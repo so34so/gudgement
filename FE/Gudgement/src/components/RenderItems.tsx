@@ -2,13 +2,14 @@ import { Animated, Easing, View } from "react-native";
 import { CommonType } from "../types/CommonType";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { useEffect, useState } from "react";
+import reactotron from "reactotron-react-native";
 
 function RenderItems({
   item,
   page,
   component,
 }: {
-  item: CommonType.Titem;
+  item: CommonType.Titem | CommonType.TinvenItem;
   page: number;
   component: string;
 }) {
@@ -16,6 +17,7 @@ function RenderItems({
   useEffect(() => {
     // page와 item.id가 같으면 translateY 애니메이션을 서서히 증가시킵니다.
     if (page + 1 === item.typeId) {
+      reactotron.log!(page + 1, item.typeId);
       Animated.timing(translateY, {
         toValue: -16, // 원하는 margin 값으로 변경
         duration: 100, // 애니메이션 지속 시간 (밀리초)
@@ -37,7 +39,7 @@ function RenderItems({
       className={`h-36 mx-[5px] ${itemWidth} my-8 justify-center items-center bg-white rounded-[10px] flex-row space-x-10`}
     >
       <View className="w-16 h-16 bg-black rounded-xl" />
-      {component === "Shop" ? (
+      {"price" in item ? (
         <View className="flex-col items-center">
           <Svg width={160} height={100}>
             <SvgText

@@ -127,9 +127,8 @@ function App(): JSX.Element {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-
   return (
-    <QueryClientProvider client={queryClient} contextSharing={true}>
+    <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
           {!isLoggedIn ? (

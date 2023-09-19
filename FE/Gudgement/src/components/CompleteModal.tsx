@@ -9,13 +9,12 @@ import {
 import Svg, { WithLocalSvg, Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import CloseIcon from "../assets/icons/closeModal.svg";
-import { queryClient } from "../../queryClient";
 function CompleteModal({
   item,
   completeModalVisible,
   setCompleteModalVisible,
 }: {
-  item?: CommonType.Titem;
+  item?: CommonType.Titem | CommonType.TinvenItem;
   completeModalVisible: { buy?: boolean; complete: boolean };
   setCompleteModalVisible: React.Dispatch<
     React.SetStateAction<{ buy?: boolean; complete: boolean }>
@@ -69,10 +68,10 @@ function CompleteModal({
               y={textDirection}
               textAnchor="middle"
             >
-              {item?.image ? "구매완료" : "적용완료"}
+              {item && "price" in item ? "구매완료" : "적용완료"}
             </SvgText>
           </Svg>
-          {item?.image ? (
+          {item && "price" in item ? (
             <>
               <Text className="text-white text-[16px] font-PretendardExtraBold">
                 {item.itemContent}

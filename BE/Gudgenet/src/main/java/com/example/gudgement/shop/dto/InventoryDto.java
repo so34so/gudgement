@@ -13,12 +13,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class InventoryDto {
     private Long invenId;
-    private Item itemId;
-    private Member memberId;
+    private Long itemId;
+    private Long memberId;
     private boolean equipped;
 
     @Builder
-    public InventoryDto(Long invenId, Item itemId, Member memberId, boolean equipped) {
+    public InventoryDto(Long invenId, Long itemId, Long memberId, boolean equipped) {
         this.invenId = invenId;
         this.itemId = itemId;
         this.memberId = memberId;
@@ -27,9 +27,9 @@ public class InventoryDto {
 
     public static InventoryDto invenDto(Inventory inventory){
         return InventoryDto.builder()
-                .invenId(inventory.getId())
-                .itemId(inventory.getItemId())
-                .memberId(inventory.getMemberId())
+                .invenId(inventory.getInvenId())
+                .itemId(inventory.getItemId().getItemId())
+                .memberId(inventory.getMemberId().getMemberId())
                 .equipped(inventory.isEquipped())
                 .build();
     }

@@ -1,6 +1,6 @@
 package com.example.gudgement.member.common.config;
 
-//import com.example.gudgement.member.common.filter.JwtAuthorizationFilter;
+import com.example.gudgement.member.common.filter.JwtAuthorizationFilter;
 import com.example.gudgement.member.common.filter.JwtFilter;
 import com.example.gudgement.member.common.filter.MemberVerifyFilter;
 import com.example.gudgement.member.common.jwt.JwtProvider;

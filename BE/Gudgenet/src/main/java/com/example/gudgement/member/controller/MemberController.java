@@ -30,7 +30,7 @@ public class MemberController {
     private final JwtProvider jwtProvider;
 
     @PostMapping("/token/refresh")
-    @Operation(summary = "토큰 재발급", description = "토큰을 재발급합니다.")
+    @Operation(summary = "토큰 재발급", description = "토큰을 재발급합니다. \n 토큰 앞에 항상 'Bearer '를 붙여주세요!")
     public ResponseEntity<AccessTokenDto> tokenRefresh(HttpServletRequest httpServletRequest) {
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
         String refreshToken = null;
@@ -57,7 +57,7 @@ public class MemberController {
     }
 
     @GetMapping("/loadMyInfo")
-    @Operation(summary = "유저 정보", description = "로그인 되어있는 유저의 정보를 확인합니다.")
+    @Operation(summary = "유저 정보", description = "로그인 되어있는 유저의 정보를 확인합니다. \n 토큰 앞에 항상 'Bearer '를 붙여주세요!")
     public ResponseEntity<MemberResponseDto> loadInfo(HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest.getHeader("Authorization"));
         Member member = getMember(httpServletRequest);

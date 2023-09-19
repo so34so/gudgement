@@ -5,6 +5,7 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import PlayNavigator from "./src/navigation/PlayNavigator";
 
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
@@ -13,7 +14,6 @@ import { useEffect, useState } from "react";
 import Login from "./src/pages/Login";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { CommonType } from "./src/types/CommonType";
-import PlaySelect from "./src/pages/PlaySelect";
 if (__DEV__) {
   import("./reactotron");
 }
@@ -142,8 +142,8 @@ function App(): JSX.Element {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="PlaySelect"
-                component={PlaySelect}
+                name="PlayNavigator"
+                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

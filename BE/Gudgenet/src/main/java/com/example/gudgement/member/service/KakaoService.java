@@ -148,6 +148,11 @@ public class KakaoService implements OauthService{
 
         WebClient wc = WebClient.create(TOKEN_URI);
 
+        System.out.println(GRANT_TYPE);
+        System.out.println(REDIRECT_URI);
+        System.out.println(CLIENT_ID);
+        System.out.println(code);
+
         log.info("토큰을 요청하는 중...");
         // POST 방식으로 key-value 데이터 요청
         OAuthToken oauthTokenRes = wc.post()

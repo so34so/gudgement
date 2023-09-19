@@ -2,6 +2,7 @@ package com.example.gudgement.member.controller;
 
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.dto.AccessTokenDto;
+import com.example.gudgement.member.dto.request.EmailDto;
 import com.example.gudgement.member.dto.response.MemberResponseDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
@@ -43,9 +44,9 @@ public class MemberController {
 
     @PostMapping("/email/send")
     @Operation(summary = "인증 메일 요청", description = "기재하는 이메일로 인증을 요청합니다.")
-    public ResponseEntity<String> mailSend(@RequestBody String email) throws Exception {
+    public ResponseEntity<String> mailSend(@RequestBody EmailDto email) throws Exception {
         String approveNumber = mailService.randomNumber();
-        mailService.sendEmail(email, approveNumber);
+        mailService.sendEmail(email.getEmail(), approveNumber);
 
         return ResponseEntity.ok(approveNumber);
     }

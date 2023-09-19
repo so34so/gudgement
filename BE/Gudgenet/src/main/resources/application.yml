@@ -55,7 +55,7 @@ spring:
     database: mysql
     hibernate:
       # ?? ?? ? create ? DB??? ???.
-      ddl-auto: create
+      ddl-auto: update
       # camelcase ??
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

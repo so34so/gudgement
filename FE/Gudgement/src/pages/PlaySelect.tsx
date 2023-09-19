@@ -2,13 +2,14 @@ import PlayBackground2 from "../assets/images/playBackground2.png";
 import MapType from "../assets/images/maptype.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
+import PlayCarousel from "../components/PlayCarousel";
 import BettingMachine from "../components/BettingMachine";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageBackground,
   Image,
   ImageSourcePropType,
   Pressable,
-  Text,
   View,
   StyleSheet,
 } from "react-native";
@@ -18,7 +19,6 @@ import { CommonType } from "../types/CommonType";
 function PlaySelect() {
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
-  const mapyType: ImageSourcePropType = MapType as ImageSourcePropType;
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -30,28 +30,14 @@ function PlaySelect() {
         resizeMode="cover"
         style={styles.background}
       >
-        <Text
-          className="color-[#ffb800] text-[32px] font-PretendardExtraBold "
-          style={styles.mapTitle}
-        >
-          맵 설명
-        </Text>
-        <Text
-          className="color-[#ffffff] text-[24px] font-PretendardSemiBold "
-          style={styles.mapInfo}
-        >
-          맵 설명을 적습니다
-        </Text>
-        <View style={styles.centeredView}>
-          <Image source={mapyType} />
-        </View>
-        <View style={styles.cards}>
-          <Image source={cards} />
-        </View>
         <Pressable onPress={() => navigation.navigate("Play")}>
           <CloseButton />
         </Pressable>
-        <BettingMachine />
+        <PlayCarousel />
+        <View style={styles.cards}>
+          <Image source={cards} />
+        </View>
+        {/* <BettingMachine /> */}
       </ImageBackground>
     </View>
   );

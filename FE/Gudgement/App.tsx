@@ -136,8 +136,16 @@ function App(): JSX.Element {
         <NavigationContainer>
           {!isLoggedIn ? (
             <Stack.Navigator>
-              <Stack.Screen name="홈" component={BottomTabNavigator} />
-              <Stack.Screen name="PlaySelect" component={PlaySelect} />
+              <Stack.Screen
+                name="홈"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PlaySelect"
+                component={PlaySelect}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           ) : (
             <Login onLogin={handleLogin} />

@@ -16,11 +16,6 @@ function PlayNavigator() {
         component={Play}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="PlaySelect"
-        component={PlaySelect}
-        options={{ headerShown: false }}
-      />
     </Stack.Navigator>
   );
 }

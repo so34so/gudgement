@@ -1,6 +1,6 @@
 package com.example.gudgement.progress.service;
 
-import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import lombok.RequiredArgsConstructor;

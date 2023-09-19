@@ -1,8 +1,8 @@
 package com.example.gudgement.member.common.filter;
 
 import com.example.gudgement.member.common.jwt.Authentication;
-import com.example.gudgement.member.db.dto.request.LoginDto;
-import com.example.gudgement.member.db.dto.response.MemberVerifyResponseDto;
+import com.example.gudgement.member.dto.request.LoginDto;
+import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class MemberVerifyFilter extends OncePerRequestFilter {
                 LoginDto loginDto = objectMapper.readValue(request.getReader(), LoginDto.class);
                 MemberVerifyResponseDto memberVerifyResponseDto =  memberService.verifyMember(loginDto);
                 if (memberVerifyResponseDto.isValid()) {
-                    request.setAttribute(AUTHENTICATE_USER, new Authentication(loginDto.getEmail(), memberVerifyResponseDto.getRole()) {
+                    request.setAttribute(AUTHENTICATE_USER, new Authentication(memberVerifyResponseDto.getId(), loginDto.getEmail(), memberVerifyResponseDto.getRole()) {
                     });
                 } else {
                     throw new IllegalArgumentException("유효하지 않은 회원입니다.");

@@ -1,10 +1,10 @@
 package com.example.gudgement.shop.service;
 
-import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
-import com.example.gudgement.member.exception.UserNotFoundException;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.member.exception.BaseErrorException;
+import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.progress.service.ProgressService;
-import com.example.gudgement.progress.service.ProgressServiceImpl;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Status;
@@ -18,18 +18,10 @@ import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,10 +40,9 @@ public class ShopServiceImpl implements ShopService{
 
 
     public List<ItemDto> getAll(Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                );
 
         return itemsAllItemLists(itemRepository.findAll(), member);
     }
@@ -109,10 +100,9 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public List<ItemDto> getTypeItems(String type, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                );
 
         return itemsTypeLists(itemRepository.findAllByType(type), type, member);
     }
@@ -168,10 +158,10 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public void buyItem(Long itemId, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
+
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
@@ -195,10 +185,9 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public void unlockItem(Long itemId, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
@@ -213,10 +202,10 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
+
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));

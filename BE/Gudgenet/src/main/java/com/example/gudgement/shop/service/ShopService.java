@@ -1,8 +1,6 @@
 package com.example.gudgement.shop.service;
 
-import com.example.gudgement.member.db.entity.Member;
 import com.example.gudgement.shop.dto.ItemDto;
-import com.example.gudgement.shop.entity.Item;
 
 import java.util.List;
 

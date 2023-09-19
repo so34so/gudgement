@@ -75,7 +75,6 @@ function Shop({ route }: ShopProps) {
   } = useQuery({
     queryKey: ["fetchShopItem"],
     queryFn: () => fetchShopItem(),
-    refetchOnWindowFocus: true,
   });
 
   const [itemStatus, setItemStatus] = useState(true);
@@ -153,7 +152,6 @@ function Shop({ route }: ShopProps) {
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);
-      Reactotron.log!("구매 완료");
     },
   });
 
@@ -168,7 +166,6 @@ function Shop({ route }: ShopProps) {
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);
-      Reactotron.log!("해금 완료");
     },
   });
 

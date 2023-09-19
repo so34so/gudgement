@@ -16,7 +16,6 @@ function ShopNavigator() {
         component={ShopEntrance}
         options={{ headerShown: false }}
       />
-
       <Stack.Screen
         name="Shop"
         component={Shop}

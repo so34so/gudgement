@@ -4,13 +4,15 @@ import { Text, Pressable, View } from "react-native";
 
 function NavigationButton({
   screenName,
+  handleFunction,
   text,
   height,
   width,
   size,
   color,
 }: {
-  screenName: keyof CommonType.RootStackParamList;
+  screenName?: keyof CommonType.RootStackParamList;
+  handleFunction?: () => Promise<void>;
   text: string;
   height: string;
   width: string;
@@ -39,7 +41,9 @@ function NavigationButton({
     <View>
       <Pressable
         className={buttonStyle01(color)}
-        onPress={() => navigation.navigate(screenName)}
+        onPress={
+          screenName ? () => navigation.navigate(screenName) : handleFunction
+        }
       >
         <View className={buttonStyle02(height, width)}>
           <Text

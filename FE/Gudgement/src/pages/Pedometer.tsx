@@ -8,8 +8,8 @@ import {
   ImageSourcePropType,
   Image,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypagebg.png";
-import MyPageIcon from "../assets/images/mypageicon.png";
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MyPageIcon from "../assets/images/mypageIcon.png";
 import NavigationButton from "../components/NavigationButton";
 
 function Pedometer() {

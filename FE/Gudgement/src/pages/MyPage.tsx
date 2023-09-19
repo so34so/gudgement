@@ -12,9 +12,9 @@ import TagBoxLarge from "../components/TagBoxLarge";
 import TagBoxSmall from "../components/TagBoxSmall";
 import BasicBox from "../components/BasicBox";
 
-import MyPageBackground from "../assets/images/mypagebg.png";
-import MypageIcon from "../assets/images/mypageicon.png";
-import AnalysisIcon from "../assets/images/analysisicon.png";
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MypageIcon from "../assets/images/mypageIcon.png";
+import AnalysisIcon from "../assets/images/analysisIcon.png";
 import Character from "../assets/images/character.png";
 
 function MyPage() {

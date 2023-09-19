@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ImageSourcePropType,
@@ -23,35 +24,23 @@ import Reactotron from "reactotron-react-native";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-// import CompleteModal from "../components/CompleteModal";
+import axios, { AxiosResponse } from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { INVENTORY_CATEGORY } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
-import Shoes from "../assets/images/item.svg";
 import { API_URL } from "@env";
+import { queryClient } from "../../queryClient";
+import reactotron from "reactotron-react-native";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
-
-const DATA: Array<CommonType.Titem> = Array.from({ length: 6 }, (_, idx) => {
-  return {
-    id: idx,
-    itemName: `${idx}번째 아이템`,
-    image: `${idx}번째 이미지`,
-    price: idx * 100 + 1000,
-    itemContent:
-      "Quis minim deserunt veniam anim dolore minim Lorem magna ad et incididunt consequat eiusmod.",
-    equipped: false,
-    sold: false,
-    unlocked: false,
-  };
-});
 
 type InventoryProps = NativeStackScreenProps<
   CommonType.RootStackParamList,
   "Inventory"
 >;
-
+interface IresponseEquipment {
+  invenId: number;
+}
 function Inventory({ route }: InventoryProps) {
   const closeInventory: ImageSourcePropType = CloseIcon as ImageSourcePropType;
   const navigation =
@@ -61,6 +50,8 @@ function Inventory({ route }: InventoryProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
+  const [itemStatus, setItemStatus] = useState(true);
+
   const [selectItem, setSelectItem] = useState(0);
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
@@ -68,20 +59,23 @@ function Inventory({ route }: InventoryProps) {
   const categoryStyle = (category: string) =>
     `rounded-[8px] py-[1px] border-2 bg-darkgray50 
     ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
+  const buttonColor = () => {
+    return itemStatus ? "bg-sub02" : "bg-buy";
+  };
 
-  async function fetchInventoryItem() {
+  async function fetchInventoryItem(category: string) {
     try {
-      const response: CommonType.Titem = await axios.get(
+      const response: AxiosResponse<CommonType.TinvenItem[]> = await axios.get(
         `${API_URL}/inventory/type`,
         {
           params: {
-            type: selectCategory,
-            memberId: 0,
+            type: INVENTORY_CATEGORY[category],
+            memberId: 1,
           },
         },
       );
-      Reactotron.log!("fetchShopItem", response);
-      return response;
+      Reactotron.log!("fetchInventoryItem", response.data);
+      return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
         Reactotron.log!("fetchShopItemError", errorResponse);
@@ -90,14 +84,18 @@ function Inventory({ route }: InventoryProps) {
   }
   const {
     data: fetchItem,
-    error,
     refetch,
+    isLoading,
   } = useQuery({
-    queryKey: ["fetchInventoryItem"],
-    queryFn: () => fetchInventoryItem(),
-    enabled: false,
+    queryKey: ["fetchInventoryItem", selectCategory],
+    queryFn: () => fetchInventoryItem(selectCategory),
   });
 
+  useLayoutEffect(() => {
+    if (fetchItem?.length) {
+      setItemStatus(fetchItem[selectItem].equipped);
+    }
+  }, [fetchItem, selectItem]);
   useEffect(() => {
     offset.value = withRepeat(
       withTiming(-offset.value, { duration: 500 }),
@@ -110,20 +108,34 @@ function Inventory({ route }: InventoryProps) {
     // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
     Reactotron.log!(selectCategory);
     refetch();
-  }, [selectCategory]);
+  }, [refetch, selectCategory]);
+
+  const { mutate: equippedItem } = useMutation({
+    mutationFn: (params: IresponseEquipment) =>
+      axios.put(`${API_URL}/inventory`, null, {
+        params: {
+          invenId: params.invenId,
+        },
+      }),
+    onSuccess: () => {
+      setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
+      queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
+      Reactotron.log!("장착 완료");
+    },
+  });
 
   const handleApply = useCallback(() => {
-    Reactotron.log!(DATA[selectItem]);
-    setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
-  }, [modalVisible, selectItem]);
-
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>error</Text>
-  //     </View>
-  //   );
-  // }
+    if (fetchItem?.length) {
+      equippedItem({ invenId: fetchItem[selectItem].invenId });
+    }
+  }, [equippedItem, fetchItem, selectItem]);
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -164,7 +176,8 @@ function Inventory({ route }: InventoryProps) {
             style={{
               elevation: 8,
             }}
-            className="w-fit bg-buy rounded-[10px] mt-5 border-2 border-[#6f530d]"
+            disabled={itemStatus}
+            className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
             onPress={handleApply}
           >
             <Text className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]">
@@ -177,54 +190,32 @@ function Inventory({ route }: InventoryProps) {
       </View>
       <View className="mt-10">
         <View className="ml-5 w-full h-fit flex-row space-x-2">
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setSelectCategory("캐릭터")}
-            className={categoryStyle("캐릭터")}
-          >
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              캐릭터
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setSelectCategory("치장")}
-            className={categoryStyle("치장")}
-          >
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              치장
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setSelectCategory("칭호")}
-            className={categoryStyle("칭호")}
-          >
-            <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
-              칭호
-            </Text>
-          </TouchableOpacity>
+          {Object.keys(INVENTORY_CATEGORY).map(category => (
+            <View key={category}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setSelectCategory(category)}
+                className={categoryStyle(category)}
+              >
+                <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
         </View>
         <Carousel
           gap={60}
           offset={60}
-          items={DATA}
-          pageWidth={screenWidth - (65 + 60) * 2}
+          items={fetchItem}
+          pageWidth={screenWidth - (55 + 75) * 2}
           setSelectItem={setSelectItem}
           component="Inventory"
         />
         <CompleteModal
           completeModalVisible={modalVisible}
           setCompleteModalVisible={setModalVisible}
-          item={{
-            image: Shoes as ImageSourcePropType,
-            itemName: "컨버스화",
-            itemContent: "어쩌고 저쩌고",
-            price: 100,
-            equipped: false,
-            sold: false,
-            unlocked: false,
-          }}
+          item={fetchItem && fetchItem[selectItem]}
         />
       </View>
     </SafeAreaView>

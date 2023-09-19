@@ -6,10 +6,9 @@ import com.example.gudgement.member.db.dto.response.MemberResponseDto;
 import com.example.gudgement.member.db.dto.response.MemberVerifyResponseDto;
 
 public interface MemberService {
-    MemberResponseDto login(LoginDto loginDto);
-    void logout();
     MemberResponseDto memberCreate(MemberCreateDto memberCreateDto);
     MemberVerifyResponseDto verifyMember(LoginDto loginDto);
     MemberResponseDto loadInfo(String email);
     void updateRefreshToken(String email, String refreshToken);
+    boolean validNickname(String nickname);
 }

@@ -10,6 +10,25 @@ server:
 
 # MySQL
 spring:
+  # 메일 요청을 위한 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: coala1080@gmail.com
+    # plz not update, don't remember
+    password: wousleleumelwfft
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 600000
+
   main:
     allow-bean-definition-overriding: true
 
@@ -45,6 +64,19 @@ spring:
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
 
+  oauth2:
+    client:
+      registration:
+        kakao:
+          client-id: 4cd45261b839373b375e0766220b3428
+          redirect-uri: http://localhost:8081/oauth/kakao/callback
+          client-authentication-method: POST
+          authorization-grant-type: authorization_code
+          scope: account_email
+          client-secret: IxXm1l2rPYcLXojdZmL9MXr8bmTkEmPQ
+          token-uri: https://kauth.kakao.com/oauth/token
+          user-info-uri: https://kapi.kakao.com
+
 # spring-docs
 springdoc:
   api-docs:
@@ -54,12 +86,6 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
-
-# jwt
-jwt:
-  secret:
-    key: "asdasaskdljasklkjlw"
-
 
 
 # H2 ??? ??? ?? ???

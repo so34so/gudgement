@@ -27,8 +27,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final String[] notAuthUris = {"/", "/api/member/login", "/api/auth/refresh", "/api/member/create",
-            "/swagger-ui/index.html", "/swagger-ui/swagger-initializer.js", "/v3/api-docs/swagger-config", "/v3/api-docs"};
+    private final String[] notAuthUris = {};
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
@@ -36,8 +35,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         log.info("JwtAuthorizationFilter : 권한 인증 중입니다.");
         log.info(httpServletRequest.getRequestURI());
-        if (authListCheck(httpServletRequest.getRequestURI())) {
-            log.info("인증 완료. 허가된 접근입니다.");
+        if (!authListCheck(httpServletRequest.getRequestURI())) {
+            log.info("인증 완료. permitAll 접근입니다.");
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }

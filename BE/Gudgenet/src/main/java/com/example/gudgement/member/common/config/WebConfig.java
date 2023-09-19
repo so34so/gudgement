@@ -38,6 +38,7 @@ public class WebConfig {
 
         filterFilterRegistrationBean.setFilter(new JwtAuthorizationFilter(jwtProvider, mapper));
         filterFilterRegistrationBean.setOrder(3);
+        filterFilterRegistrationBean.addUrlPatterns("/api/member/login");
 
         return filterFilterRegistrationBean;
     }

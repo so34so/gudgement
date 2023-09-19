@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Authentication {
+    private Long id;
     private String email;
     private Role role;
 }

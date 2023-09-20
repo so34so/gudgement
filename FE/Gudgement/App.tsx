@@ -175,9 +175,8 @@ function App(): JSX.Element {
                 component={BottomTabNavigator}
                 options={{ headerShown: false }}
               />
-          </Stack.Navigator>
+            </Stack.Navigator>
           )}
-        
         </NavigationContainer>
       </GestureHandlerRootView>
     </QueryClientProvider>

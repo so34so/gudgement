@@ -67,6 +67,10 @@ spring:
         format_sql: true
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
+    redis:
+      host: localhost
+      #host: myredis;
+      port: 6379
 
   oauth2:
     client:
@@ -90,6 +94,7 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+
 
 
 # H2 ??? ??? ?? ???

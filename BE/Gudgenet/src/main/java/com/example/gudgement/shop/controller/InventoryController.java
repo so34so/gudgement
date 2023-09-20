@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Inventory", description = "인벤토리 기능 컨트롤러입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/inventory")
+@RequestMapping("/api/inventory")
 public class InventoryController {
 
     private final InventoryService inventoryService;

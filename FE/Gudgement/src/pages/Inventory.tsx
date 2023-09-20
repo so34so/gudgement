@@ -105,8 +105,6 @@ function Inventory({ route }: InventoryProps) {
   }, [offset]);
 
   useEffect(() => {
-    // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
-    Reactotron.log!(selectCategory);
     refetch();
   }, [refetch, selectCategory]);
 
@@ -120,7 +118,6 @@ function Inventory({ route }: InventoryProps) {
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
-      Reactotron.log!("장착 완료");
     },
   });
 
@@ -129,13 +126,7 @@ function Inventory({ route }: InventoryProps) {
       equippedItem({ invenId: fetchItem[selectItem].invenId });
     }
   }, [equippedItem, fetchItem, selectItem]);
-  if (isLoading) {
-    return (
-      <View className="w-full h-full flex justify-center items-center">
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    );
-  }
+
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -204,14 +195,18 @@ function Inventory({ route }: InventoryProps) {
             </View>
           ))}
         </View>
-        <Carousel
-          gap={60}
-          offset={60}
-          items={fetchItem}
-          pageWidth={screenWidth - (55 + 75) * 2}
-          setSelectItem={setSelectItem}
-          component="Inventory"
-        />
+        {isLoading ? (
+          <ActivityIndicator size="large" color="gray" className="top-20" />
+        ) : (
+          <Carousel
+            gap={60}
+            offset={60}
+            items={fetchItem}
+            pageWidth={screenWidth - (55 + 75) * 2}
+            setSelectItem={setSelectItem}
+            component="Inventory"
+          />
+        )}
         <CompleteModal
           completeModalVisible={modalVisible}
           setCompleteModalVisible={setModalVisible}

@@ -10,6 +10,7 @@ import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.service.InventoryService;
 import com.example.gudgement.shop.service.InventoryServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,7 @@ public class InventoryController {
     }
 
     @Operation(summary = "보유 아이템 타입별 조회")
+    @Parameter(description = "type", example = "character, decor, title, consumable")
     @GetMapping("/type")
     public ResponseEntity<List<EquippedDto>> getTypeItems(@RequestParam String type, @RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회

@@ -5,6 +5,8 @@ import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.service.ShopService;
 import com.example.gudgement.shop.service.ShopServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,7 @@ public class ShopController {
 
     //카테고리 별 아이템 목록 조회
     @Operation(summary = "타입별 전체 아이템 조회")
+    @Parameter(description = "type", example = "character, decor, title, consumable")
     @GetMapping("/type")
     public ResponseEntity<List<ItemDto>> getItems(@RequestParam String type, @RequestParam Long memberId){
         // 상점의 아이템 가져오기

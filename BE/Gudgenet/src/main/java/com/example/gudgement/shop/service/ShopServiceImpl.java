@@ -16,6 +16,7 @@ import com.example.gudgement.shop.exception.InsufficientPointsException;
 import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
+import com.example.gudgement.shop.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -44,6 +45,7 @@ public class ShopServiceImpl implements ShopService{
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
     private final MemberRepository memberRepository;
+    private final StatusRepository statusRepository;
 
 
 
@@ -126,16 +128,18 @@ public class ShopServiceImpl implements ShopService{
         long typeId = 1;
         for (Item item : items) {
 
-                String imageData = IMAGE_PATH + type +"/"+ item.getImage();
+            String imageData = IMAGE_PATH + type +"/"+ item.getImage();
 
-                boolean isSold = false;
+            boolean isSold = false;
 
-                if(!"consumable".equals(type)){
-                    isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
-                }
+            if(!"consumable".equals(type)){
+                isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
+            }
 
+            boolean isEquipped = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
 
-                boolean isEquipped = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
+            // Status entity의 itemId와 Item 비교하여 일치하는 경우 hidden 값을 true로 설정
+            boolean isHidden = statusRepository.existsByItemId(item.getItemId());
 
                 ItemDto.ItemDtoBuilder builder = ItemDto.builder()
                         .id(item.getItemId())
@@ -145,24 +149,27 @@ public class ShopServiceImpl implements ShopService{
                         .image(imageData)
                         .typeId(typeId++)
                         .isSold(isSold)
-                        .isEquipped(isEquipped);
+                        .isEquipped(isEquipped)
+                        .isHidden(isHidden);
 
-                if (item instanceof Price) {
-                    builder.price(((Price) item).getPrice());
-                } else if (item instanceof Status) {
-                    String statusName = ((Status) item).getStatusName();
-                    int statusValue = ((Status) item).getStatus();
+            if ("decor".equals(type)) {
+                String subtype = item.getSubtype();
+                builder.subType(subtype);
+            }
 
-                    // member progress에서 statusName 동일하고 statusValue 수가 같거나 높은지 확인
-                    boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
+            if (item instanceof Price) {
+                builder.price(((Price) item).getPrice());
+            } else if (item instanceof Status) {
+                String statusName = ((Status) item).getStatusName();
+                int statusValue = ((Status) item).getStatus();
 
-                    builder.isUnlocked(isUnlocked);
-                }
+                // member progress에서 statusName 동일하고 statusValue 수가 같거나 높은지 확인
+                boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
 
-                itemDTOS.add(builder.build());
-/*            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+                builder.isUnlocked(isUnlocked);
+            }
+
+            itemDTOS.add(builder.build());
         }
         return itemDTOS;
     }

@@ -11,11 +11,18 @@ import {
 import Svg, { WithLocalSvg, Text as SvgText } from "react-native-svg";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import { CommonType } from "../types/CommonType";
+import Slider from "@react-native-community/slider";
+import { UseMutateFunction } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { IresponseParams, MEMBER_ID } from "../pages/Shop";
 
-function BuyModal({
+function BuyConsumptionModal({
   item,
   modalVisible,
   setModalVisible,
+  quantity,
+  setQuantity,
+  buyConsumable,
 }: {
   item?: CommonType.Titem;
   modalVisible: {
@@ -27,6 +34,14 @@ function BuyModal({
       buy?: boolean;
       complete: boolean;
     }>
+  >;
+  quantity: number;
+  setQuantity: React.Dispatch<number>;
+  buyConsumable: UseMutateFunction<
+    AxiosResponse<unknown, unknown>,
+    unknown,
+    IresponseParams,
+    unknown
   >;
 }) {
   const closeModal: ImageSourcePropType = CloseIcon as ImageSourcePropType;
@@ -69,34 +84,54 @@ function BuyModal({
           <Text className="text-main text-[32px] font-PretendardExtraBold">
             {item?.itemName}
           </Text>
-          <WithLocalSvg
-            className="left-4 top-6"
-            width={220}
-            height={200}
-            asset={item?.image as ImageSourcePropType}
-          />
+          {/* {item?.image && (
+            <WithLocalSvg
+              className="left-4 top-6"
+              width={220}
+              height={200}
+              asset={item?.image as ImageSourcePropType}
+            />
+          )} */}
           <Svg height="80" width="140">
             <SvgText
               fill="#ffb800"
               stroke="black"
               strokeWidth={2}
-              fontSize="32"
+              fontSize="28"
               fontFamily="Pretendard-ExtraBold"
-              x="70"
+              x="44"
               y="30"
               textAnchor="middle"
             >
-              {item?.price}
+              {item?.price} 티끌
             </SvgText>
           </Svg>
+
+          <Slider
+            style={{ width: 200, height: 40 }}
+            minimumValue={0}
+            maximumValue={10}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#000000"
+            value={quantity}
+            step={1}
+            onValueChange={setQuantity}
+          />
+          <Text className="py-5 font-PretendardBlack text-[20px]">
+            {quantity} 개
+          </Text>
+
           <TouchableOpacity
             className="w-32 flex justify-center items-center h-12 bg-buy rounded-[10px] border-2 border-[#6f530d]"
-            onPress={() =>
-              setModalVisible({
-                buy: !modalVisible.buy,
-                complete: !modalVisible.complete,
-              })
-            }
+            onPress={() => {
+              setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
+              buyConsumable({
+                itemId: item!.id,
+                memberId: MEMBER_ID,
+                quantity: quantity,
+              });
+              setQuantity(0);
+            }}
           >
             <Text className="font-PretendardExtraBold text-black text-[24px] top-[-1]">
               구매하기
@@ -107,4 +142,4 @@ function BuyModal({
     </Modal>
   );
 }
-export default BuyModal;
+export default BuyConsumptionModal;

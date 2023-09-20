@@ -58,6 +58,7 @@ export declare module CommonType {
     itemEffect: boolean;
     image: string;
     typeId: number;
+    quantity: number;
     equipped: false;
   };
 }

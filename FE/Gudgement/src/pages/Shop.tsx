@@ -27,21 +27,24 @@ import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
 import Reactotron from "reactotron-react-native";
-import BuyModal from "../components/BuyModal";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
+import BuyConsumptionModal from "../components/BuyConsumptionModal";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../queryClient";
-import { textShadow } from "../utils/common";
+import { INVENTORY_CATEGORY, textShadow } from "../utils/common";
 import { API_URL } from "@env";
+
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-interface IresponseParams {
+export const MEMBER_ID = 3025827319;
+export interface IresponseParams {
   itemId: number;
   memberId: number;
+  quantity?: number;
 }
 type ShopProps = NativeStackScreenProps<CommonType.RootStackParamList, "Shop">;
 function Shop({ route }: ShopProps) {
@@ -73,11 +76,12 @@ function Shop({ route }: ShopProps) {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["fetchShopItem"],
+    queryKey: ["fetchShopItem", INVENTORY_CATEGORY[selectCategory]],
     queryFn: () => fetchShopItem(),
   });
 
   const [itemStatus, setItemStatus] = useState(true);
+  const [quantity, setQuantity] = useState(0);
 
   const categoryStyle = () =>
     "rounded-[8px] border-2 border-deepgreen bg-darkgray50";
@@ -96,8 +100,8 @@ function Shop({ route }: ShopProps) {
         `${API_URL}/shop/type`,
         {
           params: {
-            type: "decor",
-            memberId: 1,
+            type: INVENTORY_CATEGORY[selectCategory],
+            memberId: MEMBER_ID,
           },
         },
       );
@@ -155,6 +159,21 @@ function Shop({ route }: ShopProps) {
     },
   });
 
+  const { mutate: buyConsumable } = useMutation({
+    mutationFn: (params: IresponseParams) =>
+      axios.post(`${API_URL}/shop/consumable`, null, {
+        params: {
+          itemId: params.itemId,
+          memberId: params.memberId,
+          quantity: quantity,
+        },
+      }),
+    onSuccess: () => {
+      setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
+      queryClient.invalidateQueries(["fetchShopItem"]);
+    },
+  });
+
   const { mutate: unlockItem } = useMutation({
     mutationFn: (params: IresponseParams) =>
       axios.post(`${API_URL}/shop/hidden`, null, {
@@ -172,17 +191,36 @@ function Shop({ route }: ShopProps) {
   const handleItem = useCallback(() => {
     if (fetchItem?.length) {
       if (selectText() === "해금 필요") {
-        unlockItem({ itemId: fetchItem[selectItem].id, memberId: 1 });
+        unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
       } else {
-        buyItem({ itemId: fetchItem[selectItem].id, memberId: 1 });
+        if (selectCategory === "소모품") {
+          setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
+        }
+        if (selectCategory !== "소모품") {
+          setModalVisible({
+            ...modalVisible,
+            complete: !modalVisible.complete,
+          });
+          buyItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+        }
       }
     }
-  }, [fetchItem, buyItem, selectItem]);
+  }, [
+    fetchItem,
+    selectText,
+    unlockItem,
+    selectItem,
+    selectCategory,
+    modalVisible,
+    buyItem,
+  ]);
 
   const handleGetTitle = useCallback(() => {
-    setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
-    Reactotron.log!("구매 완료");
-  }, [modalVisible]);
+    if (fetchItem?.length) {
+      unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+    }
+    Reactotron.log!("획득 완료");
+  }, [fetchItem, selectItem, unlockItem]);
 
   if (error) {
     <View>
@@ -322,7 +360,7 @@ function Shop({ route }: ShopProps) {
             </Animated.View>
             <View>
               <Text className=" font-PretendardBlack text-white text-[20px]">
-                칭호 어떻게 얻을 수 있는지 적어라
+                {fetchItem && fetchItem[selectItem].itemContent}
               </Text>
             </View>
             <TouchableOpacity
@@ -330,14 +368,15 @@ function Shop({ route }: ShopProps) {
               style={{
                 elevation: 8,
               }}
-              className="w-fit bg-red rounded-[10px] mt-5 border-2 border-[#6f530d]"
+              className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
               onPress={handleGetTitle}
+              disabled={itemStatus}
             >
               <Text
                 style={textShadow}
                 className="px-4 py-[5px] font-PretendardExtraBold text-white text-[20px]"
               >
-                구매
+                획득
               </Text>
             </TouchableOpacity>
           </View>
@@ -356,18 +395,25 @@ function Shop({ route }: ShopProps) {
             </Text>
           </TouchableOpacity>
         </View>
-        <Carousel
-          gap={16}
-          offset={30}
-          items={fetchItem}
-          pageWidth={screenWidth - (16 + 45) * 2}
-          setSelectItem={setSelectItem}
-          component="Shop"
-        />
-        <BuyModal
+        {isLoading ? (
+          <ActivityIndicator size="large" color="gray" className="top-20" />
+        ) : (
+          <Carousel
+            gap={16}
+            offset={30}
+            items={fetchItem}
+            pageWidth={screenWidth - (16 + 45) * 2}
+            setSelectItem={setSelectItem}
+            component="Shop"
+          />
+        )}
+        <BuyConsumptionModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           item={fetchItem && fetchItem[selectItem]}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          buyConsumable={buyConsumable}
         />
         <CompleteModal
           completeModalVisible={modalVisible}

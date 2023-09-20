@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../pages/Home";
-import MyPage from "../pages/MyPage";
-import Play from "../pages/Play";
+import MyPageNavigator from "./MyPageNavigator";
 import Ranking from "../pages/Ranking";
 import { CommonType } from "../types/CommonType";
 import ShopNavigator from "./ShopNavigator";
@@ -17,7 +16,7 @@ function BottomTabNavigator() {
     Home,
     ShopNavigator,
     PlayNavigator,
-    MyPage,
+    MyPageNavigator,
     Ranking,
   ];
 

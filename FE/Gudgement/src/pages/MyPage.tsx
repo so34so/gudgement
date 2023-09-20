@@ -1,16 +1,20 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import {
-  Text,
-  TouchableOpacity,
   View,
   ImageBackground,
   Image,
   ImageSourcePropType,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypagebg.png";
-import MypageIcon from "../assets/images/mypageicon.png";
-import AnalysisIcon from "../assets/images/analysisicon.png";
+
+import { ProgressChart } from "react-native-chart-kit";
+
+import NavigationButton from "../components/NavigationButton";
+import TagBoxLarge from "../components/TagBoxLarge";
+import TagBoxSmall from "../components/TagBoxSmall";
+import BasicBox from "../components/BasicBox";
+
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MypageIcon from "../assets/images/mypageIcon.png";
+import AnalysisIcon from "../assets/images/analysisIcon.png";
 import Character from "../assets/images/character.png";
 
 function MyPage() {
@@ -20,84 +24,9 @@ function MyPage() {
   const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
   const character: ImageSourcePropType = Character as ImageSourcePropType;
 
-  const NavigationButton = ({
-    screenName,
-    text,
-  }: {
-    screenName: keyof CommonType.RootStackParamList;
-    text: string;
-  }) => {
-    const navigation =
-      useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-    return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate(screenName)}
-        className=""
-      >
-        <Text>{text}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  interface TagBoxLargeProps {
-    text01: string;
-    text02: string;
-    img: ImageSourcePropType;
-  }
-
-  const TagBoxLarge = ({ text01, text02, img }: TagBoxLargeProps) => {
-    return (
-      <View className="flex flex-row relative m-3 items-center">
-        <View className="z-10 p-[2px] bg-white70 border-solid border-[2px] border-darkgray rounded-full">
-          <View className="bg-darkgray rounded-full">
-            <Image source={img} className="h-10 w-10" />
-          </View>
-        </View>
-        <View className="z-9 absolute ml-7 pl-2 pr-[2px] py-[2px] flex flex-row h-fill justify-center items-center bg-white70 border-solid border-[2px] rounded-lg border-darkgray">
-          <Text className="py-1 pl-3 pr-2 bg-darkgray rounded-lg text-white text-xs font-PretendardExtraBold">
-            {text01}
-          </Text>
-          <Text className="px-2 text-darkgray text-xs font-PretendardExtraBold">
-            {text02}
-          </Text>
-        </View>
-      </View>
-    );
-  };
-
-  interface TagBoxSmallProps {
-    text: string;
-    img: ImageSourcePropType;
-  }
-
-  const TagBoxSmall = ({ text, img }: TagBoxSmallProps) => {
-    return (
-      <View className="flex flex-row relative m-3 items-center">
-        <View className="z-10 bg-lightsky border-solid border-[2px] border-darkgray rounded-full">
-          <Image source={img} className="h-10 w-10" />
-        </View>
-        <View className="z-9 absolute ml-7 pl-3 pr-1 py-1 flex flex-row h-fill justify-center items-center bg-white70 border-solid border-[2px] rounded-lg border-darkgray">
-          <Text className="px-2 text-darkgray text-xs font-PretendardExtraBold">
-            {text}
-          </Text>
-        </View>
-      </View>
-    );
-  };
-
-  interface PedeometerSpeechBubbleProps {
-    text: string;
-  }
-
-  const PedeometerSpeechBubble = ({ text }: PedeometerSpeechBubbleProps) => {
-    return (
-      <View className="w-[160px] px-3 py-1 flex flex-row justify-center items-center bg-white border-solid border-[3px] rounded-lg border-darkgray">
-        <Text className="text-darkgray text-xs font-PretendardExtraBold">
-          {text}
-        </Text>
-      </View>
-    );
+  const data = {
+    labels: ["Swim", "Bike", "Run"], // optional
+    data: [0.4, 0.6, 0.8],
   };
 
   return (
@@ -115,10 +44,37 @@ function MyPage() {
         <View className="mb-10 flex flex-row justify-center items-center">
           <View>
             <Image source={character} />
-            <PedeometerSpeechBubble text={"뚜벅뚜벅뚜벅뚜벅..."} />
+            <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
           </View>
           <View>
-            <Image source={character} />
+            <ProgressChart
+              data={data}
+              width={200}
+              height={220}
+              strokeWidth={16}
+              radius={32}
+              chartConfig={{
+                backgroundColor: "#fff",
+                // backgroundGradientFrom: "#fff",
+                // backgroundGradientTo: "rgba(0,0,0,0)",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: "2",
+                  stroke: "#ffa726",
+                },
+              }}
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+              hideLegend={false}
+            />
           </View>
         </View>
         <TagBoxSmall text={"이번달 소비 추이"} img={analysisIcon} />

@@ -18,7 +18,6 @@ export declare module CommonType {
      */
     Single: undefined;
     Multi: undefined;
-    PlaySelect: undefined;
 
     /**
      * ShopScreen child Type
@@ -39,6 +38,7 @@ export declare module CommonType {
     PlaySelect: undefined;
     /**
      * ShopScreen child Type
+     * MyPage child Type
      */
     MyPageNavigator: undefined;
     MyPage: undefined;
@@ -47,6 +47,15 @@ export declare module CommonType {
     Analyze: undefined;
     SingleRecords: undefined;
     MultiRecords: undefined;
+
+    /**
+     * Login child Type
+     */
+    Login: undefined;
+    SettingEmail: undefined;
+    SettingName: undefined;
+    SettingAccount: undefined;
+    BottomTabNavigator: undefined;
   };
 
   export type Titem = {
@@ -70,5 +79,14 @@ export declare module CommonType {
     typeId: number;
     quantity: number;
     equipped: false;
+  };
+
+  export type TkakaoLogin = {
+    id: number;
+    nickname: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpiration: Date;
   };
 }

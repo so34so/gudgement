@@ -65,7 +65,7 @@ spring:
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # ddl-auto ?? ?? ??
-    generate-ddl: false
+      generate-ddl: false
     # SQL? ?? ??
     properties:
       hibernate:

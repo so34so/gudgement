@@ -30,7 +30,7 @@ public class InventoryController {
     public ResponseEntity<List<EquippedDto>> getItems(@RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
                 );
 
         List<EquippedDto> itemList = inventoryService.findMemberitems(member);
@@ -43,7 +43,7 @@ public class InventoryController {
     public ResponseEntity<List<EquippedDto>> getTypeItems(@RequestParam String type, @RequestParam Long memberId){
         // 멤버 아이디로 멤버 조회
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
                 );
 
         List<EquippedDto> itemList = inventoryService.findMemberTypeitems(type, member);

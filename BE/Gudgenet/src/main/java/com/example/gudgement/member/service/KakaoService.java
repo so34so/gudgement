@@ -103,11 +103,6 @@ public class KakaoService implements OauthService{
                 .bodyToMono(KakaoProfile.class)
                 .block();
 
-//        try {
-//            profile = objectMapper.readValue(resourceProfileResponse.getBody(), KakaoProfile.class);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
         System.out.println(profile.getConnected_at());
         System.out.println(profile.getKakao_account().getEmail());
         System.out.println(profile.getId());
@@ -134,7 +129,6 @@ public class KakaoService implements OauthService{
                 .retrieve()
                 .bodyToMono(OAuthToken.class)
                 .block();
-
     }
 
     @Override
@@ -147,11 +141,6 @@ public class KakaoService implements OauthService{
 //        params.add("client_secret", CLIENT_SECRET);
 
         WebClient wc = WebClient.create(TOKEN_URI);
-
-        System.out.println(GRANT_TYPE);
-        System.out.println(REDIRECT_URI);
-        System.out.println(CLIENT_ID);
-        System.out.println(code);
 
         log.info("토큰을 요청하는 중...");
         // POST 방식으로 key-value 데이터 요청

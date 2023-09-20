@@ -41,7 +41,7 @@ public class ShopServiceImpl implements ShopService{
 
     public List<ItemDto> getAll(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
                 );
 
         return itemsAllItemLists(itemRepository.findAll(), member);
@@ -101,7 +101,7 @@ public class ShopServiceImpl implements ShopService{
 
     public List<ItemDto> getTypeItems(String type, Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
                 );
 
         return itemsTypeLists(itemRepository.findAllByType(type), type, member);
@@ -159,7 +159,7 @@ public class ShopServiceImpl implements ShopService{
 
     public void buyItem(Long itemId, Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
 
@@ -186,7 +186,7 @@ public class ShopServiceImpl implements ShopService{
 
     public void unlockItem(Long itemId, Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
         Item item = itemRepository.findByItemId(itemId)
@@ -203,7 +203,7 @@ public class ShopServiceImpl implements ShopService{
 
     public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
         );
 
 

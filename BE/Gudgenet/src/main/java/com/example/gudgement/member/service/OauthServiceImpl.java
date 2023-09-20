@@ -24,8 +24,6 @@ public class OauthServiceImpl {
         return kakaoService.redirect(code);
     }
 
-
-    // Access만 줄건지, 걍 다 줄건지...?
     public AccessTokenDto refreshToken(String refreshToken) {
         Long memberId = (Long) jwtProvider.getClaims(refreshToken).get("id");
         String memberEmail = (String) jwtProvider.getClaims(refreshToken).get("email");

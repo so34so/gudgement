@@ -52,7 +52,7 @@ export default function Ranking() {
         <View className="w-full h-20 my-4 justify-center items-center">
           <View className="flex-row w-[90%] h-24 bg-white border-[3px] border-black rounded-[10px]">
             <View className="flex-row justify-start space-x-2 items-center ml-4 rounded-[10px]">
-              <Text className="font-PretendardExtraBold text-[30px]">
+              <Text className="font-PretendardExtraBold text-[30px] text-black">
                 {item.rank}
               </Text>
               <Image source={jilta} />
@@ -130,7 +130,9 @@ export default function Ranking() {
         <View className="w-full h-20 mt-2 justify-center items-center">
           <View className="flex-row w-[90%] h-20 bg-main border-[3px] border-black rounded-[10px]">
             <View className="flex-row justify-start space-x-2 items-center ml-4 rounded-[10px]">
-              <Text className="font-PretendardExtraBold text-[30px]">22</Text>
+              <Text className="font-PretendardExtraBold text-[30px] text-white">
+                22
+              </Text>
               <Image source={jilta} />
               <Svg className="w-20 h-10">
                 <SvgText

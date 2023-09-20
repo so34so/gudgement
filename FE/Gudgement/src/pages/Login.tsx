@@ -29,9 +29,6 @@ function Login() {
     setShowWebView(true);
   };
 
-  console.log(KAKAO_LOGIN_REDIRECT_URI);
-  Reactotron.log!(KAKAO_LOGIN_REDIRECT_URI);
-
   const handleAuthorizationCode = (event: WebViewNavigation) => {
     const url = event.url;
     // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
@@ -39,7 +36,6 @@ function Login() {
     const searchIdx = url.indexOf(exp);
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
-      console.log("인가 코드", code);
       try {
         const response = axios.post(
           `http://j9d106.p.ssafy.io:8080/oauth/kakao/callback?code=${code}`,
@@ -51,11 +47,10 @@ function Login() {
         // 받은 Access Token 다시 전달
         // 유저 정보 받기
         // 로그인 유지
+        navigation.navigate("SettingEmail");
       } catch (error) {
         Reactotron.log!("인가 코드 전달 실패!", error);
       }
-
-      navigation.navigate("SettingEmail");
 
       return false;
     }

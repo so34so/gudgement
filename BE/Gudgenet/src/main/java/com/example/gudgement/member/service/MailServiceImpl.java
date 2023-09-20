@@ -2,6 +2,7 @@ package com.example.gudgement.member.service;
 
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,8 +21,10 @@ import java.util.Random;
 public class MailServiceImpl implements MailService{
 
     private final JavaMailSender emailSender;
+    private final MemberRepository memberRepository;
 
     public String sendEmail(String toEmail, String text) {
+        if (duplicateEmail(toEmail)) new BaseErrorException(ErrorCode.DUPLICATION_EMAIL);
         System.out.println("보내는 대상 : " + toEmail);
         System.out.println("보내는 내용 : " + text);
 
@@ -57,5 +60,10 @@ public class MailServiceImpl implements MailService{
         int checkNum = r.nextInt(888888)+111111;
         System.out.println("인증번호 : " + checkNum);
         return String.valueOf(checkNum);
+    }
+
+    @Override
+    public boolean duplicateEmail(String toEmail) {
+        return memberRepository.existsByEmail(toEmail);
     }
 }

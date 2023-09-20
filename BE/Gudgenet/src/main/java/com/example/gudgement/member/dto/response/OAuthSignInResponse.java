@@ -26,12 +26,11 @@ public class OAuthSignInResponse {
     }
 
     public Member toMemberEntity() {
-        String password = "asdw";
         return Member.builder()
                 .id(id)
                 .email(email)
                 .nickname(nickname)
-                .password(password)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

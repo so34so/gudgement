@@ -8,7 +8,8 @@ public class MemberResponseDto {
     private Long memberId;
     private String email;
     private String nickname;
-    private boolean approve;
+    private boolean emailApprove;
+    private boolean nicknameApprove;
 //    private List<Item> setItems;
     private Long tiggle;
     private Long exp;
@@ -16,12 +17,13 @@ public class MemberResponseDto {
     private int pedometer;
 
     @Builder
-    public MemberResponseDto (Long memberId, String email, String nickname, boolean approve,
-                              Long tiggle, Long exp, int level, int pedometer) {
+    public MemberResponseDto (Long memberId, String email, String nickname, boolean emailApprove,
+                              boolean nicknameApprove, Long tiggle, Long exp, int level, int pedometer) {
         this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
-        this.approve = approve;
+        this.emailApprove = emailApprove;
+        this.nicknameApprove = nicknameApprove;
 //        this.setItems = setItems;
         this.tiggle = tiggle;
         this.exp = exp;

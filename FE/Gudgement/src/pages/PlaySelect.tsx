@@ -39,7 +39,11 @@ function PlaySelect() {
         <PlayCarousel />
 
         <View style={styles.cards}>
-          <Image source={cards} />
+          <Image
+            className="w-[205] h-[168]"
+            source={cards}
+            resizeMode="contain"
+          />
         </View>
         {/* <BettingMachine /> */}
 
@@ -62,14 +66,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cards: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
     position: "absolute",
-    top: "98%",
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: "90%",
+    left: "25%",
+
     zIndex: 10,
   },
   lineGradi: {
@@ -81,7 +83,6 @@ const styles = StyleSheet.create({
     height: 75,
     top: "85%",
     left: "5%",
-
     zIndex: 9,
   },
   mapTitle: {

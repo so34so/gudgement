@@ -65,4 +65,10 @@ export declare module CommonType {
     typeId: number;
     equipped: false;
   };
+  export type Tplaymap = {
+    ticle: string;
+    image: string | ImageSourcePropType;
+    title: string;
+    description: string;
+  };
 }

@@ -11,8 +11,9 @@ import {
 import { WebView, WebViewNavigation } from "react-native-webview";
 import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
 import KakaoLogoImg from "../assets/images/kakaoLogo.png";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Reactotron from "reactotron-react-native";
+import { setData, getData, removeData, containsKey } from "../utils/common";
 
 // interface LoginProps {
 //   onLogin: () => void; // onLogin의 타입을 명시
@@ -37,16 +38,13 @@ function Login() {
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
       try {
-        const response = axios.post(
+        const response: AxiosResponse<CommonType.TkakaoLogin[]> = axios.post(
           `http://j9d106.p.ssafy.io:8080/oauth/kakao/callback?code=${code}`,
         );
-        console.log("인가 코드 전달 성공!", response);
-        Reactotron.log!("인가 코드 전달 성공!", response);
-        // Authorization Code 전달하면
-        // Access Token 받기
-        // 받은 Access Token 다시 전달
-        // 유저 정보 받기
-        // 로그인 유지
+        if (response !== undefined) {
+          Reactotron.log!("인가 코드 전달 성공!", response);
+        }
+        // response
         navigation.navigate("SettingEmail");
       } catch (error) {
         Reactotron.log!("인가 코드 전달 실패!", error);

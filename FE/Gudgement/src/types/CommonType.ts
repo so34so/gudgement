@@ -53,4 +53,13 @@ export declare module CommonType {
     image: ImageSourcePropType;
     price: number;
   };
+
+  export type TkakaoLogin = {
+    id: number;
+    nickname: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpiration: Date;
+  };
 }

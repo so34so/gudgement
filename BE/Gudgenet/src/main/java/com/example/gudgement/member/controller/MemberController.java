@@ -57,6 +57,18 @@ public class MemberController {
         return ResponseEntity.ok(memberService.validNickname(nickname));
     }
 
+    @PostMapping("/update/nickname")
+    @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
+    public void updateNickname(@RequestParam Long id, @RequestParam String nickname) {
+        memberService.updateNickname(id, nickname);
+    }
+
+    @PostMapping("update/email")
+    @Operation(summary = "이메일 등록", description = "인증한 이메일을 등록합니다.")
+    public void updateEmail(@RequestBody EmailDto emailDto) {
+        memberService.updateEmail(emailDto.getId(), emailDto.getEmail());
+    }
+
     @GetMapping("/loadMyInfo")
     @Operation(summary = "유저 정보", description = "로그인 되어있는 유저의 정보를 확인합니다. \n 토큰 앞에 항상 'Bearer '를 붙여주세요!")
     public ResponseEntity<MemberResponseDto> loadInfo(HttpServletRequest httpServletRequest) {
@@ -72,7 +84,7 @@ public class MemberController {
         Long memberId = (Long) jwtProvider.getClaims(bearer).get("id");
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
-            return new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION);
+            return new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
         return member;
     }

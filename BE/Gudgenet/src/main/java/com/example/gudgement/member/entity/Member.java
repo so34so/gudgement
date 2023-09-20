@@ -1,11 +1,15 @@
 package com.example.gudgement.member.entity;
 
+import com.example.gudgement.progress.entity.Progress;
+import com.example.gudgement.shop.entity.Inventory;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 *  사용자 (멤버) 관리 Entity 입니다.
@@ -33,7 +37,10 @@ public class Member implements Serializable {
     private String nickname;
 
     @NotNull
-    private boolean approve;
+    private boolean emailApprove;
+
+    @NotNull
+    private boolean nicknameApprove;
 
     @NotNull
     @Column(columnDefinition = "bigint default 500")
@@ -60,11 +67,11 @@ public class Member implements Serializable {
     private String refreshToken;
 
     // 연결 관계
-//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<Item> set_item = new ArrayList<Item>();
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    private List<Inventory> set_item = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<Progress> progressList = new ArrayList<>();
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    private List<Progress> progresses = new ArrayList<>();
 
     // 미구현
 //     @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
@@ -77,12 +84,13 @@ public class Member implements Serializable {
 //    private List<Account> accounts = new ArrayList<>();
 
     @Builder
-    public Member(Long id, String email, String password, int gender, int age, String nickname) {
+    public Member(Long id, String email, int gender, int age, String nickname, String refreshToken) {
         this.memberId = id;
         this.email = email;
         this.gender = gender;
         this.age = age;
         this.nickname = nickname;
+        this.refreshToken = refreshToken;
     }
 
     @PrePersist
@@ -94,13 +102,16 @@ public class Member implements Serializable {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+        this.nicknameApprove = true;
     }
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
-    private class PaymentHistory {
+    public void updateEmail(String email) {
+        this.email = email;
+        this.emailApprove = true;
     }
     
     public void useTiggle(Long tiggle) {

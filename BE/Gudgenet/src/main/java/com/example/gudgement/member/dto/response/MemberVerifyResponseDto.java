@@ -9,5 +9,4 @@ import lombok.Getter;
 public class MemberVerifyResponseDto {
     private Long id;
     private boolean isValid;
-    private Role role;
 }

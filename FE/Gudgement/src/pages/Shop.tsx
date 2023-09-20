@@ -360,7 +360,7 @@ function Shop({ route }: ShopProps) {
             </Animated.View>
             <View>
               <Text className=" font-PretendardBlack text-white text-[20px]">
-                {fetchItem && fetchItem[selectItem].itemContent}
+                {fetchItem?.[selectItem] && fetchItem[selectItem].itemContent}
               </Text>
             </View>
             <TouchableOpacity

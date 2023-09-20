@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.entity.Member;
 
 import javax.persistence.*;
 

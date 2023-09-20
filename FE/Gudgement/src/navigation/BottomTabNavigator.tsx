@@ -5,6 +5,7 @@ import Play from "../pages/Play";
 import Ranking from "../pages/Ranking";
 import { CommonType } from "../types/CommonType";
 import ShopNavigator from "./ShopNavigator";
+import PlayNavigator from "./PlayNavigator";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BOTTOM_TAB_MENU } from "../utils/common";
@@ -12,7 +13,13 @@ import TabBarItem from "../components/TabBarItem";
 
 function BottomTabNavigator() {
   const Tab = createBottomTabNavigator<CommonType.RootStackParamList>();
-  const BottomTabComponents = [Home, ShopNavigator, Play, MyPage, Ranking];
+  const BottomTabComponents = [
+    Home,
+    ShopNavigator,
+    PlayNavigator,
+    MyPage,
+    Ranking,
+  ];
 
   return (
     <Tab.Navigator

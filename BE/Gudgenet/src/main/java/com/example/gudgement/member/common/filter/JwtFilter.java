@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("JwtAuthFilter 인증된 유저 검증 중...");
         if (attribute instanceof Authentication) {
             Authentication authentication = (Authentication) attribute;
-            JwtToken jwt = jwtProvider.createToken(authentication.getEmail());
+            JwtToken jwt = jwtProvider.createToken(authentication.getId(), authentication.getEmail());
 
             log.info("refreshToken 발급 중...");
             memberService.updateRefreshToken(authentication.getEmail(), jwt.getRefreshToken());
@@ -40,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json);
+            filterChain.doFilter(request, response);
             return;
         }
 

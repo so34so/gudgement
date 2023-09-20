@@ -1,6 +1,6 @@
 package com.example.gudgement.progress.service;
 
-import com.example.gudgement.member.db.entity.Member;
+import com.example.gudgement.member.entity.Member;
 
 public interface ProgressService {
 

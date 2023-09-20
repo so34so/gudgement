@@ -18,6 +18,7 @@ export declare module CommonType {
      */
     Single: undefined;
     Multi: undefined;
+    PlaySelect: undefined;
 
     /**
      * ShopScreen child Type
@@ -27,6 +28,15 @@ export declare module CommonType {
     Shop: { category: string };
     Inventory: { category: string };
 
+    /**
+     * PlayScreen child Type
+     */
+    PlayNavigator: undefined;
+    Play: undefined;
+    Low: undefined;
+    Middle: undefined;
+    High: undefined;
+    PlaySelect: undefined;
     /**
      * ShopScreen child Type
      */

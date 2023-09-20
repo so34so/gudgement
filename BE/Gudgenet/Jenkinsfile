@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    tools {
+        gradle 'gradle'
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'feature', url: 'https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D106.git', credentialsId: 'gitlab-noah-credentials'
+            }
+        }
+        stage('BE-Build') {
+            steps {
+                dir("./BE/Gudgenet") {
+                    sh "chmod +x ./gradlew"
+                    sh "./gradlew clean build"
+                }
+            }
+        }
+        stage('deploy'){
+            steps{
+                dir("./BE/Gudgenet") {
+                    sh 'docker-compose up -d --build'
+                }
+            }
+        }
+        stage('Clean Up'){
+            steps{
+                sh "docker image prune -f"
+            }
+        }
+    }
+}

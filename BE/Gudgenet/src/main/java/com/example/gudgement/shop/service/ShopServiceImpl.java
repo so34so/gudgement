@@ -1,10 +1,10 @@
 package com.example.gudgement.shop.service;
 
-import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
-import com.example.gudgement.member.exception.UserNotFoundException;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.member.exception.BaseErrorException;
+import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.progress.service.ProgressService;
-import com.example.gudgement.progress.service.ProgressServiceImpl;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Status;
@@ -16,20 +16,13 @@ import com.example.gudgement.shop.exception.InsufficientPointsException;
 import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
+import com.example.gudgement.shop.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,14 +37,14 @@ public class ShopServiceImpl implements ShopService{
     private final ItemRepository itemRepository;
     private final InventoryRepository inventoryRepository;
     private final MemberRepository memberRepository;
+    private final StatusRepository statusRepository;
 
 
 
     public List<ItemDto> getAll(Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                );
 
         return itemsAllItemLists(itemRepository.findAll(), member);
     }
@@ -109,10 +102,9 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public List<ItemDto> getTypeItems(String type, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+                );
 
         return itemsTypeLists(itemRepository.findAllByType(type), type, member);
     }
@@ -126,16 +118,18 @@ public class ShopServiceImpl implements ShopService{
         long typeId = 1;
         for (Item item : items) {
 
-                String imageData = IMAGE_PATH + type +"/"+ item.getImage();
+            String imageData = IMAGE_PATH + type +"/"+ item.getImage();
 
-                boolean isSold = false;
+            boolean isSold = false;
 
-                if(!"consumable".equals(type)){
-                    isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
-                }
+            if(!"consumable".equals(type)){
+                isSold = userItemDtos.stream().anyMatch(userItem -> userItem.getItemId().equals(item.getItemId()));
+            }
 
+            boolean isEquipped = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
 
-                boolean isEquipped = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()) && inventory.isEquipped());
+            // Status entity의 itemId와 Item 비교하여 일치하는 경우 hidden 값을 true로 설정
+            boolean isHidden = statusRepository.existsByItemId(item.getItemId());
 
                 ItemDto.ItemDtoBuilder builder = ItemDto.builder()
                         .id(item.getItemId())
@@ -145,33 +139,36 @@ public class ShopServiceImpl implements ShopService{
                         .image(imageData)
                         .typeId(typeId++)
                         .isSold(isSold)
-                        .isEquipped(isEquipped);
+                        .isEquipped(isEquipped)
+                        .isHidden(isHidden);
 
-                if (item instanceof Price) {
-                    builder.price(((Price) item).getPrice());
-                } else if (item instanceof Status) {
-                    String statusName = ((Status) item).getStatusName();
-                    int statusValue = ((Status) item).getStatus();
+            if ("decor".equals(type)) {
+                String subtype = item.getSubtype();
+                builder.subType(subtype);
+            }
 
-                    // member progress에서 statusName 동일하고 statusValue 수가 같거나 높은지 확인
-                    boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
+            if (item instanceof Price) {
+                builder.price(((Price) item).getPrice());
+            } else if (item instanceof Status) {
+                String statusName = ((Status) item).getStatusName();
+                int statusValue = ((Status) item).getStatus();
 
-                    builder.isUnlocked(isUnlocked);
-                }
+                // member progress에서 statusName 동일하고 statusValue 수가 같거나 높은지 확인
+                boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
 
-                itemDTOS.add(builder.build());
-/*            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+                builder.isUnlocked(isUnlocked);
+            }
+
+            itemDTOS.add(builder.build());
         }
         return itemDTOS;
     }
 
     public void buyItem(Long itemId, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
+
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
@@ -195,10 +192,9 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public void unlockItem(Long itemId, Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
@@ -213,10 +209,10 @@ public class ShopServiceImpl implements ShopService{
     }
 
     public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if (member == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION)
+        );
+
 
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));

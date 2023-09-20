@@ -1,20 +1,19 @@
 package com.example.gudgement.member.common.jwt;
 
-import com.example.gudgement.member.db.dto.AccessTokenDto;
-import com.example.gudgement.member.db.entity.Member;
-import com.example.gudgement.member.db.repository.MemberRepository;
+import com.example.gudgement.member.dto.AccessTokenDto;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.service.MemberService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -31,15 +30,21 @@ public class JwtProvider {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     // 토큰 생성, JWS
-    public String createJwt(String email, Date expireDate) {
+    public String createJwt(Long id, String email, Date expireDate) {
+        HashMap<String, Object> claim = new HashMap<>();
+        claim.put("id", id);
+        claim.put("email", email);
+
         return Jwts.builder()
                 .setSubject(email)
                 .setExpiration(expireDate)
+                .setClaims(claim)
                 .setIssuedAt(new Date())
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }
 
+    // 복호화
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -49,29 +54,24 @@ public class JwtProvider {
     }
 
     // 토큰 유효성 검증
-    public Boolean validationToken(String token) {
+    public boolean validationToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
+            return getClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
             return false;
         }
     }
 
     // refreshToken은 보안상 문제 때문에 claims를 포함하지 않는다.
-    public JwtToken createToken(String email) {
-        String accessToken = createJwt(email, getExpireDateAccessToken());
-        String refreshToken = createJwt(email, getExpireDateRefreshToken());
+    public JwtToken createToken(Long id, String email) {
+        String accessToken = createJwt(id, email, getExpireDateAccessToken());
+        String refreshToken = createJwt(id, email, getExpireDateRefreshToken());
 
         return JwtToken.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .tokenExpirationTime(new Date())
+                .refreshTokenExpirationTime(getExpireDateRefreshToken())
                 .build();
     }
 
@@ -81,6 +81,7 @@ public class JwtProvider {
         return new Date(System.currentTimeMillis() + expireTimeMils);
     }
 
+    // RefreshToken
     public Date getExpireDateRefreshToken() {
         long expireTimeMils = 1000 * 60 * 60 * 24 * 60L; // 60 days
         return new Date(System.currentTimeMillis() + expireTimeMils);
@@ -96,10 +97,10 @@ public class JwtProvider {
         try {
             validationToken(token);
             Member member = memberRepository.findByRefreshToken(token).orElseThrow();
-            Authentication authentication = new Authentication(member.getEmail(), member.getRole());
+            Authentication authentication = new Authentication(member.getMemberId(), member.getEmail(), member.getRole());
 //            String authenticateMemberJson = objectMapper.writeValueAsString(authentication);
 
-            JwtToken jwt = createToken(member.getEmail());
+            JwtToken jwt = createToken(member.getMemberId(), member.getEmail());
             memberService.updateRefreshToken(member.getEmail(), jwt.getRefreshToken());
 
 //            Date expiration = claims.getExpiration();
@@ -113,5 +114,16 @@ public class JwtProvider {
                 log.error(e.getMessage());
                 return null;
         }
+    }
+
+    public Member extractMember (HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("Authorization");
+        String token = header.substring(7);
+        Long memberId = (Long) getClaims(token).get("id");
+
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        return member;
     }
 }

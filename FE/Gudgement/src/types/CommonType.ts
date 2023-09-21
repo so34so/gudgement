@@ -89,4 +89,11 @@ export declare module CommonType {
     refreshToken: string;
     refreshTokenExpiration: Date;
   };
+
+  export type TemailCode = string;
+
+  export type TemailUpdate = {
+    id: number;
+    email: string;
+  };
 }

@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import RankingBackground from "../assets/images/rankingBackground.png";
 import Jilta from "../assets/images/jilta.png";
 import Svg, { Text as SvgText } from "react-native-svg";
+import { IMAGE_URL } from "@env";
 
 interface Irank {
   rank: number;
@@ -30,8 +30,6 @@ const RANKING = Array.from({ length: 10 }, (_, i) => {
 
 export default function Ranking() {
   const jilta: ImageSourcePropType = Jilta as ImageSourcePropType;
-  const rankingBackground: ImageSourcePropType =
-    RankingBackground as ImageSourcePropType;
   const styleLevel = (rank: number) => {
     return `${rank >= 10 ? "right-[-30px]" : "right-[-40px]"}`;
   };
@@ -91,7 +89,9 @@ export default function Ranking() {
   return (
     <SafeAreaView>
       <ImageBackground
-        source={rankingBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/rankingBackground.png`,
+        }}
         resizeMode="cover"
         style={{ opacity: 0.9, backgroundColor: "black" }}
         className="absolute w-full h-full top-0 left-0 right-0 bottom-0"

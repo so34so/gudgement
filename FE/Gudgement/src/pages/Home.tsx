@@ -5,12 +5,18 @@ import {
   SafeAreaView,
   Text,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
 import GoodIcon from "../assets/icons/goodIcon.png";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
-import { IMAGE_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
+import { useQuery } from "@tanstack/react-query";
+import axios, { AxiosResponse } from "axios";
+import { CommonType } from "../types/CommonType";
+import reactotron from "reactotron-react-native";
+import { getData } from "../utils/common";
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
  * 서버에서 유저가 기준일로 부터 현재까지 쓴 소비 내역 총합만 줄 수 있다고 하면 퍼센트를 직접 계산하면 됨
@@ -37,6 +43,47 @@ export default function Home() {
       setSpend({ text: "위험", color: "text-red" });
     }
   }, [percent]);
+
+  async function fetchUser() {
+    const token = await getData("accessToken");
+    try {
+      const response: AxiosResponse<CommonType.TUser> = await axios.get(
+        `${API_URL}/member/loadMyInfo`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      reactotron.log!("fetchUser", response);
+    } catch (error) {
+      reactotron.log!("error", error);
+    }
+  }
+  const {
+    data: user,
+    error: fetchError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["fetchUserInfo"],
+    queryFn: () => fetchUser(),
+  });
+
+  // if (fetchError) {
+  //   return (
+  //     <View>
+  //       <Text>에러</Text>
+  //     </View>
+  //   );
+  // }
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">

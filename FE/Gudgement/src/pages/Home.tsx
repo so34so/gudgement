@@ -6,11 +6,11 @@ import {
   Text,
   Image,
 } from "react-native";
-import RankingBackground from "../assets/images/homeBackground.png";
 import PointHeader from "../components/PointHeader";
 import GoodIcon from "../assets/icons/goodIcon.png";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
+import { IMAGE_URL } from "@env";
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
  * 서버에서 유저가 기준일로 부터 현재까지 쓴 소비 내역 총합만 줄 수 있다고 하면 퍼센트를 직접 계산하면 됨
@@ -20,8 +20,6 @@ import { useEffect, useState } from "react";
  *  50% ~ 70%는 안정, 그 이하는 절약으로 설정해놓은 상태
  */
 export default function Home() {
-  const rankingBackground: ImageSourcePropType =
-    RankingBackground as ImageSourcePropType;
   const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
   const [percent, setPercent] = useState(0.5);
   const [spend, setSpend] = useState<{ text: string; color: string }>({
@@ -44,7 +42,9 @@ export default function Home() {
       <View className="w-full h-full flex justify-start items-center">
         <PointHeader />
         <ImageBackground
-          source={rankingBackground}
+          source={{
+            uri: `${IMAGE_URL}/asset/homeBackground.png`,
+          }}
           resizeMode="stretch"
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"

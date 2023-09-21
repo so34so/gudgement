@@ -1,6 +1,7 @@
+package com.example.gudgement.match.controller;
+
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.match.service.MatchService;
-import com.example.gudgement.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class MatchController {
     }
 
     @PostMapping("/cancel")
-    public void cancelMatch(@RequestBody MatchDto matchRequest) {
-        matchService.cancelMatch(matchRequest);
+    public void cancelMatch(@RequestBody MatchDto matchDto) {
+        matchService.cancelMatch(matchDto);
     }
 }

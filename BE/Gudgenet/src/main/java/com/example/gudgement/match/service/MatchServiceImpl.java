@@ -19,15 +19,23 @@ public class MatchServiceImpl implements MatchService {
     private final LettuceConnectionFactory redisConnectionFactory;
 
     public void requestMatch(MatchDto matchDto) {
-        String key = "matchQueue:" + matchDto.getLevel();
+        String key = "matchQueue:" + matchDto.getLevel() + ":" + matchDto.getTiggle();
 
         Boolean alreadyWaiting = redisTemplate.opsForZSet().rank(key, matchDto) != null;
         if (alreadyWaiting) {
             throw new RuntimeException("이미 대기열에 있습니다");
         }
 
+
         double score = calculateScore(matchDto);
         redisTemplate.opsForZSet().add(key, matchDto, score);
+
+        // check if a user is matched after adding the new user to the queue
+        if (isMatched(matchDto.getLevel().intValue(), matchDto.getNickName())) {
+            System.out.println("User " + matchDto.getNickName() + " is matched!");
+            // TODO: Add your own logic after a user is matched (e.g., send a notification to the users)
+        }
+
     }
 
     private double calculateScore(MatchDto matchDto) {
@@ -44,27 +52,19 @@ public class MatchServiceImpl implements MatchService {
         return levelWeight * matchDto.getLevel() + timeWeight * (maxTime - System.nanoTime());
     }
 
-
-    public void cancelMatch(MatchDto matchDto) {
-        String key = "matchQueue:" + matchDto.getLevel();
-
-        if (!redisTemplate.opsForZSet().remove(key, matchDto.getMemberId())) {
-            throw new RuntimeException("Failed to cancel the matching request");
-        }
-    }
     private boolean isMatched(int level, String username) {
         for (int i = level - 1; i <= level + 1; i++) { // 주변 레벨 탐색 범위 설정. 현재 레벨의 앞뒤로 한 단계씩.
             String key = "matchQueue:" + i;
             Long waitingUserCount = redisTemplate.opsForZSet().zCard(key);
 
             if (waitingUserCount >= 2) {
-                Set<String> range = redisTemplate.opsForZSet().range(key, 0, 1);
+                Set<MatchDto> range = redisTemplate.opsForZSet().range(key, 0, 1);
 
-                Iterator<String> iterator = range.iterator();
-                String firstUser = iterator.next();
-                String secondUser = iterator.next();
+                Iterator<MatchDto> iterator = range.iterator();
+                MatchDto firstUser = iterator.next();
+                MatchDto secondUser = iterator.next();
 
-                deleteUsersFromQueue(range.toArray(new String[0]), key);
+                deleteUsersFromQueue(new MatchDto[]{firstUser, secondUser}, key);
 
                 return true;
             }
@@ -73,11 +73,18 @@ public class MatchServiceImpl implements MatchService {
         return false;
     }
 
-    private void deleteUsersFromQueue(String[] users, String key) {
-        for (String user : users) {
+    private void deleteUsersFromQueue(MatchDto[] users, String key) {
+        for (MatchDto user : users) {
             redisTemplate.opsForZSet().remove(key, user);
         }
     }
 
+    public void cancelMatch(MatchDto matchDto) {
+        String key = "matchQueue:" + matchDto.getLevel() + ":" + matchDto.getTiggle();
+
+        if (redisTemplate.opsForZSet().remove(key, matchDto.getNickName()) == 0) {
+            throw new RuntimeException("Failed to cancel the matching request");
+        }
+    }
 
 }

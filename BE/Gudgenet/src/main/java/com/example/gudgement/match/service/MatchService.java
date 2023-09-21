@@ -6,5 +6,5 @@ import com.example.gudgement.member.entity.Member;
 public interface MatchService {
     void requestMatch(MatchDto matchDto);
 
-    void cancelMatch(MatchDto matchRequest);
+    void cancelMatch(MatchDto matchDto);
 }

@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,10 @@ import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import ArrowIcon from "../assets/icons/arrowIcon.svg";
 import NavigationButton from "../components/NavigationButton";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Reactotron from "reactotron-react-native";
+import { getAsyncData } from "../utils/common";
+import { API_URL } from "@env";
 
 function SettingEmail() {
   const mypageBackground: ImageSourcePropType =
@@ -28,42 +30,74 @@ function SettingEmail() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const [email, onChangeEmail] = useState("");
-  const [number, onChangeNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
+  const [checkNumber, setCheckNumber] = useState("");
+  const [tempUserId, setTempUserId] = useState(0);
+
+  const getTempUserId = async () => {
+    try {
+      const responseGetId = await getAsyncData("id");
+      Reactotron.log!("아이디 확인 성공!", responseGetId);
+      setTempUserId(responseGetId ? parseInt(responseGetId, 10) : 0);
+    } catch (error) {
+      Reactotron.log!("아이디 확인 실패!", error);
+    }
+  };
 
   const handleFetchEmail = async (currentEmail: string) => {
-    Reactotron.log!(currentEmail);
     const sendBE = {
+      id: tempUserId,
       email: currentEmail,
     };
-
+    Reactotron.log!("sendBE", sendBE);
     try {
-      const response = await axios.post(
-        "http://j9d106.p.ssafy.io:8080/api/member/email/send",
+      const response: AxiosResponse<CommonType.TemailCode> = await axios.post(
+        `${API_URL}/member/email/send`,
         sendBE,
       );
-      Reactotron.log!("인증 메일 요청 성공!", response);
+      Reactotron.log!("인증 메일 요청 성공!", response.data);
+      if (response.status === 200) {
+        const mailCode = response.data.toString();
+        setCheckNumber(mailCode);
+        setEmail(currentEmail);
+        // 이메일로 전송된 인증 코드를 입력하세요! 알림 모달창
+      }
     } catch (error) {
+      // 인증 메일 요청 실패! 알림 모달창
       Reactotron.log!("인증 메일 요청 실패!", error);
     }
   };
 
   const handleFetchNumber = async (currentNumber: string) => {
     Reactotron.log!(currentNumber);
-    const sendBE = {
-      number: currentNumber,
-    };
-
-    try {
-      const response = await axios.post(
-        "http://j9d106.p.ssafy.io:8080/api/member/email/send",
-        sendBE,
-      );
-      Reactotron.log!("이메일 인증 성공!", response);
-    } catch (error) {
-      Reactotron.log!("이메일 인증 실패!", error);
+    if (checkNumber === currentNumber) {
+      Reactotron.log!("이메일 인증 코드 동일!", checkNumber, currentNumber);
+      try {
+        const sendBE = {
+          id: tempUserId,
+          email: email,
+        };
+        const response: AxiosResponse<CommonType.TemailUpdate[]> =
+          await axios.post(`${API_URL}/member/update/email`, sendBE);
+        Reactotron.log!("인증 메일 등록 성공!", response.data);
+        if (response.status === 200) {
+          const mailCode = response.data.toString();
+          setCheckNumber(mailCode);
+          navigation.navigate("SettingName");
+        }
+      } catch (error) {
+        // 인증 메일 등록 실패! 알림 모달창
+        Reactotron.log!("인증 메일 등록 실패!", error);
+      }
+    } else {
+      // 인증 코드를 다시 확인해주세요! 알림 모달창
     }
   };
+
+  useEffect(() => {
+    getTempUserId();
+  }, []);
 
   return (
     <View className="flex">
@@ -123,11 +157,11 @@ function SettingEmail() {
                 <SafeAreaView className="mx-4 w-fit">
                   <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
                     <TextInput
-                      onChangeText={onChangeEmail}
+                      onChangeText={setEmail}
                       value={email}
                       placeholder="이메일"
                       placeholderTextColor="darkgray"
-                      className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-sm font-PretendardExtraBold"
+                      className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] text-darkgray border-darkgray text-sm font-PretendardExtraBold"
                     />
                     <NavigationButton
                       handleFunction={() => handleFetchEmail(email)}
@@ -139,12 +173,12 @@ function SettingEmail() {
                     />
                   </View>
                   <TextInput
-                    onChangeText={onChangeNumber}
+                    onChangeText={setNumber}
                     value={number}
                     placeholder="인증 번호"
                     placeholderTextColor="darkgray"
                     keyboardType="numeric"
-                    className="h-[60px] bt-3 mb-4 p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray50 text-sm font-PretendardExtraBold"
+                    className="h-[60px] bt-3 mb-4 p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
                   />
                 </SafeAreaView>
               </View>
@@ -153,7 +187,6 @@ function SettingEmail() {
         </View>
         <Pressable className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
           <NavigationButton
-            screenName="SettingName"
             handleFunction={() => handleFetchNumber(number)}
             text="다 음"
             height="lg"

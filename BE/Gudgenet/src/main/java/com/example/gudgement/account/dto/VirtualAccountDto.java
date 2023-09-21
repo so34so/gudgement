@@ -1,5 +1,6 @@
 package com.example.gudgement.account.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class VirtualAccountDto {
+
+    @Schema(hidden = true)
     private long virtualAccountId;
+
     private String bankName;
     private String accountNumber;
     private String accountHolder;

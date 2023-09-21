@@ -35,11 +35,15 @@ function BottomTabNavigator() {
           display: "flex",
           backgroundColor: "transparent",
           height: 110,
+          top: 4,
         },
         // eslint-disable-next-line react/no-unstable-nested-components
         tabBarLabel: props => {
           return (
-            <TouchableOpacity className="w-16 h-8 rounded-md bg-black flex justify-center items-center">
+            <TouchableOpacity
+              activeOpacity={0.9}
+              className="w-16 h-8 rounded-md bg-black flex justify-center items-center"
+            >
               <View className="w-[95%] h-[92%] border-[1px] border-white rounded-md">
                 <Text className="top-[2px] text-center text-white rounded-sm font-bold text-[16px]">
                   {props.children}
@@ -60,7 +64,7 @@ function BottomTabNavigator() {
               headerShown: false,
               // eslint-disable-next-line react/no-unstable-nested-components
               tabBarIcon: () => {
-                return <TabBarItem item={ele} />;
+                return <TabBarItem item={ele} index={idx} />;
               },
               unmountOnBlur: true,
             }}

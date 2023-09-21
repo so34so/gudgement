@@ -128,7 +128,6 @@ function App(): JSX.Element {
     });
     return unsubscribe;
   }, []);
-  const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (

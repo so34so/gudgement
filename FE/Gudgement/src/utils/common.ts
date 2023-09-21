@@ -55,3 +55,11 @@ export const containsKey = async (key: string) => {
     Reactotron.log!(error);
   }
 };
+
+export const BOTTOM_TAB_IMAGE = [
+  "/asset/homeicon.png",
+  "/asset/shopicon.png",
+  "/asset/playicon.png",
+  "/asset/myinfoicon.png",
+  "/asset/rankingicon.png",
+];

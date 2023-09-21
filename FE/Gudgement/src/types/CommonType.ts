@@ -100,4 +100,11 @@ export declare module CommonType {
     level: number;
     pedometer: number;
   };
+
+  export type TemailCode = string;
+
+  export type TemailUpdate = {
+    id: number;
+    email: string;
+  };
 }

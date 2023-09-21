@@ -89,4 +89,15 @@ export declare module CommonType {
     refreshToken: string;
     refreshTokenExpiration: Date;
   };
+  export type TUser = {
+    memberId: number;
+    email: string;
+    nickname: string;
+    emailApprove: boolean;
+    nicknameApprove: boolean;
+    tiggle: number;
+    exp: number;
+    level: number;
+    pedometer: number;
+  };
 }

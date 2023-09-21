@@ -74,11 +74,4 @@ public class VirtualAccountController {
         return new ResponseEntity<>(resultMap, status);
     }
 
-    @Operation(summary = "가상계좌 정보 업데이트")
-    @PutMapping("/{id}")
-    public ResponseEntity<VirtualAccountDto> update(@PathVariable Long id, @RequestBody VirtualAccountDto updatedDto) {
-        VirtualAccountDto updatedAccount = virtualAccountService.update(id, updatedDto);
-        return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
-    }
-
 }

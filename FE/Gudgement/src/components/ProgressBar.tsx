@@ -10,7 +10,7 @@ import { View, StyleSheet, Animated } from "react-native";
 const ProgressBar = ({ percent }: { percent: number }) => {
   const [progress] = useState(new Animated.Value(0));
   const containerRef = useRef<View>(null);
-  const [progressColor, setProgressColor] = useState("bg-transparent");
+  const [progressColor, setProgressColor] = useState("bg-sub02");
   useEffect(() => {
     Animated.timing(progress, {
       toValue: 370 * percent,

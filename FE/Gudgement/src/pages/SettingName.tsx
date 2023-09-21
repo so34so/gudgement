@@ -16,6 +16,8 @@ import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import ArrowIcon from "../assets/icons/arrowIcon.svg";
 import NavigationButton from "../components/NavigationButton";
+import { getAsyncData } from "../utils/common";
+import Reactotron from "reactotron-react-native";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
@@ -26,7 +28,39 @@ function SettingName() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const [text, onChangeText] = useState("");
+  const [name, setName] = useState("");
+  const [tempUserId, setTempUserId] = useState(0);
+
+  const getTempUserId = async () => {
+    try {
+      const responseGetId = await getAsyncData("id");
+      Reactotron.log!("아이디 확인 성공!", responseGetId);
+      setTempUserId(responseGetId ? parseInt(responseGetId, 10) : 0);
+    } catch (error) {
+      Reactotron.log!("아이디 확인 실패!", error);
+    }
+  };
+
+  const handleCheckName = async (currentEmail: string) => {
+    const sendBE = {
+      id: tempUserId,
+      email: currentEmail,
+    };
+    Reactotron.log!("sendBE", sendBE);
+    try {
+      const response = await axios.post(`${API_URL}/member/valid/nickname`);
+      Reactotron.log!("인증 메일 요청 성공!", response.data);
+      if (response.status === 200) {
+        const mailCode = response.data.toString();
+        setCheckNumber(mailCode);
+        setEmail(currentEmail);
+        // 이메일로 전송된 인증 코드를 입력하세요! 알림 모달창
+      }
+    } catch (error) {
+      // 인증 메일 요청 실패! 알림 모달창
+      Reactotron.log!("인증 메일 요청 실패!", error);
+    }
+  };
 
   return (
     <View className="flex">
@@ -81,14 +115,14 @@ function SettingName() {
                 <SafeAreaView className="mx-4 w-fit">
                   <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
                     <TextInput
-                      onChangeText={onChangeText}
-                      value={text}
+                      onChangeText={setName}
+                      value={name}
                       placeholder="닉네임"
                       placeholderTextColor="darkgray"
                       className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-sm font-PretendardExtraBold"
                     />
                     <NavigationButton
-                      screenName="hmmm"
+                      handleFunction={() => handleCheckName(name)}
                       text="중복 확인"
                       height="lg"
                       width="sm"
@@ -106,7 +140,7 @@ function SettingName() {
         </View>
         <View className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
           <NavigationButton
-            screenName="SettingAccount"
+            handleFunction={() => handleName(name)}
             text="다 음"
             height="lg"
             width="lg"

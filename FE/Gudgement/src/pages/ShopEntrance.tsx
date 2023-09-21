@@ -1,23 +1,17 @@
-import {
-  ImageBackground,
-  ImageSourcePropType,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ImageBackground, Pressable, Text, View } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import ShopBackground from "../assets/images/shopBackground.png";
 import { CommonType } from "../types/CommonType";
+import { IMAGE_URL } from "@env";
 
 function ShopEntrance() {
-  const shopBackground: ImageSourcePropType =
-    ShopBackground as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   return (
     <View className="flex flex-1 w-full h-full">
       <ImageBackground
-        source={shopBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/shopBackground.png`,
+        }}
         resizeMode="cover"
         className="flex-1"
       >

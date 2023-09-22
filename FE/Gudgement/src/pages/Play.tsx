@@ -14,7 +14,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-
+import PlayNavigator from "../navigation/PlayNavigator";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import PlayBackground from "../assets/images/playBackground.png";
 import Fin from "../assets/images/finfinee.png";
@@ -68,7 +68,7 @@ function Play() {
           {/* 실제 불의 선택 영역 */}
           <Pressable
             className="flex-1 absolute left-[35%] top-[30%] w-[150] h-[150]"
-            onPress={() => navigation.navigate("PlaySelect")}
+            onPress={() => navigation.navigate("PlayNavigator")}
           />
           <Image
             className=" "

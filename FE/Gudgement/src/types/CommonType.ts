@@ -31,10 +31,6 @@ export declare module CommonType {
      * PlayScreen child Type
      */
     PlayNavigator: undefined;
-    Play: undefined;
-    Low: undefined;
-    Middle: undefined;
-    High: undefined;
     PlaySelect: undefined;
     /**
      * ShopScreen child Type
@@ -106,5 +102,11 @@ export declare module CommonType {
   export type TemailUpdate = {
     id: number;
     email: string;
+  };
+  export type Tplaymap = {
+    ticle: string;
+    image: string | ImageSourcePropType;
+    title: string;
+    description: string;
   };
 }

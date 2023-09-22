@@ -60,6 +60,16 @@ export const containsAsyncKey = async (key: string) => {
   }
 };
 
+export const getTempUserId = async () => {
+  try {
+    const responseGetId = await getAsyncData("id");
+    return responseGetId ? parseInt(responseGetId, 10) : 0;
+  } catch (error) {
+    Reactotron.log!("아이디 확인 실패!", error);
+    return 0;
+  }
+};
+
 export const BOTTOM_TAB_IMAGE = [
   "/asset/homeicon.png",
   "/asset/shopicon.png",

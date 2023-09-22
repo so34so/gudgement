@@ -54,10 +54,10 @@ function Login() {
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const tempUserId = response.data.id;
-      Reactotron.log!("사용자 정보 미리보기!", response.data);
-      Reactotron.log!("Access Token!", accessToken);
-      Reactotron.log!("Refresh Token!", refreshToken);
-      Reactotron.log!("TempID!", tempUserId);
+      // Reactotron.log!("사용자 정보 미리보기!", response.data);
+      // Reactotron.log!("Access Token!", accessToken);
+      // Reactotron.log!("Refresh Token!", refreshToken);
+      // Reactotron.log!("TempID!", tempUserId);
 
       try {
         const responseAccess = await setAsyncData("accessToken", accessToken);
@@ -83,6 +83,7 @@ function Login() {
         Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
         Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
         Reactotron.log!("아이디 확인 성공!", responseGetId);
+        setShowWebView(false);
       } catch (error) {
         Reactotron.log!("액세스 토큰 확인 실패!", error);
       }

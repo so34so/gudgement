@@ -69,30 +69,15 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Primary
-    @Bean(name = "redisTemplate")
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-
-        // JSON 직렬화를 위해 Jackson2JsonRedisSerializer를 설정합니다.
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-
-        redisTemplate.setDefaultSerializer(serializer);
-        redisTemplate.setKeySerializer(serializer);
-        redisTemplate.setValueSerializer(serializer);
-        redisTemplate.setHashKeySerializer(serializer);
-        redisTemplate.setHashValueSerializer(serializer);
-
-        // 역직렬화 (stream -> json)
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.registerModule(new JavaTimeModule()); // JavaTimeModule을 등록하여 LocalDateTime을 처리할 수 있도록 합니다.
-
-        serializer.setObjectMapper(objectMapper);
-
-        return redisTemplate;
+    @Bean
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+        return template;
     }
 }
 

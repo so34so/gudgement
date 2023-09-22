@@ -28,6 +28,9 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 600000
+  redis:
+    host: localhost
+    port: 6379
 
   main:
     allow-bean-definition-overriding: true
@@ -67,10 +70,6 @@ spring:
         format_sql: true
       # LazyInitializationException ??
       enable_lazy_load_no_trans: true
-    redis:
-      host: localhost
-      #host: myredis;
-      port: 6379
 
   oauth2:
     client:

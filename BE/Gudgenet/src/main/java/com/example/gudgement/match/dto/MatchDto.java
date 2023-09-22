@@ -12,16 +12,17 @@ import java.io.Serializable;
 public class MatchDto implements Serializable {
     private Long memberId;
     private String nickName;
-    private Long level;
+    private String roleUser;
     private Long tiggle;
     private Long timestamp;
 
     @Builder
-    public MatchDto(Long memberId, String nickName, Long level, Long tiggle, Long timestamp){
+    public MatchDto(Long memberId, String nickName, String roleUser, Long tiggle, Long timestamp){
         this.memberId = memberId;
         this.nickName = nickName;
-        this.level = level;
+        this.roleUser = roleUser;
         this.tiggle = tiggle;
         this.timestamp = timestamp;
     }
+
 }

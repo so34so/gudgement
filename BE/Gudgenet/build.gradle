@@ -31,6 +31,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework:spring-messaging'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+    testImplementation 'org.mockito:mockito-core:3.9.0'
 
 
     // email

@@ -22,7 +22,8 @@ public enum ErrorCode {
     
     // 이메일
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 송신 에러입니다."),
-    DUPLICATION_EMAIL(HttpStatus.BAD_REQUEST, "E-002", "중복된 이메일입니다.");
+    DUPLICATION_EMAIL(HttpStatus.BAD_REQUEST, "E-002", "중복된 이메일입니다."),
+    NOT_AUTHORIZATION_EMAIL(HttpStatus.BAD_REQUEST, "E-003", "이메일이 인증되지 않은 유저입니다.");
 
 
     private HttpStatus httpStatus;

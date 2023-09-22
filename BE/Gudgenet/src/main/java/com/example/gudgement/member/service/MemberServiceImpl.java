@@ -5,6 +5,7 @@ import com.example.gudgement.member.dto.request.MemberCreateDto;
 import com.example.gudgement.member.dto.response.MemberResponseDto;
 import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.exception.EmailLogicException;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.NonUniqueResultException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -59,10 +63,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponseDto loadInfo(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+    public MemberResponseDto loadInfo(Long id) {
+        Member member = memberRepository.findByMemberId(id).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
+
+        log.info("이메일 체크 ===================================");
+        if (member.getEmail().equals("Gudgement") && !member.isEmailApprove()) {
+            throw new EmailLogicException(ErrorCode.NOT_AUTHORIZATION_EMAIL);
+            }
+        log.info("인증된 이메일 =================================");
 
         return MemberResponseDto.builder()
                 .memberId(member.getMemberId())

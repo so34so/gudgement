@@ -20,7 +20,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
@@ -29,17 +29,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Filter : JWTFilter");
         MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
-        String accessToken = jwtProvider.getHeaderToken(request, "Access");
-        String refreshToken = jwtProvider.getHeaderToken(request, "Refresh");
+        String accessToken = jwtProvider.getHeaderToken(request, "Authorization");
 
         String requestURI = request.getRequestURI();
 
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7);
-        } else if (refreshToken  != null && refreshToken.startsWith("Bearer ")) {
-            refreshToken = refreshToken.substring(7);
         } else {
-            new BaseErrorException(ErrorCode.NOT_AUTHORIZATION_TOKEN);
+            throw new BaseErrorException(ErrorCode.NOT_AUTHORIZATION_TOKEN);
         }
 
         // accessToken 값이 있음
@@ -47,6 +44,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // 유효성 검사
             if (jwtProvider.validationToken(accessToken)) {
                 log.info("AccessToken 유효함. : {}", accessToken);
+
+                Claims claims = jwtProvider.getClaims(accessToken);
+                if (attribute.getId() != (Long) claims.get("id")) {
+                    throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
+                }
+                log.info("요청 ID 일치함. : {}", claims.get("id"));
+
                 filterChain.doFilter(request, response);
 
             // accessToken 만료
@@ -56,28 +60,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
 
-        } else if (refreshToken != null) {
-            // 토큰 유효성 검증
-            if (jwtProvider.validationToken(refreshToken)) {
-                log.info("RefreshToken 유효함. : {}", refreshToken);
-                // 토큰 ID와 실제 요청 ID 검증
-                Claims claims = jwtProvider.getClaims(refreshToken);
-                if (attribute.getId() != (Long) claims.get("id")) {
-                    new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
-                }
-                log.info("요청 ID 일치함. : {}", claims.get("id"));
-                
-                Member member = memberRepository.findByMemberId((Long) claims.get("id")).orElseThrow(
-                        () -> new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
-                );
-
-                // 요청 RefreshToken ID와 DB RefreshToken의 동일성 검증
-                if (jwtProvider.verifyRefreshToken(refreshToken, member)) {
-                    jwtProvider.tokenRefresh(refreshToken);
-                }
-                log.info("요청 RefreshToken 일치함. : {}", refreshToken);
-                filterChain.doFilter(request, response);
-            }
         } else {
             jwtExceptionHandler(response, "null");
         }

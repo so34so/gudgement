@@ -1,4 +1,7 @@
 package com.example.gudgement.account.repository;
 
-public interface TransactionHistoryRepository {
+import com.example.gudgement.account.entity.TransactionHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TransactionHistoryRepository extends JpaRepository<TransactionHistory, Long> {
 }

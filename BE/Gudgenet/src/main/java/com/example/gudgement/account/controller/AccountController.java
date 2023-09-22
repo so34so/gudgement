@@ -1,6 +1,8 @@
 package com.example.gudgement.account.controller;
 
+import com.example.gudgement.account.dto.TransactionHistoryDto;
 import com.example.gudgement.account.dto.VirtualAccountDto;
+import com.example.gudgement.account.service.TransactionHistoryService;
 import com.example.gudgement.account.service.VirtualAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,10 +22,10 @@ import java.util.Map;
 public class AccountController {
 
     private final VirtualAccountService virtualAccountService;
+    private final TransactionHistoryService transactionHistoryService;
 
     @Operation(summary = "가상계좌 생성")
-    @RequestMapping("/virtual")
-    @PostMapping
+    @PostMapping("/virtual")
     public ResponseEntity<Map<String, Object>> create(@RequestBody VirtualAccountDto virtualAccountDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status;
@@ -43,8 +45,7 @@ public class AccountController {
     }
 
     @Operation(summary = "가상계좌 목록 조회")
-    @RequestMapping("/virtual")
-    @GetMapping
+    @GetMapping("/virtual")
     public ResponseEntity<List<VirtualAccountDto>> getAll() {
         List<VirtualAccountDto> accounts = virtualAccountService.getAll();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
@@ -76,4 +77,23 @@ public class AccountController {
         return new ResponseEntity<>(resultMap, status);
     }
 
+    @Operation(summary = "거래내역 생성")
+    @PostMapping("/transaction")
+    public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody TransactionHistoryDto transactionHistoryDto) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status;
+
+        try {
+            TransactionHistoryDto created = transactionHistoryService.create(transactionHistoryDto);
+            status = HttpStatus.OK;
+            resultMap.put("message", "success");
+            resultMap.put("transaction", created);
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("message", "fail");
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
 }

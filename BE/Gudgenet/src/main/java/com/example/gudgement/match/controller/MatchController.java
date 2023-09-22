@@ -3,6 +3,7 @@ package com.example.gudgement.match.controller;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.match.service.MatchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -14,7 +15,7 @@ public class MatchController {
 
     private final MatchService matchService;
 
-    @PostMapping("/match")
+/*    @PostMapping("/match")
     public void addUserToRoomAndTier(@RequestBody MatchDto matchDto) {
         matchService.addUserToRoomAndTier(matchDto);
     }
@@ -34,5 +35,23 @@ public class MatchController {
     @DeleteMapping("/{room}/{tier}/remove-user")
     public void removeUserFromRoomAndTier(@RequestBody MatchDto matchDto) {
         matchService.removeUserFromRoomAndTier(matchDto);
+    }*/
+
+    @PostMapping("/addUser")
+    public ResponseEntity<String> addUserToGroup(
+            @RequestParam String room,
+            @RequestParam String group,
+            @RequestParam String user) {
+        matchService.addUserToGroup(room, group, user);
+        return ResponseEntity.ok("User added to group.");
+    }
+
+    @PostMapping("/removeUser")
+    public ResponseEntity<String> removeUserFromGroup(
+            @RequestParam String room,
+            @RequestParam String group,
+            @RequestParam String user) {
+        matchService.removeUserFromGroup(room, group, user);
+        return ResponseEntity.ok("User removed from group.");
     }
 }

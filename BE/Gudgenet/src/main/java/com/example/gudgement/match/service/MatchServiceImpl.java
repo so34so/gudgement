@@ -23,7 +23,7 @@ public class MatchServiceImpl implements MatchService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Override
+   /* @Override
     public void addUserToRoomAndTier(MatchDto matchDto) {
         String tiggleKey = String.valueOf(matchDto.getTiggle()); // 티어 키를 가져옵니다.
         String userId = String.valueOf(matchDto.getRoleUser()); // 사용자 아이디를 가져옵니다.
@@ -52,5 +52,15 @@ public class MatchServiceImpl implements MatchService {
         String userId = String.valueOf(matchDto.getRoleUser());
         ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
         zSetOps.remove(tierKey, userId);
+    }*/
+
+    public void addUserToGroup(String room, String group, String user) {
+        String key = "Room:" + room + ":" + group;
+        redisTemplate.opsForSet().add(key, user);
+    }
+
+    public void removeUserFromGroup(String room, String group, String user) {
+        String key = "Room:" + room + ":" + group;
+        redisTemplate.opsForSet().remove(key, user);
     }
 }

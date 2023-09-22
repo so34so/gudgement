@@ -7,13 +7,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Set;
 
 public interface MatchService {
+    void addUserToGroup(String room, String group, String user);
 
-    void addUserToRoomAndTier(MatchDto matchDto);
+    void removeUserFromGroup(String room, String group, String user);
+
+/*    void addUserToRoomAndTier(MatchDto matchDto);
 
     Set<String> getUsersInRoomAndTier(MatchDto matchDto);
 
     void removeUserFromRoomAndTier(MatchDto matchDto);
 
-    long getUsersCountInRoomAndTier(String room, String tier);
+    long getUsersCountInRoomAndTier(String room, String tier);*/
 }
 

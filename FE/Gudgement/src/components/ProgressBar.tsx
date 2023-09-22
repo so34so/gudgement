@@ -20,9 +20,6 @@ const ProgressBar = ({ percent }: { percent: number }) => {
       if (percent <= 0.5) {
         setProgressColor("bg-main");
       }
-      if (percent > 0.5 && percent <= 0.7) {
-        setProgressColor("bg-transparent");
-      }
       if (percent > 0.7) {
         setProgressColor("bg-red");
       }

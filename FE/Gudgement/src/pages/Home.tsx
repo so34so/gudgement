@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
-import { getData } from "../utils/common";
+import { getAsyncData } from "../utils/common";
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
  * 서버에서 유저가 기준일로 부터 현재까지 쓴 소비 내역 총합만 줄 수 있다고 하면 퍼센트를 직접 계산하면 됨
@@ -27,11 +27,12 @@ import { getData } from "../utils/common";
  */
 export default function Home() {
   const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
-  const [percent, setPercent] = useState(0.5);
+  const [percent, setPercent] = useState(0.6);
   const [spend, setSpend] = useState<{ text: string; color: string }>({
     text: "",
     color: "",
   });
+  const [isStartSingle] = useState(true);
   useEffect(() => {
     if (percent <= 0.5) {
       setSpend({ text: "절약", color: "text-black" });
@@ -45,7 +46,7 @@ export default function Home() {
   }, [percent]);
 
   async function fetchUser() {
-    const token = await getData("accessToken");
+    const token = await getAsyncData("accessToken");
     try {
       const response: AxiosResponse<CommonType.TUser> = await axios.get(
         `${API_URL}/member/loadMyInfo`,
@@ -104,23 +105,44 @@ export default function Home() {
             999,999원
           </Text>
         </View>
-        <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-[5px]">
-          <Text className={`font-PretendardBlack ${spend.color} text-[24px]`}>
-            {spend.text}
-          </Text>
-          <Image source={goodIcon} className="w-16 h-12" resizeMode="contain" />
-          <View className="flex flex-col">
-            <Text className="text-black font-PretendardExtraBold text-[16px]">
-              이번 달 소비
-            </Text>
-            <Text className="text-black font-PretendardExtraBold text-[24px]">
-              14,742,096원
+        {isStartSingle ? (
+          <>
+            <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-[5px]">
+              <Text
+                className={`font-PretendardBlack ${spend.color} text-[24px]`}
+              >
+                {spend.text}
+              </Text>
+              <Image
+                source={goodIcon}
+                className="w-16 h-12"
+                resizeMode="contain"
+              />
+              <View className="flex flex-col">
+                <Text className="text-black font-PretendardExtraBold text-[16px]">
+                  이번 달 소비
+                </Text>
+                <Text className="text-black font-PretendardExtraBold text-[24px]">
+                  14,742,096원
+                </Text>
+              </View>
+            </View>
+            <View className="top-16">
+              <ProgressBar percent={percent} />
+            </View>
+          </>
+        ) : (
+          <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-[5px]">
+            <Image
+              source={goodIcon}
+              className="w-16 h-12"
+              resizeMode="contain"
+            />
+            <Text className="text-black font-PretendardExtraBold text-[18px]">
+              진행 중인 싱글 플레이가 없습니다!
             </Text>
           </View>
-        </View>
-        <View className="top-16">
-          <ProgressBar percent={percent} />
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );

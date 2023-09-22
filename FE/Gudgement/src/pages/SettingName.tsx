@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,58 +9,78 @@ import {
   ImageBackground,
   ImageSourcePropType,
   Image,
-  Pressable,
 } from "react-native";
-import { WithLocalSvg } from "react-native-svg";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
-import ArrowIcon from "../assets/icons/arrowIcon.svg";
 import NavigationButton from "../components/NavigationButton";
-import { getAsyncData } from "../utils/common";
 import Reactotron from "reactotron-react-native";
+import { API_URL } from "@env";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
     MyPageBackground as ImageSourcePropType;
   const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-  const arrowIcon: ImageSourcePropType = ArrowIcon as ImageSourcePropType;
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const [name, setName] = useState("");
-  const [tempUserId, setTempUserId] = useState(0);
+  const [checkName, setCheckName] = useState(0);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [agree, setAgree] = useState(false);
 
-  const getTempUserId = async () => {
-    try {
-      const responseGetId = await getAsyncData("id");
-      Reactotron.log!("아이디 확인 성공!", responseGetId);
-      setTempUserId(responseGetId ? parseInt(responseGetId, 10) : 0);
-    } catch (error) {
-      Reactotron.log!("아이디 확인 실패!", error);
+  const { data: fetchUserId, refetch } = useQuery({
+    queryKey: ["fetchId"],
+    enabled: false,
+  });
+
+  const handleFetchCheckName = async (currentName: string) => {
+    const nickName = currentName.trim();
+    if (nickName.length > 6 || nickName.length < 1) {
+      setCheckName(1);
+      return;
     }
-  };
-
-  const handleCheckName = async (currentEmail: string) => {
-    const sendBE = {
-      id: tempUserId,
-      email: currentEmail,
-    };
-    Reactotron.log!("sendBE", sendBE);
     try {
-      const response = await axios.post(`${API_URL}/member/valid/nickname`);
-      Reactotron.log!("인증 메일 요청 성공!", response.data);
-      if (response.status === 200) {
-        const mailCode = response.data.toString();
-        setCheckNumber(mailCode);
-        setEmail(currentEmail);
-        // 이메일로 전송된 인증 코드를 입력하세요! 알림 모달창
+      const response = await axios.post(
+        `${API_URL}/member/valid/nickname?nickname=${nickName}`,
+      );
+      Reactotron.log!("닉네임 중복 확인 성공!", response.data);
+      if (response.data === true) {
+        setCheckName(2); // 멋진 닉네임이네요!
+      }
+      if (response.data === false) {
+        setCheckName(3); // 중복된 닉네임이예요.
       }
     } catch (error) {
-      // 인증 메일 요청 실패! 알림 모달창
-      Reactotron.log!("인증 메일 요청 실패!", error);
+      setCheckName(4); // 중복 확인 실패
+      Reactotron.log!("닉네임 중복 확인 실패!", error);
     }
   };
+
+  const handleFetchName = async (currentName: string) => {
+    if (checkName !== 2) {
+      // 다음 버튼 비활성화
+    }
+    if (checkName === 2 && typeof fetchUserId === "number") {
+      try {
+        const response = await axios.post(
+          `${API_URL}/member/valid/nickname?id=${fetchUserId}&nickname=${currentName}`,
+        );
+        Reactotron.log!("인증 메일 등록 성공!", response.data);
+        setShowAgreement(true);
+        setAgree(true);
+        navigation.navigate("SettingAccount");
+      } catch (error) {
+        // 인증 메일 등록 실패! 알림 모달창
+        Reactotron.log!("인증 메일 등록 실패!", error);
+      }
+    }
+  };
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <View className="flex">
@@ -70,16 +90,12 @@ function SettingName() {
         className="flex w-screen h-screen"
       >
         <View className="z-10 flex flex-col">
-          <View className="flex flex-row justify-between items-center px-4">
-            <Pressable onPress={() => navigation.navigate("SettingEmail")}>
-              <WithLocalSvg width={50} height={50} asset={arrowIcon} />
-            </Pressable>
+          <View className="flex justify-between items-center px-4">
             <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
               <Text className="py-1 px-2 w-full text-center bg-darkgray rounded-lg text-white text-sm font-PretendardExtraBold">
                 닉네임 설정
               </Text>
             </View>
-            <View className="bg-transparent h-10 w-10" />
           </View>
           <View className="flex w-full justify-center items-center">
             <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
@@ -115,14 +131,22 @@ function SettingName() {
                 <SafeAreaView className="mx-4 w-fit">
                   <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
                     <TextInput
-                      onChangeText={setName}
+                      onChangeText={newName => {
+                        const nickName = newName.trim();
+                        setName(nickName);
+                        if (nickName.length > 6 || nickName.length < 1) {
+                          setCheckName(1);
+                        } else {
+                          setCheckName(5);
+                        }
+                      }}
                       value={name}
                       placeholder="닉네임"
                       placeholderTextColor="darkgray"
-                      className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-sm font-PretendardExtraBold"
+                      className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
                     />
                     <NavigationButton
-                      handleFunction={() => handleCheckName(name)}
+                      handleFunction={() => handleFetchCheckName(name.trim())}
                       text="중복 확인"
                       height="lg"
                       width="sm"
@@ -130,9 +154,36 @@ function SettingName() {
                       color="lightsky"
                     />
                   </View>
-                  <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
-                    닉네임을 입력해주세요.
-                  </Text>
+                  {checkName === 0 ? (
+                    <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
+                      닉네임을 입력해주세요.
+                    </Text>
+                  ) : null}
+                  {checkName === 1 ? (
+                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                      1글자 이상 6글자 이하로 입력해주세요.
+                    </Text>
+                  ) : null}
+                  {checkName === 2 ? (
+                    <Text className="text-sky text-xs font-PretendardExtraBold px-4 pb-4">
+                      멋진 닉네임이네요!
+                    </Text>
+                  ) : null}
+                  {checkName === 3 ? (
+                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                      중복된 닉네임이예요.
+                    </Text>
+                  ) : null}
+                  {checkName === 4 ? (
+                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                      다시 시도해주세요.
+                    </Text>
+                  ) : null}
+                  {checkName === 5 ? (
+                    <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
+                      닉네임 중복 확인해주세요.
+                    </Text>
+                  ) : null}
                 </SafeAreaView>
               </View>
             </View>
@@ -140,7 +191,7 @@ function SettingName() {
         </View>
         <View className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
           <NavigationButton
-            handleFunction={() => handleName(name)}
+            handleFunction={() => handleFetchName(name)}
             text="다 음"
             height="lg"
             width="lg"

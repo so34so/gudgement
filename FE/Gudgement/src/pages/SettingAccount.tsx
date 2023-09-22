@@ -12,8 +12,14 @@ import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
+import { useState } from "react";
 
-const accounts = Array(10).fill(0);
+const accounts = [1, 2, 3, 4, 5, 6];
+
+export interface IAccount {
+  id: number;
+  isSelect: boolean;
+}
 function SettingAccount() {
   const mypageBackground: ImageSourcePropType =
     MyPageBackground as ImageSourcePropType;
@@ -21,6 +27,14 @@ function SettingAccount() {
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const [isSelectedAccount, setIsSelectedAccount] = useState<
+    ArrayLike<IAccount>
+  >(
+    accounts.map((ele: number) => {
+      return { id: ele, isSelect: false };
+    }),
+  );
 
   return (
     <View className="flex">
@@ -47,16 +61,26 @@ function SettingAccount() {
                     </View>
                   </View>
                   <View className="flex felx-col">
-                    <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
+                    <Text className="text-sub01 text-xs font-PretendardExtraBold">
                       연동한 계좌정보는 저희가
                     </Text>
-
                     <View className="flex flex-row">
                       <Text className="text-darkgray text-xs font-PretendardExtraBold">
                         안전하게 보관
                       </Text>
                       <Text className="text-sub01 text-xs font-PretendardExtraBold">
                         할게요.
+                      </Text>
+                    </View>
+                    <View className="flex flex-row">
+                      <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
+                        주계좌 1개를
+                      </Text>
+                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
+                        선택
+                      </Text>
+                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
+                        해주세요.
                       </Text>
                     </View>
                   </View>
@@ -66,9 +90,20 @@ function SettingAccount() {
                 </Text>
               </View>
               <ScrollView className="h-[570px] w-fill p-3">
-                {accounts.map((e: number) => {
-                  return <AccountBox key={e} />;
-                })}
+                <View className="mb-6">
+                  {accounts.map((e: number) => {
+                    return (
+                      <AccountBox
+                        key={e}
+                        bank={"우리은행"}
+                        accountName={"우리은행저축예금"}
+                        accountNumber={"1002-***-****-****"}
+                        accountMoney={"잔액 10,230원"}
+                        accountId={e}
+                      />
+                    );
+                  })}
+                </View>
               </ScrollView>
             </View>
           </View>

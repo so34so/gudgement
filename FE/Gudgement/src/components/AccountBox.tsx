@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   View,
   Text,
@@ -12,25 +11,29 @@ import CheckBoxOn from "../assets/icons/checkBoxOn.svg";
 import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
 
 interface AccountBoxProps {
+  bank: string;
   accountName: string;
   accountNumber: string;
   accountMoney: string;
+  accountId: number;
 }
 
 function AccountBox({
+  bank,
   accountName,
   accountNumber,
   accountMoney,
+  accountId,
 }: AccountBoxProps) {
   const checkBoxOn: ImageSourcePropType = CheckBoxOn as ImageSourcePropType;
   const checkBoxOff: ImageSourcePropType = CheckBoxOff as ImageSourcePropType;
   const shinhanLogo: ImageSourcePropType = ShinhanLogo as ImageSourcePropType;
 
-  const [isSelected, setSelection] = useState(false);
-
-  const toggleCheckbox = () => {
-    setSelection(!isSelected);
-  };
+  // reactotron.log!(isSelectedAccount);
+  // const onSelect = (id: number) => {
+  //   isSelectedAccount[id].isSelect = true;
+  //   setIsSelectedAccount(isSelectedAccount);
+  // };
 
   return (
     <View className="m-2 p-4 flex flex-row justify-between items-center rounded-2xl bg-white border-[3px] border-darkgray border-solid">
@@ -50,8 +53,13 @@ function AccountBox({
           </Text>
         </View>
       </View>
-      <Pressable onPress={toggleCheckbox}>
-        {isSelected ? (
+      <Pressable
+        onPress={() => {
+          console.log("click");
+          // onSelect(accountId);
+        }}
+      >
+        {accountId ? (
           <WithLocalSvg width={40} height={40} asset={checkBoxOn} />
         ) : (
           <WithLocalSvg width={40} height={40} asset={checkBoxOff} />

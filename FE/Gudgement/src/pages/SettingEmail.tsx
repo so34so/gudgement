@@ -64,6 +64,10 @@ function SettingEmail() {
 
   const handleFetchNumber = async (currentNumber: string) => {
     Reactotron.log!(currentNumber);
+    if (currentNumber.length === 0) {
+      // 이메일로 전송된 인증 코드를 입력하세요! 알림 모달창
+      return;
+    }
     if (checkNumber === currentNumber) {
       // Reactotron.log!("이메일 인증 코드 동일!", checkNumber, currentNumber);
       try {
@@ -149,7 +153,7 @@ function SettingEmail() {
                         className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] text-darkgray border-darkgray text-sm font-PretendardExtraBold"
                       />
                       <NavigationButton
-                        handleFunction={() => handleFetchEmail(email)}
+                        handleFunction={() => handleFetchEmail(email.trim())}
                         text="인증받기"
                         height="lg"
                         width="sm"
@@ -172,7 +176,7 @@ function SettingEmail() {
           </View>
           <Pressable className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
             <NavigationButton
-              handleFunction={() => handleFetchNumber(number)}
+              handleFunction={() => handleFetchNumber(number.trim())}
               text="다 음"
               height="lg"
               width="lg"

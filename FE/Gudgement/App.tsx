@@ -17,8 +17,7 @@ import PushNotification from "react-native-push-notification";
 import { useEffect, useState } from "react";
 
 import Login from "./src/pages/Login";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { CommonType } from "./src/types/CommonType";
+
 if (__DEV__) {
   import("./reactotron");
 }

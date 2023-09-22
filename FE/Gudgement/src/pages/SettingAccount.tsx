@@ -14,7 +14,44 @@ import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
 import { useState } from "react";
 
-const accounts = [1, 2, 3, 4, 5, 6];
+const accounts = [
+  {
+    id: 0,
+    bankName: "신한",
+    accountNumber: "1002-283-1234-1234",
+    accountHolder: "강해빈",
+    email: "aubrienid@naver.com",
+    balance: 231333512000,
+    isSelected: false,
+  },
+  {
+    id: 1,
+    bankName: "우리",
+    accountNumber: "1002-283-1234-1234",
+    accountHolder: "강해빈",
+    email: "aubrienid@naver.com",
+    balance: 231333512000,
+    isSelected: false,
+  },
+  {
+    id: 0,
+    bankName: "하나",
+    accountNumber: "1002-283-1234-1234",
+    accountHolder: "강해빈",
+    email: "aubrienid@naver.com",
+    balance: 231333512000,
+    isSelected: false,
+  },
+  {
+    id: 0,
+    bankName: "토스",
+    accountNumber: "1002-283-1234-1234",
+    accountHolder: "강해빈",
+    email: "aubrienid@naver.com",
+    balance: 231333512000,
+    isSelected: false,
+  },
+];
 
 export interface IAccount {
   id: number;

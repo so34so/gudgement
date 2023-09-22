@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b0a89a66-2ceb-4709-bb09-2fdc5107ca71" name="변경" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Gudgement" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="HTML File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="2V1LiCciXW54ku9alPlbSrTzjCs" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDK&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;9b0029364e69cbd61dd476ea390dddd1&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.gudgement.member.common.filter" />
+      <recent name="com.example.gudgement.member.exception" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Gudgenet" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Gudgenet" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GudgementApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="Gudgement.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.gudgement.GudgementApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="b0a89a66-2ceb-4709-bb09-2fdc5107ca71" name="변경" comment="" />
+      <created>1693998769008</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1693998769008</updated>
+      <workItem from="1693998770627" duration="1065000" />
+      <workItem from="1694397898346" duration="203000" />
+      <workItem from="1694398223536" duration="24568000" />
+      <workItem from="1694476412540" duration="23739000" />
+      <workItem from="1694507236848" duration="1728000" />
+      <workItem from="1694528812575" duration="2580000" />
+      <workItem from="1694534043941" duration="19000" />
+      <workItem from="1694534449783" duration="19222000" />
+      <workItem from="1694591179675" duration="78000" />
+      <workItem from="1694591820477" duration="182000" />
+      <workItem from="1694593195776" duration="1330000" />
+      <workItem from="1694648997051" duration="13632000" />
+      <workItem from="1694738601759" duration="5225000" />
+      <workItem from="1694757510814" duration="6386000" />
+      <workItem from="1694836413903" duration="58584000" />
+      <workItem from="1695045748214" duration="1000" />
+      <workItem from="1695049670838" duration="22166000" />
+      <workItem from="1695099566923" duration="6000" />
+      <workItem from="1695099975347" duration="9000" />
+      <workItem from="1695100070812" duration="52000" />
+      <workItem from="1695100577549" duration="2010000" />
+      <workItem from="1695104490999" duration="118000" />
+      <workItem from="1695104620970" duration="589000" />
+      <workItem from="1695105357236" duration="71000" />
+      <workItem from="1695105618976" duration="5995000" />
+      <workItem from="1695111905353" duration="1628000" />
+      <workItem from="1695113642706" duration="18000" />
+      <workItem from="1695131551927" duration="509000" />
+      <workItem from="1695132199492" duration="20630000" />
+      <workItem from="1695171275816" duration="16913000" />
+      <workItem from="1695196061616" duration="267000" />
+      <workItem from="1695197703855" duration="34000" />
+      <workItem from="1695197938373" duration="943000" />
+      <workItem from="1695204609731" duration="1058000" />
+      <workItem from="1695278236164" duration="910000" />
+      <workItem from="1695280072080" duration="11069000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.springframework.web.reactive.function.client.WebClientResponseException$BadRequest" package="org.springframework.web.reactive.function.client" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

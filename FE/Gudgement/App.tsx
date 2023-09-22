@@ -138,7 +138,7 @@ function App(): JSX.Element {
           {isLoggedIn ? (
             <Stack.Navigator>
               <Stack.Screen
-                name="홈"
+                name="바텀"
                 component={BottomTabNavigator}
                 options={{ headerShown: false }}
               />

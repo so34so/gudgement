@@ -12,7 +12,7 @@ export declare module CommonType {
     플레이: undefined;
     "내 정보": undefined;
     랭킹: undefined;
-
+    바텀: undefined;
     /**
      * PlayScreen childs Type
      */

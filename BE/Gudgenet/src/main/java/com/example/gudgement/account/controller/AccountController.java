@@ -13,15 +13,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "VirtualAccount", description = "가상계좌 기능 컨트롤러입니다.")
+@Tag(name = "Account", description = "가상계좌 기능 컨트롤러입니다.")
 @RestController
-@RequestMapping("/api/account/virtual")
+@RequestMapping("/api/account")
 @RequiredArgsConstructor
-public class VirtualAccountController {
+public class AccountController {
 
     private final VirtualAccountService virtualAccountService;
 
     @Operation(summary = "가상계좌 생성")
+    @RequestMapping("/virtual")
     @PostMapping
     public ResponseEntity<Map<String, Object>> create(@RequestBody VirtualAccountDto virtualAccountDto) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -42,6 +43,7 @@ public class VirtualAccountController {
     }
 
     @Operation(summary = "가상계좌 목록 조회")
+    @RequestMapping("/virtual")
     @GetMapping
     public ResponseEntity<List<VirtualAccountDto>> getAll() {
         List<VirtualAccountDto> accounts = virtualAccountService.getAll();
@@ -49,14 +51,14 @@ public class VirtualAccountController {
     }
 
     @Operation(summary = "특정 가상계좌 조회")
-    @GetMapping("/{id}")
+    @GetMapping("/virtual/{id}")
     public ResponseEntity<VirtualAccountDto> getById(@PathVariable Long id) {
         VirtualAccountDto account = virtualAccountService.getById(id);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @Operation(summary = "가상계좌 삭제")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/virtual/{id}")
     public ResponseEntity<Map<String, String>> delete(@PathVariable Long id) {
         Map<String, String> resultMap = new HashMap<>();
         HttpStatus status;

@@ -9,13 +9,13 @@ import com.example.gudgement.match.dto.MatchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -26,18 +26,26 @@ public class GameServiceImpl implements GameService{
     private final GameRoomRepository gameRoomRepository;
     private final GameUserRepository gameUserRepository;
 
+    @Scheduled(fixedRate = 1000)  // 매 초마다 실행
+    public void checkUnresponsiveUsers() {
+        LocalDateTime now = LocalDateTime.now();
+        List<GameUser> unresponsiveUsers = gameUserRepository.findAllByInvitedAtBeforeAndGameAcceptedIsNull(now.minusSeconds(15));
+
+        for (GameUser user : unresponsiveUsers) {
+            String roomNumber = user.getGameRoom().getRoomNumber();
+            rejectGame(roomNumber, user.getNickName());
+
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/timeout", user.getNickName() + " did not respond.");
+        }
+    }
+
     public String createGameRoom() {
         // UUID를 이용해 랜덤한 방 번호 생성
         Random random = new Random();
 
         int roomNumber = random.nextInt(9000000) + 1000000; // Generates a random number between 100000 and 999999.
         return Integer.toString(roomNumber);
-
-        // WebSocket 연결 생성 (Spring에서 제공하는 WebSocket API 사용)
-        // 실제 구현은 WebSocket 설정과 관련된 복잡한 부분이 있으므로 여기서는 생략
     }
-
-    // GameServiceImpl 클래스에 추가...
 
     @Transactional
     public void acceptGame(String roomNumber, String nickname) {
@@ -103,6 +111,7 @@ public class GameServiceImpl implements GameService{
                 .nickName(nickname)
                 .gameAccepted(null)
                 .gameRoom(gameRoom)
+                .invitedAt(LocalDateTime.now())
                 .build();
 
         // Save the user.

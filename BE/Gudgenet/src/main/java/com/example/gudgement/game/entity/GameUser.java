@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @NoArgsConstructor
@@ -22,12 +24,14 @@ public class GameUser {
 
     private Boolean gameAccepted; // null: 아직 선택하지 않음, true: 수락, false: 거부
 
+    private LocalDateTime invitedAt;
     @Builder
-    public GameUser(Long id, String nickName, GameRoom gameRoom, Boolean gameAccepted){
+    public GameUser(Long id, String nickName, GameRoom gameRoom, Boolean gameAccepted, LocalDateTime invitedAt){
         this.id = id;
         this.nickName = nickName;
         this.gameRoom = gameRoom;
         this.gameAccepted = gameAccepted;
+        this.invitedAt = invitedAt;
     }
 
     public void acceptGame() {

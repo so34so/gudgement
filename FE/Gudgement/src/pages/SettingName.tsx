@@ -18,6 +18,7 @@ import { API_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getTempUserId } from "../utils/common";
+import CustomModal from "../components/CustomModal";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
@@ -32,12 +33,22 @@ function SettingName() {
   const [tempId, setTempId] = useState(0);
   const [showAgreement, setShowAgreement] = useState(false);
   const [agree, setAgree] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
 
   useEffect(() => {
     getTempUserId().then(tempUserId => {
       setTempId(tempUserId);
     });
   }, []);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleFetchCheckName = async (currentName: string) => {
     const nickName = currentName.trim();
@@ -64,7 +75,9 @@ function SettingName() {
 
   const handleFetchName = async (currentName: string) => {
     if (checkName !== 2) {
-      // 다음 버튼 비활성화
+      setModalText("닉네임 설정을 다시 확인해주세요.");
+      openModal();
+      return;
     }
     if (checkName === 2) {
       try {
@@ -76,7 +89,7 @@ function SettingName() {
         setAgree(true);
         navigation.navigate("SettingAccount");
       } catch (error) {
-        // 닉네임 등록 실패! 알림 모달창
+        setCheckName(4);
         Reactotron.log!("닉네임 등록 실패!", error);
       }
     }
@@ -90,6 +103,11 @@ function SettingName() {
           resizeMode="cover"
           className="flex w-screen h-screen"
         >
+          <CustomModal
+            alertText={modalText}
+            visible={modalVisible}
+            closeModal={closeModal}
+          />
           <View className="z-10 flex flex-col">
             <View className="flex justify-between items-center px-4">
               <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">

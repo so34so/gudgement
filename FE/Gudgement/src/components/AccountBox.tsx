@@ -14,12 +14,17 @@ import { IAccount } from "../pages/SettingAccount";
 interface AccountBoxProps {
   account: IAccount;
   isSelected: boolean;
+  onSelect: (accountId: number) => void;
 }
 
-function AccountBox({ account, isSelected }: AccountBoxProps) {
+function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
   const checkBoxOn: ImageSourcePropType = CheckBoxOn as ImageSourcePropType;
   const checkBoxOff: ImageSourcePropType = CheckBoxOff as ImageSourcePropType;
   const shinhanLogo: ImageSourcePropType = ShinhanLogo as ImageSourcePropType;
+
+  const handleSelect = () => {
+    onSelect(account.id);
+  };
 
   return (
     <View className="m-2 p-4 flex flex-row justify-between items-center rounded-2xl bg-white border-[3px] border-darkgray border-solid">
@@ -39,7 +44,7 @@ function AccountBox({ account, isSelected }: AccountBoxProps) {
           </Text>
         </View>
       </View>
-      <Pressable>
+      <Pressable onPress={() => handleSelect()}>
         {isSelected ? (
           <WithLocalSvg width={40} height={40} asset={checkBoxOn} />
         ) : (

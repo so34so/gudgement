@@ -202,6 +202,7 @@ function SettingAccount() {
                         <AccountBox
                           account={account}
                           isSelected={selectedAccountId === account.id}
+                          onSelect={handleSelect}
                         />
                       </Pressable>
                     );

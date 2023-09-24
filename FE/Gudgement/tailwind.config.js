@@ -33,7 +33,7 @@ module.exports = {
         white20: "rgba(255, 255, 255, 0.2)",
         white70: "#ffffffb2",
         white90: "#ffffffe5",
-        main: "#21e5a9",
+        mainColor: "#21e5a9",
       },
       fontSize: {
         "2xs": 14,

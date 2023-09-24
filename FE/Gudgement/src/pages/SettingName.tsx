@@ -1,5 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -13,31 +11,39 @@ import {
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import NavigationButton from "../components/NavigationButton";
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import Reactotron from "reactotron-react-native";
 import { API_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getTempUserId } from "../utils/common";
+import CustomModal from "../components/CustomModal";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
     MyPageBackground as ImageSourcePropType;
   const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
 
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [name, setName] = useState("");
   const [checkName, setCheckName] = useState(0);
   const [tempId, setTempId] = useState(0);
-  const [showAgreement, setShowAgreement] = useState(false);
-  const [agree, setAgree] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
   useEffect(() => {
     getTempUserId().then(tempUserId => {
       setTempId(tempUserId);
     });
   }, []);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleFetchCheckName = async (currentName: string) => {
     const nickName = currentName.trim();
@@ -63,8 +69,11 @@ function SettingName() {
   };
 
   const handleFetchName = async (currentName: string) => {
+    setBottomSheetVisible(false);
     if (checkName !== 2) {
-      // 다음 버튼 비활성화
+      setModalText("닉네임 설정을 다시 확인해주세요.");
+      openModal();
+      return;
     }
     if (checkName === 2) {
       try {
@@ -72,11 +81,9 @@ function SettingName() {
           `${API_URL}/member/valid/nickname?id=${tempId}&nickname=${currentName}`,
         );
         Reactotron.log!("닉네임 등록 성공!", response.data);
-        setShowAgreement(true);
-        setAgree(true);
-        navigation.navigate("SettingAccount");
+        setBottomSheetVisible(true);
       } catch (error) {
-        // 닉네임 등록 실패! 알림 모달창
+        setCheckName(4);
         Reactotron.log!("닉네임 등록 실패!", error);
       }
     }
@@ -90,6 +97,11 @@ function SettingName() {
           resizeMode="cover"
           className="flex w-screen h-screen"
         >
+          <CustomModal
+            alertText={modalText}
+            visible={modalVisible}
+            closeModal={closeModal}
+          />
           <View className="z-10 flex flex-col">
             <View className="flex justify-between items-center px-4">
               <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
@@ -192,7 +204,7 @@ function SettingName() {
               </View>
             </View>
           </View>
-          <View className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
+          <View className="z-10 w-full h-fill absolute bottom-0 pb-10 flex justify-end items-center">
             <NavigationButton
               handleFunction={() => handleFetchName(name)}
               text="다 음"
@@ -203,6 +215,10 @@ function SettingName() {
             />
           </View>
         </ImageBackground>
+        <AgreeBottomSheet
+          bottomSheetVisible={bottomSheetVisible}
+          setBottomSheetVisible={setBottomSheetVisible}
+        />
       </KeyboardAwareScrollView>
     </View>
   );

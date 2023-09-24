@@ -19,6 +19,7 @@ import Reactotron from "reactotron-react-native";
 import { getTempUserId } from "../utils/common";
 import { API_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
+import CustomModal from "../components/CustomModal";
 
 function SettingEmail() {
   const mypageBackground: ImageSourcePropType =
@@ -32,6 +33,8 @@ function SettingEmail() {
   const [number, setNumber] = useState("");
   const [checkNumber, setCheckNumber] = useState("");
   const [tempId, setTempId] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
 
   useEffect(() => {
     getTempUserId().then(tempUserId => {
@@ -39,7 +42,27 @@ function SettingEmail() {
     });
   }, []);
 
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const isValidEmail = (currentEmail: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(currentEmail);
+  };
+
   const handleFetchEmail = async (currentEmail: string) => {
+    if (!isValidEmail(currentEmail)) {
+      setModalText("이메일 형식을 확인해주세요.");
+      openModal();
+      return;
+    }
+    setModalText("로딩 중...");
+    openModal();
     const sendBE = {
       id: tempId,
       email: currentEmail,
@@ -54,16 +77,23 @@ function SettingEmail() {
         const mailCode = response.data.toString();
         setCheckNumber(mailCode);
         setEmail(currentEmail);
-        // 이메일로 전송된 인증 코드를 입력하세요! 알림 모달창
+        setModalText("이메일로 전송된 인증 코드를 입력하세요.");
+        openModal();
       }
     } catch (error) {
-      // 인증 메일 요청 실패! 알림 모달창
+      setModalText("다시 시도해주세요.");
+      openModal();
       Reactotron.log!("인증 메일 요청 실패!", error);
     }
   };
 
   const handleFetchNumber = async (currentNumber: string) => {
     Reactotron.log!(currentNumber);
+    if (currentNumber.length === 0) {
+      setModalText("이메일로 전송된 인증 코드를 입력하세요.");
+      openModal();
+      return;
+    }
     if (checkNumber === currentNumber) {
       // Reactotron.log!("이메일 인증 코드 동일!", checkNumber, currentNumber);
       try {
@@ -80,11 +110,13 @@ function SettingEmail() {
           navigation.navigate("SettingName");
         }
       } catch (error) {
-        // 인증 메일 등록 실패! 알림 모달창
+        setModalText("다시 시도해주세요.");
+        openModal();
         Reactotron.log!("인증 메일 등록 실패!", error);
       }
     } else {
-      // 인증 코드를 다시 확인해주세요! 알림 모달창
+      setModalText("인증 코드를 다시 확인해주세요.");
+      openModal();
     }
   };
   return (
@@ -95,6 +127,11 @@ function SettingEmail() {
           resizeMode="cover"
           className="flex w-screen h-screen"
         >
+          <CustomModal
+            alertText={modalText}
+            visible={modalVisible}
+            closeModal={closeModal}
+          />
           <View className="z-10 flex flex-col">
             <View className="flex justify-between items-center px-4">
               <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
@@ -149,7 +186,7 @@ function SettingEmail() {
                         className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] text-darkgray border-darkgray text-sm font-PretendardExtraBold"
                       />
                       <NavigationButton
-                        handleFunction={() => handleFetchEmail(email)}
+                        handleFunction={() => handleFetchEmail(email.trim())}
                         text="인증받기"
                         height="lg"
                         width="sm"
@@ -172,7 +209,7 @@ function SettingEmail() {
           </View>
           <Pressable className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
             <NavigationButton
-              handleFunction={() => handleFetchNumber(number)}
+              handleFunction={() => handleFetchNumber(number.trim())}
               text="다 음"
               height="lg"
               width="lg"

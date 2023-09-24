@@ -25,8 +25,8 @@ public class StompGameChatController {
 
     // gameCode Long으로 받는 거 수정해야 됨
     @Operation(summary = "전체 채팅")
-    @MessageMapping("/game/{gameCode}/chat/all")
-    public void chatAll(@DestinationVariable String gameCode, MessageDto messageDTO){
+    @MessageMapping("/game/{roomNumber}/chat/all")
+    public void chatAll(@DestinationVariable String roomNumber, MessageDto messageDTO){
         log.info(messageDTO.getMemberId()+"");
 
         SendMessageDto message = SendMessageDto.builder()
@@ -37,7 +37,7 @@ public class StompGameChatController {
         publisher.publish(gameTopic,
                 DataDto.builder()
                         .type("GAME_CHAT")
-                        .code(gameCode)
+                        .code(roomNumber)
                         .data(message)
                         .build());
     }

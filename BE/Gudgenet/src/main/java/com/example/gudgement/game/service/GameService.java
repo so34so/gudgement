@@ -4,5 +4,11 @@ import com.example.gudgement.match.dto.MatchDto;
 
 public interface GameService {
 
-    String startNewGame(MatchDto matchDto);
+    String createGameRoom();
+
+    void acceptGame(String roomNumber, String username);
+
+    void rejectGame(String roomNumber, String username);
+
+    void addUserToRoom(String roomNumber, String username);
 }

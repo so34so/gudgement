@@ -24,7 +24,10 @@ public class MailServiceImpl implements MailService{
     private final MemberRepository memberRepository;
 
     public String sendEmail(String toEmail, String text) {
-        if (duplicateEmail(toEmail)) new BaseErrorException(ErrorCode.DUPLICATION_EMAIL);
+        if (duplicateEmail(toEmail)) {
+            throw new BaseErrorException(ErrorCode.DUPLICATION_EMAIL);
+        }
+
         System.out.println("보내는 대상 : " + toEmail);
         System.out.println("보내는 내용 : " + text);
 

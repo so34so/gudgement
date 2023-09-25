@@ -75,7 +75,7 @@ public class MemberController {
         System.out.println(httpServletRequest.getHeader("Authorization"));
         Member member = getMember(httpServletRequest);
         System.out.println(member.getEmail());
-        return ResponseEntity.ok(memberService.loadInfo(member.getEmail()));
+        return ResponseEntity.ok(memberService.loadInfo(member.getMemberId()));
     }
 
     private Member getMember(HttpServletRequest httpServletRequest) {

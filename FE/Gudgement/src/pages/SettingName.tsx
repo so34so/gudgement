@@ -77,9 +77,12 @@ function SettingName() {
     }
     if (checkName === 2) {
       try {
-        const response = await axios.post(
-          `${API_URL}/member/valid/nickname?id=${tempId}&nickname=${currentName}`,
-        );
+        const response = await axios.post(`${API_URL}/member/valid/nickname`, {
+          params: {
+            id: tempId,
+            nickname: currentName,
+          },
+        });
         Reactotron.log!("닉네임 등록 성공!", response.data);
         setBottomSheetVisible(true);
       } catch (error) {
@@ -90,7 +93,7 @@ function SettingName() {
   };
 
   return (
-    <View className="flex">
+    <View className="flex w-screen h-screen">
       <KeyboardAwareScrollView>
         <ImageBackground
           source={mypageBackground}

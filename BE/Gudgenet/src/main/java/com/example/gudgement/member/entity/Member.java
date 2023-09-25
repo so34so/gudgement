@@ -5,7 +5,6 @@ import com.example.gudgement.shop.entity.Inventory;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,51 +21,59 @@ import java.util.List;
 public class Member implements Serializable {
 
     @Id
-    @Column
+    @Column(nullable = false)
     private Long memberId;
 
-    @NotNull
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String email;
 
+    @Column
     private int gender;
 
+    @Column
     private int age;
 
-    @NotNull
+    @Column(nullable = false)
     private String nickname;
 
-    @NotNull
+    @Column(nullable = false)
     private boolean emailApprove;
 
-    @NotNull
+    @Column(nullable = false)
     private boolean nicknameApprove;
 
-    @NotNull
-    @Column(columnDefinition = "bigint default 500")
+    @Column(nullable = false, columnDefinition = "bigint default 500")
     private long tiggle;
 
-    @NotNull
-    @Column(columnDefinition = "bigint default 0")
+    @Column(nullable = false, columnDefinition = "bigint default 0")
     private long exp;
 
-    @NotNull
-    @Column
+    @Column(nullable = false)
     private int level;
 
-    @NotNull
-    @Column(columnDefinition = "integer default 0")
+    // 임시, 아마 추후엔 게임 룸에서 싱글 플레이의 내용에서 끌어와서 사용할 예정
+    @Column
+    private int target_payment;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private int pedometer;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(nullable = false)
+    private Grade grade;
 
+    @Column
     private LocalDateTime createAt;
 
+    @Column
     private String refreshToken;
 
-    // 연결 관계
+    @Lob
+    @Column
+    private String firebaseToken;
+
+    /* 연결 관계 */
+    // 상점, 진행도 관련
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
     private List<Inventory> set_item = new ArrayList<>();
 
@@ -74,6 +81,7 @@ public class Member implements Serializable {
     private List<Progress> progresses = new ArrayList<>();
 
     // 미구현
+    // 게임, 계좌 관련
 //     @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
 //    private GameRoom roomId;
 //
@@ -96,7 +104,7 @@ public class Member implements Serializable {
     @PrePersist
     public void prePersist() {
         this.createAt = LocalDateTime.now();
-        this.role = Role.ROLE_USER;
+        this.grade = Grade.ROLE_USER;
         this.level = 1;
     }
 
@@ -116,5 +124,9 @@ public class Member implements Serializable {
     
     public void useTiggle(Long tiggle) {
         this.tiggle -= tiggle;
+    }
+
+    public void setFirebaseToken(String token) {
+        this.firebaseToken = token;
     }
 }

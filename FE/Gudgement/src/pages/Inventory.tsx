@@ -31,6 +31,7 @@ import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
+import { MEMBER_ID } from "./Shop";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -70,7 +71,7 @@ function Inventory({ route }: InventoryProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[category],
-            memberId: 1,
+            memberId: MEMBER_ID,
           },
         },
       );
@@ -90,9 +91,13 @@ function Inventory({ route }: InventoryProps) {
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
-
+  reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
   useLayoutEffect(() => {
-    if (fetchItem?.length) {
+    if (
+      fetchItem?.length &&
+      fetchItem[selectItem] &&
+      "equipped" in fetchItem[selectItem]
+    ) {
       setItemStatus(fetchItem[selectItem].equipped);
     }
   }, [fetchItem, selectItem]);

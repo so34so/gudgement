@@ -1,19 +1,23 @@
 /// <reference types="nativewind/types" />
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CommonType } from "./src/types/CommonType";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import PlayNavigator from "./src/navigation/PlayNavigator";
+import SettingEmail from "./src/pages/SettingEmail";
+import SettingName from "./src/pages/SettingName";
+import SettingAccount from "./src/pages/SettingAccount";
 
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
 import { useEffect, useState } from "react";
 
 import Login from "./src/pages/Login";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { CommonType } from "./src/types/CommonType";
-import PlaySelect from "./src/pages/PlaySelect";
+
 if (__DEV__) {
   import("./reactotron");
 }
@@ -127,28 +131,51 @@ function App(): JSX.Element {
   }, []);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
         <NavigationContainer>
-          {!isLoggedIn ? (
+          {isLoggedIn ? (
             <Stack.Navigator>
               <Stack.Screen
-                name="홈"
+                name="바텀"
                 component={BottomTabNavigator}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="PlaySelect"
-                component={PlaySelect}
+                name="PlayNavigator"
+                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
           ) : (
-            <Login onLogin={handleLogin} />
+            <Stack.Navigator initialRouteName="Login">
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SettingEmail"
+                component={SettingEmail}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SettingName"
+                component={SettingName}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SettingAccount"
+                component={SettingAccount}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="BottomTabNavigator"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
           )}
         </NavigationContainer>
       </GestureHandlerRootView>

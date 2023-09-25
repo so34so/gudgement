@@ -1,3 +1,5 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import {
   Image,
@@ -6,34 +8,109 @@ import {
   Pressable,
   ImageSourcePropType,
 } from "react-native";
-import { WebView } from "react-native-webview";
-import { KAKAO_LOGIN_REST_API_KEY, KAKAO_LOGIN_REDIRECT_URI } from "@env";
-import KakaoLogoImg from "../assets/images/kakaologo.png";
-// 상단에 적어 탈취하여 웹뷰에 값을 가져오기
+import { WebView, WebViewMessageEvent } from "react-native-webview";
+import {
+  KAKAO_LOGIN_REST_API_KEY,
+  KAKAO_LOGIN_REDIRECT_URI,
+  SERVER_URL,
+} from "@env";
+import KakaoLogoImg from "../assets/images/kakaoLogo.png";
+import axios from "axios";
+import Reactotron from "reactotron-react-native";
+import { getAsyncData, setAsyncData } from "../utils/common";
+import reactotron from "reactotron-react-native";
 
-// eslint-disable-next-line quotes
-const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage("messge from webView")`;
+// interface LoginProps {
+//   onLogin: () => void; // onLogin의 타입을 명시
+// }
+//{ onLogin }: LoginProps
 
-interface LoginProps {
-  onLogin: () => void; // onLogin의 타입을 명시
-}
-
-function Login({ onLogin }: LoginProps) {
+function Login() {
   const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);
   };
 
-  const getCode = async (codeUrl: string) => {
-    // url에 붙어오는 code= 가있다면 뒤부터 parse하여 인가 코드 get
+  interface kakaoLoginResponse {
+    id: number;
+    nickname: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpiration: string;
+  }
+
+  const fetchAccessToken = async (code: string) => {
+    try {
+      const response = await axios.post<kakaoLoginResponse>(
+        `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
+      );
+
+      const accessToken = response.data.accessToken;
+      const refreshToken = response.data.refreshToken;
+      const tempUserId = response.data.id;
+      // Reactotron.log!("사용자 정보 미리보기!", response.data);
+      // Reactotron.log!("Access Token!", accessToken);
+      // Reactotron.log!("Refresh Token!", refreshToken);
+      // Reactotron.log!("TempID!", tempUserId);
+
+      try {
+        const responseAccess = await setAsyncData("accessToken", accessToken);
+        const responseRefresh = await setAsyncData(
+          "refreshToken",
+          refreshToken,
+        );
+        const responseId = await setAsyncData("id", tempUserId);
+        Reactotron.log!(
+          "스토리지에 저장 성공!",
+          responseAccess,
+          responseRefresh,
+          responseId,
+        );
+      } catch (error) {
+        Reactotron.log!("스토리지 초기화 실패!", error);
+      }
+
+      try {
+        const responseGetAccess = await getAsyncData("accessToken");
+        const responseGetRefresh = await getAsyncData("refreshToken");
+        const responseGetId = await getAsyncData("id");
+        Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
+        Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
+        Reactotron.log!("아이디 확인 성공!", responseGetId);
+        setShowWebView(false);
+      } catch (error) {
+        Reactotron.log!("액세스 토큰 확인 실패!", error);
+      }
+
+      navigation.navigate("SettingEmail");
+    } catch (error) {
+      Reactotron.log!("인가 코드 전달 실패!", error);
+    }
+  };
+
+  const getAuthorizationCode = async (event: WebViewMessageEvent) => {
+    const url = event.nativeEvent.url;
     const exp = "code=";
-    const searchIdx = codeUrl.indexOf(exp);
+    const searchIdx = url.indexOf(exp);
+
     if (searchIdx !== -1) {
-      const code = codeUrl.substring(searchIdx + exp.length);
-      console.log(code);
-      onLogin(); // 로그인 성공 시
+      const code = url.substring(searchIdx + exp.length);
+      reactotron.log!("code", code);
+      await fetchAccessToken(code);
+    }
+  };
+
+  const handleAuthorizationCode = async (event: WebViewMessageEvent) => {
+    try {
+      await getAuthorizationCode(event);
+    } catch (error) {
+      Reactotron.log!("에러 발생!", error);
     }
   };
 
@@ -45,18 +122,18 @@ function Login({ onLogin }: LoginProps) {
         source={{
           uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
         }}
-        // 웹뷰로 열리는 모든 페이지에서 실행될 자바스크립트 코드
-        injectedJavaScript={INJECTED_JAVASCRIPT}
-        javaScriptEnabled
-        // 웹뷰에서 window.ReactNativeWebView.postMessage 함수가 호출될때 실행되는 이벤트 함수
+        injectedJavaScript={
+          'window.ReactNativeWebView.postMessage("this is message from web");'
+        }
+        javaScriptEnabled={true}
         onMessage={event => {
-          const data = event.nativeEvent.url;
-          getCode(data);
+          if (!event.nativeEvent.loading) {
+            handleAuthorizationCode(event);
+          }
         }}
       />
     );
   }
-
   return (
     <View className="flex flex-row justify-center items-end h-full pb-20">
       <Pressable

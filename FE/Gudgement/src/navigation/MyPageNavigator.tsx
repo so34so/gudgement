@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CommonType } from "../types/CommonType";
 import MyPage from "../pages/MyPage";
 import Pedometer from "../pages/Pedometer";
 import Analyze from "../pages/Analyze";
 import SingleRecords from "../pages/SingleRecords";
 import MultiRecords from "../pages/MultiRecords";
-import { CommonType } from "../types/CommonType";
+
 function MyPageNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (

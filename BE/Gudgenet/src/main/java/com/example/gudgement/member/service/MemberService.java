@@ -10,5 +10,8 @@ public interface MemberService {
     MemberVerifyResponseDto verifyMember(LoginDto loginDto);
     MemberResponseDto loadInfo(String email);
     void updateRefreshToken(String email, String refreshToken);
+    void updateEmail(Long id, String email);
+    void updateNickname(Long id, String nickname);
     boolean validNickname(String nickname);
+
 }

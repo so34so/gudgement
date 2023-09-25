@@ -29,7 +29,7 @@ spring:
           writetimeout: 5000
     auth-code-expiration-millis: 600000
   redis:
-    host: localhost
+    host: myredis
     port: 6379
 
   main:
@@ -50,6 +50,11 @@ spring:
     password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+#    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+#    username: cos
+#    password: cos1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
   # Jpa
   jpa:
     show-sql: true
@@ -63,7 +68,7 @@ spring:
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # ddl-auto ?? ?? ??
-    generate-ddl: true
+    generate-ddl: false
     # SQL? ?? ??
     properties:
       hibernate:
@@ -93,6 +98,10 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+
+jwt:
+  secret:
+    key: javax.crypto.spec.SecretKeySpec@fa7605b8
 
 
 

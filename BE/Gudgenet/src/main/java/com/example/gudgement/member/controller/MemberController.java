@@ -44,9 +44,9 @@ public class MemberController {
 
     @PostMapping("/email/send")
     @Operation(summary = "인증 메일 요청", description = "기재하는 이메일로 인증을 요청합니다.")
-    public ResponseEntity<String> mailSend(@RequestBody EmailDto email) throws Exception {
+    public ResponseEntity<String> mailSend(@RequestBody EmailDto emailDto) throws Exception {
         String approveNumber = mailService.randomNumber();
-        mailService.sendEmail(email.getEmail(), approveNumber);
+        mailService.sendEmail(emailDto.getEmail(), approveNumber);
 
         return ResponseEntity.ok(approveNumber);
     }
@@ -55,6 +55,18 @@ public class MemberController {
     @Operation(summary = "닉네임 중복 확인", description = "중복된 닉네임인지 확인합니다.")
     public ResponseEntity<Boolean> validNickname(@RequestParam String nickname){
         return ResponseEntity.ok(memberService.validNickname(nickname));
+    }
+
+    @PostMapping("/update/nickname")
+    @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
+    public void updateNickname(@RequestParam Long id, @RequestParam String nickname) {
+        memberService.updateNickname(id, nickname);
+    }
+
+    @PostMapping("update/email")
+    @Operation(summary = "이메일 등록", description = "인증한 이메일을 등록합니다.")
+    public void updateEmail(@RequestBody EmailDto emailDto) {
+        memberService.updateEmail(emailDto.getId(), emailDto.getEmail());
     }
 
     @GetMapping("/loadMyInfo")
@@ -72,7 +84,7 @@ public class MemberController {
         Long memberId = (Long) jwtProvider.getClaims(bearer).get("id");
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
-            return new BaseErrorException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION);
+            return new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
         return member;
     }

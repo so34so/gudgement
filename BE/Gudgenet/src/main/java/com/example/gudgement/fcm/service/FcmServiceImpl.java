@@ -1,12 +1,11 @@
 package com.example.gudgement.fcm.service;
 
-import com.example.gudgement.fcm.dto.FcmNotificationRequestDto;
+import com.example.gudgement.fcm.dto.FcmNotificationResponseDto;
 import com.example.gudgement.fcm.exception.FcmErrorException;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -32,13 +31,14 @@ public class FcmServiceImpl implements FcmService{
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
-
+        log.info("에러 위치 확인 (1).");
         member.setFirebaseToken(firebaseToken);
+        log.info("에러 위치 확인 (2)");
         memberRepository.save(member);
     }
 
     @Override
-    public String sendNotificationDetail(FcmNotificationRequestDto requestDto) throws FcmErrorException {
+    public String sendNotificationDetail(FcmNotificationResponseDto requestDto) throws FcmErrorException {
         Optional<Member> member = memberRepository.findByMemberId(requestDto.getMemberId());
         if (member.isPresent()) {
             if (member.get().getFirebaseToken() != null) {

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Dimensions } from "react-native";
 import Reactotron from "reactotron-react-native";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
@@ -55,6 +56,9 @@ export const containsKey = async (key: string) => {
     Reactotron.log!(error);
   }
 };
+
+export const screenWidth = Math.round(Dimensions.get("window").width);
+export const screenHeight = Math.round(Dimensions.get("window").height);
 
 export const BOTTOM_TAB_IMAGE = [
   "/asset/homeicon.png",

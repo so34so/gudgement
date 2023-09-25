@@ -9,6 +9,9 @@ import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
 import messaging from "@react-native-firebase/messaging";
+import { useQuery } from "@tanstack/react-query";
+import reactotron from "reactotron-react-native";
+import { Text } from "react-native-svg";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -34,6 +37,27 @@ function AppInner() {
     });
     return unsubscribe;
   }, []);
+
+  const {
+    data: user,
+    isError: fetchIsError,
+    error: fetchError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["fetchUserInfo"],
+  });
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (fetchIsError) {
+    reactotron.log!(fetchError);
+  } else {
+    reactotron.log!("사용자 정보", user);
+    setIsLoggedIn(true);
+  }
+
   return (
     <NavigationContainer>
       {isLoggedIn ? (

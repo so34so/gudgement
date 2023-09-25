@@ -98,7 +98,7 @@ export default function Home() {
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
-        <View className="absolute top-20 left-4 bg-white rounded-[5px] flex w-fit h-fit justify-start space-x-2 items-center flex-row border-2 border-black">
+        <View className="absolute top-20 left-5 bg-white rounded-[5px] flex w-fit h-fit justify-start space-x-2 items-center flex-row border-2 border-black">
           <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-[20px] rounded-tl-[5px] rounded-bl-[5px]">
             계좌 잔고
           </Text>
@@ -109,22 +109,24 @@ export default function Home() {
         {isStartSingle ? (
           <>
             <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-[5px]">
-              <Text
-                className={`font-PretendardBlack ${spend.color} text-[24px]`}
-              >
-                {spend.text}
-              </Text>
-              <Image
-                source={goodIcon}
-                className="w-16 h-12"
-                resizeMode="contain"
-              />
-              <View className="flex flex-col">
+              <View className="flex flex-row w-fit h-fit justify-center items-center">
+                <Text
+                  className={`font-PretendardBlack ${spend.color} text-[24px]`}
+                >
+                  {spend.text}
+                </Text>
+                <Image
+                  source={goodIcon}
+                  className="w-16 h-12 bottom-1"
+                  resizeMode="contain"
+                />
+              </View>
+              <View className="flex flex-col w-fit h-fit">
                 <Text className="text-black font-PretendardExtraBold text-[16px]">
                   이번 달 소비
                 </Text>
                 <Text className="text-black font-PretendardExtraBold text-[24px]">
-                  14,742,096원
+                  1,400,000원
                 </Text>
               </View>
             </View>

@@ -54,6 +54,12 @@ function SettingName() {
     try {
       const response = await axios.post(
         `${API_URL}/member/valid/nickname?nickname=${nickName}`,
+        null,
+        {
+          params: {
+            nickname: currentName,
+          },
+        },
       );
       Reactotron.log!("닉네임 중복 확인 성공!", response.data);
       if (response.data === true) {
@@ -77,12 +83,16 @@ function SettingName() {
     }
     if (checkName === 2) {
       try {
-        const response = await axios.post(`${API_URL}/member/valid/nickname`, {
-          params: {
-            id: tempId,
-            nickname: currentName,
+        const response = await axios.post(
+          `${API_URL}/member/valid/nickname`,
+          null,
+          {
+            params: {
+              id: tempId,
+              nickname: currentName,
+            },
           },
-        });
+        );
         Reactotron.log!("닉네임 등록 성공!", response.data);
         setBottomSheetVisible(true);
       } catch (error) {

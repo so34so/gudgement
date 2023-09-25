@@ -1,24 +1,15 @@
 /// <reference types="nativewind/types" />
-import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { CommonType } from "./src/types/CommonType";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
-import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
-import PlayNavigator from "./src/navigation/PlayNavigator";
-import SettingEmail from "./src/pages/SettingEmail";
-import SettingName from "./src/pages/SettingName";
-import SettingAccount from "./src/pages/SettingAccount";
 
 import messaging from "@react-native-firebase/messaging";
+import { useEffect } from "react";
 import PushNotification from "react-native-push-notification";
-import { useEffect, useState } from "react";
-
-import Login from "./src/pages/Login";
 
 import CodePush, { CodePushOptions } from "react-native-code-push";
+import AppInner from "./AppInner";
 
 if (__DEV__) {
   import("./reactotron");
@@ -109,7 +100,6 @@ PushNotification.createChannel(
 //   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
 //   // 업데이트를 어떻게 설치할 것인지 (IMMEDIATE는 강제설치를 의미)
 // };
-const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
 function App(): JSX.Element {
   useEffect(() => {
     CodePush.sync(
@@ -136,75 +126,11 @@ function App(): JSX.Element {
       console.log(`CodePush ${status}`);
     });
   }, []);
-  useEffect(() => {
-    async function getToken() {
-      try {
-        if (!messaging().isDeviceRegisteredForRemoteMessages) {
-          await messaging().registerDeviceForRemoteMessages();
-        }
-        const token = await messaging().getToken();
-        console.log("phone token", token);
-        // dispatch(userSlice.actions.setPhoneToken(token));
-        // return axios.post(`${Config.API_URL}/phonetoken`, { token });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    getToken();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("[Remote Message] ", JSON.stringify(remoteMessage));
-    });
-    return unsubscribe;
-  }, []);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
-        <NavigationContainer>
-          {isLoggedIn ? (
-            <Stack.Navigator>
-              <Stack.Screen
-                name="바텀"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PlayNavigator"
-                component={PlayNavigator}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          ) : (
-            <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingEmail"
-                component={SettingEmail}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingName"
-                component={SettingName}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingAccount"
-                component={SettingAccount}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="BottomTabNavigator"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          )}
-        </NavigationContainer>
+        <AppInner />
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

@@ -75,6 +75,16 @@ const ACCOUNTS: Array<IAccount> = [
     balance: 231333512000,
     isSelected: false,
   },
+  {
+    id: 5,
+    bankName: "토스",
+    accountName: "신한저축예금",
+    accountNumber: "1002-283-1234-1234",
+    accountHolder: "강해빈",
+    email: "aubrienid@naver.com",
+    balance: 231333512000,
+    isSelected: false,
+  },
 ];
 
 function SettingAccount() {
@@ -132,7 +142,7 @@ function SettingAccount() {
   };
 
   return (
-    <View className="flex">
+    <View className="flex w-screen h-screen">
       <ImageBackground
         source={mypageBackground}
         resizeMode="cover"
@@ -189,7 +199,7 @@ function SettingAccount() {
                   3/3
                 </Text>
               </View>
-              <ScrollView className="h-[67%] w-fill p-3">
+              <ScrollView className="h-[74%] w-fill p-3">
                 <View className="mb-6">
                   {ACCOUNTS.map((account: IAccount) => {
                     return (
@@ -212,7 +222,7 @@ function SettingAccount() {
             </View>
           </View>
         </View>
-        <View className="z-10 w-full h-fill bg-black bottom-0 absolute pb-10 flex justify-end items-center">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
           <NavigationButton
             handleFunction={submitSelect}
             text="다 음"
@@ -228,4 +238,3 @@ function SettingAccount() {
 }
 
 export default SettingAccount;
-

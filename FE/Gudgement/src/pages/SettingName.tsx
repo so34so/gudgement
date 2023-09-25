@@ -90,7 +90,7 @@ function SettingName() {
   };
 
   return (
-    <View className="flex">
+    <View className="flex w-screen h-screen">
       <KeyboardAwareScrollView>
         <ImageBackground
           source={mypageBackground}

@@ -35,7 +35,7 @@ public class Item {
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = true)
+    @Column
     private String subtype;
 
 

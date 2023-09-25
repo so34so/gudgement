@@ -1,9 +1,7 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
+// import { CommonType } from "../types/CommonType";
 import { Text, Pressable, View } from "react-native";
 
 function NavigationButton({
-  screenName,
   handleFunction,
   text,
   height,
@@ -11,7 +9,7 @@ function NavigationButton({
   size,
   color,
 }: {
-  screenName?: keyof CommonType.RootStackParamList;
+  // screenName?: keyof CommonType.RootStackParamList;
   handleFunction?: () => Promise<void>;
   text: string;
   height: string;
@@ -19,9 +17,6 @@ function NavigationButton({
   size: string;
   color: string;
 }) {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const buttonStyle01 = (color: string) =>
     `h-fill w-fill py-[1px] flex flex-row justify-center items-center ${
       color === "lightsky" ? "bg-lightsky" : "bg-deepgreen"
@@ -38,28 +33,23 @@ function NavigationButton({
     } font-PretendardExtraBold`;
 
   return (
-    <View>
-      <Pressable
-        className={buttonStyle01(color)}
-        onPress={
-          screenName ? () => navigation.navigate(screenName) : handleFunction
-        }
-      >
-        <View className={buttonStyle02(height, width)}>
-          <Text
-            style={{
-              textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
-              textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
-              textShadowRadius: 5, // 그림자의 블러 정도
-            }}
-            className={buttonStyle03(size)}
-            numberOfLines={1}
-          >
-            {text}
-          </Text>
-        </View>
-      </Pressable>
-    </View>
+    // <View>
+    <Pressable className={buttonStyle01(color)} onPress={handleFunction}>
+      <View className={buttonStyle02(height, width)}>
+        <Text
+          style={{
+            textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
+            textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
+            textShadowRadius: 5, // 그림자의 블러 정도
+          }}
+          className={buttonStyle03(size)}
+          numberOfLines={1}
+        >
+          {text}
+        </Text>
+      </View>
+    </Pressable>
+    // </View>
   );
 }
 

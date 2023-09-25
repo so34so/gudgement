@@ -17,30 +17,33 @@ export const INVENTORY_CATEGORY: {
   소모품: "consumable",
 };
 
-export const setData = async (key: string, value: unknown) => {
+// 데이터 저장
+export const setAsyncData = async (key: string, value: unknown) => {
   try {
     const stringValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, stringValue);
+    return true;
   } catch (error) {
     Reactotron.log!(error);
+    return false;
   }
 };
 
-export const getData = async (key: string) => {
+// 데이터 불러오기
+export const getAsyncData = async (key: string) => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const data = JSON.parse(value);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return data;
+      const data: unknown = JSON.parse(value);
+      return data as string;
     }
   } catch (error) {
     Reactotron.log!(error);
   }
 };
 
-export const removeData = async (key: string) => {
+// 데이터 삭제
+export const removeAsyncData = async (key: string) => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (error) {
@@ -48,7 +51,8 @@ export const removeData = async (key: string) => {
   }
 };
 
-export const containsKey = async (key: string) => {
+// 해당 key가 AsyncStorage에 존재하는지 여부 확인
+export const containsAsyncKey = async (key: string) => {
   try {
     const keys = await AsyncStorage.getAllKeys();
     return keys.includes(key);
@@ -59,6 +63,16 @@ export const containsKey = async (key: string) => {
 
 export const screenWidth = Math.round(Dimensions.get("window").width);
 export const screenHeight = Math.round(Dimensions.get("window").height);
+
+export const getTempUserId = async () => {
+  try {
+    const responseGetId = await getAsyncData("id");
+    return responseGetId ? parseInt(responseGetId, 10) : 0;
+  } catch (error) {
+    Reactotron.log!("아이디 확인 실패!", error);
+    return 0;
+  }
+};
 
 export const BOTTOM_TAB_IMAGE = [
   "/asset/homeicon.png",

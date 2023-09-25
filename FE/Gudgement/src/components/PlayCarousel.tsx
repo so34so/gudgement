@@ -23,24 +23,24 @@ const map3: ImageSourcePropType = Map3 as ImageSourcePropType;
 const mapCard: ImageSourcePropType = MapCard as ImageSourcePropType;
 
 const mapType: ImageSourcePropType = MapType as ImageSourcePropType;
-const mapInfoArray: CommonType.Titem[] = [
+const mapInfoArray: CommonType.Tplaymap[] = [
   {
     title: "Map 1",
-    description: "Description of Map 1",
+    description: "맵 설명이 들어갈 자리 1",
     image: map1, // 맵 이미지 경로
-    price: 0, // 예시로 추가한 가격 프로퍼티
+    ticle: "x100",
   },
   {
     title: "Map 2",
-    description: "Description of Map 2",
+    description: "맵 설명이 들어갈 자리 2",
     image: map2,
-    price: 0,
+    ticle: "x300",
   },
   {
     title: "Map 3",
-    description: "Description of Map 3",
+    description: "맵 설명이 들어갈 자리 3",
     image: map3,
-    price: 0,
+    ticle: "x500",
   },
 ];
 
@@ -95,6 +95,9 @@ function PlayCarousel() {
           style={styles.mapType}
         >
           <View style={styles.mapTextContainer}>
+            <Text style={styles.mapTicle}>
+              {mapInfoArray[selectItem].ticle}
+            </Text>
             <Text style={styles.mapTitle}>
               {mapInfoArray[selectItem].title}
             </Text>
@@ -145,6 +148,14 @@ const styles = StyleSheet.create({
     color: "#ffb800",
     fontSize: 32,
     fontWeight: "bold",
+  },
+  mapTicle: {
+    color: "#ffffff",
+    fontSize: 40,
+    fontWeight: "bold",
+    textShadowColor: "rgb(0, 0, 0)", // 텍스트 테두리 색상
+    textShadowOffset: { width: 4, height: 4 }, // 텍스트 테두리 오프셋
+    textShadowRadius: 4, // 텍스트 테두리 반경
   },
   mapInfo: {
     color: "#ffffff",

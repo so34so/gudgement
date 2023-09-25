@@ -7,6 +7,7 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import PlayNavigator from "./src/navigation/PlayNavigator";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
@@ -16,7 +17,9 @@ import PushNotification from "react-native-push-notification";
 import { useEffect, useState } from "react";
 
 import Login from "./src/pages/Login";
-import PlaySelect from "./src/pages/PlaySelect";
+
+import CodePush, { CodePushOptions } from "react-native-code-push";
+
 if (__DEV__) {
   import("./reactotron");
 }
@@ -109,6 +112,31 @@ PushNotification.createChannel(
 const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
 function App(): JSX.Element {
   useEffect(() => {
+    CodePush.sync(
+      {
+        installMode: CodePush.InstallMode.IMMEDIATE,
+        mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+        updateDialog: {
+          mandatoryUpdateMessage:
+            "필수 업데이트가 있어 설치 후 앱을 재시작합니다.",
+          mandatoryContinueButtonLabel: "재시작",
+          optionalIgnoreButtonLabel: "나중에",
+          optionalInstallButtonLabel: "재시작",
+          optionalUpdateMessage: "업데이트가 있습니다. 설치하시겠습니까?",
+          title: "업데이트 안내",
+        },
+      },
+      status => {
+        console.log(`Changed ${status}`);
+      },
+      downloadProgress => {
+        // 여기서 몇 % 다운로드되었는지 체크 가능
+      },
+    ).then(status => {
+      console.log(`CodePush ${status}`);
+    });
+  }, []);
+  useEffect(() => {
     async function getToken() {
       try {
         if (!messaging().isDeviceRegisteredForRemoteMessages) {
@@ -137,13 +165,13 @@ function App(): JSX.Element {
           {isLoggedIn ? (
             <Stack.Navigator>
               <Stack.Screen
-                name="홈"
+                name="바텀"
                 component={BottomTabNavigator}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="PlaySelect"
-                component={PlaySelect}
+                name="PlayNavigator"
+                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
@@ -182,4 +210,16 @@ function App(): JSX.Element {
   );
 }
 
-export default App;
+const codePushOptions: CodePushOptions = {
+  checkFrequency: CodePush.CheckFrequency.MANUAL,
+  // 언제 업데이트를 체크하고 반영할지를 정한다.
+  // ON_APP_RESUME은 Background에서 Foreground로 오는 것을 의미
+  // ON_APP_START는 앱이 실행되는 순간을 의미
+  // MANUAL은 수동으로 지정 가능
+
+  installMode: CodePush.InstallMode.IMMEDIATE,
+  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+  // 업데이트를 어떻게 설치할 것인지(IMMEDIATE는 강제설치를 의미)
+};
+
+export default CodePush(codePushOptions)(App);

@@ -29,7 +29,7 @@ spring:
           writetimeout: 5000
     auth-code-expiration-millis: 600000
   redis:
-    host: localhost
+    host: myredis
     port: 6379
 
   main:

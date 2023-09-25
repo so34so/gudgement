@@ -59,7 +59,7 @@ function Inventory({ route }: InventoryProps) {
 
   const categoryStyle = (category: string) =>
     `rounded-[8px] py-[1px] border-2 bg-darkgray50 
-    ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
+    ${category === selectCategory ? "border-mainColor" : "border-darkgray50"}`;
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-buy";
   };

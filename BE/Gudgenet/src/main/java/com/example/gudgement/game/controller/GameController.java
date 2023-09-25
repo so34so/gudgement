@@ -1,8 +1,7 @@
 package com.example.gudgement.game.controller;
 
-import com.example.gudgement.game.dto.GameStartResponseDto;
+import com.example.gudgement.game.dto.GameRequestDto;
 import com.example.gudgement.game.service.GameService;
-import com.example.gudgement.match.dto.MatchDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,14 +15,11 @@ public class GameController {
 
     private final GameService gameService;
 
-/*    @PostMapping("/startGame")
-    public ResponseEntity<GameStartResponseDto> startGame() {
-        String roomNumber = gameService.createGameRoom();
-        return ResponseEntity.ok().body(new GameStartResponseDto(roomNumber));
-    }*/
+    @PostMapping("/accept")
+    public ResponseEntity<Void> acceptGame(@RequestBody GameRequestDto gameRequestDto) {
+        String roomNumber = gameRequestDto.getRoomNumber();
+        String username = gameRequestDto.getUserName();
 
-    @PostMapping("/game/{roomNumber}/accept")
-    public ResponseEntity<Void> acceptGame(@PathVariable String roomNumber, @RequestBody String username) {
         gameService.addUserToRoom(roomNumber, username);
 
         // Update the game acceptance status for the user.
@@ -31,9 +27,9 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/game/{roomNumber}/reject")
-    public ResponseEntity<Void> rejectGame(@PathVariable String roomNumber, @RequestBody String username) {
-        gameService.rejectGame(roomNumber, username);
+    @PostMapping("/reject")
+    public ResponseEntity<Void> rejectGame(@RequestBody GameRequestDto gameRequestDto) {
+        gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getUserName());
         return ResponseEntity.ok().build();
     }
 

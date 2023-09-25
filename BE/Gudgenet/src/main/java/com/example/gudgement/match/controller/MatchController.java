@@ -9,21 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/betting-room")
+@RequestMapping("/matching")
 @RequiredArgsConstructor
 public class MatchController {
 
     private final MatchService matchService;
 
     @PostMapping("/addUser")
-    public void addUserToGroup(
-            @RequestBody MatchDto matchDto) {
+    public void addUserToGroup(@RequestBody MatchDto matchDto) {
         matchService.addUserToGroup(matchDto);
     }
 
     @PostMapping("/removeUser")
-    public void removeUserFromGroup(
-            @RequestBody MatchDto matchDto) {
+    public void removeUserFromGroup(@RequestBody MatchDto matchDto) {
         matchService.removeUserFromGroup(matchDto);
     }
 }

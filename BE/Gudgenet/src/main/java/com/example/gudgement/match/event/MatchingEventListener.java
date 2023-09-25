@@ -9,9 +9,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +37,18 @@ public class MatchingEventListener {
 
             String roomNumber = gameService.createGameRoom(); // 새로운 게임 방 생성
 
+            List<String> matchedUsers = Arrays.asList(request.getNickName(), otherUser);
+
+            // Redis에 게임 방 정보와 유저들의 정보 저장
+            redisTemplate.opsForSet().add(roomNumber, matchedUsers.toArray(new String[0]));
+
             messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
             messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
         }
-
     }
+
     private String selectRandomUser(Set<String> users) {
         int size = users.size();
         int item = new Random().nextInt(size);

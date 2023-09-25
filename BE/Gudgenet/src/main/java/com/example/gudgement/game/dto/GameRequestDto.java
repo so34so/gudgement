@@ -8,12 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GameStartResponseDto {
+public class GameRequestDto {
 
     private String roomNumber;
+    private String userName;
 
     @Builder
-    public GameStartResponseDto(String roomNumber) {
+    public GameRequestDto(String roomNumber, String userName) {
         this.roomNumber = roomNumber;
+        this.userName = userName;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.gudgement.game.service;
 
+import com.example.gudgement.CardService;
 import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameUserDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
@@ -36,6 +37,8 @@ public class GameServiceImpl implements GameService{
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
+
+    private final CardService cardService;
 
     @Scheduled(fixedRate = 1000)  // 매 초마다 실행
     public void checkUnresponsiveUsers() {
@@ -79,6 +82,7 @@ public class GameServiceImpl implements GameService{
             Set<String> members = redisTemplate.opsForSet().members(roomNumber);
 
             for(String member : members){
+                cardService.generateAndStoreCards(member);
                 /* Fetch necessary information of each member from database or other services */
                 EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);  // This should be implemented
                 int level = fetchLevel(member);  // This should be implemented

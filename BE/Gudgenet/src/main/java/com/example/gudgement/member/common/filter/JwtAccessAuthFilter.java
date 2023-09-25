@@ -2,14 +2,14 @@ package com.example.gudgement.member.common.filter;
 
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
-import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.exception.AuthorizationException;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
-import com.example.gudgement.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,16 +22,20 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
+    private final String[] whiteUriList = new String[] {};
     private final JwtProvider jwtProvider;
-    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("Filter : JWTFilter");
+        log.info("Filter : JwtAccessFilter");
+
+        if(whiteListCheck(request.getRequestURI())){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
         String accessToken = jwtProvider.getHeaderToken(request, "Authorization");
-
-        String requestURI = request.getRequestURI();
 
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7);
@@ -46,12 +50,10 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
                 log.info("AccessToken 유효함. : {}", accessToken);
 
                 Claims claims = jwtProvider.getClaims(accessToken);
-                if (attribute.getId() != (Long) claims.get("id")) {
+                if (attribute.getId().equals(claims.get("id"))) {
                     throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
                 }
                 log.info("요청 ID 일치함. : {}", claims.get("id"));
-
-                filterChain.doFilter(request, response);
 
             // accessToken 만료
             } else {
@@ -71,14 +73,14 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
         if (Token.equals("Access")) {
             try{
-                String json = new ObjectMapper().writeValueAsString(new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
+                String json = new ObjectMapper().writeValueAsString(new AuthorizationException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
                 response.getWriter().write(json);
             } catch (Exception e){
                 log.error(e.getMessage());
             }
         } else if (Token.equals("Refresh")) {
             try{
-                String json = new ObjectMapper().writeValueAsString(new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
+                String json = new ObjectMapper().writeValueAsString(new AuthorizationException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
                 response.getWriter().write(json);
             } catch (Exception e){
                 log.error(e.getMessage());
@@ -91,6 +93,9 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
                 log.error(e.getMessage());
             }
         }
+    }
 
+    private boolean whiteListCheck(String uri){
+        return PatternMatchUtils.simpleMatch(whiteUriList, uri);
     }
 }

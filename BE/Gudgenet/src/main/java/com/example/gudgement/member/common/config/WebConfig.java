@@ -25,10 +25,10 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, MemberRepository memberRepository) {
+    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider) {
         FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
 
-        filterFilterRegistrationBean.setFilter(new JwtAccessAuthFilter(jwtProvider, memberRepository));
+        filterFilterRegistrationBean.setFilter(new JwtAccessAuthFilter(jwtProvider));
         filterFilterRegistrationBean.setOrder(2);
         filterFilterRegistrationBean.addUrlPatterns("/dontUse");
 

@@ -71,6 +71,8 @@ export default function PlayMatchingWait() {
               source={blueFlame}
             />
           </Animated.View>
+          <Image style={styles.blueBlur} source={blueBlur} />
+
           <Image style={styles.flamematch} source={flameMatch} />
         </View>
 
@@ -99,13 +101,17 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
+  blueBlur: {
+    bottom: "15%",
+    left: "13%",
+  },
   numbertext: {
     top: "23%",
     zIndex: 9,
     left: "15%",
   },
   flamematch: {
-    bottom: "33%",
+    bottom: "50%",
     zIndex: 9,
     right: "35%",
   },

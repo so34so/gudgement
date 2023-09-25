@@ -32,11 +32,12 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService{
                 .amount(transactionHistoryDto.getAmount())
                 .depositSource(transactionHistoryDto.getDepositSource())
                 .withdrawalDestination(transactionHistoryDto.getWithdrawalDestination())
-                .transactionDate(LocalDateTime.now()) // 현재 시간을 저장합니다.
+                // 입력받은 시간을 저장합니다.
+                .transactionDate(transactionHistoryDto.getTransactionDate())
                 .build();
 
         TransactionHistory savedHistory = transactionRepository.save(history);
-        
+
         return TransactionHistoryDto.builder()
                 .historyId(savedHistory.getHistoryId())
                 .virtualAccountId(virtualAccountId.getVirtualAccountId())
@@ -47,26 +48,27 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService{
                 .transactionDate(savedHistory.getTransactionDate()).build();
     }
 
-//
-//    @Override
-//    public List<TransactionHistoryDto> getAll() {
-//        List<TransactionHistory> transactions = this.transactionHistoryRepository.findAll();
-//
-//        return transactions.stream()
-//                .map(transaction -> new TransactionHistoryDto(transaction.getId(),
-//                        transaction.getVirtualAccountId().getId(),
-//                        transaction.getType(),
-//                        transaction.getAmount(),
-//                        transaction.getDepositSource(),
-//                        transaction.getTransactionDate()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public void delete(Long id) {
-//        TransactionHistory entity = this.transactionHistoryRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("거래 내역이 존재하지 않습니다. ID: " + id));
-//        this.transactionHistoryRepository.delete(entity);
-//    }
+    @Override
+    public List<TransactionHistoryDto> getAll() {
+        List<TransactionHistory> transactions = this.transactionRepository.findAll();
+
+        return transactions.stream()
+                .map(transaction -> TransactionHistoryDto.builder()
+                        .historyId(transaction.getHistoryId())
+                        .virtualAccountId(transaction.getVirtualAccountId().getVirtualAccountId())
+                        .type(transaction.getType())
+                        .amount(transaction.getAmount())
+                        .depositSource(transaction.getDepositSource())
+                        .withdrawalDestination(transaction.getWithdrawalDestination())
+                        .transactionDate(transaction.getTransactionDate()).build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(Long id) {
+        TransactionHistory entity = this.transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 거래 내역이 존재하지 않습니다. ID: " + id));
+        this.transactionRepository.delete(entity);
+    }
 
 }

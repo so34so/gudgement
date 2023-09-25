@@ -96,4 +96,31 @@ public class AccountController {
 
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
+    @Operation(summary = "거래내역 목록 조회")
+    @GetMapping("/transaction")
+    public ResponseEntity<List<TransactionHistoryDto>> getAllTransactions() {
+        List<TransactionHistoryDto> transactions = transactionHistoryService.getAll();
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @Operation(summary = "거래내역 삭제")
+    @DeleteMapping("/transaction/{id}")
+    public ResponseEntity<Map<String, String>> deleteTransaction(@PathVariable Long id) {
+        Map<String, String> resultMap = new HashMap<>();
+        HttpStatus status;
+
+        try {
+            transactionHistoryService.delete(id);
+            status = HttpStatus.NO_CONTENT;
+            resultMap.put("message", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("message", "fail");
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
+
 }

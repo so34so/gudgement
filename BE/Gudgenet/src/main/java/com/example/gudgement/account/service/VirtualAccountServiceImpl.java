@@ -21,6 +21,7 @@ public class VirtualAccountServiceImpl implements VirtualAccountService {
         VirtualAccount account = new VirtualAccount(virtualAccountDto.getBankName(),
                 virtualAccountDto.getAccountNumber(),
                 virtualAccountDto.getAccountHolder(),
+                virtualAccountDto.getEmail(),
                 virtualAccountDto.getBalance());
 
         // Save Entity in the database and get the saved entity
@@ -31,6 +32,7 @@ public class VirtualAccountServiceImpl implements VirtualAccountService {
                 savedAccount.getBankName(),
                 savedAccount.getAccountNumber(),
                 savedAccount.getAccountHolder(),
+                savedAccount.getEmail(),
                 savedAccount.getBalance());
     }
 
@@ -42,6 +44,7 @@ public class VirtualAccountServiceImpl implements VirtualAccountService {
                         account.getBankName(),
                         account.getAccountNumber(),
                         account.getAccountHolder(),
+                        account.getEmail(),
                         account.getBalance()))
                 .collect(Collectors.toList());
     }
@@ -54,6 +57,7 @@ public class VirtualAccountServiceImpl implements VirtualAccountService {
                 account.getBankName(),
                 account.getAccountNumber(),
                 account.getAccountHolder(),
+                account.getEmail(),
                 account.getBalance());
     }
 

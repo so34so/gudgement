@@ -38,7 +38,9 @@ spring:
 
   # datasource
   datasource:
-    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    # 한국시간으로 DB저장되게 !!
+    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
     username: root
     password: ssafy
 

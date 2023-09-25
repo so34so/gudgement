@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,16 +19,18 @@ public class VirtualAccountDto {
     private String bankName;
     private String accountNumber;
     private String accountHolder;
+    private String email;
     private long balance;
 
     @Builder
     public VirtualAccountDto(long virtualAccountId, String bankName,
                              String accountNumber, String accountHolder,
-                             long balance) {
+                             String email, long balance) {
         this.virtualAccountId = virtualAccountId;
         this.bankName = bankName;
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
+        this.email = email;
         this.balance = balance;
     }
 }

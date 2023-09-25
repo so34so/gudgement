@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -25,15 +26,19 @@ public class VirtualAccount {
     @Column(nullable=false)
     private String accountHolder;
 
+    @Column(nullable = false, length = 50)
+    private String email;
+
     @Column(nullable=false)
     private long balance;
 
 
     @Builder
-    public VirtualAccount(String bankName, String accountNumber, String accountHolder, long balance){
+    public VirtualAccount(String bankName, String accountNumber, String accountHolder, String email, long balance){
         this.bankName = bankName;
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
+        this.email = email;
         this.balance = balance;
     }
 

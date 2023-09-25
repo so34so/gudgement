@@ -148,7 +148,7 @@ function Inventory({ route }: InventoryProps) {
           </TouchableOpacity>
         </View>
 
-        <View className="w-full h-[340px] flex flex-col justify-center items-center mt-4">
+        <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
               <Image source={myCharacter} />

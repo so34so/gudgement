@@ -116,7 +116,7 @@ export default function Ranking() {
               </View>
               <View className="top-[-10px] left-[-7px] flex justify-center items-center w-24 h-fit rounded-[6px] bg-white border-solid border-2 border-black">
                 <View className="w-full h-fit bg-black border-2 flex justify-center items-center border-white rounded-[6px]">
-                  <Text className="text-main font-PretendardBold text-[18px] px-2 py-1 whitespace-nowrap">
+                  <Text className="text-main font-PretendardBold text-[18px] px-2 py-1 whitespace-nowrap text-mainColor">
                     {ele.name}
                   </Text>
                 </View>
@@ -124,11 +124,11 @@ export default function Ranking() {
             </View>
           ))}
         </View>
-        <View className="h-[52%]">
+        <View className="h-[46%]">
           <FlatList {...flatListProps} />
         </View>
         <View className="w-full h-20 mt-2 justify-center items-center">
-          <View className="flex-row w-[90%] h-20 bg-main border-[3px] border-black rounded-[10px]">
+          <View className="flex-row w-[90%] h-20 bg-mainColor border-[3px] border-black rounded-[10px]">
             <View className="flex-row justify-start space-x-2 items-center ml-4 rounded-[10px]">
               <Text className="font-PretendardExtraBold text-[30px] text-white">
                 22

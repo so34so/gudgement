@@ -18,7 +18,7 @@ const ProgressBar = ({ percent }: { percent: number }) => {
       useNativeDriver: false,
     }).start(() => {
       if (percent <= 0.5) {
-        setProgressColor("bg-main");
+        setProgressColor("bg-mainColor");
       }
       if (percent > 0.7) {
         setProgressColor("bg-red");

@@ -1,12 +1,11 @@
 package com.example.gudgement.fcm.service;
 
-import com.example.gudgement.fcm.dto.FcmNotificationRequestDto;
+import com.example.gudgement.fcm.dto.FcmNotificationResponseDto;
 import com.example.gudgement.fcm.exception.FcmErrorException;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -32,13 +31,12 @@ public class FcmServiceImpl implements FcmService{
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
-
         member.setFirebaseToken(firebaseToken);
         memberRepository.save(member);
     }
 
     @Override
-    public String sendNotificationDetail(FcmNotificationRequestDto requestDto) throws FcmErrorException {
+    public String sendNotificationDetail(FcmNotificationResponseDto requestDto) throws FcmErrorException {
         Optional<Member> member = memberRepository.findByMemberId(requestDto.getMemberId());
         if (member.isPresent()) {
             if (member.get().getFirebaseToken() != null) {
@@ -54,16 +52,13 @@ public class FcmServiceImpl implements FcmService{
                     firebaseMessaging.send(message);
                     return "성공!";
                 } catch (FirebaseMessagingException e) {
-                    log.error(e.getMessage(), e.getCause());
-                    return "송신 실패!";
+                    throw new FcmErrorException(ErrorCode.NOT_REGISTRATION_NICKNAME);
                 }
             } else {
-                new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN);
-                return "유저에게 토큰이 없음";
+                throw new FcmErrorException(ErrorCode.NOT_REGISTRATION_FCM_TOKEN);
             }
         } else {
-            new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER);
-            return "유저가 존재하지 않음";
+            throw new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.gudgement.fcm.controller;
 
-import com.example.gudgement.fcm.dto.FcmNotificationRequestDto;
+import com.example.gudgement.fcm.dto.FcmNotificationResponseDto;
 import com.example.gudgement.fcm.dto.ReceiveFcmTokenDto;
 import com.example.gudgement.fcm.exception.FcmErrorException;
 import com.example.gudgement.fcm.service.FcmService;
@@ -21,12 +21,12 @@ public class FcmController {
 
     @Operation(summary = "([테스트용] 단일 회원 알림 보내기")
     @PostMapping("member/send")
-    public String sendNotification(@RequestBody FcmNotificationRequestDto requestDto) throws FcmErrorException {
+    public String sendNotification(@RequestBody FcmNotificationResponseDto requestDto) throws FcmErrorException {
         return fcmService.sendNotificationDetail(requestDto);
     }
 
     @Operation(summary = "firebase 토큰 받기")
-    @GetMapping("token")
+    @PutMapping("token")
     public void setToken(@RequestBody ReceiveFcmTokenDto requestDto) throws IOException {
         fcmService.setAccessToken(requestDto.getId(), requestDto.getFirebaseToken());
     }

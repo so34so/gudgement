@@ -37,6 +37,7 @@ public class MemberController {
         String refreshToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             refreshToken = authorizationHeader.substring(7);
+            log.info("refreshToken : {}", refreshToken);
         }
 
         return ResponseEntity.ok(jwtProvider.tokenRefresh(refreshToken));
@@ -53,13 +54,13 @@ public class MemberController {
 
     @PostMapping("/valid/nickname")
     @Operation(summary = "닉네임 중복 확인", description = "중복된 닉네임인지 확인합니다.")
-    public ResponseEntity<Boolean> validNickname(@RequestParam String nickname){
+    public ResponseEntity<Boolean> validNickname(@RequestParam(name = "nickname") String nickname){
         return ResponseEntity.ok(memberService.validNickname(nickname));
     }
 
     @PostMapping("/update/nickname")
     @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
-    public void updateNickname(@RequestParam Long id, @RequestParam String nickname) {
+    public void updateNickname(@RequestParam(name = "id") Long id, @RequestParam(name = "nickname") String nickname) {
         memberService.updateNickname(id, nickname);
     }
 

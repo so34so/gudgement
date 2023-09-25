@@ -14,6 +14,7 @@ public class ErrorResponse {
     private final String code;
     private final String message;
 
+    @Builder
     public ErrorResponse(ErrorCode errorCode) {
         this.httpStatus = errorCode.getHttpStatus();
         this.code = errorCode.getErrorCode();

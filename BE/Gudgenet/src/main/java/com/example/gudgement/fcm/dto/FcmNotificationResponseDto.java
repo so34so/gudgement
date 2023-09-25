@@ -6,13 +6,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class FcmNotificationRequestDto {
+public class FcmNotificationResponseDto {
     private Long memberId;
     private String title;
     private String content;
 
     @Builder
-    public FcmNotificationRequestDto(Long memberId, String title, String content) {
+    public FcmNotificationResponseDto(Long memberId, String title, String content) {
         this.memberId = memberId;
         this.title = title;
         this.content = content;

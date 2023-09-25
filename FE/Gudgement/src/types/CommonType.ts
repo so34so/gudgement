@@ -31,7 +31,10 @@ export declare module CommonType {
      * PlayScreen child Type
      */
     PlayNavigator: undefined;
+    PlayMatchingWait: undefined;
+    PlayMatchingQueue: undefined;
     PlaySelect: undefined;
+
     /**
      * ShopScreen child Type
      * MyPage child Type

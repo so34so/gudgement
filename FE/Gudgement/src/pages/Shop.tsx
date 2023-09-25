@@ -248,7 +248,7 @@ function Shop({ route }: ShopProps) {
             </View>
           </View>
           <TouchableOpacity
-            className="bg-green h-8 rounded-[4px] border-2 border-darkgray50"
+            className="bg-green h-9 rounded-[4px] border-2 border-darkgray50"
             onPress={() =>
               navigation.navigate("Inventory", { category: selectCategory })
             }
@@ -265,7 +265,7 @@ function Shop({ route }: ShopProps) {
           <View className="absolute top-[70px] rounded-full h-10 z-10 flex bg-darkgray" />
         </View>
         {selectCategory !== "칭호" ? (
-          <View className="w-full h-60 flex flex-row justify-center space-x-24 mt-8">
+          <View className="w-full h-52 flex flex-row justify-center space-x-24 mt-8">
             <View className="w-1/4 h-fit items-center ">
               <Animated.View style={[animatedStyles]}>
                 <Image source={myCharacter} ref={imageRef} />
@@ -342,10 +342,10 @@ function Shop({ route }: ShopProps) {
             </View>
           </View>
         ) : (
-          <View className="w-full h-60 flex flex-col top-6 items-center space-y-12 mt-8">
+          <View className="w-full h-60 flex flex-col top-2 items-center space-y-12 mt-4">
             <Animated.View style={[animatedStyles]}>
               <View
-                className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
+                className="w-fit h-[38px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
                 style={{
                   elevation: 10,
                 }}
@@ -358,17 +358,15 @@ function Shop({ route }: ShopProps) {
                 </Text>
               </View>
             </Animated.View>
-            <View>
-              <Text className=" font-PretendardBlack text-white text-[20px]">
-                {fetchItem?.[selectItem] && fetchItem[selectItem].itemContent}
-              </Text>
-            </View>
+            <Text className="font-PretendardBlack text-white text-[20px]">
+              {fetchItem?.[selectItem] && fetchItem[selectItem].itemContent}
+            </Text>
             <TouchableOpacity
               activeOpacity={0.5}
               style={{
                 elevation: 8,
               }}
-              className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
+              className={`w-fit ${buttonColor()} h-fit rounded-[10px] border-2 border-[#6f530d]`}
               onPress={handleGetTitle}
               disabled={itemStatus}
             >
@@ -381,7 +379,6 @@ function Shop({ route }: ShopProps) {
             </TouchableOpacity>
           </View>
         )}
-        <View className="w-full h-4" />
       </View>
       <View className="mt-10">
         <View className="ml-5 w-full h-fit flex-row space-x-2">

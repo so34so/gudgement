@@ -28,6 +28,9 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 600000
+  redis:
+    host: myredis
+    port: 6379
 
   main:
     allow-bean-definition-overriding: true
@@ -42,15 +45,15 @@ spring:
 #    username: root
 #    password: ssafy
 
-#    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-#    username: gudgement
-#    password: d106gudgement
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: root
-    password: 1234
+    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: gudgement
+    password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+#    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+#    username: root
+#    password: 1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa
   jpa:
@@ -78,7 +81,7 @@ spring:
       registration:
         kakao:
           client-id: 4cd45261b839373b375e0766220b3428
-          redirect-uri: http://localhost:9999/oauth/login/auth/kakao/callback
+          redirect-uri: http://j9d106.p.ssafy.io:8080/oauth/login/auth/kakao/callback
           client-authentication-method: POST
           authorization-grant-type: authorization_code
           scope: account_email
@@ -99,6 +102,7 @@ springdoc:
 jwt:
   secret:
     key: javax.crypto.spec.SecretKeySpec@fa7605b8
+
 
 
 # H2 ??? ??? ?? ???

@@ -2,7 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { CommonType } from "../types/CommonType";
 import PlaySelect from "../pages/PlaySelect";
-
+import PlayMatchingWait from "../pages/PlayMatchingWait";
+import PlayMatchingQueue from "../pages/PlayMatchingQueue";
 function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
@@ -13,6 +14,16 @@ function PlayNavigator() {
       <Stack.Screen
         name="PlaySelect"
         component={PlaySelect}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayMatchingWait"
+        component={PlayMatchingWait}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayMatchingQueue"
+        component={PlayMatchingQueue}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

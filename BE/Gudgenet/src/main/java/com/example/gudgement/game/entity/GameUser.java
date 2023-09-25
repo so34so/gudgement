@@ -21,7 +21,7 @@ public class GameUser {
     private String nickName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="room_id")
+    @JoinColumn(name="gameRoom")
     private GameRoom gameRoom;
 
     private Boolean gameAccepted; // null: 아직 선택하지 않음, true: 수락, false: 거부

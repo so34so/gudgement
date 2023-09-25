@@ -1,11 +1,25 @@
-import { ImageBackground, Pressable, Text, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  ImageSourcePropType,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { IMAGE_URL } from "@env";
+import Chingho from "../assets/icons/chingho.png";
+import Chijang from "../assets/icons/chijang.png";
+import Sobi from "../assets/icons/sobi.png";
+import Character from "../assets/icons/character.png";
+import { screenHeight, screenWidth } from "../utils/common";
+import reactotron from "reactotron-react-native";
 
 function ShopEntrance() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  reactotron.log!(screenHeight);
   return (
     <View className="flex flex-1 w-full h-full">
       <ImageBackground
@@ -15,38 +29,54 @@ function ShopEntrance() {
         resizeMode="cover"
         className="flex-1"
       >
-        <Pressable
-          className="absolute bg-deepgreen top-[42%] left-[42%] rounded-[20px]"
-          onPress={() => navigation.navigate("Shop", { category: "칭호" })}
-        >
-          <Text className=" font-PretendardBold text-[16px] p-5 text-white">
-            칭호
-          </Text>
-        </Pressable>
-        <View className="top-2/4">
+        <View className="top-10">
           <Pressable
-            className="absolute bg-pink-500 left-[5%] rounded-[20px]"
-            onPress={() => navigation.navigate("Shop", { category: "치장" })}
-          >
-            <Text className=" font-PretendardBold text-[16px] p-5 text-white">
-              치장
-            </Text>
-          </Pressable>
-          <Pressable
-            className="absolute bg-blue-500 right-[5%] rounded-[20px]"
-            onPress={() => navigation.navigate("Shop", { category: "캐릭터" })}
-          >
-            <Text className=" font-PretendardBold text-[16px] p-5 text-white">
-              캐릭터
-            </Text>
-          </Pressable>
-          <Pressable
-            className="absolute bg-sub01 top-20 right-[40%] rounded-[20px]"
             onPress={() => navigation.navigate("Shop", { category: "소모품" })}
           >
-            <Text className=" font-PretendardBold text-[16px] p-5 text-white">
-              소모품
-            </Text>
+            <Image
+              source={Sobi as ImageSourcePropType}
+              style={{
+                top: screenHeight / 2.6,
+                left: screenWidth / 2.5,
+              }}
+              className="absolute rounded-[20px] w-24 h-28"
+            />
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate("Shop", { category: "칭호" })}
+          >
+            <Image
+              source={Chingho as ImageSourcePropType}
+              style={{
+                top: screenHeight / 2,
+                left: screenWidth / 11,
+              }}
+              className="absolute rounded-[20px] w-24 h-28"
+            />
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate("Shop", { category: "치장" })}
+          >
+            <Image
+              source={Chijang as ImageSourcePropType}
+              style={{
+                top: screenHeight / 2,
+                left: screenWidth / 1.4,
+              }}
+              className="absolute rounded-[20px] w-24 h-28"
+            />
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate("Shop", { category: "캐릭터" })}
+          >
+            <Image
+              source={Character as ImageSourcePropType}
+              style={{
+                top: screenHeight / 1.6,
+                left: screenWidth / 2.5,
+              }}
+              className="absolute rounded-[20px] w-24 h-28"
+            />
           </Pressable>
         </View>
       </ImageBackground>

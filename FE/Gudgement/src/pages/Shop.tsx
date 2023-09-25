@@ -238,7 +238,9 @@ function Shop({ route }: ShopProps) {
   return (
     <SafeAreaView className="bg-sky w-full h-full">
       <View className="w-full h-fit bg-deepgreen">
-        <PointHeader />
+        <View className="w-full flex items-center">
+          <PointHeader />
+        </View>
         <View className="w-full h-12 justify-around space-x-36 flex flex-row top-2">
           <View className="bg-white border-2 border-black w-28 h-8 flex justify-center items-center rounded-[4px]">
             <View className="bg-black w-[96%] h-[88%] rounded-[4px]">

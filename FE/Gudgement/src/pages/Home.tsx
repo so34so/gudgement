@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
-import { getAsyncData } from "../utils/common";
+import { getAsyncData, screenHeight, screenWidth } from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -70,7 +70,6 @@ export default function Home() {
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
-
   // if (fetchError) {
   //   return (
   //     <View>
@@ -146,6 +145,16 @@ export default function Home() {
             </Text>
           </View>
         )}
+        <Image
+          source={{
+            uri: `${IMAGE_URL}/character/stoat.png`,
+          }}
+          className="w-32 h-48 z-1"
+          style={{
+            top: screenWidth / 2.5,
+            right: screenHeight / 35,
+          }}
+        />
       </View>
     </SafeAreaView>
   );

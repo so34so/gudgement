@@ -48,10 +48,12 @@ function PlaySelect() {
         {/* <BettingMachine /> */}
 
         <View style={styles.lineGradi}>
-          <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[32px] font-PretendardExtraBold">
-            대전 찾기
-          </Text>
-          <Image source={lineGradi} />
+          <Pressable onPress={() => navigation.navigate("PlayMatchingWait")}>
+            <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[32px] font-PretendardExtraBold">
+              대전 찾기
+            </Text>
+            <Image source={lineGradi} />
+          </Pressable>
         </View>
       </ImageBackground>
     </View>

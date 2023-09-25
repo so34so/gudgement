@@ -124,7 +124,7 @@ export default function Ranking() {
             </View>
           ))}
         </View>
-        <View className="h-[52%]">
+        <View className="h-[46%]">
           <FlatList {...flatListProps} />
         </View>
         <View className="w-full h-20 mt-2 justify-center items-center">

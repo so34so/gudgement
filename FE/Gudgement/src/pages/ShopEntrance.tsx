@@ -3,7 +3,6 @@ import {
   ImageBackground,
   ImageSourcePropType,
   Pressable,
-  Text,
   View,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";

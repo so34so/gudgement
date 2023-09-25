@@ -17,6 +17,7 @@ import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
 import { getAsyncData } from "../utils/common";
+import messaging from "@react-native-firebase/messaging";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -58,6 +59,7 @@ export default function Home() {
         },
       );
       reactotron.log!("fetchUser", response);
+      return response.data;
     } catch (error) {
       reactotron.log!("error", error);
     }
@@ -66,10 +68,58 @@ export default function Home() {
     data: user,
     error: fetchError,
     isLoading,
+    isSuccess,
   } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
+
+  useEffect(() => {
+    async function sendToken(myInfo: CommonType.TUser) {
+      try {
+        if (!messaging().isDeviceRegisteredForRemoteMessages) {
+          await messaging().registerDeviceForRemoteMessages();
+        }
+        const token = await messaging().getToken();
+        console.log("phone token", token);
+        // dispatch(userSlice.actions.setPhoneToken(token));
+        const response = await axios.get(`${API_URL}/fcm/token`, {
+          params: {
+            id: myInfo.memberId,
+            firebaseToken: token,
+          },
+        });
+        reactotron.log!(response.data);
+        return response;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (isSuccess && user) {
+      sendToken(user);
+    }
+  }, [user]);
+
+  // useEffect(() => {
+  //   async function getToken() {
+  //     try {
+  //       if (!messaging().isDeviceRegisteredForRemoteMessages) {
+  //         await messaging().registerDeviceForRemoteMessages();
+  //       }
+  //       const token = await messaging().getToken();
+  //       console.log("phone token", token);
+  //       // dispatch(userSlice.actions.setPhoneToken(token));
+  //       // return axios.post(`${Config.API_URL}/phonetoken`, { token });
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  //   getToken();
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log("[Remote Message] ", JSON.stringify(remoteMessage));
+  //   });
+  //   return unsubscribe;
+  // }, []);
 
   // if (fetchError) {
   //   return (

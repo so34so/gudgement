@@ -65,7 +65,7 @@ public class JwtProvider {
             return getClaims(token).getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
-            return false;
+            throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
         }
     }
 

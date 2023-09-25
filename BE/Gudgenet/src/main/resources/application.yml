@@ -51,8 +51,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-#    username: cos
-#    password: cos1234
+#    username: root
+#    password: 1234
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa
@@ -68,7 +68,7 @@ spring:
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # ddl-auto ?? ?? ??
-    generate-ddl: false
+      generate-ddl: true
     # SQL? ?? ??
     properties:
       hibernate:

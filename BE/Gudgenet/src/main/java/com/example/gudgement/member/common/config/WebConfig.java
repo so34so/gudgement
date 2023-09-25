@@ -1,6 +1,6 @@
 package com.example.gudgement.member.common.config;
 
-import com.example.gudgement.member.common.filter.JwtAuthFilter;
+import com.example.gudgement.member.common.filter.JwtAccessAuthFilter;
 import com.example.gudgement.member.common.filter.MemberVerifyFilter;
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.repository.MemberRepository;
@@ -25,10 +25,10 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider, MemberRepository memberRepository) {
+    public FilterRegistrationBean JwtAuthorizationFilter(JwtProvider jwtProvider) {
         FilterRegistrationBean<OncePerRequestFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
 
-        filterFilterRegistrationBean.setFilter(new JwtAuthFilter(jwtProvider, memberRepository));
+        filterFilterRegistrationBean.setFilter(new JwtAccessAuthFilter(jwtProvider));
         filterFilterRegistrationBean.setOrder(2);
         filterFilterRegistrationBean.addUrlPatterns("/dontUse");
 

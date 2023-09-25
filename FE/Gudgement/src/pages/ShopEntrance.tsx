@@ -56,69 +56,69 @@ function ShopEntrance() {
         className="flex-1"
       >
         <View className="top-10">
-          <Animated.View style={[animatedRowStyles]}>
-            <Pressable
-              onPress={() =>
-                navigation.navigate("Shop", { category: "소모품" })
-              }
-            >
+          <Pressable
+            className="absolute bg-transparent w-24 h-24"
+            style={{
+              top: screenHeight / 2.6,
+              left: screenWidth / 2.5,
+            }}
+            onPress={() => navigation.navigate("Shop", { category: "소모품" })}
+          >
+            <Animated.View style={[animatedRowStyles]}>
               <Image
                 source={Sobi as ImageSourcePropType}
-                style={{
-                  top: screenHeight / 2.6,
-                  left: screenWidth / 2.5,
-                }}
-                className="absolute rounded-[20px] w-24 h-28"
+                className="absolute rounded-[20px] w-24 h-28 z-10"
               />
-            </Pressable>
-          </Animated.View>
+            </Animated.View>
+          </Pressable>
 
-          <Animated.View style={[animatedColStyles]}>
-            <Pressable
-              onPress={() => navigation.navigate("Shop", { category: "칭호" })}
-            >
+          <Pressable
+            className="absolute w-24 h-24"
+            style={{
+              top: screenHeight / 2,
+              left: screenWidth / 11,
+            }}
+            onPress={() => navigation.navigate("Shop", { category: "칭호" })}
+          >
+            <Animated.View style={[animatedColStyles]}>
               <Image
                 source={Chingho as ImageSourcePropType}
-                style={{
-                  top: screenHeight / 2,
-                  left: screenWidth / 11,
-                }}
                 className="absolute rounded-[20px] w-24 h-28"
               />
-            </Pressable>
-          </Animated.View>
+            </Animated.View>
+          </Pressable>
 
-          <Animated.View style={[animatedColStyles]}>
-            <Pressable
-              onPress={() => navigation.navigate("Shop", { category: "치장" })}
-            >
+          <Pressable
+            className="absolute w-24 h-24"
+            style={{
+              top: screenHeight / 2,
+              left: screenWidth / 1.4,
+            }}
+            onPress={() => navigation.navigate("Shop", { category: "치장" })}
+          >
+            <Animated.View style={[animatedColStyles]}>
               <Image
                 source={Chijang as ImageSourcePropType}
-                style={{
-                  top: screenHeight / 2,
-                  left: screenWidth / 1.4,
-                }}
                 className="absolute rounded-[20px] w-24 h-28"
               />
-            </Pressable>
-          </Animated.View>
+            </Animated.View>
+          </Pressable>
 
-          <Animated.View style={[animatedRowStyles]}>
-            <Pressable
-              onPress={() =>
-                navigation.navigate("Shop", { category: "캐릭터" })
-              }
-            >
+          <Pressable
+            className="absolute w-24 h-24"
+            style={{
+              top: screenHeight / 1.6,
+              left: screenWidth / 2.5,
+            }}
+            onPress={() => navigation.navigate("Shop", { category: "캐릭터" })}
+          >
+            <Animated.View style={[animatedRowStyles]}>
               <Image
                 source={Character as ImageSourcePropType}
-                style={{
-                  top: screenHeight / 1.6,
-                  left: screenWidth / 2.5,
-                }}
                 className="absolute rounded-[20px] w-24 h-28"
               />
-            </Pressable>
-          </Animated.View>
+            </Animated.View>
+          </Pressable>
         </View>
       </ImageBackground>
     </View>

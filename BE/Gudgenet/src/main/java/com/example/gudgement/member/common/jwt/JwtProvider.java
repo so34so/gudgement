@@ -110,7 +110,10 @@ public class JwtProvider {
     */
     public AccessTokenDto tokenRefresh(String token) {
         try {
+            log.info("token valid 확인 중...");
             validationToken(token);
+            log.info("token valid!");
+
             Claims claims = getClaims(token);
             Member member = memberRepository.findByMemberId((Long)claims.get("id")).orElseThrow(() ->
                     new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
@@ -121,10 +124,14 @@ public class JwtProvider {
 
             AccessTokenDto accessTokenDto = new AccessTokenDto(jwt.getAccessToken());
 
+            log.info(accessTokenDto.getAccessToken());
+            log.info("정상 리턴");
             return accessTokenDto;
 
         } catch (IllegalArgumentException | NoSuchElementException | JwtException e) {
+                log.info(e.toString());
                 log.error(e.getMessage());
+                log.info("null 값 리턴");
                 return null;
         }
     }

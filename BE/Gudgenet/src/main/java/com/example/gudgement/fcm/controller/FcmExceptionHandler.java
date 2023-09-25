@@ -14,6 +14,10 @@ public class FcmExceptionHandler {
     @ExceptionHandler(value = FcmErrorException.class)
     public ResponseEntity<ErrorResponse> fcmException(FcmErrorException e) {
         log.error("[fcmException] {} : {}", e.getErrorCode(), e.getMessage());
-        return ResponseEntity.ok(ErrorResponse.builder().build());
+        return ResponseEntity.ok(ErrorResponse.builder()
+                .httpStatus(e.getErrorCode().getHttpStatus())
+                .code(e.getErrorCode().getErrorCode())
+                .message(e.getErrorCode().getMessage())
+                .build());
     }
 }

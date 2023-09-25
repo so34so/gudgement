@@ -26,7 +26,8 @@ public enum ErrorCode {
     NOT_AUTHORIZATION_EMAIL(HttpStatus.BAD_REQUEST, "E-003", "이메일이 인증되지 않은 유저입니다."),
 
     // appPush
-    FAIL_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "F-001", "FCM Push에 실패하였습니다.");
+    FAIL_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "F-001", "FCM Push에 실패하였습니다."),
+    NOT_REGISTRATION_FCM_TOKEN(HttpStatus.NOT_FOUND, "F-002", "Fcm 토큰이 존재하지 않습니다.");
 
 
     private HttpStatus httpStatus;

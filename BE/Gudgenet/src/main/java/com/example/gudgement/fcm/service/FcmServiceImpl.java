@@ -31,9 +31,7 @@ public class FcmServiceImpl implements FcmService{
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
-        log.info("에러 위치 확인 (1).");
         member.setFirebaseToken(firebaseToken);
-        log.info("에러 위치 확인 (2)");
         memberRepository.save(member);
     }
 
@@ -54,16 +52,13 @@ public class FcmServiceImpl implements FcmService{
                     firebaseMessaging.send(message);
                     return "성공!";
                 } catch (FirebaseMessagingException e) {
-                    log.error(e.getMessage(), e.getCause());
-                    return "송신 실패!";
+                    throw new FcmErrorException(ErrorCode.NOT_REGISTRATION_NICKNAME);
                 }
             } else {
-                new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN);
-                return "유저에게 토큰이 없음";
+                throw new FcmErrorException(ErrorCode.NOT_REGISTRATION_FCM_TOKEN);
             }
         } else {
-            new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER);
-            return "유저가 존재하지 않음";
+            throw new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER);
         }
     }
 }

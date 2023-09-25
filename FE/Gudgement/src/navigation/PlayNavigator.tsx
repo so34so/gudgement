@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { CommonType } from "../types/CommonType";
 import PlaySelect from "../pages/PlaySelect";
+import PlayGame from "../pages/PlayGame";
 import PlayMatchingWait from "../pages/PlayMatchingWait";
 import PlayMatchingQueue from "../pages/PlayMatchingQueue";
 function PlayNavigator() {
@@ -24,6 +25,11 @@ function PlayNavigator() {
       <Stack.Screen
         name="PlayMatchingQueue"
         component={PlayMatchingQueue}
+        options={{ headerShown: false }}
+      />
+          <Stack.Screen
+        name="PlayGame"
+        component={PlayGame}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

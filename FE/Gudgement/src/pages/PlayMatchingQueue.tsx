@@ -10,6 +10,7 @@ import {
   StyleSheet,
   ImageBackground,
   Pressable,
+  TouchableOpacity,
   Image,
   Text,
   ImageSourcePropType,
@@ -44,9 +45,14 @@ export default function PlayMatchingQueue() {
         className="flex-1"
       >
       <View style={styles.buttonwrapper}>
+      <TouchableOpacity onPress={() => navigation.navigate("PlayGame")}>
         <Image style={styles.acceptbutton} source={acceptButton} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>
         <Image style={styles.rejectbutton} source={rejectButton} />
-      </View>
+      </TouchableOpacity>
+    </View>
+
         <View className="flex z-20">    
         <Image style={styles.bluecard} source={blueCard} />
       </View>
@@ -83,6 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     top: "60%",
     left: "50.5%",
+    zIndex: 20,
   },
   infomessage: {
     bottom: "100%",

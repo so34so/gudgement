@@ -148,8 +148,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void updateNickname(Long id, String nickname) {
-        Member member = memberRepository.findByMemberId(id).orElseThrow(() ->
-                new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByMemberId(id).orElseThrow(() ->{
+                throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
 
         member.updateNickname(nickname);
         memberRepository.save(member);

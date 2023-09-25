@@ -11,7 +11,7 @@ import PointHeader from "../components/PointHeader";
 import GoodIcon from "../assets/icons/goodIcon.png";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
-import { API_URL, IMAGE_URL } from "@env";
+import { API_URL, IMAGE_URL, SERVER_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
@@ -83,7 +83,7 @@ export default function Home() {
         const token = await messaging().getToken();
         console.log("phone token", token);
         // dispatch(userSlice.actions.setPhoneToken(token));
-        const response = await axios.get(`${API_URL}/fcm/token`, {
+        const response = await axios.get(`${SERVER_URL}/fcm/token`, {
           params: {
             id: myInfo.memberId,
             firebaseToken: token,
@@ -98,28 +98,7 @@ export default function Home() {
     if (isSuccess && user) {
       sendToken(user);
     }
-  }, [user]);
-
-  // useEffect(() => {
-  //   async function getToken() {
-  //     try {
-  //       if (!messaging().isDeviceRegisteredForRemoteMessages) {
-  //         await messaging().registerDeviceForRemoteMessages();
-  //       }
-  //       const token = await messaging().getToken();
-  //       console.log("phone token", token);
-  //       // dispatch(userSlice.actions.setPhoneToken(token));
-  //       // return axios.post(`${Config.API_URL}/phonetoken`, { token });
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  //   getToken();
-  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //     console.log("[Remote Message] ", JSON.stringify(remoteMessage));
-  //   });
-  //   return unsubscribe;
-  // }, []);
+  }, [isSuccess, user]);
 
   // if (fetchError) {
   //   return (

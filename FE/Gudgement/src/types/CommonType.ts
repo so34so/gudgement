@@ -61,7 +61,7 @@ export declare module CommonType {
     id: number;
     itemName: string;
     itemContent: string;
-    image: string | ImageSourcePropType;
+    image: string;
     price: number;
     equipped: boolean;
     typeId: number;

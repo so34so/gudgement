@@ -3,7 +3,8 @@ import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
 import { WEBSOCKET_URL } from "@env";
-
+import BettingMachine from "../components/BettingMachine";
+import GameUi from "../components/GameUi";
 import {
   View,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   Image,
   Text,
   ImageSourcePropType,
+  StatusBar,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
@@ -25,6 +27,10 @@ interface Game {
 }
 
 export default function PlayGame() {
+  useEffect(() => {
+    StatusBar.setHidden(true);
+  }, []);
+
   const [serverState, setServerState] = useState("Loading...");
   const [messageText, setMessageText] = useState("");
   const [serverMessages, setServerMessages] = useState([]);
@@ -64,6 +70,7 @@ export default function PlayGame() {
         resizeMode="cover"
         className="flex-1"
       >
+        <GameUi />
         <Text
           className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
           style={styles.loadingtext}
@@ -78,7 +85,7 @@ export default function PlayGame() {
         </Text>
 
         <Image style={styles.mycharacter} source={pingping} />
-
+        <BettingMachine />
         <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>

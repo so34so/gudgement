@@ -27,7 +27,7 @@ function PlayNavigator() {
         component={PlayMatchingQueue}
         options={{ headerShown: false }}
       />
-          <Stack.Screen
+      <Stack.Screen
         name="PlayGame"
         component={PlayGame}
         options={{ headerShown: false }}

@@ -3,7 +3,7 @@ import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
-import BettingMachine from "../components/BettingMachine";
+import { API_URL, IMAGE_URL } from "@env";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageBackground,

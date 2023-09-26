@@ -8,10 +8,10 @@ import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
+import Splash from "./src/pages/Splash";
 import messaging from "@react-native-firebase/messaging";
 import reactotron from "reactotron-react-native";
 import { getAsyncData } from "./src/utils/common";
-import Splash from "./src/pages/Splash";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -42,13 +42,14 @@ function AppInner() {
     accessToken: string;
     refreshToken: string;
     id: number;
+    info: boolean; // 로그인 절차 다 밟으면 true로 변경됨
   }
 
   const checkIsLoggedIn = async () => {
     try {
       const loginData = (await getAsyncData("loginData")) as loginData;
       reactotron.log!("loginData 확인 성공!", loginData);
-      setIsLoggedIn(true);
+      // setIsLoggedIn(true);
     } catch (error) {
       reactotron.log!("loginData 확인 실패!", error);
     }
@@ -74,7 +75,7 @@ function AppInner() {
           />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName="Splash">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="Splash"
             component={Splash}

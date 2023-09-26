@@ -24,7 +24,6 @@ public class GameController {
 
         // Update the game acceptance status for the user.
         gameService.acceptGame(roomNumber, username);
-        gameService.addUserToRoom(roomNumber, username);
         return ResponseEntity.ok().build();
     }
 

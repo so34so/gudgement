@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dimensions } from "react-native";
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 export const textShadow = {
@@ -24,7 +25,7 @@ export const setAsyncData = async (key: string, value: unknown) => {
     await AsyncStorage.setItem(key, stringValue);
     return true;
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!(error);
     return false;
   }
 };
@@ -38,7 +39,7 @@ export const getAsyncData = async <T>(key: string): Promise<T | null> => {
       return data;
     }
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!("getAsyncData 불러오기 실패", error);
   }
 
   return null;
@@ -58,12 +59,12 @@ export const updateAsyncData = async (key: string, updatedValue: unknown) => {
 
       // 3. 수정된 값을 다시 저장합니다.
       await setAsyncData(key, updatedData);
-      Reactotron.log!("값이 업데이트되었습니다.");
+      reactotron.log!("값이 업데이트되었습니다.");
     } else {
-      Reactotron.log!("값이 존재하지 않습니다.");
+      reactotron.log!("값이 존재하지 않습니다.");
     }
   } catch (error) {
-    Reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
+    reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
   }
 };
 
@@ -72,7 +73,7 @@ export const removeAsyncData = async (key: string) => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!(error);
   }
 };
 
@@ -82,20 +83,37 @@ export const containsAsyncKey = async (key: string) => {
     const keys = await AsyncStorage.getAllKeys();
     return keys.includes(key);
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!(error);
   }
 };
 
 export const screenWidth = Math.round(Dimensions.get("window").width);
 export const screenHeight = Math.round(Dimensions.get("window").height);
 
-export const getTempUserId = async () => {
+export const getLoginData = async (prop: string) => {
   try {
-    const responseGetId = await getAsyncData("id");
-    return responseGetId ? parseInt(responseGetId, 10) : 0;
+    const loginData = (await getAsyncData(
+      "loginData",
+    )) as CommonType.TloginData;
+    const id = loginData.id;
+    const accessToken = loginData.accessToken;
+    const refreshToken = loginData.refreshToken;
+    const email = loginData.email;
+    if (prop === "id") {
+      return id;
+    }
+    if (prop === "accessToken") {
+      return accessToken;
+    }
+    if (prop === "refreshToken") {
+      return refreshToken;
+    }
+    if (prop === "email") {
+      return email;
+    }
   } catch (error) {
-    Reactotron.log!("아이디 확인 실패!", error);
-    return 0;
+    reactotron.log!("불러오기 실패!", error);
+    return;
   }
 };
 

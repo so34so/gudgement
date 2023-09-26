@@ -1,6 +1,7 @@
 package com.example.gudgement.game.service;
 
 import com.example.gudgement.CardService;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,6 +16,7 @@ public class GameRoundServiceImpl implements GameRoundService {
     private final CardService cardService;
     private final RedisTemplate<String, String> redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
+    private final TimerService timerService;
 
     // 각 사용자의 배팅 상태를 저장하는 Map
     private Map<String, Boolean> bettingStatus = new HashMap<>();
@@ -42,15 +44,19 @@ public class GameRoundServiceImpl implements GameRoundService {
             }
         }
 
-        // 40초 후 체크하는 스케줄러 설정
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                checkBettingStatus(roomNumber);
-            }
-        }, 40000);  // 40초 후 실행
+//        timerService.createRoomTimer(roomNumber);  // 타이머 생성 로직 호출
 
         // ... 기타 라운드 종료 로직 ...
+    }
+
+    public void betReceived(String userName) {
+        bettingStatus.put(userName,true);
+
+//        timerService.timerEndUser(userName);  // 타이머 종료 로직 호출
+        //(주: 이 메소드는 userName 대신 gameCode와 userSeq를 파라미터로 받으므로 적절히 수정해야 합니다.)
+
+        checkBettingStatus(userName);   //(주: 이 메소드는 roomNumber를 파라미터로 받으므로 적절히 수정해야 합니다.)
+
     }
 
     public void checkBettingStatus(String roomNumber) {
@@ -63,10 +69,6 @@ public class GameRoundServiceImpl implements GameRoundService {
                 compareCards();   // 카드 비교 메소드 호출
             }
         }
-    }
-
-    public void betReceived(String userName) {
-        bettingStatus.put(userName,true);
     }
 
     public void compareCards() {

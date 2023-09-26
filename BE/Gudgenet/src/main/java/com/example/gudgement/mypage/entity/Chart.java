@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -22,7 +23,7 @@ public class Chart {
     private Member memberId;
 
     @Column(nullable = false)
-    private String account;
+    private long accountId;
 
     @Column(nullable = false)
     private int month;
@@ -52,9 +53,9 @@ public class Chart {
     private Long sun;
 
     @Builder
-    public Chart(Member memberId, String account, int month, int week) {
+    public Chart(Member memberId, Long accountId, int month, int week) {
         this.memberId = memberId;
-        this.account = account;
+        this.accountId = accountId;
         this.month = month;
         this.week = week;
     }

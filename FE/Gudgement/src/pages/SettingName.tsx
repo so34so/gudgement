@@ -8,16 +8,17 @@ import {
   ImageSourcePropType,
   Image,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
-import NavigationButton from "../components/NavigationButton";
-import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import Reactotron from "reactotron-react-native";
 import { API_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getTempUserId } from "../utils/common";
+import { getLoginData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
+import NavigationButton from "../components/NavigationButton";
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MyPageIcon from "../assets/images/mypageIcon.png";
+import reactotron from "reactotron-react-native";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
@@ -32,8 +33,15 @@ function SettingName() {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
   useEffect(() => {
-    getTempUserId().then(tempUserId => {
-      setTempId(tempUserId);
+    getLoginData("id").then(res => {
+      if (res) {
+        setTempId(res as number);
+      }
+    });
+    getLoginData("email").then(ress => {
+      if (ress) {
+        reactotron.log!("이메일 업데이트 1", ress as string);
+      }
     });
   }, []);
 

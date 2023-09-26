@@ -36,7 +36,6 @@ export declare module CommonType {
     PlaySelect: undefined;
     PlayGame: undefined;
     /**
-     * ShopScreen child Type
      * MyPage child Type
      */
     MyPageNavigator: undefined;
@@ -81,14 +80,48 @@ export declare module CommonType {
     equipped: false;
   };
 
+  export type Terror = {
+    httpStatus: string;
+    code: string;
+    message: string;
+  };
+
   export type TkakaoLogin = {
     id: number;
     nickname: string;
     email: string;
     accessToken: string;
     refreshToken: string;
-    refreshTokenExpiration: Date;
+    refreshTokenExpiration: string;
   };
+
+  export type TloginData = {
+    accessToken: string;
+    refreshToken: string;
+    id: number;
+    info: boolean; // 로그인 절차 다 밟으면 true로 변경됨
+    email: string; // 계좌 연동 시 보낼 인증된 email
+    hasAccounts: boolean; // 계좌 불러왔는지 확인
+  };
+
+  export type TemailCode = string;
+
+  export type TemailUpdate = {
+    id: number;
+    email: string;
+  };
+
+  export type Taccount = {
+    virtualAccountId: number;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    accountHolder: string;
+    email: string;
+    balance: number;
+    selected: boolean;
+  };
+
   export type TUser = {
     memberId: number;
     email: string;
@@ -101,12 +134,6 @@ export declare module CommonType {
     pedometer: number;
   };
 
-  export type TemailCode = string;
-
-  export type TemailUpdate = {
-    id: number;
-    email: string;
-  };
   export type Tplaymap = {
     ticle: string;
     image: string | ImageSourcePropType;

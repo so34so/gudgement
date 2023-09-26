@@ -14,10 +14,9 @@ import {
   KAKAO_LOGIN_REDIRECT_URI,
   SERVER_URL,
 } from "@env";
-import KakaoLogoImg from "../assets/images/kakaoLogo.png";
 import axios from "axios";
-import Reactotron from "reactotron-react-native";
 import { getAsyncData, setAsyncData } from "../utils/common";
+import KakaoLogoImg from "../assets/images/kakaoLogo.png";
 import reactotron from "reactotron-react-native";
 
 function Login() {
@@ -30,24 +29,9 @@ function Login() {
     setShowWebView(true);
   };
 
-  interface kakaoLoginResponse {
-    id: number;
-    nickname: string;
-    email: string;
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpiration: string;
-  }
-
-  interface loginData {
-    accessToken: string;
-    refreshToken: string;
-    id: number;
-  }
-
   const fetchAccessToken = async (code: string) => {
     try {
-      const response = await axios.post<kakaoLoginResponse>(
+      const response = await axios.post<CommonType.TkakaoLogin>(
         `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
       );
 
@@ -56,32 +40,37 @@ function Login() {
       const id = response.data.id;
 
       try {
-        const loginData: loginData = {
+        const loginData: CommonType.TloginData = {
           accessToken: accessToken,
           refreshToken: refreshToken,
           id: id,
+          info: false,
+          email: "none",
+          hasAccounts: false,
         };
 
         const responseLogin = await setAsyncData("loginData", loginData);
-        Reactotron.log!("스토리지에 저장 성공!", responseLogin);
+        reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {
-        Reactotron.log!("스토리지 초기화 실패!", error);
+        reactotron.log!("스토리지 초기화 실패!", error);
       }
 
-      try {
-        const loginData = (await getAsyncData("loginData")) as loginData;
-        Reactotron.log!("loginData 확인 성공!", loginData);
-        Reactotron.log!("accessToken 확인 성공!", loginData.accessToken);
-        Reactotron.log!("refreshToken 성공!", loginData.refreshToken);
-        Reactotron.log!("id 확인 성공!", loginData.id);
-        // Reactotron.log!("info 확인 성공!", loginData.info);
-        setShowWebView(false);
-      } catch (error) {
-        Reactotron.log!("액세스 토큰 확인 실패!", error);
-      }
+      // try {
+      //   const loginData = (await getAsyncData(
+      //     "loginData",
+      //   )) as CommonType.TloginData;
+      //   reactotron.log!("loginData 확인 성공!", loginData);
+      //   reactotron.log!("accessToken 확인 성공!", loginData.accessToken);
+      //   reactotron.log!("refreshToken 성공!", loginData.refreshToken);
+      //   reactotron.log!("id 확인 성공!", loginData.id);
+      //   reactotron.log!("info 확인 성공!", loginData.info);
+      // } catch (error) {
+      //   reactotron.log!("액세스 토큰 확인 실패!", error);
+      // }
+      setShowWebView(false);
       navigation.navigate("SettingEmail");
     } catch (error) {
-      Reactotron.log!("인가 코드 전달 실패!", error);
+      reactotron.log!("인가 코드 전달 실패!", error);
     }
   };
 
@@ -101,7 +90,7 @@ function Login() {
     try {
       await getAuthorizationCode(event);
     } catch (error) {
-      Reactotron.log!("에러 발생!", error);
+      reactotron.log!("에러 발생!", error);
     }
   };
 

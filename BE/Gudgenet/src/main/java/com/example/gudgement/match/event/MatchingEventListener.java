@@ -42,6 +42,10 @@ public class MatchingEventListener {
             // Redis에 게임 방 정보와 유저들의 정보 저장
             redisTemplate.opsForSet().add(roomNumber, matchedUsers.toArray(new String[0]));
 
+            // 각 사용자의 tiggle 값을 함께 저장
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName(), request.getTiggle());
+            redisTemplate.opsForHash().put(roomNumber, otherUser, request.getTiggle());
+
             messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
             messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);
 

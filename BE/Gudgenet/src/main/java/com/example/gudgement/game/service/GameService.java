@@ -11,4 +11,5 @@ public interface GameService {
     void rejectGame(String roomNumber, String username);
 
     void addUserToRoom(String roomNumber, String username);
+
 }

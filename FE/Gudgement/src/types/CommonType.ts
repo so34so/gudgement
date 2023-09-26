@@ -113,4 +113,9 @@ export declare module CommonType {
     title: string;
     description: string;
   };
+  export type TplayCard = {
+    cost: string;
+    number: number;
+    title: string;
+  };
 }

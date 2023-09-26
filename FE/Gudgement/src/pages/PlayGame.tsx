@@ -3,8 +3,8 @@ import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
 import { WEBSOCKET_URL } from "@env";
-import BettingMachine from "../components/BettingMachine";
 import GameUi from "../components/GameUi";
+import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
   StyleSheet,
@@ -70,8 +70,9 @@ export default function PlayGame() {
         resizeMode="cover"
         className="flex-1"
       >
+        <GameBettingSyetem />
         <GameUi />
-        <Text
+        {/* <Text
           className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
           style={styles.loadingtext}
         >
@@ -82,10 +83,9 @@ export default function PlayGame() {
           style={styles.loadingtextkr}
         >
           잠시후 게임이 시작됩니다
-        </Text>
+        </Text> */}
 
         <Image style={styles.mycharacter} source={pingping} />
-        <BettingMachine />
         <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>

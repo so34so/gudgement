@@ -66,8 +66,8 @@ function Carousel({
         snapToInterval={pageWidth + gap}
         snapToAlignment="start"
         ListEmptyComponent={() => (
-          <Text className="mt-20 font-PretendardBlack text-[16px] text-white">
-            아무것도 없음
+          <Text className="mt-20 font-PretendardBlack text-[20px] text-white">
+            상품이 없습니다.
           </Text>
         )}
         showsHorizontalScrollIndicator={false}

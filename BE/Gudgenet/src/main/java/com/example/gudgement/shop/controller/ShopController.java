@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Tag(name = "Shop", description = "상점 기능 컨트롤러입니다.")
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/api/shop")
 @RequiredArgsConstructor
 public class ShopController {
 

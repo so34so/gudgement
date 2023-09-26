@@ -1,5 +1,5 @@
 import PlayBackground2 from "../assets/images/playBackground2.png";
-import MapType from "../assets/images/maptype.png";
+import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
@@ -8,6 +8,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageBackground,
   Image,
+  Text,
   ImageSourcePropType,
   Pressable,
   View,
@@ -19,6 +20,8 @@ import { CommonType } from "../types/CommonType";
 function PlaySelect() {
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
+  const lineGradi: ImageSourcePropType = LineGradi as ImageSourcePropType;
+
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -34,10 +37,24 @@ function PlaySelect() {
           <CloseButton />
         </Pressable>
         <PlayCarousel />
+
         <View style={styles.cards}>
-          <Image source={cards} />
+          <Image
+            className="w-[205] h-[168]"
+            source={cards}
+            resizeMode="contain"
+          />
         </View>
         {/* <BettingMachine /> */}
+
+        <View style={styles.lineGradi}>
+          <Pressable onPress={() => navigation.navigate("PlayMatchingWait")}>
+            <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[32px] font-PretendardExtraBold">
+              대전 찾기
+            </Text>
+            <Image source={lineGradi} />
+          </Pressable>
+        </View>
       </ImageBackground>
     </View>
   );
@@ -51,15 +68,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cards: {
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    top: "90%",
+    left: "25%",
+
+    zIndex: 10,
+  },
+  lineGradi: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    top: "60%",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 10,
+    width: 360,
+    height: 75,
+    top: "85%",
+    left: "5%",
+    zIndex: 9,
   },
   mapTitle: {
     flex: 1,

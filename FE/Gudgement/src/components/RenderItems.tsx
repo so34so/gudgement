@@ -1,4 +1,4 @@
-import { Animated, Easing, View } from "react-native";
+import { Animated, Easing, Text, View } from "react-native";
 import { CommonType } from "../types/CommonType";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { useEffect, useState } from "react";
@@ -66,7 +66,13 @@ function RenderItems({
             </SvgText>
           </Svg>
         </View>
-      ) : null}
+      ) : (
+        item?.quantity && (
+          <Text className="text-black right-2 font-PretendardBlack text-[20px]">
+            X {item.quantity}
+          </Text>
+        )
+      )}
     </Animated.View>
   );
 }

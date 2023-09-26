@@ -79,12 +79,14 @@ function CompleteModal({
               <Text className="text-main text-[32px] font-PretendardExtraBold">
                 {item.itemName}
               </Text>
-              <WithLocalSvg
-                className="left-4 top-6"
-                width={220}
-                height={200}
-                asset={item.image as ImageSourcePropType}
-              />
+              {/* {item.image && (
+                <WithLocalSvg
+                  className="left-4 top-6"
+                  width={220}
+                  height={200}
+                  asset={item.image as ImageSourcePropType}
+                />
+              )} */}
             </>
           ) : null}
         </View>

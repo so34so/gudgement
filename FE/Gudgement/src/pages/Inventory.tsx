@@ -31,6 +31,7 @@ import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
+import { MEMBER_ID } from "./Shop";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -70,7 +71,7 @@ function Inventory({ route }: InventoryProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[category],
-            memberId: 1,
+            memberId: MEMBER_ID,
           },
         },
       );
@@ -90,9 +91,13 @@ function Inventory({ route }: InventoryProps) {
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
-
+  reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
   useLayoutEffect(() => {
-    if (fetchItem?.length) {
+    if (
+      fetchItem?.length &&
+      fetchItem[selectItem] &&
+      "equipped" in fetchItem[selectItem]
+    ) {
       setItemStatus(fetchItem[selectItem].equipped);
     }
   }, [fetchItem, selectItem]);
@@ -105,8 +110,6 @@ function Inventory({ route }: InventoryProps) {
   }, [offset]);
 
   useEffect(() => {
-    // 카테고리가 바뀔 때 마다 다른 아이템을 서버에서 불러와야 함
-    Reactotron.log!(selectCategory);
     refetch();
   }, [refetch, selectCategory]);
 
@@ -120,7 +123,6 @@ function Inventory({ route }: InventoryProps) {
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
-      Reactotron.log!("장착 완료");
     },
   });
 
@@ -129,13 +131,7 @@ function Inventory({ route }: InventoryProps) {
       equippedItem({ invenId: fetchItem[selectItem].invenId });
     }
   }, [equippedItem, fetchItem, selectItem]);
-  if (isLoading) {
-    return (
-      <View className="w-full h-full flex justify-center items-center">
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    );
-  }
+
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -152,7 +148,7 @@ function Inventory({ route }: InventoryProps) {
           </TouchableOpacity>
         </View>
 
-        <View className="w-full h-[340px] flex flex-col justify-center items-center mt-4">
+        <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
               <Image source={myCharacter} />
@@ -204,14 +200,18 @@ function Inventory({ route }: InventoryProps) {
             </View>
           ))}
         </View>
-        <Carousel
-          gap={60}
-          offset={60}
-          items={fetchItem}
-          pageWidth={screenWidth - (55 + 75) * 2}
-          setSelectItem={setSelectItem}
-          component="Inventory"
-        />
+        {isLoading ? (
+          <ActivityIndicator size="large" color="gray" className="top-20" />
+        ) : (
+          <Carousel
+            gap={60}
+            offset={60}
+            items={fetchItem}
+            pageWidth={screenWidth - (55 + 75) * 2}
+            setSelectItem={setSelectItem}
+            component="Inventory"
+          />
+        )}
         <CompleteModal
           completeModalVisible={modalVisible}
           setCompleteModalVisible={setModalVisible}

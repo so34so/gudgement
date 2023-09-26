@@ -9,7 +9,6 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class EquippedDto implements Serializable {
     private Long invenId;

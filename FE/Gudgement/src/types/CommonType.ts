@@ -12,13 +12,12 @@ export declare module CommonType {
     플레이: undefined;
     "내 정보": undefined;
     랭킹: undefined;
-
+    바텀: undefined;
     /**
      * PlayScreen childs Type
      */
     Single: undefined;
     Multi: undefined;
-    PlaySelect: undefined;
 
     /**
      * ShopScreen child Type
@@ -32,13 +31,13 @@ export declare module CommonType {
      * PlayScreen child Type
      */
     PlayNavigator: undefined;
-    Play: undefined;
-    Low: undefined;
-    Middle: undefined;
-    High: undefined;
+    PlayMatchingWait: undefined;
+    PlayMatchingQueue: undefined;
     PlaySelect: undefined;
+
     /**
      * ShopScreen child Type
+     * MyPage child Type
      */
     MyPageNavigator: undefined;
     MyPage: undefined;
@@ -47,6 +46,16 @@ export declare module CommonType {
     Analyze: undefined;
     SingleRecords: undefined;
     MultiRecords: undefined;
+
+    /**
+     * Login child Type
+     */
+    Splash: undefined;
+    Login: undefined;
+    SettingEmail: undefined;
+    SettingName: undefined;
+    SettingAccount: undefined;
+    BottomTabNavigator: undefined;
   };
 
   export type Titem = {
@@ -68,6 +77,40 @@ export declare module CommonType {
     itemEffect: boolean;
     image: string;
     typeId: number;
+    quantity: number;
     equipped: false;
+  };
+
+  export type TkakaoLogin = {
+    id: number;
+    nickname: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpiration: Date;
+  };
+  export type TUser = {
+    memberId: number;
+    email: string;
+    nickname: string;
+    emailApprove: boolean;
+    nicknameApprove: boolean;
+    tiggle: number;
+    exp: number;
+    level: number;
+    pedometer: number;
+  };
+
+  export type TemailCode = string;
+
+  export type TemailUpdate = {
+    id: number;
+    email: string;
+  };
+  export type Tplaymap = {
+    ticle: string;
+    image: string | ImageSourcePropType;
+    title: string;
+    description: string;
   };
 }

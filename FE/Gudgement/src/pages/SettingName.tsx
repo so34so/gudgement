@@ -46,19 +46,10 @@ function SettingName() {
   }, []);
 
   useEffect(() => {
-    const getLoginData = async () => {
-      const loginData = (await getAsyncData(
-        "loginData",
-      )) as CommonType.TloginData;
-
-      if (loginData.hasAccounts === 2) {
-        const hasAccounts = {
-          hasAccounts: 1,
-        };
-        updateAsyncData("loginData", hasAccounts);
-      }
+    const info = {
+      info: 2,
     };
-    getLoginData();
+    updateAsyncData("loginData", info);
   });
 
   const openModal = () => {

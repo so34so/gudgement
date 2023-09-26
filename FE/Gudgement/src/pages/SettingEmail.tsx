@@ -48,19 +48,10 @@ function SettingEmail() {
   }, []);
 
   useEffect(() => {
-    const getLoginData = async () => {
-      const loginData = (await getAsyncData(
-        "loginData",
-      )) as CommonType.TloginData;
-
-      if (loginData.hasAccounts === 1) {
-        const hasAccounts = {
-          hasAccounts: 0,
-        };
-        updateAsyncData("loginData", hasAccounts);
-      }
+    const info = {
+      info: 1,
     };
-    getLoginData();
+    updateAsyncData("loginData", info);
   });
 
   const openModal = () => {

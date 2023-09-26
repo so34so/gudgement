@@ -16,6 +16,8 @@ import { getAsyncData } from "./src/utils/common";
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [routeName, setRouteName] =
+    useState<keyof CommonType.RootStackParamList>("Login");
 
   useEffect(() => {
     async function getToken() {
@@ -44,7 +46,25 @@ function AppInner() {
         "loginData",
       )) as CommonType.TloginData;
       reactotron.log!("loginData 확인 성공!", loginData);
-      // setIsLoggedIn(true);
+
+      if (loginData.info === 1) {
+        setRouteName("SettingEmail");
+      }
+
+      if (loginData.info === 2) {
+        setRouteName("SettingName");
+      }
+
+      if (loginData.info === 3) {
+        setRouteName("SettingAccount");
+      }
+
+      if (loginData.info === 4) {
+        setIsLoggedIn(true);
+        setRouteName("홈");
+      }
+
+      setRouteName("Login");
     } catch (error) {
       reactotron.log!("loginData 확인 실패!", error);
     }
@@ -70,7 +90,7 @@ function AppInner() {
           />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName={routeName}>
           <Stack.Screen
             name="Splash"
             component={Splash}

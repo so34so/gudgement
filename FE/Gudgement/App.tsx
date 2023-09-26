@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /// <reference types="nativewind/types" />
 import { QueryClientProvider } from "@tanstack/react-query";
 import "react-native-gesture-handler";
@@ -28,24 +29,28 @@ PushNotification.configure({
 
   // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
   onNotification: function (notification: any) {
-    console.log("NOTIFICATION:", notification); // notification: content, title등 여러 정보를 넣을 수 있음
-    if (notification.channelId === "만보기") {
-      if (notification.message || notification.data.message) {
-        Linking.openURL("gudgement://mypage"); // <---- 2
+    console.log("NOTIFICATION:", notification);
+    if (notification.userInteraction) {
+      if (notification.channelId === "만보기") {
+        // console.log("url open");
       }
-    }
-    if (notification.channelId === "분석") {
-      if (notification.message || notification.data.message) {
-        Linking.openURL("gudgement://mypage"); // <---- 2
+      if (notification.channelId === "분석") {
+        if (notification.message || notification.data.message) {
+          Linking.openURL("gudgement://mypage");
+        }
       }
+      if (notification.channelId === "fcm_fallback_notification_channel") {
+        // Linking.openURL("gudgement://mypage");
+      }
+      // process the notification
+      Linking.openURL("gudgement://mypage");
     }
-    // process the notification
   },
 
   // (optional) 등록한 액션을 눌렀고 invokeApp이 false 상태일 때 실행됨, true면 onNotification이 실행됨 (Android)
   onAction: function (notification: any) {
     // console.log("ACTION:", notification.action);
-    console.log("NOTIFICATION:", notification);
+    console.log("NOTIFICATION ACTION:", notification);
 
     // process the action
   },

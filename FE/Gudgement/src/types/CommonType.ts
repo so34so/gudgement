@@ -34,7 +34,7 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-
+    PlayGame: undefined;
     /**
      * ShopScreen child Type
      * MyPage child Type
@@ -50,6 +50,7 @@ export declare module CommonType {
     /**
      * Login child Type
      */
+    Splash: undefined;
     Login: undefined;
     SettingEmail: undefined;
     SettingName: undefined;

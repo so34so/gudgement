@@ -1,11 +1,20 @@
 package com.example.gudgement.game.service;
 
+import com.example.gudgement.CardService;
+import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameUserDto;
+import com.example.gudgement.game.dto.GameUserInfoDto;
 import com.example.gudgement.game.entity.GameRoom;
 import com.example.gudgement.game.entity.GameUser;
 import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
 import com.example.gudgement.match.dto.MatchDto;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.shop.dto.ItemDto;
+import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.shop.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,10 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -29,6 +35,10 @@ public class GameServiceImpl implements GameService{
     private final GameRoomRepository gameRoomRepository;
     private final GameUserRepository gameUserRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final MemberRepository memberRepository;
+    private final InventoryRepository inventoryRepository;
+
+    private final CardService cardService;
 
     @Scheduled(fixedRate = 1000)  // 매 초마다 실행
     public void checkUnresponsiveUsers() {
@@ -64,14 +74,31 @@ public class GameServiceImpl implements GameService{
         // Update the acceptance status in Redis.
         redisTemplate.opsForHash().put(roomNumber, nickname, "accepted");
 
-        // No need to call save() here. The transaction will automatically commit
-        // the changes when the service method returns.
-
         if (allUsersAccepted(roomNumber)) {
             messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/start", "All users accepted.");
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
+            Set<String> members = redisTemplate.opsForSet().members(roomNumber);
+
+            for(String member : members){
+                cardService.generateAndStoreCards(member);
+                /* Fetch necessary information of each member from database or other services */
+                EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);  // This should be implemented
+                int level = fetchLevel(member);  // This should be implemented
+                Long tiggle = (Long) redisTemplate.opsForHash().get(roomNumber, member);
+
+                /* Construct a DTO that contains all necessary information */
+                GameUserInfoDto userInfoDto = GameUserInfoDto.builder()
+                        .nickname(member)
+                        .level(level)
+                        .tiggle(tiggle)
+                        .equippedItems(equippedItemsDto)
+                        .build();
+
+                /* Send this DTO to client side */
+                messagingTemplate.convertAndSendToUser(member, "/queue/userInfo", userInfoDto);
+            }
 
             // Remove room information from Redis as it's no longer needed there.
             redisTemplate.delete(roomNumber);
@@ -152,17 +179,6 @@ public class GameServiceImpl implements GameService{
         gameRoomRepository.deleteByRoomNumber(roomNumber);  // 게임 방 삭제 로직 추가.
     }
 
-
-/*    private boolean allUsersAccepted(String roomNumber) {
-        GameRoom gameRoom = gameRoomRepository.findByRoomNumber(roomNumber);
-        for (GameUser user : gameRoom.getUsers()) {
-            if (!Boolean.TRUE.equals(user.getGameAccepted())) {  // 수락하지 않은 유저가 있는지 체크.
-                return false;
-            }
-        }
-        return true;
-    }*/
-
     @Transactional
     public void addUserToRoom(String roomNumber, String nickname) {
         // Find the game room by room number.
@@ -185,6 +201,49 @@ public class GameServiceImpl implements GameService{
 
         // Add the user to the game room's users list directly.
         gameRoom.getUsers().add(user);
+    }
+
+    private int fetchLevel(String nickname) {
+        Optional<Member> gameUser = memberRepository.findByNickname(nickname);
+
+        if (gameUser == null) {
+            throw new IllegalArgumentException("Invalid nickname: " + nickname);
+        }
+
+        return gameUser.get().getLevel();
+    }
+
+    private EquippedItemsDto fetchEquippedItems(String nickname) {
+        // Find the user by nickname.
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> {
+            throw new IllegalArgumentException("Invalid nickname: " + nickname);
+        });
+
+        // Find equipped items by memberId.
+        List<Inventory> equippedInventories = inventoryRepository.findByMemberIdAndEquipped(member.getMemberId(), true);
+
+        // Convert the entity list to DTO.
+        List<ItemDto> itemDtos = new ArrayList<>();
+
+        for (Inventory inventory : equippedInventories) {
+            Item item = inventory.getItemId();
+
+            ItemDto itemDto = ItemDto.builder()
+                    .id(item.getItemId())
+                    .itemName(item.getItemName())
+                    .itemContent(item.getItemContent())
+                    .itemEffect(item.getItemEffect())
+                    .image(item.getImage())
+                    .type(item.getType())
+                    .subType(item.getType())
+                    .build();
+
+            itemDtos.add(itemDto);
+        }
+
+        return EquippedItemsDto.builder()
+                .items(itemDtos)
+                .build();
     }
 
 }

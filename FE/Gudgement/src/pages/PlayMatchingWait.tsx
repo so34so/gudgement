@@ -41,6 +41,36 @@ export default function PlayMatchingWait() {
   }));
 
   const [elapsedTime, setElapsedTime] = useState(0);
+  useEffect(() => {
+    const WSUrl = "http://j9d106.p.ssafy.io:8080";
+    const ws = new WebSocket(WSUrl);
+
+    ws.onopen = () => {
+      // 연결이 열린 경우
+      ws.send("something"); // 메시지 전송
+      console.log("새로운 클라이언트 접속");
+    };
+
+    ws.onmessage = e => {
+      // 메시지를 받은 경우
+      console.log(e.data);
+    };
+
+    ws.onerror = e => {
+      // 오류가 발생한 경우
+      console.log(e.message);
+    };
+
+    ws.onclose = e => {
+      // 연결이 닫힌 경우
+      console.log(e.code, e.reason);
+    };
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 웹 소켓 연결 정리
+      ws.close();
+    };
+  }, []);
 
   useEffect(() => {
     offset.value = withRepeat(
@@ -52,12 +82,12 @@ export default function PlayMatchingWait() {
       setElapsedTime(prevTime => prevTime + 1);
     }, 1000);
 
-    // 컴포넌트가 언마운트될 때 clearInterval로 인터벌을 정리합니다.
+    // 컴포넌트가 언마운트될 때 인터벌 정리
     return () => {
       clearInterval(intervalId);
     };
   }, [offset]);
-  // useEffect(() => {});
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground

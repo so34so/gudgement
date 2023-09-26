@@ -35,7 +35,7 @@ export default function PlayGame() {
   const [messageText, setMessageText] = useState("");
   const [serverMessages, setServerMessages] = useState([]);
   const userId = "ddd";
-  const WSUrl = "ws://j9d106.p.ssafy.io:8080";
+  const WSUrl = "http://j9d106.p.ssafy.io:8080";
   console.log(WSUrl);
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
   const snake: ImageSourcePropType = Snake as ImageSourcePropType;
@@ -70,8 +70,9 @@ export default function PlayGame() {
         resizeMode="cover"
         className="flex-1"
       >
-        <GameBettingSyetem />
         <GameUi />
+
+        <GameBettingSyetem />
         {/* <Text
           className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
           style={styles.loadingtext}

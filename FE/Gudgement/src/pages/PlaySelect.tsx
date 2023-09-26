@@ -1,6 +1,7 @@
 import PlayBackground2 from "../assets/images/playBackground2.png";
 import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
+
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
 import { API_URL, IMAGE_URL } from "@env";
@@ -16,6 +17,14 @@ import {
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
+import { mapInfoArray } from "../components/MapData";
+
+interface MatchData {
+  nickName: string;
+  tiggle: number;
+  roleUser: string;
+  memberId: number;
+}
 
 function PlaySelect() {
   const playBackground2: ImageSourcePropType =
@@ -25,6 +34,33 @@ function PlaySelect() {
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  const [selectedMap, setSelectedMap] = useState(mapInfoArray[0]);
+
+  const handleMapSelection = map => {
+    setSelectedMap(map);
+  };
+  // 매칭하기 함수
+  async function postMatchStart() {
+    try {
+      const response: AxiosResponse<MatchData[]> = await axios.post(
+        `${API_URL}/shop/type`,
+        {
+          params: {
+            nickName: MatchData.nickName,
+            tiggle: MatchData.tiggle,
+            roleUser: MatchData.roleUser,
+            memberId: MatchData.memberId,
+          },
+        },
+      );
+      Reactotron.log!("fetchShopItem", response.data);
+      return response.data;
+    } catch (errorResponse) {
+      if (axios.isAxiosError(errorResponse)) {
+        Reactotron.log!("fetchShopItemError", errorResponse);
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -36,7 +72,7 @@ function PlaySelect() {
         <Pressable onPress={() => navigation.navigate("플레이")}>
           <CloseButton />
         </Pressable>
-        <PlayCarousel />
+        <PlayCarousel onSelectMap={handleMapSelection} />
 
         <View style={styles.cards}>
           <Image

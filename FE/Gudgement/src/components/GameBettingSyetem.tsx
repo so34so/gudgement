@@ -10,6 +10,7 @@ import {
   View,
   StyleSheet,
 } from "react-native";
+
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 const myCards: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 const enemyCards: CommonType.TplayCard[] = [

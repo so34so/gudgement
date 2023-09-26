@@ -12,13 +12,14 @@ import Reactotron from "reactotron-react-native";
 import { API_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getLoginData } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import NavigationButton from "../components/NavigationButton";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
@@ -31,19 +32,37 @@ function SettingName() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const [checkHasAccounts, setCheckHasAccounts] = useState(0);
 
   useEffect(() => {
-    getLoginData("id").then(res => {
-      if (res) {
-        setTempId(res as number);
-      }
-    });
-    getLoginData("email").then(ress => {
-      if (ress) {
-        reactotron.log!("이메일 업데이트 1", ress as string);
-      }
-    });
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setTempId(loginData.id);
+      reactotron.log!("이메일 업뎃", loginData.email);
+    };
+    getLoginData();
   }, []);
+
+  useEffect(() => {
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setCheckHasAccounts(loginData.hasAccounts);
+      if (checkHasAccounts === 2) {
+        const hasAccounts = {
+          hasAccounts: 1,
+        };
+        updateAsyncData("loginData", hasAccounts);
+        reactotron.log!(checkHasAccounts);
+      }
+    };
+    getLoginData();
+  });
 
   const openModal = () => {
     setModalVisible(true);

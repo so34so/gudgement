@@ -101,7 +101,7 @@ export declare module CommonType {
     id: number;
     info: boolean; // 로그인 절차 다 밟으면 true로 변경됨
     email: string; // 계좌 연동 시 보낼 인증된 email
-    hasAccounts: boolean; // 계좌 불러왔는지 확인
+    hasAccounts: number; // 계좌 한번도 불러온적 없으면 0 불러온적 있으면 1 불러왔으면 2
   };
 
   export type TemailCode = string;

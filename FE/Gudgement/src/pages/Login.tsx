@@ -46,7 +46,7 @@ function Login() {
           id: id,
           info: false,
           email: "none",
-          hasAccounts: false,
+          hasAccounts: 0,
         };
 
         const responseLogin = await setAsyncData("loginData", loginData);

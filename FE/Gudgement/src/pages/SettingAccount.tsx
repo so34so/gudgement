@@ -22,7 +22,7 @@ import AccountBox from "../components/AccountBox";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, getLoginData, updateAsyncData } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 
 function SettingAccount() {
   const mypageBackground: ImageSourcePropType =
@@ -43,11 +43,15 @@ function SettingAccount() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const email = await getLoginData("email");
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        const email = loginData.email;
+        const hasAccounts = loginData.hasAccounts;
         if (email) {
-          // reactotron.log!("이메일 업데이트", email as string);
-          setTempEmail(email as string);
-          // reactotron.log!("TempEmail", tempEmail);
+          setTempEmail(email);
+          reactotron.log!("TempEmail", tempEmail);
+          reactotron.log!("hasAccounts", hasAccounts);
         }
       } catch (error) {
         reactotron.log!("이메일 불러오기 실패!", error);
@@ -56,26 +60,29 @@ function SettingAccount() {
 
     fetchData();
 
-    const fetchAccount = async () => {
-      await handleCreateAccountRepeatedly(6);
-    };
-
     if (tempEmail.length > 0) {
       const bringAccounts = async () => {
         const loginData = (await getAsyncData(
           "loginData",
         )) as CommonType.TloginData;
-        if (!loginData.hasAccounts) {
+        if (loginData.hasAccounts === 0) {
           fetchAccount();
-          const hasAccounts = {
-            hasAccounts: true,
-          };
-          updateAsyncData("loginData", hasAccounts);
         }
+        if (loginData.hasAccounts === 1) {
+          handleReadAccount();
+        }
+        const hasAccounts = {
+          hasAccounts: 2,
+        };
+        updateAsyncData("loginData", hasAccounts);
       };
       bringAccounts();
     }
   }, [tempEmail]);
+
+  const fetchAccount = async () => {
+    await handleCreateAccountRepeatedly(6);
+  };
 
   const handleCreateAccountRepeatedly = async (repetitions: number) => {
     for (let i = 0; i < repetitions; i++) {
@@ -150,11 +157,11 @@ function SettingAccount() {
         reactotron.log!("계좌 연동 성공!", response);
 
         navigation.navigate("BottomTabNavigator");
-        // const settingAccountAction = CommonActions.reset({
-        //   index: 0,
-        //   routes: [{ name: "바텀" }],
-        // });
-        // navigation.dispatch(settingAccountAction);
+        const settingAccountAction = CommonActions.reset({
+          index: 0,
+          routes: [{ name: "BottomTabNavigator" }],
+        });
+        navigation.dispatch(settingAccountAction);
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);
       }

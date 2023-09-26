@@ -1,3 +1,5 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import {
   ImageBackground,
   ImageSourcePropType,
@@ -13,10 +15,9 @@ import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosResponse } from "axios";
-import { CommonType } from "../types/CommonType";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, setAsyncData, updateAsyncData } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -29,6 +30,9 @@ import { getAsyncData, setAsyncData, updateAsyncData } from "../utils/common";
 console.log(API_URL);
 console.log(IMAGE_URL);
 export default function Home() {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
   const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
   const [percent, setPercent] = useState(0.6);
   const [spend, setSpend] = useState<{ text: string; color: string }>({
@@ -65,19 +69,27 @@ export default function Home() {
   }, []);
 
   async function fetchUser() {
-    const token = await getAsyncData("accessToken");
+    const loginData = (await getAsyncData(
+      "loginData",
+    )) as CommonType.TloginData;
+    reactotron.log!(loginData.accessToken);
     try {
-      const response: AxiosResponse<CommonType.TUser> = await axios.get(
+      const response: AxiosResponse<CommonType.Tuser> = await axios.get(
         `${API_URL}/member/loadMyInfo`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${loginData.accessToken}`,
           },
         },
       );
       reactotron.log!("fetchUser", response);
     } catch (error) {
-      reactotron.log!("error", error);
+      const axiosError = error as AxiosError<CommonType.Terror>;
+      if (axiosError.response) {
+        const errorMessage = axiosError.response.data.message;
+        // navigation.navigate("Login");
+        reactotron.log!("홈 에러", errorMessage);
+      }
     }
   }
   const {

@@ -1,9 +1,11 @@
 package com.example.gudgement.game.controller;
 
 import com.example.gudgement.game.dto.GameRequestDto;
+import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -48,5 +50,15 @@ public class GameController {
         gameRoundService.startRound(roomNumber, username);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/end")
+    public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
+        try {
+            gameService.endGame(gameResultDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.gudgement.game.service;
 
 import com.example.gudgement.CardService;
 import com.example.gudgement.game.dto.EquippedItemsDto;
+import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
 import com.example.gudgement.game.entity.GameRoom;
@@ -245,6 +246,47 @@ public class GameServiceImpl implements GameService{
         return EquippedItemsDto.builder()
                 .items(equippedDtos)
                 .build();
+    }
+
+    public void endGame(GameResultDto gameResultDto) {
+
+        String nickname = gameResultDto.getNickName();
+        boolean isWinner = gameResultDto.isResult();
+
+        Optional<Member> user = memberRepository.findByNickname(nickname);
+
+        if (user == null) throw new IllegalArgumentException("Invalid nickname: " + nickname);
+
+        Object value = redisTemplate.opsForHash().get(gameResultDto.getRoomNumber(), nickname+":tiggle");
+        if (value == null) throw new RuntimeException("Value is not found in Redis");
+        Long tiggle = Long.parseLong((String) value);
+
+       /* if(isWinner){
+            user.setMoney(user.getMoney() + tiggle*2);
+            user.setExp(user.getExp() + 2);
+            user.setWinCount(user.getWinCount() + 1);
+
+        }else{
+            if (user.getMoney() < tiggle){
+                throw new IllegalArgumentException("The user does not have enough money");
+            }
+
+            user.setMoney(user.getMoney() - tiggle);
+            user.setExp(user.getExp() + 2);
+            user.setLoseCount(user.getLoseCount()+1);
+
+        }*/
+
+        // Update the user info in DB.
+        memberRepository.save(user);
+
+        // Delete all keys associated with the room number from Redis.
+        Set<Object> keysInRoom = redisTemplate.opsForHash().keys(gameResultDto.getRoomNumber());
+
+        for(Object key : keysInRoom){
+            redisTemplate.opsForHash().delete(gameResultDto.getRoomNumber(), key);
+        }
+
     }
 
 }

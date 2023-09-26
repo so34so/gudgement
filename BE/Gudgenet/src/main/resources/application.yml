@@ -43,13 +43,13 @@ spring:
   datasource:
 #    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     # 한국시간으로 DB저장되게 !!
-    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
-    username: root
-    password: ssafy
+#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
+#    username: root
+#    password: ssafy
 
-#    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-#    username: gudgement
-#    password: d106gudgement
+    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: gudgement
+    password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8

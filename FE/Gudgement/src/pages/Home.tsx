@@ -83,11 +83,9 @@ export default function Home() {
         const token = await messaging().getToken();
         console.log("phone token", token);
         // dispatch(userSlice.actions.setPhoneToken(token));
-        const response = await axios.get(`${SERVER_URL}/fcm/token`, {
-          params: {
-            id: myInfo.memberId,
-            firebaseToken: token,
-          },
+        const response = await axios.put(`${SERVER_URL}/fcm/token`, {
+          id: myInfo.memberId,
+          firebaseToken: token,
         });
         reactotron.log!(response.data);
         return response;

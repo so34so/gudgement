@@ -14,26 +14,6 @@ function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    async function getToken() {
-      try {
-        if (!messaging().isDeviceRegisteredForRemoteMessages) {
-          await messaging().registerDeviceForRemoteMessages();
-        }
-        const token = await messaging().getToken();
-        console.log("phone token", token);
-        // dispatch(userSlice.actions.setPhoneToken(token));
-        // return axios.post(`${Config.API_URL}/phonetoken`, { token });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    getToken();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("[Remote Message] ", JSON.stringify(remoteMessage));
-    });
-    return unsubscribe;
-  }, []);
   return (
     <NavigationContainer>
       {isLoggedIn ? (

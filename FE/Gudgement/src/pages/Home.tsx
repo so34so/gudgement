@@ -11,12 +11,13 @@ import PointHeader from "../components/PointHeader";
 import GoodIcon from "../assets/icons/goodIcon.png";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
-import { API_URL, IMAGE_URL } from "@env";
+import { API_URL, IMAGE_URL, SERVER_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
 import { getAsyncData, screenHeight, screenWidth } from "../utils/common";
+import messaging from "@react-native-firebase/messaging";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -58,6 +59,7 @@ export default function Home() {
         },
       );
       reactotron.log!("fetchUser", response);
+      return response.data;
     } catch (error) {
       reactotron.log!("error", error);
     }
@@ -66,10 +68,36 @@ export default function Home() {
     data: user,
     error: fetchError,
     isLoading,
+    isSuccess,
   } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
+
+  useEffect(() => {
+    async function sendToken(myInfo: CommonType.TUser) {
+      try {
+        if (!messaging().isDeviceRegisteredForRemoteMessages) {
+          await messaging().registerDeviceForRemoteMessages();
+        }
+        const token = await messaging().getToken();
+        console.log("phone token", token);
+        // dispatch(userSlice.actions.setPhoneToken(token));
+        const response = await axios.put(`${SERVER_URL}/fcm/token`, {
+          id: myInfo.memberId,
+          firebaseToken: token,
+        });
+        reactotron.log!(response.data);
+        return response;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (isSuccess && user) {
+      sendToken(user);
+    }
+  }, [isSuccess, user]);
+
   // if (fetchError) {
   //   return (
   //     <View>

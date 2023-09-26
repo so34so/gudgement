@@ -62,46 +62,13 @@ function SettingAccount() {
     fetchData();
 
     if (tempEmail.length > 0) {
-      const bringAccounts = async () => {
-        const loginData = (await getAsyncData(
-          "loginData",
-        )) as CommonType.TloginData;
-        if (loginData.hasAccounts === 0) {
-          fetchAccount();
-        }
-        if (loginData.hasAccounts === 1) {
-          handleReadAccount();
-        }
-        const hasAccounts = {
-          hasAccounts: 2,
-        };
-        updateAsyncData("loginData", hasAccounts);
+      handleReadAccount();
+      const info = {
+        info: 3,
       };
-      bringAccounts();
+      updateAsyncData("loginData", info);
     }
   }, [tempEmail]);
-
-  const fetchAccount = async () => {
-    await handleCreateAccountRepeatedly(6);
-  };
-
-  const handleCreateAccountRepeatedly = async (repetitions: number) => {
-    for (let i = 0; i < repetitions; i++) {
-      await handleCreateAccount(i);
-    }
-  };
-
-  const handleCreateAccount = async (idx: number) => {
-    let sendBE = accountsForMockUp[idx];
-    sendBE = { ...sendBE, email: tempEmail };
-    try {
-      const response = await axios.post(`${API_URL}/account/virtual`, sendBE);
-      reactotron.log!("계좌 생성 성공!", response);
-      handleReadAccount();
-    } catch (error) {
-      reactotron.log!("계좌 생성 실패!", error);
-    }
-  };
 
   const handleReadAccount = async () => {
     // reactotron.log!("인증된 이메일", tempEmail);
@@ -150,6 +117,11 @@ function SettingAccount() {
       try {
         const response = await axios.post(`${API_URL}/account`, sendBE);
         reactotron.log!("계좌 연동 성공!", response);
+
+        const info = {
+          info: 4,
+        };
+        updateAsyncData("loginData", info);
 
         navigation.navigate("BottomTabNavigator");
         const settingAccountAction = CommonActions.reset({

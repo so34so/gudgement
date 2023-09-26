@@ -8,15 +8,52 @@ import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
+import MyPageNavigator from "./src/navigation/MyPageNavigator";
 import messaging from "@react-native-firebase/messaging";
+import { Linking } from "react-native";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <NavigationContainer>
-      {isLoggedIn ? (
+    <NavigationContainer
+      linking={{
+        prefixes: ["https://gudgement.com", "gudgement://"],
+        config: {
+          screens: {
+            MyPageNavigator: "/mypage",
+          },
+        },
+        subscribe(listener) {
+          const onReceiveURL = ({ url }: { url: string }) => listener(url);
+
+          // Listen to incoming links from deep linking
+          const subscription = Linking.addEventListener("url", onReceiveURL);
+
+          // Listen to firebase push notifications
+          const unsubscribeNotification = messaging().onNotificationOpenedApp(
+            message => {
+              const url = message.data?.url;
+
+              if (url) {
+                // Any custom logic to check whether the URL needs to be handled
+
+                // Call the listener to let React Navigation handle the URL
+                listener(url);
+              }
+            },
+          );
+
+          return () => {
+            // Clean up the event listeners
+            subscription.remove();
+            unsubscribeNotification();
+          };
+        },
+      }}
+    >
+      {!isLoggedIn ? (
         <Stack.Navigator>
           <Stack.Screen
             name="바텀"

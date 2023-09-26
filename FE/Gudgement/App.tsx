@@ -5,12 +5,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 
 import { useEffect } from "react";
-
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
 
 import CodePush, { CodePushOptions } from "react-native-code-push";
 import AppInner from "./AppInner";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
+import { Linking } from "react-native";
 
 if (__DEV__) {
   import("./reactotron");
@@ -28,14 +29,15 @@ PushNotification.configure({
   // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
   onNotification: function (notification: any) {
     console.log("NOTIFICATION:", notification); // notification: content, title등 여러 정보를 넣을 수 있음
-    if (notification.channelId === "riders") {
-      // if (notification.message || notification.data.message) {
-      //   store.dispatch(
-      //     userSlice.actions.showPushPopup(
-      //       notification.message || notification.data.message,
-      //     ),
-      //   );
-      // }
+    if (notification.channelId === "만보기") {
+      if (notification.message || notification.data.message) {
+        Linking.openURL("gudgement://mypage"); // <---- 2
+      }
+    }
+    if (notification.channelId === "분석") {
+      if (notification.message || notification.data.message) {
+        Linking.openURL("gudgement://mypage"); // <---- 2
+      }
     }
     // process the notification
   },
@@ -70,7 +72,7 @@ PushNotification.configure({
 // 채널은 여러개 만들어 둘 수 있음
 PushNotification.createChannel(
   {
-    channelId: "riders", // (required)
+    channelId: "만보기", // (required)
     channelName: "앱 전반", // (required)
     channelDescription: "앱 실행하는 알림", // (optional) default: undefined.
     soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
@@ -78,7 +80,19 @@ PushNotification.createChannel(
     vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
   },
   (created: boolean) =>
-    console.log(`createChannel riders returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    console.log(`createChannel 만보기 returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+);
+
+PushNotification.createChannel(
+  {
+    channelId: "분석", // (required)
+    channelName: "앱 전반", // (required)
+    channelDescription: "앱 실행하는 알림", // (optional) default: undefined.
+    soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+    importance: 4, // (optional) default: 4. Int value of the Android notification importance
+    vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+  },
+  (created: boolean) => console.log(`createChannel 분석 returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
 );
 
 // const codePushOptions: CodePushOptions = {
@@ -91,6 +105,19 @@ PushNotification.createChannel(
 //   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
 //   // 업데이트를 어떻게 설치할 것인지 (IMMEDIATE는 강제설치를 의미)
 // };
+
+// 푸시 알림 권한 꺼져있으면 켜달라고 요청함
+check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(async result => {
+  console.log("result", result);
+  if (
+    result === RESULTS.DENIED ||
+    result === RESULTS.BLOCKED ||
+    result === RESULTS.UNAVAILABLE
+  ) {
+    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+  }
+});
+
 function App(): JSX.Element {
   useEffect(() => {
     CodePush.sync(

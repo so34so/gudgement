@@ -9,7 +9,6 @@ function NavigationButton({
   size,
   color,
 }: {
-  // screenName?: keyof CommonType.RootStackParamList;
   handleFunction?: () => Promise<void>;
   text: string;
   height: string;
@@ -17,19 +16,19 @@ function NavigationButton({
   size: string;
   color: string;
 }) {
-  const buttonStyle01 = (color: string) =>
+  const buttonStyle01 = (currentColor: string) =>
     `h-fill w-fill py-[1px] flex flex-row justify-center items-center ${
-      color === "lightsky" ? "bg-lightsky" : "bg-deepgreen"
+      currentColor === "lightsky" ? "bg-lightsky" : "bg-deepgreen"
     } border-solid border-[3px] border-white70 rounded-xl`;
 
-  const buttonStyle02 = (height: string, width: string) =>
-    `${height === "lg" ? "py-2" : "py-1"} ${
-      width === "lg" ? "px-[162px]" : "px-2"
+  const buttonStyle02 = (currentHeight: string, currentWidth: string) =>
+    `${currentHeight === "lg" ? "py-2" : "py-1"} ${
+      currentWidth === "lg" ? "px-[162px]" : "px-2"
     } h-fill w-fill flex flex-row justify-center items-center bg-transparent border-solid border-[3px] border-white20 rounded-lg`;
 
-  const buttonStyle03 = (size: string) =>
+  const buttonStyle03 = (currentSize: string) =>
     `text-center text-white ${
-      size === "md" ? "text-md" : "text-sm"
+      currentSize === "md" ? "text-md" : "text-sm"
     } font-PretendardExtraBold`;
 
   return (

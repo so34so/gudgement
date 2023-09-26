@@ -57,11 +57,6 @@ spring:
 #    password: 1234
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: root
-    password: 1234
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   # Jpa
   jpa:
     show-sql: true
@@ -88,7 +83,7 @@ spring:
       registration:
         kakao:
           client-id: 4cd45261b839373b375e0766220b3428
-          redirect-uri: http://localhost:9999/oauth/login/auth/kakao/callback
+          redirect-uri: http://http://j9d106.p.ssafy.io:8080//oauth/login/auth/kakao/callback
           client-authentication-method: POST
           authorization-grant-type: authorization_code
           scope: account_email

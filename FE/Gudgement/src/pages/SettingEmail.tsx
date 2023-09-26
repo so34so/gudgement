@@ -14,7 +14,7 @@ import {
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import NavigationButton from "../components/NavigationButton";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import Reactotron from "reactotron-react-native";
 import { getTempUserId } from "../utils/common";
 import { API_URL } from "@env";
@@ -72,7 +72,6 @@ function SettingEmail() {
         `${API_URL}/member/email/send`,
         sendBE,
       );
-      // Reactotron.log!("인증 메일 요청 성공!", response.data);
       if (response.status === 200) {
         const mailCode = response.data.toString();
         setCheckNumber(mailCode);
@@ -81,9 +80,16 @@ function SettingEmail() {
         openModal();
       }
     } catch (error) {
-      setModalText("다시 시도해주세요.");
-      openModal();
-      Reactotron.log!("인증 메일 요청 실패!", error);
+      const axiosError = error as AxiosError<{
+        httpStatus: string;
+        code: string;
+        message: string;
+      }>;
+      if (axiosError.response) {
+        const errorMessage = axiosError.response.data.message;
+        setModalText(errorMessage);
+        openModal();
+      }
     }
   };
 
@@ -95,7 +101,6 @@ function SettingEmail() {
       return;
     }
     if (checkNumber === currentNumber) {
-      // Reactotron.log!("이메일 인증 코드 동일!", checkNumber, currentNumber);
       try {
         const sendBE = {
           id: tempId,
@@ -103,15 +108,22 @@ function SettingEmail() {
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
           await axios.post(`${API_URL}/member/update/email`, sendBE);
-        // Reactotron.log!("인증 메일 등록 성공!", response.data);
         if (response.status === 200) {
           const mailCode = response.data.toString();
           setCheckNumber(mailCode);
           navigation.navigate("SettingName");
         }
       } catch (error) {
-        setModalText("다시 시도해주세요.");
-        openModal();
+        const axiosError = error as AxiosError<{
+          httpStatus: string;
+          code: string;
+          message: string;
+        }>;
+        if (axiosError.response) {
+          const errorMessage = axiosError.response.data.message;
+          setModalText(errorMessage);
+          openModal();
+        }
         Reactotron.log!("인증 메일 등록 실패!", error);
       }
     } else {

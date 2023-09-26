@@ -18,8 +18,7 @@ import PlayNavigator from "../navigation/PlayNavigator";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import PlayBackground from "../assets/images/playBackground.png";
 import Fin from "../assets/images/finfinee.png";
-import FlameEntrance from "../assets/images/flame.gif";
-
+import { API_URL, IMAGE_URL } from "@env";
 import { CommonType } from "../types/CommonType";
 
 function Play() {
@@ -27,8 +26,6 @@ function Play() {
     PlayBackground as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-  const flameEntrance: ImageSourcePropType =
-    FlameEntrance as ImageSourcePropType;
   const fin: ImageSourcePropType = Fin as ImageSourcePropType;
   const offset = useSharedValue(5);
 
@@ -55,7 +52,9 @@ function Play() {
           <Animated.View style={[animatedStyles]}>
             <Image
               className="justify-center top-[150] flex-2 h-[350] w-[450]"
-              source={flameEntrance} // 로컬 이미지 불러오는 방법
+              source={{
+                uri: `${IMAGE_URL}/asset/flame.gif`,
+              }}
             />
           </Animated.View>
 

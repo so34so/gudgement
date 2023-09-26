@@ -47,6 +47,22 @@ function SettingEmail() {
     getLoginData();
   }, []);
 
+  useEffect(() => {
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      if (loginData.hasAccounts === 1) {
+        const hasAccounts = {
+          hasAccounts: 0,
+        };
+        updateAsyncData("loginData", hasAccounts);
+      }
+    };
+    getLoginData();
+  });
+
   const openModal = () => {
     setModalVisible(true);
   };

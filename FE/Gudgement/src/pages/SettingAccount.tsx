@@ -47,11 +47,11 @@ function SettingAccount() {
           "loginData",
         )) as CommonType.TloginData;
         const email = loginData.email;
-        const hasAccounts = loginData.hasAccounts;
+        // const hasAccounts = loginData.hasAccounts;
         if (email) {
           setTempEmail(email);
-          reactotron.log!("TempEmail", tempEmail);
-          reactotron.log!("hasAccounts", hasAccounts);
+          // reactotron.log!("TempEmail", tempEmail);
+          // reactotron.log!("hasAccounts", hasAccounts);
         }
       } catch (error) {
         reactotron.log!("이메일 불러오기 실패!", error);

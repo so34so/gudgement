@@ -32,7 +32,6 @@ function SettingName() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-  const [checkHasAccounts, setCheckHasAccounts] = useState(0);
 
   useEffect(() => {
     const getLoginData = async () => {
@@ -52,13 +51,11 @@ function SettingName() {
         "loginData",
       )) as CommonType.TloginData;
 
-      setCheckHasAccounts(loginData.hasAccounts);
-      if (checkHasAccounts === 2) {
+      if (loginData.hasAccounts === 2) {
         const hasAccounts = {
           hasAccounts: 1,
         };
         updateAsyncData("loginData", hasAccounts);
-        reactotron.log!(checkHasAccounts);
       }
     };
     getLoginData();

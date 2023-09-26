@@ -2,11 +2,12 @@ import VolcanoMap from "../assets/images/volcanomap.png";
 import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
+import { WEBSOCKET_URL } from "@env";
+
 import {
   View,
   StyleSheet,
   ImageBackground,
-  Pressable,
   Image,
   Text,
   ImageSourcePropType,
@@ -18,14 +19,43 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+interface Game {
+  user: string;
+  message: string;
+}
 
 export default function PlayGame() {
+  const [serverState, setServerState] = useState("Loading...");
+  const [messageText, setMessageText] = useState("");
+  const [serverMessages, setServerMessages] = useState([]);
+  const userId = "ddd";
+  const WSUrl = "ws://j9d106.p.ssafy.io:8080";
+  console.log(WSUrl);
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
   const snake: ImageSourcePropType = Snake as ImageSourcePropType;
   const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
+  const ws = new WebSocket(WSUrl);
+  ws.onopen = () => {
+    // connection opened
+    ws.send("something"); // send a message
+    console.log("새로운 클라이언트 접속");
+  };
+
+  ws.onmessage = e => {
+    // a message was received
+    console.log(e.data);
+  };
+
+  ws.onerror = e => {
+    // an error occurred
+    console.log(e.message);
+  };
+
+  ws.onclose = e => {
+    // connection closed
+    console.log(e.code, e.reason);
+  };
 
   return (
     <View className="flex w-full h-full">
@@ -33,13 +63,23 @@ export default function PlayGame() {
         source={volcanoMap}
         resizeMode="cover"
         className="flex-1"
+      >
+        <Text
+          className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
+          style={styles.loadingtext}
         >
-          <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold" style={styles.loadingtext}>Now Loading</Text>
-          <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[28px] font-Pretendard" style={styles.loadingtextkr}>잠시 후 게임이 시작됩니다</Text>
+          Now Loading
+        </Text>
+        <Text
+          className="py-1 pl-3 pr-2 rounded-lg text-white text-[28px] font-Pretendard"
+          style={styles.loadingtextkr}
+        >
+          잠시후 게임이 시작됩니다
+        </Text>
 
-          <Image style={styles.mycharacter} source={pingping}/>
-          
-          <Image style={styles.enemy} source={snake}/>
+        <Image style={styles.mycharacter} source={pingping} />
+
+        <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>
   );
@@ -74,13 +114,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "40%",
     right: "10%",
-
   },
   loadingtextkr: {
     position: "absolute",
     top: "48%",
     right: "12.5%",
-
   },
   enemy: {
     position: "absolute",
@@ -88,7 +126,7 @@ const styles = StyleSheet.create({
     height: 79,
     bottom: "88%",
     right: "40%",
-    
+
     zIndex: 10,
   },
   bluecard: {

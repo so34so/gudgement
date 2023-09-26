@@ -79,9 +79,9 @@ export default function PlayMatchingWait() {
 
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
-        <Pressable onPress={() => navigation.navigate("PlayMatchingQueue")}>
-          <SmallCloseButton />
-        </Pressable>
+          <Pressable onPress={() => navigation.navigate("PlayMatchingQueue")}>
+            <SmallCloseButton />
+          </Pressable>
         </View>
         <View style={styles.matchInfobox}>
           <Text

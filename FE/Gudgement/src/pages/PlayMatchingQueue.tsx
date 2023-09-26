@@ -31,11 +31,9 @@ export default function PlayMatchingQueue() {
   const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
   const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
 
-  const queueBox: ImageSourcePropType =
-  QueueBox as ImageSourcePropType;
+  const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
 
   return (
     <View className="flex w-full h-full">
@@ -44,32 +42,26 @@ export default function PlayMatchingQueue() {
         resizeMode="cover"
         className="flex-1"
       >
-      <View style={styles.buttonwrapper}>
-      <TouchableOpacity onPress={() => navigation.navigate("PlayGame")}>
-        <Image style={styles.acceptbutton} source={acceptButton} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>
-        <Image style={styles.rejectbutton} source={rejectButton} />
-      </TouchableOpacity>
-    </View>
+        <View style={styles.buttonwrapper}>
+          <TouchableOpacity onPress={() => navigation.navigate("PlayGame")}>
+            <Image style={styles.acceptbutton} source={acceptButton} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>
+            <Image style={styles.rejectbutton} source={rejectButton} />
+          </TouchableOpacity>
+        </View>
 
-        <View className="flex z-20">    
-        <Image style={styles.bluecard} source={blueCard} />
-      </View>
-      <View className="flex w-full h-full bg-black opacity-70"/>
-
-      
-   
+        <View className="flex z-20">
+          <Image style={styles.bluecard} source={blueCard} />
+        </View>
+        <View className="flex w-full h-full bg-black opacity-70" />
 
         <Image className="opacity-70" style={styles.bluFin} source={blueFin} />
-
 
         <View style={styles.queuebox}>
           <Image style={styles.queuebox} source={queueBox} />
         </View>
-     
       </ImageBackground>
-      
     </View>
   );
 }
@@ -124,7 +116,7 @@ const styles = StyleSheet.create({
   },
   queuebox: {
     flex: 1,
-    bottom: 140,
+    bottom: "31%",
     position: "absolute",
     justifyContent: "center",
     width: 180,

@@ -34,7 +34,7 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-
+    PlayGame: undefined;
     /**
      * ShopScreen child Type
      * MyPage child Type

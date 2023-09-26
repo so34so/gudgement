@@ -47,6 +47,7 @@ export declare module CommonType {
     /**
      * Login child Type
      */
+    Splash: undefined;
     Login: undefined;
     SettingEmail: undefined;
     SettingName: undefined;

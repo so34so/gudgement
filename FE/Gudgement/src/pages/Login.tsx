@@ -20,15 +20,9 @@ import Reactotron from "reactotron-react-native";
 import { getAsyncData, setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 
-// interface LoginProps {
-//   onLogin: () => void; // onLogin의 타입을 명시
-// }
-//{ onLogin }: LoginProps
-
 function Login() {
   const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -45,6 +39,12 @@ function Login() {
     refreshTokenExpiration: string;
   }
 
+  interface loginData {
+    accessToken: string;
+    refreshToken: string;
+    id: number;
+  }
+
   const fetchAccessToken = async (code: string) => {
     try {
       const response = await axios.post<kakaoLoginResponse>(
@@ -53,41 +53,32 @@ function Login() {
 
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
-      const tempUserId = response.data.id;
-      // Reactotron.log!("사용자 정보 미리보기!", response.data);
-      // Reactotron.log!("Access Token!", accessToken);
-      // Reactotron.log!("Refresh Token!", refreshToken);
-      // Reactotron.log!("TempID!", tempUserId);
+      const id = response.data.id;
 
       try {
-        const responseAccess = await setAsyncData("accessToken", accessToken);
-        const responseRefresh = await setAsyncData(
-          "refreshToken",
-          refreshToken,
-        );
-        const responseId = await setAsyncData("id", tempUserId);
-        Reactotron.log!(
-          "스토리지에 저장 성공!",
-          responseAccess,
-          responseRefresh,
-          responseId,
-        );
+        const loginData: loginData = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          id: id,
+        };
+
+        const responseLogin = await setAsyncData("loginData", loginData);
+        Reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {
         Reactotron.log!("스토리지 초기화 실패!", error);
       }
 
       try {
-        const responseGetAccess = await getAsyncData("accessToken");
-        const responseGetRefresh = await getAsyncData("refreshToken");
-        const responseGetId = await getAsyncData("id");
-        Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
-        Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
-        Reactotron.log!("아이디 확인 성공!", responseGetId);
+        const loginData = (await getAsyncData("loginData")) as loginData;
+        Reactotron.log!("loginData 확인 성공!", loginData);
+        Reactotron.log!("accessToken 확인 성공!", loginData.accessToken);
+        Reactotron.log!("refreshToken 성공!", loginData.refreshToken);
+        Reactotron.log!("id 확인 성공!", loginData.id);
+        // Reactotron.log!("info 확인 성공!", loginData.info);
         setShowWebView(false);
       } catch (error) {
         Reactotron.log!("액세스 토큰 확인 실패!", error);
       }
-
       navigation.navigate("SettingEmail");
     } catch (error) {
       Reactotron.log!("인가 코드 전달 실패!", error);

@@ -1,6 +1,8 @@
 package com.example.gudgement.account.service;
 
 import com.example.gudgement.account.dto.VirtualAccountDto;
+import com.example.gudgement.account.dto.VirtualAccountWithSelectedDto;
+
 import java.util.List;
 
 public interface VirtualAccountService {
@@ -8,4 +10,7 @@ public interface VirtualAccountService {
     List<VirtualAccountDto> getAll(); // 모든 가상 계좌 목록 조회
     VirtualAccountDto getById(Long id); // 특정 가상 계좌 조회
     void delete(Long id);
+
+    List<VirtualAccountWithSelectedDto> getVirtualAccountsByEmail(String email);
+    void updateSelectedVirtualAccount(String email, Long virtualAccountId);
 }

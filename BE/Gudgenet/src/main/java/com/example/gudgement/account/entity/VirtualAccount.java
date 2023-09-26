@@ -1,11 +1,11 @@
 package com.example.gudgement.account.entity;
 
+import com.example.gudgement.member.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -21,6 +21,9 @@ public class VirtualAccount {
     private String bankName;
 
     @Column(nullable=false)
+    private String accountName;
+
+    @Column(nullable=false)
     private String accountNumber;
 
     @Column(nullable=false)
@@ -32,10 +35,13 @@ public class VirtualAccount {
     @Column(nullable=false)
     private long balance;
 
-
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
     @Builder
-    public VirtualAccount(String bankName, String accountNumber, String accountHolder, String email, long balance){
+    public VirtualAccount(String bankName, String accountName, String accountNumber, String accountHolder, String email, long balance){
         this.bankName = bankName;
+        this.accountName = accountName;
         this.accountNumber = accountNumber;
         this.accountHolder = accountHolder;
         this.email = email;

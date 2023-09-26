@@ -1,7 +1,9 @@
 package com.example.gudgement.account.controller;
 
+import com.example.gudgement.account.dto.SelectedVirtualAccountUpdateRequest;
 import com.example.gudgement.account.dto.TransactionHistoryDto;
 import com.example.gudgement.account.dto.VirtualAccountDto;
+import com.example.gudgement.account.dto.VirtualAccountWithSelectedDto;
 import com.example.gudgement.account.service.TransactionHistoryService;
 import com.example.gudgement.account.service.VirtualAccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -123,4 +125,29 @@ public class AccountController {
         return new ResponseEntity<>(resultMap, status);
     }
 
+    @Operation(summary = "특정 이메일 주소의 가상계좌 목록 반환")
+    @GetMapping("/{email}")
+    public ResponseEntity<List<VirtualAccountWithSelectedDto>> getByEmail(@PathVariable String email) {
+        List<VirtualAccountWithSelectedDto> accounts = virtualAccountService.getVirtualAccountsByEmail(email);
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
+    }
+
+    @Operation(summary = "선택된 가상계좌 업데이트")
+    @PostMapping
+    public ResponseEntity<Map<String, String>> selectVirtualAccount(@RequestBody SelectedVirtualAccountUpdateRequest request) {
+        Map<String, String> resultMap = new HashMap<>();
+        HttpStatus status;
+
+        try {
+            virtualAccountService.updateSelectedVirtualAccount(request.getEmail(), request.getVirtualAccountId());
+            status = HttpStatus.OK;
+            resultMap.put("message", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("message", "fail");
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
 }

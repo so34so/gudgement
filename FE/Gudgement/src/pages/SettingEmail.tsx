@@ -14,7 +14,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { API_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getLoginData, updateAsyncData } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import MyPageBackground from "../assets/images/mypageBackground.png";
@@ -37,11 +37,14 @@ function SettingEmail() {
   const [modalText, setModalText] = useState("");
 
   useEffect(() => {
-    getLoginData("id").then(res => {
-      if (res) {
-        setTempId(res as number);
-      }
-    });
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setTempId(loginData.id);
+    };
+    getLoginData();
   }, []);
 
   const openModal = () => {
@@ -122,6 +125,8 @@ function SettingEmail() {
           await axios.post(`${API_URL}/member/update/email`, sendBE);
         if (response.status === 200) {
           setCheckNumber("");
+          setNumber("");
+          setEmail("");
           await updateLoginData();
           navigation.navigate("SettingName");
         }
@@ -133,12 +138,16 @@ function SettingEmail() {
         }>;
         if (axiosError.response) {
           const errorMessage = axiosError.response.data.message;
+          setCheckNumber("");
+          setNumber("");
           setModalText(errorMessage);
           openModal();
         }
         reactotron.log!("인증 메일 등록 실패!", error);
       }
     } else {
+      setCheckNumber("");
+      setNumber("");
       setModalText("인증 코드를 다시 확인해주세요.");
       openModal();
     }

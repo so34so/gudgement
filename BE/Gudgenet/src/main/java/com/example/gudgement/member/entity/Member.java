@@ -1,5 +1,6 @@
 package com.example.gudgement.member.entity;
 
+import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.shop.entity.Inventory;
 import lombok.*;
@@ -68,6 +69,21 @@ public class Member implements Serializable {
     @Column
     private String refreshToken;
 
+
+    //계좌 연동을 위한 노아가 작성한 코드
+//    @OneToOne(mappedBy = "member")
+//    private VirtualAccount virtualAccount;
+    @Column(nullable = true)
+    private Long virtualAccountId; // This replaces the VirtualAccount field
+
+        public void setVirtualAccountId(Long virtualAccountId) {
+            this.virtualAccountId = virtualAccountId;
+        }
+
+
+    // 연결 관계
+//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+//    private List<Item> set_item = new ArrayList<Item>();
     @Lob
     @Column
     private String firebaseToken;

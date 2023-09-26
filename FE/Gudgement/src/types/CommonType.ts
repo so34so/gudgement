@@ -112,14 +112,14 @@ export declare module CommonType {
   };
 
   export type Taccount = {
-    virtualAccountId: number;
+    virtualAccountId?: number;
     bankName: string;
     accountName: string;
     accountNumber: string;
     accountHolder: string;
     email: string;
     balance: number;
-    selected: boolean;
+    selected?: boolean;
   };
 
   export type TUser = {

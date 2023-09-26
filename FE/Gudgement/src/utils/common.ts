@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dimensions } from "react-native";
 import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 export const textShadow = {
@@ -86,4 +87,55 @@ export const BOTTOM_TAB_IMAGE = [
   "/asset/playicon.png",
   "/asset/myinfoicon.png",
   "/asset/rankingicon.png",
+];
+
+export const accountsForMockUp: Array<CommonType.Taccount> = [
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
+  {
+    bankName: "shinhan",
+    accountName: "신한저축계좌",
+    accountNumber: "1002-345-234-124",
+    accountHolder: "강해빈",
+    email: "",
+    balance: 122395134,
+  },
 ];

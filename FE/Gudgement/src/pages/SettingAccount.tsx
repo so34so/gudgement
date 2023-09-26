@@ -22,7 +22,11 @@ import AccountBox from "../components/AccountBox";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import {
+  accountsForMockUp,
+  getAsyncData,
+  updateAsyncData,
+} from "../utils/common";
 
 function SettingAccount() {
   const mypageBackground: ImageSourcePropType =
@@ -47,11 +51,8 @@ function SettingAccount() {
           "loginData",
         )) as CommonType.TloginData;
         const email = loginData.email;
-        // const hasAccounts = loginData.hasAccounts;
         if (email) {
           setTempEmail(email);
-          // reactotron.log!("TempEmail", tempEmail);
-          // reactotron.log!("hasAccounts", hasAccounts);
         }
       } catch (error) {
         reactotron.log!("이메일 불러오기 실패!", error);
@@ -86,19 +87,13 @@ function SettingAccount() {
 
   const handleCreateAccountRepeatedly = async (repetitions: number) => {
     for (let i = 0; i < repetitions; i++) {
-      await handleCreateAccount();
+      await handleCreateAccount(i);
     }
   };
 
-  const handleCreateAccount = async () => {
-    const sendBE = {
-      bankName: "shinhan",
-      accountName: "신한저축계좌",
-      accountNumber: "1002-345-234-124",
-      accountHolder: "강해빈",
-      email: tempEmail,
-      balance: 122395134,
-    };
+  const handleCreateAccount = async (idx: number) => {
+    let sendBE = accountsForMockUp[idx];
+    sendBE = { ...sendBE, email: tempEmail };
     try {
       const response = await axios.post(`${API_URL}/account/virtual`, sendBE);
       reactotron.log!("계좌 생성 성공!", response);

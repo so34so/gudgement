@@ -63,6 +63,8 @@ function SettingEmail() {
     }
     setModalText("로딩 중...");
     openModal();
+
+    Reactotron.log!("저장된 id", tempId);
     const sendBE = {
       id: tempId,
       email: currentEmail,

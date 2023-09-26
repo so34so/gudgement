@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
-import { getAsyncData } from "../utils/common";
+import { getAsyncData, setAsyncData, updateAsyncData } from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -36,6 +36,7 @@ export default function Home() {
     color: "",
   });
   const [isStartSingle] = useState(true);
+
   useEffect(() => {
     if (percent <= 0.5) {
       setSpend({ text: "절약", color: "text-black" });
@@ -47,6 +48,21 @@ export default function Home() {
       setSpend({ text: "위험", color: "text-red" });
     }
   }, [percent]);
+
+  const updateLoginData = async () => {
+    try {
+      const loginData = {
+        info: true,
+      };
+      await updateAsyncData("loginData", loginData);
+    } catch (error) {
+      reactotron.log!(error);
+    }
+  };
+
+  useEffect(() => {
+    updateLoginData();
+  }, []);
 
   async function fetchUser() {
     const token = await getAsyncData("accessToken");

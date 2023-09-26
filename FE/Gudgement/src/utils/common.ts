@@ -30,15 +30,40 @@ export const setAsyncData = async (key: string, value: unknown) => {
 };
 
 // 데이터 불러오기
-export const getAsyncData = async (key: string) => {
+export const getAsyncData = async <T>(key: string): Promise<T | null> => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
-      const data: unknown = JSON.parse(value);
-      return data as string;
+      const data = JSON.parse(value) as T;
+      return data;
     }
   } catch (error) {
     Reactotron.log!(error);
+  }
+
+  return null;
+};
+
+export const updateAsyncData = async (key: string, updatedValue: unknown) => {
+  try {
+    // 1. 저장된 값을 불러옵니다.
+    const existingValue = await getAsyncData(key);
+
+    if (existingValue !== null) {
+      // 2. 원하는 값을 수정합니다.
+      const updatedData: unknown = {
+        ...(existingValue as object), // 기존 값이 객체여야 함
+        ...(updatedValue as object), // 업데이트할 값도 객체여야 함
+      };
+
+      // 3. 수정된 값을 다시 저장합니다.
+      await setAsyncData(key, updatedData);
+      Reactotron.log!("값이 업데이트되었습니다.");
+    } else {
+      Reactotron.log!("값이 존재하지 않습니다.");
+    }
+  } catch (error) {
+    Reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
   }
 };
 

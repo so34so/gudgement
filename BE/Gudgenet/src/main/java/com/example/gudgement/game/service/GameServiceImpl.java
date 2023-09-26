@@ -10,6 +10,7 @@ import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -91,20 +94,26 @@ public class GameServiceImpl implements GameService{
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
 
-            Set<String> memberKeys = redisTemplate.keys(roomNumber);
-
             Set<Object> memberFields = redisTemplate.opsForHash().keys(roomNumber);
 
-            for(Object key : memberFields){
-                String field = (String) key;
-                String[] parts = field.split(":");
-                String member = parts[0];
-                log.info(member);
+            Set<String> members = memberFields.stream()
+                    .map(key -> ((String) key).split(":")[0])
+                    .collect(Collectors.toSet());
+
+            for(String member : members){
+                log.info("Processing member: " + member);
+
                 cardService.generateAndStoreCards(roomNumber, member);
 
                 EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);
+                log.info("장착아이템까지는 가지고 옴");
                 int level = fetchLevel(member);
-                Long tiggle = Long.parseLong((String) redisTemplate.opsForHash().get(field, member+":tiggle"));
+                log.info("레벨까지는 가지고 옴");
+                Object value = redisTemplate.opsForHash().get(roomNumber, member+":tiggle");
+                if (value == null) {
+                    throw new RuntimeException("Value is not found in Redis");
+                }
+                Long tiggle = Long.parseLong((String) value);
 
                 /* Construct a DTO that contains all necessary information */
                 GameUserInfoDto userInfoDto = GameUserInfoDto.builder()
@@ -113,6 +122,8 @@ public class GameServiceImpl implements GameService{
                         .tiggle(tiggle)
                         .equippedItems(equippedItemsDto)
                         .build();
+
+                log.info("userInfoDto: " + userInfoDto);
 
                 /* Send this DTO to client side */
                 messagingTemplate.convertAndSendToUser(member, "/queue/userInfo", userInfoDto);
@@ -204,30 +215,35 @@ public class GameServiceImpl implements GameService{
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         });
         log.info(String.valueOf(member.getMemberId()));
-        // Find equipped items by memberId.
-        List<Inventory> equippedInventories = inventoryRepository.findByMemberIdAndEquipped(member.getMemberId(), true);
+
+        List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
+
+        log.info("equippedInventories: {}", equippedInventories.toString());
+
+        log.info(String.valueOf(member.getMemberId()));
 
         // Convert the entity list to DTO.
-        List<ItemDto> itemDtos = new ArrayList<>();
+        List<EquippedDto> equippedDtos = new ArrayList<>();
 
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
 
-            ItemDto itemDto = ItemDto.builder()
-                    .id(item.getItemId())
+            EquippedDto equippedDto= EquippedDto.builder()
+                    .invenId(inventory.getInvenId())
+                    .itemId(item.getItemId())
                     .itemName(item.getItemName())
                     .itemContent(item.getItemContent())
                     .itemEffect(item.getItemEffect())
                     .image(item.getImage())
-                    .type(item.getType())
-                    .subType(item.getType())
+                    .isEquipped(inventory.isEquipped())  // Assuming that isEquip() method exists in Inventory class.
+                    .quantity(inventory.getQuantity())  // Assuming that getQuantity() method exists in Inventory class.
                     .build();
 
-            itemDtos.add(itemDto);
+            equippedDtos.add(equippedDto);
         }
 
         return EquippedItemsDto.builder()
-                .items(itemDtos)
+                .items(equippedDtos)
                 .build();
     }
 

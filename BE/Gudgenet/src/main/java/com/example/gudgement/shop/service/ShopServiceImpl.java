@@ -51,7 +51,7 @@ public class ShopServiceImpl implements ShopService{
 
     private List<ItemDto> itemsAllItemLists(List<Item> items, Member memberId) {
         List<ItemDto> itemDTOS = new ArrayList<>();
-        List<Inventory> userItems = inventoryRepository.findAllByMemberId(memberId);
+        List<Inventory> userItems = inventoryRepository.findAllByMember(memberId);
 
         List<InventoryDto> userItemDtos = userItems.stream()
                 .map(InventoryDto::invenDto)
@@ -111,7 +111,7 @@ public class ShopServiceImpl implements ShopService{
 
     private List<ItemDto> itemsTypeLists(List<Item> items, String type, Member memberId) {
         List<ItemDto> itemDTOS = new ArrayList<>();
-        List<Inventory> userItems = inventoryRepository.findAllByMemberId(memberId);
+        List<Inventory> userItems = inventoryRepository.findAllByMember(memberId);
         List<InventoryDto> userItemDtos = userItems.stream()
                 .map(InventoryDto::invenDto)
                 .collect(Collectors.toList());
@@ -175,7 +175,7 @@ public class ShopServiceImpl implements ShopService{
 
 
         // 이미 구매한 아이템인지 확인
-        if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {
+        if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
             throw new AlreadyPurchasedException("이미 구매한 아이템입니다.");
         }
 
@@ -188,7 +188,7 @@ public class ShopServiceImpl implements ShopService{
         member.useTiggle(((Price) item).getPrice());
 
         // 아이템 추가
-        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).quantity(1).build());
+        inventoryRepository.save(Inventory.builder().itemId(item).member(member).quantity(1).build());
     }
 
     public void unlockItem(Long itemId, Long memberId) {
@@ -200,12 +200,12 @@ public class ShopServiceImpl implements ShopService{
                 .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
 
         // 이미 해금한 아이템인지 확인
-        if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {
+        if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
             throw new AlreadyPurchasedException("이미 해금한 아이템입니다.");
         }
 
         // 아이템 추가
-        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).build());
+        inventoryRepository.save(Inventory.builder().itemId(item).member(member).build());
     }
 
     public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
@@ -226,12 +226,12 @@ public class ShopServiceImpl implements ShopService{
         member.useTiggle(((Price) item).getPrice() * quantity);
 
         // Find the inventory item for this user and this consumable.
-        Inventory inventory = inventoryRepository.findByMemberIdAndItemId(member, item)
+        Inventory inventory = inventoryRepository.findByMemberAndItemId(member, item)
                 .orElseGet(() -> {
                     // If the inventory does not exist yet, create a new one.
                     Inventory newInventory = Inventory.builder()
                             .itemId(item)
-                            .memberId(member)
+                            .member(member)
                             .quantity(quantity)
                             .build();
 

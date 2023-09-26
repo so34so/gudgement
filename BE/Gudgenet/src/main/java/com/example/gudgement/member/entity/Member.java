@@ -90,10 +90,10 @@ public class Member implements Serializable {
 
     /* 연결 관계 */
     // 상점, 진행도 관련
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Inventory> set_item = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();
 
     // 미구현

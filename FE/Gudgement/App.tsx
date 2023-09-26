@@ -4,8 +4,9 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 
-import messaging from "@react-native-firebase/messaging";
 import { useEffect } from "react";
+
+import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
 
 import CodePush, { CodePushOptions } from "react-native-code-push";
@@ -20,13 +21,13 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 PushNotification.configure({
   // (optional) 토큰이 생성될 때 실행됨(토큰을 서버에 등록할 때 쓸 수 있음)
-  onRegister: function (token: { os: string; token: string }) {
-    console.log("TOKEN:", token);
-  },
+  // onRegister: function (token: { os: string; token: string }) {
+  //   console.log("TOKEN:", token);
+  // },
 
   // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
   onNotification: function (notification: any) {
-    console.log("NOTIFICATION:", notification);
+    console.log("NOTIFICATION:", notification); // notification: content, title등 여러 정보를 넣을 수 있음
     if (notification.channelId === "riders") {
       // if (notification.message || notification.data.message) {
       //   store.dispatch(
@@ -37,12 +38,9 @@ PushNotification.configure({
       // }
     }
     // process the notification
-
-    // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
-    // notification.finish(PushNotificationIOS.FetchResult.NoData);
   },
 
-  // (optional) 등록한 액션을 누렀고 invokeApp이 false 상태일 때 실행됨, true면 onNotification이 실행됨 (Android)
+  // (optional) 등록한 액션을 눌렀고 invokeApp이 false 상태일 때 실행됨, true면 onNotification이 실행됨 (Android)
   onAction: function (notification: any) {
     // console.log("ACTION:", notification.action);
     console.log("NOTIFICATION:", notification);
@@ -54,13 +52,6 @@ PushNotification.configure({
   onRegistrationError: function (err: Error) {
     console.error(err.message, err);
   },
-
-  // IOS ONLY (optional): default: all - Permissions to register.
-  // permissions: {
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // },
 
   // Should the initial notification be popped automatically
   // default: true

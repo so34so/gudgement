@@ -4,16 +4,15 @@ import {
   View,
   SafeAreaView,
   Text,
-  Image,
   ActivityIndicator,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
-import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import { ANALYZE_BOX_IMAGE, fetchUser } from "../utils/common";
+import { checkSpendRate, fetchUser } from "../utils/common";
+import AnalysisBox from "../components/AnalysisBox";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -35,7 +34,6 @@ export default function Home() {
     queryFn: () => fetchUser(),
   });
 
-  const [isStartSingle] = useState(true);
   const [percent, setPercent] = useState(userData?.rate.rate as number);
   const [spend, setSpend] = useState<{
     text: string;
@@ -49,34 +47,7 @@ export default function Home() {
 
   useEffect(() => {
     if (userData) {
-      if (percent <= 0.5) {
-        setSpend({
-          text: "절약",
-          color: "text-black",
-          img: 1,
-        });
-      }
-      if (percent > 0.5 && percent <= 0.7) {
-        setSpend({
-          text: "안정",
-          color: "text-black",
-          img: 2,
-        });
-      }
-      if (percent > 0.7 && percent < 1.0) {
-        setSpend({
-          text: "위험",
-          color: "text-red",
-          img: 3,
-        });
-      }
-      if (percent >= 1.0) {
-        setSpend({
-          text: "초과",
-          color: "text-red",
-          img: 4,
-        });
-      }
+      checkSpendRate(userData, percent, setSpend);
     }
   }, [percent]);
 
@@ -98,7 +69,6 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">
-        <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
         <ImageBackground
           source={{
             uri: `${IMAGE_URL}/asset/homeBackground.png`,
@@ -107,62 +77,23 @@ export default function Home() {
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
-        <View className="absolute top-20 left-6 bg-white rounded-lg flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
-          <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-md">
-            계좌 잔고
-          </Text>
-          <Text className="text-center font-PretendardBlack bg-transparent text-black px-2 text-md right-1">
-            {userData?.rate.balance
-              ? userData?.rate.balance.toLocaleString("ko-KR")
-              : 0}{" "}
-            원
-          </Text>
-        </View>
-        {isStartSingle ? (
-          <>
-            <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-xl">
-              <View className="flex flex-row justify-center items-center space-x-6">
-                <Text
-                  className={`font-PretendardBlack ${spend.color} text-2lg`}
-                >
-                  {spend.text}
-                </Text>
-                <Image
-                  source={{
-                    uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[spend.img]}`,
-                  }}
-                  className="w-16 h-12"
-                  resizeMode="contain"
-                />
-              </View>
-              <View className="flex flex-col items-end">
-                <Text className="text-black font-PretendardExtraBold text-sm">
-                  이번 달 소비
-                </Text>
-                <Text className="text-black font-PretendardExtraBold text-3lg">
-                  {userData?.rate.payment
-                    ? userData?.rate.payment.toLocaleString("ko-KR")
-                    : 0}{" "}
-                  원
-                </Text>
-              </View>
-            </View>
-            <View className="top-16">
-              <ProgressBar percent={percent} />
-            </View>
-          </>
-        ) : (
-          <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
-            <Image
-              source={{ uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}` }}
-              className="w-16 h-12"
-              resizeMode="contain"
-            />
-            <Text className="text-black font-PretendardExtraBold text-sm">
-              진행 중인 싱글 플레이가 없습니다!
+        <View className="space-y-2 flex flex-col w-fill justify-center items-start">
+          <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
+          <View className="mx-1 bg-white rounded-xl flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
+            <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-md">
+              계좌 잔고
+            </Text>
+            <Text className="text-center font-PretendardBlack bg-transparent text-black px-2 text-md right-1">
+              {userData?.rate.balance
+                ? userData?.rate.balance.toLocaleString("ko-KR")
+                : 0}{" "}
+              원
             </Text>
           </View>
-        )}
+          <View className="flex justify-center items-center w-[90%]">
+            <AnalysisBox />
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );

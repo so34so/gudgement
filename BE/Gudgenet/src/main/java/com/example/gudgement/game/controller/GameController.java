@@ -19,20 +19,18 @@ public class GameController {
     private final GameService gameService;
     private final GameRoundService gameRoundService;
 
-    @PostMapping("/accept")
-    public ResponseEntity<Void> acceptGame(@RequestBody GameRequestDto gameRequestDto) {
+    @MessageMapping("/game/accept")
+    public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
         String roomNumber = gameRequestDto.getRoomNumber();
         String username = gameRequestDto.getUserName();
 
         // Update the game acceptance status for the user.
         gameService.acceptGame(roomNumber, username);
-        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reject")
-    public ResponseEntity<Void> rejectGame(@RequestBody GameRequestDto gameRequestDto) {
+    @MessageMapping("/game/reject")
+    public void rejectGame(@RequestBody GameRequestDto gameRequestDto) {
         gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getUserName());
-        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/stomp/{roomNumber}")
@@ -54,11 +52,7 @@ public class GameController {
 
     @PostMapping("/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
-        try {
-            gameService.endGame(gameResultDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        gameService.endGame(gameResultDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

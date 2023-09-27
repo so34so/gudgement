@@ -11,6 +11,8 @@ import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.progress.entity.Progress;
+import com.example.gudgement.progress.repository.ProgressRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Inventory;
@@ -41,6 +43,7 @@ public class GameServiceImpl implements GameService{
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
+    private final ProgressRepository progressRepository;
 
     private final CardService cardService;
 
@@ -90,7 +93,7 @@ public class GameServiceImpl implements GameService{
 
         if (allUsersAccepted(roomNumber)) {
             log.info("All users accepted. Sending start message and saving game room and users.");
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/start", "All users success");
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber , "All users success");
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
@@ -100,6 +103,9 @@ public class GameServiceImpl implements GameService{
             Set<String> members = memberFields.stream()
                     .map(key -> ((String) key).split(":")[0])
                     .collect(Collectors.toSet());
+
+            // List to store userInfoDtos
+            List<GameUserInfoDto> userInfoDtos = new ArrayList<>();
 
             for(String member : members){
                 log.info("Processing member: " + member);
@@ -111,9 +117,11 @@ public class GameServiceImpl implements GameService{
                 int level = fetchLevel(member);
                 log.info("레벨까지는 가지고 옴");
                 Object value = redisTemplate.opsForHash().get(roomNumber, member+":tiggle");
+
                 if (value == null) {
                     throw new RuntimeException("Value is not found in Redis");
                 }
+
                 Long tiggle = Long.parseLong((String) value);
 
                 /* Construct a DTO that contains all necessary information */
@@ -124,11 +132,12 @@ public class GameServiceImpl implements GameService{
                         .equippedItems(equippedItemsDto)
                         .build();
 
-                log.info("userInfoDto: " + userInfoDto);
-
-                /* Send this DTO to client side */
-                messagingTemplate.convertAndSendToUser(member, "/queue/userInfo", userInfoDto);
+                // Add the dto to the list
+                userInfoDtos.add(userInfoDto);
             }
+
+            /* Send this DTO list to client side */
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/userInfoList", userInfoDtos);
 
         }else{
             log.info("fail");
@@ -198,6 +207,8 @@ public class GameServiceImpl implements GameService{
 
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
+
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname + " fail");
     }
 
     private int fetchLevel(String nickname) {
@@ -248,45 +259,68 @@ public class GameServiceImpl implements GameService{
                 .build();
     }
 
+    @Transactional
     public void endGame(GameResultDto gameResultDto) {
 
         String nickname = gameResultDto.getNickName();
         boolean isWinner = gameResultDto.isResult();
 
+        String progressType = isWinner ? "win" : "lose";
+
         Optional<Member> user = memberRepository.findByNickname(nickname);
+        Progress progress = progressRepository.findByMemberAndProgressName(user,progressType);
 
-        if (user == null) throw new IllegalArgumentException("Invalid nickname: " + nickname);
-
-        Object value = redisTemplate.opsForHash().get(gameResultDto.getRoomNumber(), nickname+":tiggle");
-        if (value == null) throw new RuntimeException("Value is not found in Redis");
-        Long tiggle = Long.parseLong((String) value);
-
-       /* if(isWinner){
-            user.setMoney(user.getMoney() + tiggle*2);
-            user.setExp(user.getExp() + 2);
-            user.setWinCount(user.getWinCount() + 1);
-
-        }else{
-            if (user.getMoney() < tiggle){
-                throw new IllegalArgumentException("The user does not have enough money");
-            }
-
-            user.setMoney(user.getMoney() - tiggle);
-            user.setExp(user.getExp() + 2);
-            user.setLoseCount(user.getLoseCount()+1);
-
+        if (!user.isPresent()) {
+            throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }
 
-        // Update the user info in DB.
-        memberRepository.save(user);
-*/
-        // Delete all keys associated with the room number from Redis.
-        Set<Object> keysInRoom = redisTemplate.opsForHash().keys(gameResultDto.getRoomNumber());
+        // Redis에서 해당 유저의 배팅 tiggle 값을 가져옴
+        String roomNumber = gameResultDto.getRoomNumber();
+        String bettingField = nickname + ":betting";
 
-        for(Object key : keysInRoom){
-            redisTemplate.opsForHash().delete(gameResultDto.getRoomNumber(), key);
+        Object value = redisTemplate.opsForHash().get(roomNumber, bettingField);
+
+        if (value == null) throw new RuntimeException("Betting tiggle value is not found in Redis");
+        Long bettingTiggle = Long.parseLong(String.valueOf(value));
+
+        if(isWinner){
+            user.get().addTiggle(bettingTiggle*2);
+            user.get().addExp(2);
+            progress.incrementProgressValue();
+
+            redisTemplate.opsForHash().put(roomNumber, nickname + ":betting", "0");
+
+            // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
+            deleteIfAllBettingtigglesAreZero(gameResultDto.getRoomNumber());
+
+        }else{
+            user.get().subtractTiggle(bettingTiggle);
+            user.get().addExp(2);
+            progress.incrementProgressValue();
+
+            redisTemplate.opsForHash().put(roomNumber, nickname + ":betting", "0");
+
+            // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
+            deleteIfAllBettingtigglesAreZero(gameResultDto.getRoomNumber());
         }
 
     }
 
+    private void deleteIfAllBettingtigglesAreZero(String roomNumber) {
+        Set<String> keys = redisTemplate.keys(roomNumber + "*:betting");
+        for (String key : keys) {
+            String value = redisTemplate.opsForValue().get(key);
+            if (!"0".equals(value)) return;  // 아직 초기화되지 않은 키가 있으면 반환
+        }
+
+        // 모든 키가 초기화된 경우 해당 방의 데이터 삭제
+        deleteKeysByPattern(roomNumber + "*");
+    }
+
+    public void deleteKeysByPattern(String pattern) {
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+    }
 }

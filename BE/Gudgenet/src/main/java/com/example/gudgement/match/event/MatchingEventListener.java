@@ -43,11 +43,14 @@ public class MatchingEventListener {
             String currentTime = LocalDateTime.now().toString();
 
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":tiggle", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":status", "fail");
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":invitedAt", currentTime);
 
+
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":tiggle", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "fail");
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":invitedAt", currentTime);

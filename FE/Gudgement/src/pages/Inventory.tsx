@@ -31,7 +31,6 @@ import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
-import { MEMBER_ID } from "./Shop";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -56,6 +55,11 @@ function Inventory({ route }: InventoryProps) {
   const [selectItem, setSelectItem] = useState(0);
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
+  const [carouselPage, setCarouselPage] = useState(0);
+
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
 
   const categoryStyle = (category: string) =>
     `rounded-[8px] py-[1px] border-2 bg-darkgray50 
@@ -71,7 +75,7 @@ function Inventory({ route }: InventoryProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[category],
-            memberId: MEMBER_ID,
+            memberId: userInfo!.memberId,
           },
         },
       );
@@ -190,7 +194,12 @@ function Inventory({ route }: InventoryProps) {
             <View key={category}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSelectCategory(category)}
+                onPress={() => {
+                  setSelectCategory(category);
+                  setItemStatus(false);
+                  reactotron.log!("category", selectItem);
+                  setSelectItem(0);
+                }}
                 className={categoryStyle(category)}
               >
                 <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">

@@ -15,4 +15,5 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
                                                                             int type);
 
 
+
 }

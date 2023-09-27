@@ -19,7 +19,7 @@ public class Chart {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "member_id")
     private Member memberId;
 
     @Column(nullable = false)
@@ -60,31 +60,64 @@ public class Chart {
         this.week = week;
     }
 
+    @PrePersist
+    private void Chart () {
+        this.mon = 0L;
+        this.tue = 0L;
+        this.wen = 0L;
+        this.thu = 0L;
+        this.fri = 0L;
+        this.sat = 0L;
+        this.sun = 0L;
+    }
+
     public void setMon(Long mon) {
-        this.mon = mon;
+        this.mon += mon;
     }
 
     public void setTue(Long tue) {
-        this.tue = tue;
+        this.tue += tue;
     }
 
     public void setWen(Long wen) {
-        this.wen = wen;
+        this.wen += wen;
     }
 
     public void setThu(Long thu) {
-        this.thu = thu;
+        this.thu += thu;
     }
 
     public void setFri(Long fri) {
-        this.fri = fri;
+        this.fri += fri;
     }
 
     public void setSat(Long sat) {
-        this.sat = sat;
+        this.sat += sat;
     }
 
     public void setSun(Long sun) {
+        this.sun += sun;
+    }
+
+    public void updateMon(Long mon) {
+        this.mon = mon;
+    }
+    public void updateTue(Long tue) {
+        this.tue = tue;
+    }
+    public void updateWen(Long wen) {
+        this.wen = wen;
+    }
+    public void updateThu(Long thu) {
+        this.thu = thu;
+    }
+    public void updateFri(Long fri) {
+        this.fri = fri;
+    }
+    public void updateSat(Long sat) {
+        this.sat = sat;
+    }
+    public void updateSun(Long sun) {
         this.sun = sun;
     }
 }

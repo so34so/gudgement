@@ -4,11 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Getter
 @NoArgsConstructor
 public class ChartDataDto {
+    private int month;
+    private int week;
     private Data data;
 
     @Getter
@@ -26,18 +26,21 @@ public class ChartDataDto {
 
         @Getter
         public static class DataSet {
-            Long[] payment;
+            Long[] amount;
+            String[] color;
 
             @Builder
-            public DataSet(Long[] payment) {
-                this.payment = payment;
+            public DataSet(Long[] amount, String[] color) {
+                this.amount = amount;
+                this.color = color;
             }
         }
     }
 
     @Builder
-    public ChartDataDto(Data data) {
+    public ChartDataDto(Data data, int month, int week) {
         this.data = data;
-
+        this.month = month;
+        this.week = week;
     }
 }

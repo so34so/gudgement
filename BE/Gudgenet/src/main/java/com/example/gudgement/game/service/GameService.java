@@ -11,5 +11,5 @@ public interface GameService {
 
     void rejectGame(String roomNumber, String username);
 
-    void endGame(GameResultDto gameResultDto);
+/*    void endGame(GameResultDto gameResultDto);*/
 }

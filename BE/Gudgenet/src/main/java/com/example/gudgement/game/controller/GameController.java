@@ -52,7 +52,7 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/end")
+/*    @PostMapping("/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         try {
             gameService.endGame(gameResultDto);
@@ -60,5 +60,5 @@ public class GameController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 }

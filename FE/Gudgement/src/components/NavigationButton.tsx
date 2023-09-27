@@ -1,5 +1,6 @@
 // import { CommonType } from "../types/CommonType";
 import { Text, Pressable, View } from "react-native";
+import { textShadow } from "../utils/common";
 
 function NavigationButton({
   handleFunction,
@@ -32,15 +33,10 @@ function NavigationButton({
     } font-PretendardExtraBold`;
 
   return (
-    // <View>
     <Pressable className={buttonStyle01(color)} onPress={handleFunction}>
       <View className={buttonStyle02(height, width)}>
         <Text
-          style={{
-            textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
-            textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
-            textShadowRadius: 5, // 그림자의 블러 정도
-          }}
+          style={textShadow}
           className={buttonStyle03(size)}
           numberOfLines={1}
         >
@@ -48,7 +44,6 @@ function NavigationButton({
         </Text>
       </View>
     </Pressable>
-    // </View>
   );
 }
 

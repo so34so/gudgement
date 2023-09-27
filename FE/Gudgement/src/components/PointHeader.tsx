@@ -21,7 +21,7 @@ function PointHeader({ tiggle, level }: PointHeaderProps) {
           }}
           className="h-8 w-8"
         />
-        <Text className="text-black text-sm px-1 py-1 font-PretendardExtraBold ">
+        <Text className="text-black text-sm p-1 font-PretendardExtraBold ">
           {tiggle ? tiggle.toLocaleString("ko-KR") : 0}
         </Text>
       </View>

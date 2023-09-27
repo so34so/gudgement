@@ -44,9 +44,8 @@ function Login() {
           accessToken: accessToken,
           refreshToken: refreshToken,
           id: id,
-          info: false,
+          info: 0,
           email: "none",
-          hasAccounts: 0,
         };
 
         const responseLogin = await setAsyncData("loginData", loginData);

@@ -22,11 +22,7 @@ import AccountBox from "../components/AccountBox";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
-import {
-  accountsForMockUp,
-  getAsyncData,
-  updateAsyncData,
-} from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 
 function SettingAccount() {
   const mypageBackground: ImageSourcePropType =

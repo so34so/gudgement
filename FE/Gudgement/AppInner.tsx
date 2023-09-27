@@ -64,7 +64,7 @@ function AppInner() {
         setRouteName("홈");
       }
 
-      setRouteName("Login");
+      // setRouteName("Login");
     } catch (error) {
       reactotron.log!("loginData 확인 실패!", error);
     }
@@ -73,6 +73,8 @@ function AppInner() {
   useEffect(() => {
     checkIsLoggedIn();
   }, []);
+
+  reactotron.log!(routeName);
 
   return (
     <NavigationContainer>

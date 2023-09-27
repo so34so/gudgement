@@ -16,6 +16,11 @@ import MyPageBackground from "../assets/images/mypageBackground.png";
 import MypageIcon from "../assets/images/mypageIcon.png";
 import AnalysisIcon from "../assets/images/analysisIcon.png";
 import Character from "../assets/images/character.png";
+import { useQuery } from "@tanstack/react-query";
+import { ActivityIndicator } from "react-native";
+import reactotron from "reactotron-react-native";
+import { useEffect } from "react";
+import { CommonType } from "../types/CommonType";
 
 function MyPage() {
   const mypageBackground: ImageSourcePropType =
@@ -23,6 +28,33 @@ function MyPage() {
   const mypageIcon: ImageSourcePropType = MypageIcon as ImageSourcePropType;
   const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
   const character: ImageSourcePropType = Character as ImageSourcePropType;
+
+  const {
+    data: userData,
+    error: fetchError,
+    isLoading,
+    refetch,
+  } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+    enabled: false,
+  });
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+  if (fetchError) {
+    reactotron.log!(fetchError);
+  } else {
+    reactotron.log!("홈 사용자 정보", userData);
+  }
 
   const data = {
     // labels: ["pedometer", "Bike", "Run"], // optional
@@ -41,8 +73,8 @@ function MyPage() {
         className="flex w-full h-full"
       >
         <TagBoxLarge
-          text01={"인동파 행동대장"}
-          text02={"옥계공주"}
+          text01={userData?.email ? userData?.email : "인동파 행동대장"}
+          text02={userData?.nickname ? userData?.nickname : "옥계공주"}
           img={mypageIcon}
         />
         <View className="mb-10 flex flex-row justify-center items-center">

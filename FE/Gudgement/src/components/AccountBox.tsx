@@ -1,3 +1,4 @@
+import { CommonType } from "../types/CommonType";
 import {
   View,
   Text,
@@ -9,10 +10,9 @@ import { WithLocalSvg } from "react-native-svg";
 import ShinhanLogo from "../assets/images/shinhanLogo.png";
 import CheckBoxOn from "../assets/icons/checkBoxOn.svg";
 import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
-import { IAccount } from "../pages/SettingAccount";
 
 interface AccountBoxProps {
-  account: IAccount;
+  account: CommonType.Taccount;
   isSelected: boolean;
   onSelect: (accountId: number) => void;
 }
@@ -23,7 +23,9 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
   const shinhanLogo: ImageSourcePropType = ShinhanLogo as ImageSourcePropType;
 
   const handleSelect = () => {
-    onSelect(account.id);
+    if (account.virtualAccountId !== undefined) {
+      onSelect(account.virtualAccountId);
+    }
   };
 
   return (

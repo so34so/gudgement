@@ -11,15 +11,15 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
-import NavigationButton from "../components/NavigationButton";
-import axios, { AxiosResponse } from "axios";
-import Reactotron from "reactotron-react-native";
-import { getTempUserId } from "../utils/common";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { API_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
+import NavigationButton from "../components/NavigationButton";
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MyPageIcon from "../assets/images/mypageIcon.png";
+import reactotron from "reactotron-react-native";
 
 function SettingEmail() {
   const mypageBackground: ImageSourcePropType =
@@ -37,9 +37,21 @@ function SettingEmail() {
   const [modalText, setModalText] = useState("");
 
   useEffect(() => {
-    getTempUserId().then(tempUserId => {
-      setTempId(tempUserId);
-    });
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setTempId(loginData.id);
+    };
+    getLoginData();
+  }, []);
+
+  useEffect(() => {
+    const info = {
+      info: 1,
+    };
+    updateAsyncData("loginData", info);
   }, []);
 
   const openModal = () => {
@@ -63,6 +75,8 @@ function SettingEmail() {
     }
     setModalText("로딩 중...");
     openModal();
+
+    reactotron.log!("저장된 id", tempId);
     const sendBE = {
       id: tempId,
       email: currentEmail,
@@ -72,7 +86,6 @@ function SettingEmail() {
         `${API_URL}/member/email/send`,
         sendBE,
       );
-      // Reactotron.log!("인증 메일 요청 성공!", response.data);
       if (response.status === 200) {
         const mailCode = response.data.toString();
         setCheckNumber(mailCode);
@@ -81,21 +94,35 @@ function SettingEmail() {
         openModal();
       }
     } catch (error) {
-      setModalText("다시 시도해주세요.");
-      openModal();
-      Reactotron.log!("인증 메일 요청 실패!", error);
+      const axiosError = error as AxiosError<CommonType.Terror>;
+      if (axiosError.response) {
+        const errorMessage = axiosError.response.data.message;
+        setModalText(errorMessage);
+        openModal();
+      }
+    }
+  };
+
+  const updateLoginData = async () => {
+    try {
+      const loginData = {
+        email: email,
+      };
+      await updateAsyncData("loginData", loginData);
+      return email; // 업데이트된 이메일 반환
+    } catch (error) {
+      reactotron.log!(error);
+      return null; // 에러 발생 시 null 반환
     }
   };
 
   const handleFetchNumber = async (currentNumber: string) => {
-    Reactotron.log!(currentNumber);
     if (currentNumber.length === 0) {
       setModalText("이메일로 전송된 인증 코드를 입력하세요.");
       openModal();
       return;
     }
     if (checkNumber === currentNumber) {
-      // Reactotron.log!("이메일 인증 코드 동일!", checkNumber, currentNumber);
       try {
         const sendBE = {
           id: tempId,
@@ -103,22 +130,36 @@ function SettingEmail() {
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
           await axios.post(`${API_URL}/member/update/email`, sendBE);
-        // Reactotron.log!("인증 메일 등록 성공!", response.data);
         if (response.status === 200) {
-          const mailCode = response.data.toString();
-          setCheckNumber(mailCode);
+          setCheckNumber("");
+          setNumber("");
+          setEmail("");
+          await updateLoginData();
           navigation.navigate("SettingName");
         }
       } catch (error) {
-        setModalText("다시 시도해주세요.");
-        openModal();
-        Reactotron.log!("인증 메일 등록 실패!", error);
+        const axiosError = error as AxiosError<{
+          httpStatus: string;
+          code: string;
+          message: string;
+        }>;
+        if (axiosError.response) {
+          const errorMessage = axiosError.response.data.message;
+          setCheckNumber("");
+          setNumber("");
+          setModalText(errorMessage);
+          openModal();
+        }
+        reactotron.log!("인증 메일 등록 실패!", error);
       }
     } else {
+      setCheckNumber("");
+      setNumber("");
       setModalText("인증 코드를 다시 확인해주세요.");
       openModal();
     }
   };
+
   return (
     <View className="flex w-screen h-screen">
       <KeyboardAwareScrollView>

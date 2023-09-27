@@ -27,7 +27,7 @@ public class InventoryDto {
         return InventoryDto.builder()
                 .invenId(inventory.getInvenId())
                 .itemId(inventory.getItemId().getItemId())
-                .memberId(inventory.getMemberId().getMemberId())
+                .memberId(inventory.getMember().getMemberId())
                 .equipped(inventory.isEquipped())
                 .build();
     }

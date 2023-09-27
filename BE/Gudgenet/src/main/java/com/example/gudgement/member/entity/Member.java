@@ -1,5 +1,6 @@
 package com.example.gudgement.member.entity;
 
+import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.shop.entity.Inventory;
 import lombok.*;
@@ -68,16 +69,31 @@ public class Member implements Serializable {
     @Column
     private String refreshToken;
 
+
+    //계좌 연동을 위한 노아가 작성한 코드
+//    @OneToOne(mappedBy = "member")
+//    private VirtualAccount virtualAccount;
+    @Column(nullable = true)
+    private Long virtualAccountId; // This replaces the VirtualAccount field
+
+    public void setVirtualAccountId(Long virtualAccountId) {
+        this.virtualAccountId = virtualAccountId;
+    }
+
+
+    // 연결 관계
+//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+//    private List<Item> set_item = new ArrayList<Item>();
     @Lob
     @Column
     private String firebaseToken;
 
     /* 연결 관계 */
     // 상점, 진행도 관련
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Inventory> set_item = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();
 
     // 미구현
@@ -124,6 +140,10 @@ public class Member implements Serializable {
     
     public void useTiggle(Long tiggle) {
         this.tiggle -= tiggle;
+    }
+
+    public void addTiggle(Long tiggle) {
+        this.tiggle += tiggle;
     }
 
     public void setFirebaseToken(String token) {

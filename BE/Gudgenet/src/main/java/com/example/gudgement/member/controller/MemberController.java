@@ -89,4 +89,12 @@ public class MemberController {
         });
         return member;
     }
+
+    @PostMapping("/pedometer")
+    @Operation(summary = "만보걷기 완료", description = "member의 tiggle값에 300을 더합니다.")
+    public ResponseEntity<String> pedometerClear(@RequestParam(name = "memberId") Long id) {
+        memberService.addTiggle(id);
+        return ResponseEntity.ok("만보걷기 완료");
+    }
+
 }

@@ -8,16 +8,18 @@ import {
   ImageSourcePropType,
   Image,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
-import NavigationButton from "../components/NavigationButton";
-import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import Reactotron from "reactotron-react-native";
 import { API_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getTempUserId } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
+import NavigationButton from "../components/NavigationButton";
+import MyPageBackground from "../assets/images/mypageBackground.png";
+import MyPageIcon from "../assets/images/mypageIcon.png";
+import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
 
 function SettingName() {
   const mypageBackground: ImageSourcePropType =
@@ -32,9 +34,22 @@ function SettingName() {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
   useEffect(() => {
-    getTempUserId().then(tempUserId => {
-      setTempId(tempUserId);
-    });
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setTempId(loginData.id);
+      reactotron.log!("이메일 업뎃", loginData.email);
+    };
+    getLoginData();
+  }, []);
+
+  useEffect(() => {
+    const info = {
+      info: 2,
+    };
+    updateAsyncData("loginData", info);
   }, []);
 
   const openModal = () => {
@@ -78,14 +93,7 @@ function SettingName() {
     if (checkName === 2) {
       try {
         const response = await axios.post(
-          `${API_URL}/member/update/nickname`,
-          null,
-          {
-            params: {
-              id: tempId,
-              nickname: currentName,
-            },
-          },
+          `${API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
         );
         Reactotron.log!("닉네임 등록 성공!", response.data);
         setBottomSheetVisible(true);

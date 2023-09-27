@@ -1,3 +1,5 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import {
   ImageBackground,
   ImageSourcePropType,
@@ -13,11 +15,15 @@ import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL, SERVER_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosResponse } from "axios";
-import { CommonType } from "../types/CommonType";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import reactotron from "reactotron-react-native";
 import messaging from "@react-native-firebase/messaging";
-import { getAsyncData, screenHeight, screenWidth } from "../utils/common";
+import {
+  getAsyncData,
+  screenHeight,
+  screenWidth,
+  updateAsyncData,
+} from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -27,7 +33,12 @@ import { getAsyncData, screenHeight, screenWidth } from "../utils/common";
  * 위험, 안정 기준: 설정한 소비내역 대비 70%(0.7)보다 더 많이 쓴 경우엔 위험,
  *  50% ~ 70%는 안정, 그 이하는 절약으로 설정해놓은 상태
  */
+console.log(API_URL);
+console.log(IMAGE_URL);
 export default function Home() {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
   const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
   const [percent, setPercent] = useState(0.6);
   const [spend, setSpend] = useState<{ text: string; color: string }>({
@@ -35,6 +46,7 @@ export default function Home() {
     color: "",
   });
   const [isStartSingle] = useState(true);
+
   useEffect(() => {
     if (percent <= 0.5) {
       setSpend({ text: "절약", color: "text-black" });
@@ -47,21 +59,44 @@ export default function Home() {
     }
   }, [percent]);
 
+  // const updateLoginData = async () => {
+  //   try {
+  //     const loginData = {
+  //       info: true,
+  //     };
+  //     await updateAsyncData("loginData", loginData);
+  //   } catch (error) {
+  //     reactotron.log!(error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   updateLoginData();
+  // }, []);
+
   async function fetchUser() {
-    const token = await getAsyncData("accessToken");
+    const loginData = (await getAsyncData(
+      "loginData",
+    )) as CommonType.TloginData;
+    reactotron.log!(loginData.accessToken);
     try {
-      const response: AxiosResponse<CommonType.TUser> = await axios.get(
+      const response: AxiosResponse<CommonType.Tuser> = await axios.get(
         `${API_URL}/member/loadMyInfo`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${loginData.accessToken}`,
           },
         },
       );
       reactotron.log!("fetchUser", response);
       return response.data;
     } catch (error) {
-      reactotron.log!("error", error);
+      const axiosError = error as AxiosError<CommonType.Terror>;
+      if (axiosError.response) {
+        const errorMessage = axiosError.response.data.message;
+        // navigation.navigate("Login");
+        reactotron.log!("홈 에러", errorMessage);
+      }
     }
   }
   const {

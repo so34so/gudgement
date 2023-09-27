@@ -14,21 +14,14 @@ import {
   KAKAO_LOGIN_REDIRECT_URI,
   SERVER_URL,
 } from "@env";
-import KakaoLogoImg from "../assets/images/kakaoLogo.png";
 import axios from "axios";
-import Reactotron from "reactotron-react-native";
 import { getAsyncData, setAsyncData } from "../utils/common";
+import KakaoLogoImg from "../assets/images/kakaoLogo.png";
 import reactotron from "reactotron-react-native";
-
-// interface LoginProps {
-//   onLogin: () => void; // onLogin의 타입을 명시
-// }
-//{ onLogin }: LoginProps
 
 function Login() {
   const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -36,61 +29,47 @@ function Login() {
     setShowWebView(true);
   };
 
-  interface kakaoLoginResponse {
-    id: number;
-    nickname: string;
-    email: string;
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpiration: string;
-  }
-
   const fetchAccessToken = async (code: string) => {
     try {
-      const response = await axios.post<kakaoLoginResponse>(
+      const response = await axios.post<CommonType.TkakaoLogin>(
         `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
       );
 
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
-      const tempUserId = response.data.id;
-      // Reactotron.log!("사용자 정보 미리보기!", response.data);
-      // Reactotron.log!("Access Token!", accessToken);
-      // Reactotron.log!("Refresh Token!", refreshToken);
-      // Reactotron.log!("TempID!", tempUserId);
+      const id = response.data.id;
 
       try {
-        const responseAccess = await setAsyncData("accessToken", accessToken);
-        const responseRefresh = await setAsyncData(
-          "refreshToken",
-          refreshToken,
-        );
-        const responseId = await setAsyncData("id", tempUserId);
-        Reactotron.log!(
-          "스토리지에 저장 성공!",
-          responseAccess,
-          responseRefresh,
-          responseId,
-        );
+        const loginData: CommonType.TloginData = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          id: id,
+          info: 0,
+          email: "none",
+        };
+
+        const responseLogin = await setAsyncData("loginData", loginData);
+        reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {
-        Reactotron.log!("스토리지 초기화 실패!", error);
+        reactotron.log!("스토리지 초기화 실패!", error);
       }
 
-      try {
-        const responseGetAccess = await getAsyncData("accessToken");
-        const responseGetRefresh = await getAsyncData("refreshToken");
-        const responseGetId = await getAsyncData("id");
-        Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
-        Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
-        Reactotron.log!("아이디 확인 성공!", responseGetId);
-        setShowWebView(false);
-      } catch (error) {
-        Reactotron.log!("액세스 토큰 확인 실패!", error);
-      }
-
+      // try {
+      //   const loginData = (await getAsyncData(
+      //     "loginData",
+      //   )) as CommonType.TloginData;
+      //   reactotron.log!("loginData 확인 성공!", loginData);
+      //   reactotron.log!("accessToken 확인 성공!", loginData.accessToken);
+      //   reactotron.log!("refreshToken 성공!", loginData.refreshToken);
+      //   reactotron.log!("id 확인 성공!", loginData.id);
+      //   reactotron.log!("info 확인 성공!", loginData.info);
+      // } catch (error) {
+      //   reactotron.log!("액세스 토큰 확인 실패!", error);
+      // }
+      setShowWebView(false);
       navigation.navigate("SettingEmail");
     } catch (error) {
-      Reactotron.log!("인가 코드 전달 실패!", error);
+      reactotron.log!("인가 코드 전달 실패!", error);
     }
   };
 
@@ -110,7 +89,7 @@ function Login() {
     try {
       await getAuthorizationCode(event);
     } catch (error) {
-      Reactotron.log!("에러 발생!", error);
+      reactotron.log!("에러 발생!", error);
     }
   };
 

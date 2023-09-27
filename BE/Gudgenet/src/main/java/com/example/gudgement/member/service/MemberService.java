@@ -16,4 +16,6 @@ public interface MemberService {
     void updateEmail(Long id, String email);
     void updateNickname(Long id, String nickname);
     boolean validNickname(String nickname);
+
+    void addTiggle(Long id);
 }

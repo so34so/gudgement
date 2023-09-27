@@ -22,7 +22,7 @@ public class FcmController {
     @Operation(summary = "([테스트용] 단일 회원 알림 보내기")
     @PostMapping("member/send")
     public String sendNotification(@RequestBody FcmNotificationResponseDto requestDto) throws FcmErrorException {
-        return fcmService.sendNotificationDetail(requestDto);
+        return fcmService.sendNotificationToChannel(requestDto);
     }
 
     @Operation(summary = "firebase 토큰 받기")

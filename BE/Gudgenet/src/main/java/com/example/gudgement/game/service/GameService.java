@@ -1,5 +1,6 @@
 package com.example.gudgement.game.service;
 
+import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.match.dto.MatchDto;
 
 public interface GameService {
@@ -10,6 +11,5 @@ public interface GameService {
 
     void rejectGame(String roomNumber, String username);
 
-    void addUserToRoom(String roomNumber, String username);
-
+/*    void endGame(GameResultDto gameResultDto);*/
 }

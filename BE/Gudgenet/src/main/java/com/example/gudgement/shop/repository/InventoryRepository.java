@@ -9,23 +9,17 @@ import java.util.Optional;
 
 
 public interface InventoryRepository extends JpaRepository<Inventory,Long> {
-    int countByMemberIdAndItemId(Member memberId, Item itemId);
+    int countByMemberAndItemId(Member memberId, Item itemId);
 
-    List<Inventory> findAllByMemberId(Member memberId);
-
-    List<Inventory> findAllByMemberIdAndEquipped(Member memberId, boolean b);
+    List<Inventory> findAllByMember(Member member);
 
     Optional<Inventory> findByItemId_TypeAndEquipped(String type, boolean b);
 
-/*    Optional<Inventory> findByItemId(Item inventoryId);*/
-
-    Optional<Inventory> findByMemberIdAndItemId(Member member, Item item);
+    Optional<Inventory> findByMemberAndItemId(Member member, Item item);
 
     Optional<Inventory> findByInvenId(Long invenId);
 
-    List<Inventory> findByMemberIdAndEquipped(Long memberId, boolean b);
+    List<Inventory> findByMemberAndEquipped(Member member, boolean b);
 
-/*    Inventory findByMemberIdAndShopTypeAndEquipped(Long memberId, String type, boolean equipped);
 
-    List<InventoryDto> findItemsByMemberId(Long memberId);*/
 }

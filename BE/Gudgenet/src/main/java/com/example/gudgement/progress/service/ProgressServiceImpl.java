@@ -16,7 +16,7 @@ public class ProgressServiceImpl implements ProgressService{
     private final ProgressRepository progressRepository;
 
     public boolean checkUnlockStatus(Member memberId, String progressName, int progressValue) {
-       Progress progress =  progressRepository.findByMemberIdAndProgressName(memberId, progressName);
+       Progress progress =  progressRepository.findByMemberAndProgressName(memberId, progressName);
 
        if(progress != null && progress.getProgressValue()>=progressValue) {
            return true;

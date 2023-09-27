@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -39,11 +40,17 @@ public class MatchingEventListener {
 
             List<String> matchedUsers = Arrays.asList(request.getNickName(), otherUser);
 
+            String currentTime = LocalDateTime.now().toString();
+
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":tiggle", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":status", "fail");
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":invitedAt", currentTime);
 
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":tiggle", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "fail");
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":invitedAt", currentTime);
 
             messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
             messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);

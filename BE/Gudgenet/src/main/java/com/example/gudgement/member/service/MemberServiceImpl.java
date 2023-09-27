@@ -238,5 +238,19 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.save(member); // 변경된 정보 저장
     }
+
+    public LocalDateTime getDateTime() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(3);
+
+        long startSeconds = startDate.toEpochSecond(ZoneOffset.UTC);
+        long endSeconds = endDate.toEpochSecond(ZoneOffset.UTC);
+
+        long randomEpochSecond = ThreadLocalRandom
+                .current()
+                .nextLong(startSeconds, endSeconds);
+
+        return LocalDateTime.ofEpochSecond(randomEpochSecond, 0, ZoneOffset.UTC);
+    }
 }
 

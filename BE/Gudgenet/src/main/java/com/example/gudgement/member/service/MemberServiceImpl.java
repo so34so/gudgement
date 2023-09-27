@@ -1,5 +1,13 @@
 package com.example.gudgement.member.service;
 
+import com.example.gudgement.account.dto.TransactionHistoryDto;
+import com.example.gudgement.account.dto.VirtualAccountDto;
+import com.example.gudgement.account.entity.TransactionHistory;
+import com.example.gudgement.account.entity.VirtualAccount;
+import com.example.gudgement.account.repository.TransactionHistoryRepository;
+import com.example.gudgement.account.repository.VirtualAccountRepository;
+import com.example.gudgement.account.service.TransactionHistoryService;
+import com.example.gudgement.account.service.VirtualAccountService;
 import com.example.gudgement.member.dto.Rate;
 import com.example.gudgement.member.dto.request.LoginDto;
 import com.example.gudgement.member.dto.request.MemberCreateDto;
@@ -15,15 +23,43 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NonUniqueResultException;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final VirtualAccountService virtualAccountService;
+    private final VirtualAccountRepository virtualAccountRepository;
+    private final TransactionHistoryService transactionHistoryService;
 
+    private static String[] bank_name = {"대구은행", "경남은행", "하나은행", "농협은행", "신한은행", "국민은행", "카카오뱅크"
+            , "S&C제일은행", "광주은행", "기업은행", "우리은행"};
+    private static String[][] account_name = {
+                    {"Smart 정기예금", "e-스마트 적금", "Happy 청년 정기예금"},
+                    {"Smart 정기예금", "e-스마트 적금", "Happy 청년 정기예금"},
+                    {"하나원큐 체크카드 자동적금", "뉴스탠다드 정기예금", "아이사랑 적립식 보험"},
+                    {"NH 희망 적금", "NH 스마일 저축보험", "NH 온라인 정기예금"},
+                    {"스마트 모아저축", "S클래스 VIP 저축예금", "신한저축계좌"},
+                    {"Liiv M 적금", "K-easy 스맛 폰 예적립식", "KB Star 정기"},
+                    {"카카오뱅크 자유적립식 예뱅", "카카오뱅크 연동정기", "카카오뱅크 타임디파짓"},
+                    {"SC Dream 정기", "SC 청년 Dream 적금", "i-SC모아저축"},
+                    {"GJ 스맛정", "GJ 에듀 샘이벤트" , "GJ My Car 자동차 대출"},
+                    {"IBK 기업청약" , "IBK e-정당" , "IBK Working Mom 우대 종합"},
+                    {"우리 아이 통장" , "Woori Smart 주거래청구계좌" , "We 첫 직장인 첫 계좌"}};
+    private static List<String> account_number = Arrays.asList("940311-556-4511-01", "508-124-17535-52", "113-4445978-85", "1977-88520-5543-054",
+            "13-13558-5469-4", "6-4555-11264-563-5", "171-4450-4579-6","508-117-4525-6", "940302-00-024486", "4-7778-2456-21");
+
+    private static String[] Destination = {
+            "카카오페이", "쉼터", "탐앤탐스", "스타벅스 코리아","버거킹 인의점",
+            "쿠팡","씨유구미강동점","007마트 인동점","GS 구미진평점","(주) 우아한형제들",
+            "(주) 우아한형제들","투썸플레이스 구미 진","한국맥도날드 (유)","GS 진평베스트점","카카오페이",
+            "투썸플레이스 인동점","올리브영","강고기집 진평점","진미축산","권민우","여민수", "카카오법인택시_5",
+             };
     @Override
     @Transactional
     public MemberResponseDto memberCreate(MemberCreateDto memberCreateDto) {
@@ -38,8 +74,6 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .emailApprove(member.isEmailApprove())
-                .nicknameApprove(member.isNicknameApprove())
                 .tiggle(member.getTiggle())
                 .exp(member.getExp())
                 .level(member.getLevel())
@@ -89,8 +123,6 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .emailApprove(member.isEmailApprove())
-                .nicknameApprove(member.isNicknameApprove())
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())
@@ -141,8 +173,42 @@ public class MemberServiceImpl implements MemberService {
                 new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER));
 
         member.updateEmail(email);
-        memberRepository.save(member);
+        memberRepository.saveAndFlush(member);
+        Random rd = new Random();
+        int cnt = 0;
+        Collections.shuffle(account_number);
 
+        // 가상 계좌 랜덤 생성
+        System.out.println(bank_name.length);
+        System.out.println(account_name.length);
+        do {
+            int random_num = rd.nextInt(bank_name.length);
+            virtualAccountService.create(VirtualAccountDto.builder()
+                            .bankName(bank_name[random_num])
+                            .accountNumber(account_number.get(cnt))
+                            .accountName(account_name[random_num][rd.nextInt(3)])
+                            .accountHolder(member.getNickname())
+                            .email(email)
+                            .balance(rd.nextInt(100000) * 100)
+                    .build());
+            cnt++;
+        } while(cnt <= rd.nextInt(6));
+
+        
+        // 거래 내역 생성
+        List<VirtualAccount> accounts = virtualAccountRepository.findAllByEmail(email);
+
+        for (int i = 0; i < 100; i++) {
+            int random_num = rd.nextInt(bank_name.length);
+            transactionHistoryService.create(TransactionHistoryDto.builder()
+                    .virtualAccountId(accounts.get(rd.nextInt(accounts.size())).getVirtualAccountId())
+                    .type(1)
+                    .amount(rd.nextInt(9999) * 10)
+                    .depositSource(".")
+                    .withdrawalDestination(Destination[rd.nextInt(Destination.length)])
+                    .transactionDate(getDateTime())
+                    .build());
+        }
     }
 
     @Override
@@ -173,3 +239,4 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member); // 변경된 정보 저장
     }
 }
+

@@ -28,9 +28,11 @@ public class TransactionHistory {
     @Column(nullable=false)
     private long amount;
 
+    // 입금처
     @Column(nullable=false)
     private String depositSource;
 
+    // 출금처
     @Column(nullable=false)
     private String withdrawalDestination;
 

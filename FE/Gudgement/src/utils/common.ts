@@ -4,7 +4,6 @@ import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { API_URL } from "@env";
-import { useQuery } from "@tanstack/react-query";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 export const textShadow = {

@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import {
   ImageBackground,
@@ -27,9 +26,6 @@ import { ANALYZE_BOX_IMAGE, fetchUser } from "../utils/common";
 console.log(API_URL);
 console.log(IMAGE_URL);
 export default function Home() {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const {
     data: userData,
     error: fetchError,
@@ -84,19 +80,17 @@ export default function Home() {
 
   reactotron.log!("userData", userData);
 
-  if (fetchError) {
-    return (
-      <View>
-        <Text>에러</Text>
-      </View>
-    );
-  }
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
         <ActivityIndicator size="large" color="blue" />
       </View>
     );
+  }
+  if (fetchError) {
+    reactotron.log!(fetchError);
+  } else {
+    reactotron.log!("홈 사용자 정보", userData);
   }
 
   return (

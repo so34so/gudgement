@@ -98,6 +98,10 @@ export declare module CommonType {
     exp: number;
     level: number;
     pedometer: number;
+    rate: {
+      payment: number;
+      rate: number;
+    };
   };
 
   export type TemailCode = string;

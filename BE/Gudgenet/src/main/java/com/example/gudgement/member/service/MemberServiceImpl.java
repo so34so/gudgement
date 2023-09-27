@@ -161,5 +161,15 @@ public class MemberServiceImpl implements MemberService {
         return !memberRepository.existsByNickname(nickname);
     }
 
+    @Override
+    @Transactional
+    public void addTiggle(Long id) {
+        Member member = memberRepository.findByMemberId(id).orElseThrow(() ->{
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
 
+        member.addTiggle(300L); // 기존 tiggles 값에 300을 더한 값을 저장
+
+        memberRepository.save(member); // 변경된 정보 저장
+    }
 }

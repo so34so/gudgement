@@ -50,7 +50,7 @@ function SettingName() {
       info: 2,
     };
     updateAsyncData("loginData", info);
-  });
+  }, []);
 
   const openModal = () => {
     setModalVisible(true);

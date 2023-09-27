@@ -16,8 +16,6 @@ import { getAsyncData } from "./src/utils/common";
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [routeName, setRouteName] =
-    useState<keyof CommonType.RootStackParamList>("Login");
 
   useEffect(() => {
     async function getToken() {
@@ -40,41 +38,23 @@ function AppInner() {
     return unsubscribe;
   }, []);
 
-  const checkIsLoggedIn = async () => {
-    try {
-      const loginData = (await getAsyncData(
-        "loginData",
-      )) as CommonType.TloginData;
-      reactotron.log!("loginData 확인 성공!", loginData);
-
-      if (loginData.info === 1) {
-        setRouteName("SettingEmail");
-      }
-
-      if (loginData.info === 2) {
-        setRouteName("SettingName");
-      }
-
-      if (loginData.info === 3) {
-        setRouteName("SettingAccount");
-      }
-
-      if (loginData.info === 4) {
-        setIsLoggedIn(true);
-        setRouteName("홈");
-      }
-
-      // setRouteName("Login");
-    } catch (error) {
-      reactotron.log!("loginData 확인 실패!", error);
-    }
-  };
-
   useEffect(() => {
+    const checkIsLoggedIn = async () => {
+      try {
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        reactotron.log!("loginData 확인 성공!", loginData);
+
+        if (loginData.info === 4) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        reactotron.log!("loginData 확인 실패!", error);
+      }
+    };
     checkIsLoggedIn();
   }, []);
-
-  reactotron.log!(routeName);
 
   return (
     <NavigationContainer>
@@ -92,7 +72,7 @@ function AppInner() {
           />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName={routeName}>
+        <Stack.Navigator initialRouteName="Splash">
           <Stack.Screen
             name="Splash"
             component={Splash}

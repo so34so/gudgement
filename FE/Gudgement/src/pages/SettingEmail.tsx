@@ -52,7 +52,7 @@ function SettingEmail() {
       info: 1,
     };
     updateAsyncData("loginData", info);
-  });
+  }, []);
 
   const openModal = () => {
     setModalVisible(true);

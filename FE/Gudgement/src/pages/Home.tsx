@@ -53,20 +53,20 @@ export default function Home() {
     }
   }, [percent]);
 
-  const updateLoginData = async () => {
-    try {
-      const loginData = {
-        info: true,
-      };
-      await updateAsyncData("loginData", loginData);
-    } catch (error) {
-      reactotron.log!(error);
-    }
-  };
+  // const updateLoginData = async () => {
+  //   try {
+  //     const loginData = {
+  //       info: true,
+  //     };
+  //     await updateAsyncData("loginData", loginData);
+  //   } catch (error) {
+  //     reactotron.log!(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    updateLoginData();
-  }, []);
+  // useEffect(() => {
+  //   updateLoginData();
+  // }, []);
 
   async function fetchUser() {
     const loginData = (await getAsyncData(

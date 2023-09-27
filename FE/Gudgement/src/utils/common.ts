@@ -2,6 +2,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dimensions } from "react-native";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { API_URL } from "@env";
+import { useQuery } from "@tanstack/react-query";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 export const textShadow = {
@@ -88,3 +91,27 @@ export const BOTTOM_TAB_IMAGE = [
   "/asset/myinfoicon.png",
   "/asset/rankingicon.png",
 ];
+
+export const fetchUser = async (): Promise<CommonType.Tuser> => {
+  const loginData = (await getAsyncData("loginData")) as CommonType.TloginData;
+  reactotron.log!(loginData.accessToken);
+  try {
+    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+      `${API_URL}/member/loadMyInfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${loginData.accessToken}`,
+        },
+      },
+    );
+    reactotron.log!("fetchUser", response);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<CommonType.Terror>;
+    if (axiosError.response) {
+      const errorMessage = axiosError.response.data.message;
+      reactotron.log!("홈 에러", errorMessage);
+    }
+    throw error;
+  }
+};

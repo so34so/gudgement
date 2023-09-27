@@ -17,7 +17,7 @@ import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import { fetchUser, getAsyncData, updateAsyncData } from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -53,61 +53,50 @@ export default function Home() {
     }
   }, [percent]);
 
-  // const updateLoginData = async () => {
+  // const fetchUser = async () => {
+  //   const loginData = (await getAsyncData(
+  //     "loginData",
+  //   )) as CommonType.TloginData;
+  //   reactotron.log!(loginData.accessToken);
   //   try {
-  //     const loginData = {
-  //       info: true,
-  //     };
-  //     await updateAsyncData("loginData", loginData);
+  //     const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+  //       `${API_URL}/member/loadMyInfo`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${loginData.accessToken}`,
+  //         },
+  //       },
+  //     );
+  //     reactotron.log!("fetchUser", response);
+  //     return response.data;
   //   } catch (error) {
-  //     reactotron.log!(error);
+  //     const axiosError = error as AxiosError<CommonType.Terror>;
+  //     if (axiosError.response) {
+  //       const errorMessage = axiosError.response.data.message;
+  //       reactotron.log!("홈 에러", errorMessage);
+  //     }
+  //     throw error;
   //   }
   // };
 
-  // useEffect(() => {
-  //   updateLoginData();
-  // }, []);
-
-  async function fetchUser() {
-    const loginData = (await getAsyncData(
-      "loginData",
-    )) as CommonType.TloginData;
-    reactotron.log!(loginData.accessToken);
-    try {
-      const response: AxiosResponse<CommonType.Tuser> = await axios.get(
-        `${API_URL}/member/loadMyInfo`,
-        {
-          headers: {
-            Authorization: `Bearer ${loginData.accessToken}`,
-          },
-        },
-      );
-      reactotron.log!("fetchUser", response);
-    } catch (error) {
-      const axiosError = error as AxiosError<CommonType.Terror>;
-      if (axiosError.response) {
-        const errorMessage = axiosError.response.data.message;
-        // navigation.navigate("Login");
-        reactotron.log!("홈 에러", errorMessage);
-      }
-    }
-  }
   const {
-    data: user,
+    data: userData,
     error: fetchError,
     isLoading,
-  } = useQuery({
+  } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
 
-  // if (fetchError) {
-  //   return (
-  //     <View>
-  //       <Text>에러</Text>
-  //     </View>
-  //   );
-  // }
+  reactotron.log!("userData", userData);
+
+  if (fetchError) {
+    return (
+      <View>
+        <Text>에러</Text>
+      </View>
+    );
+  }
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -119,7 +108,7 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">
-        <PointHeader />
+        <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
         <ImageBackground
           source={{
             uri: `${IMAGE_URL}/asset/homeBackground.png`,
@@ -128,8 +117,8 @@ export default function Home() {
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
-        <View className="absolute top-20 left-4 bg-white rounded-[5px] flex w-fit h-fit justify-start space-x-2 items-center flex-row border-2 border-black">
-          <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-[20px] rounded-tl-[5px] rounded-bl-[5px]">
+        <View className="absolute top-20 left-6 bg-white rounded-lg flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
+          <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-[20px]">
             계좌 잔고
           </Text>
           <Text className="text-center font-PretendardBlack bg-transparent text-black px-2 text-[20px] right-1">
@@ -138,7 +127,7 @@ export default function Home() {
         </View>
         {isStartSingle ? (
           <>
-            <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-[5px]">
+            <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-xl">
               <Text
                 className={`font-PretendardBlack ${spend.color} text-[24px]`}
               >
@@ -163,7 +152,7 @@ export default function Home() {
             </View>
           </>
         ) : (
-          <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-[5px]">
+          <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
             <Image
               source={goodIcon}
               className="w-16 h-12"

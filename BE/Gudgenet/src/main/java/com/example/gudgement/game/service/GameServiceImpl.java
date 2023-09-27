@@ -197,7 +197,7 @@ public class GameServiceImpl implements GameService{
         messagingTemplate.convertAndSend("/topic/game/" + roomNumber+"/reject",nickname+" fail");
 
         // Delete the user's information from Redis.
-        redisTemplate.opsForHash().delete(roomNumber);
+        redisTemplate.delete(roomNumber);
     }
 
     private int fetchLevel(String nickname) {
@@ -248,7 +248,7 @@ public class GameServiceImpl implements GameService{
                 .build();
     }
 
-/*    public void endGame(GameResultDto gameResultDto) {
+    public void endGame(GameResultDto gameResultDto) {
 
         String nickname = gameResultDto.getNickName();
         boolean isWinner = gameResultDto.isResult();
@@ -261,7 +261,7 @@ public class GameServiceImpl implements GameService{
         if (value == null) throw new RuntimeException("Value is not found in Redis");
         Long tiggle = Long.parseLong((String) value);
 
-       *//* if(isWinner){
+       /* if(isWinner){
             user.setMoney(user.getMoney() + tiggle*2);
             user.setExp(user.getExp() + 2);
             user.setWinCount(user.getWinCount() + 1);
@@ -275,11 +275,11 @@ public class GameServiceImpl implements GameService{
             user.setExp(user.getExp() + 2);
             user.setLoseCount(user.getLoseCount()+1);
 
-        }*//*
+        }
 
         // Update the user info in DB.
         memberRepository.save(user);
-
+*/
         // Delete all keys associated with the room number from Redis.
         Set<Object> keysInRoom = redisTemplate.opsForHash().keys(gameResultDto.getRoomNumber());
 
@@ -287,6 +287,6 @@ public class GameServiceImpl implements GameService{
             redisTemplate.opsForHash().delete(gameResultDto.getRoomNumber(), key);
         }
 
-    }*/
+    }
 
 }

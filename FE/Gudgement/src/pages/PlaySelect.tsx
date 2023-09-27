@@ -1,9 +1,10 @@
 import PlayBackground2 from "../assets/images/playBackground2.png";
 import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
-
+import Reactotron from "reactotron-react-native";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
+import axios from "axios";
 import { API_URL, IMAGE_URL } from "@env";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -18,13 +19,10 @@ import {
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
-
-interface MatchData {
-  nickName: string;
-  tiggle: number;
-  roleUser: string;
-  memberId: number;
-}
+const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
+const MEMBER_ID = 3032257068;
+const MEMBER_NickName = "KII";
+const MEMBER_RoleUser = "silver";
 
 function PlaySelect() {
   const playBackground2: ImageSourcePropType =
@@ -38,29 +36,44 @@ function PlaySelect() {
 
   const handleMapSelection = map => {
     setSelectedMap(map);
+    console.log(selectedMap);
   };
+
   // 매칭하기 함수
   async function postMatchStart() {
     try {
-      const response: AxiosResponse<MatchData[]> = await axios.post(
-        `${API_URL}/shop/type`,
-        {
-          params: {
-            nickName: MatchData.nickName,
-            tiggle: MatchData.tiggle,
-            roleUser: MatchData.roleUser,
-            memberId: MatchData.memberId,
-          },
-        },
-      );
-      Reactotron.log!("fetchShopItem", response.data);
-      return response.data;
-    } catch (errorResponse) {
-      if (axios.isAxiosError(errorResponse)) {
-        Reactotron.log!("fetchShopItemError", errorResponse);
-      }
+      const response = await axios.post(`${MATCH_URL}/matching/addUser`, {
+        memberId: MEMBER_ID,
+        nickName: MEMBER_NickName,
+        roleUser: MEMBER_RoleUser,
+        tiggle: selectedMap.ticle,
+        timestamp: 0,
+      });
+      Reactotron.log!("흠", response.data);
+      return response;
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
+  const handleStartMatch = async () => {
+    try {
+      const response = await postMatchStart();
+      if (response) {
+        // 응답이 유효한 경우에만 navigation을 진행합니다.
+        navigation.navigate("PlayMatchingWait", {
+          memberId: MEMBER_ID,
+          nickName: MEMBER_NickName,
+          roleUser: MEMBER_RoleUser,
+          tiggle: selectedMap.ticle,
+          timestamp: 0,
+        });
+      }
+    } catch (error) {
+      console.error("대전 찾기 중 오류 발생", error);
+      // 오류가 발생했을 때의 처리를 수행
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -84,7 +97,7 @@ function PlaySelect() {
         {/* <BettingMachine /> */}
 
         <View style={styles.lineGradi} className="flex items-center">
-          <Pressable onPress={() => navigation.navigate("PlayMatchingWait")}>
+          <Pressable onPress={handleStartMatch}>
             <Text className="flex m-auto justify-center rounded-lg text-white text-[32px] font-PretendardExtraBold">
               대전 찾기
             </Text>

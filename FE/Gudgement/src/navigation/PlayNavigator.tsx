@@ -9,7 +9,7 @@ function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
     <Stack.Navigator
-      initialRouteName="PlayNavigator"
+      initialRouteName="PlaySelect"
       screenOptions={{ headerShown: false, animation: "none" }} // 전환 효과 사용 안 함
     >
       <Stack.Screen

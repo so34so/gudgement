@@ -11,18 +11,18 @@ export const mapInfoArray: CommonType.Tplaymap[] = [
     title: "Map 1",
     description: "맵 설명이 들어갈 자리 1",
     image: map1,
-    ticle: "x100",
+    ticle: 100,
   },
   {
     title: "Map 2",
     description: "맵 설명이 들어갈 자리 2",
     image: map2,
-    ticle: "x300",
+    ticle: 300,
   },
   {
     title: "Map 3",
     description: "맵 설명이 들어갈 자리 3",
     image: map3,
-    ticle: "x500",
+    ticle: 500,
   },
 ];

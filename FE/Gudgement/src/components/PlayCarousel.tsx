@@ -79,7 +79,7 @@ function PlayCarousel({
         >
           <View style={styles.mapTextContainer}>
             <Text style={styles.mapTicle}>
-              {mapInfoArray[selectItem].ticle}
+              x{mapInfoArray[selectItem].ticle}
             </Text>
             <Text style={styles.mapTitle}>
               {mapInfoArray[selectItem].title}

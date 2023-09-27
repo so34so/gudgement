@@ -15,26 +15,34 @@ import {
   Text,
   ImageSourcePropType,
 } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import {
+  NavigationProp,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import Reactotron from "reactotron-react-native";
 
-export default function PlayMatchingWait() {
+export default function PlayMatchingWait({ route }) {
+  const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueBlur: ImageSourcePropType = BlueBlur as ImageSourcePropType;
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
   const blueFlame: ImageSourcePropType = BlueFlame as ImageSourcePropType;
   const flameMatch: ImageSourcePropType = FlameMatch as ImageSourcePropType;
-
   const matchInfobox: ImageSourcePropType =
     MatchingInfoBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
+
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
@@ -88,6 +96,33 @@ export default function PlayMatchingWait() {
     };
   }, [offset]);
 
+  // 매칭하기 함수
+  async function postMatchClose() {
+    try {
+      const response = await axios.post(`${MATCH_URL}/matching/removeUser`, {
+        memberId: memberId,
+        nickName: nickName,
+        roleUser: roleUser,
+        tiggle: tiggle,
+        timestamp: timestamp,
+      });
+      Reactotron.log!("흠", response.data);
+      return response;
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
+  const handleCloseMatch = async () => {
+    try {
+      postMatchClose();
+      navigation.navigate("PlayMatchingQueue");
+    } catch (error) {
+      console.error("매칭 취소 중 오류 발생", error);
+      // 오류가 발생했을 때의 처리를 수행
+    }
+  };
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -109,7 +144,7 @@ export default function PlayMatchingWait() {
 
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
-          <Pressable onPress={() => navigation.navigate("PlayMatchingQueue")}>
+          <Pressable onPress={handleCloseMatch}>
             <SmallCloseButton />
           </Pressable>
         </View>

@@ -108,9 +108,12 @@ export declare module CommonType {
     email: string;
   };
   export type Tplaymap = {
-    ticle: string;
+    ticle: number;
     image: string | ImageSourcePropType;
     title: string;
+    tiggle: number;
+    roleUser: string;
+    nickName: string;
     description: string;
   };
   export type TplayCard = {

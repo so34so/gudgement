@@ -48,33 +48,35 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (percent <= 0.5) {
-      setSpend({
-        text: "절약",
-        color: "text-black",
-        img: 1,
-      });
-    }
-    if (percent > 0.5 && percent <= 0.7) {
-      setSpend({
-        text: "안정",
-        color: "text-black",
-        img: 2,
-      });
-    }
-    if (percent > 0.7 && percent < 1.0) {
-      setSpend({
-        text: "위험",
-        color: "text-red",
-        img: 3,
-      });
-    }
-    if (percent >= 1.0) {
-      setSpend({
-        text: "초과",
-        color: "text-red",
-        img: 4,
-      });
+    if (userData) {
+      if (percent <= 0.5) {
+        setSpend({
+          text: "절약",
+          color: "text-black",
+          img: 1,
+        });
+      }
+      if (percent > 0.5 && percent <= 0.7) {
+        setSpend({
+          text: "안정",
+          color: "text-black",
+          img: 2,
+        });
+      }
+      if (percent > 0.7 && percent < 1.0) {
+        setSpend({
+          text: "위험",
+          color: "text-red",
+          img: 3,
+        });
+      }
+      if (percent >= 1.0) {
+        setSpend({
+          text: "초과",
+          color: "text-red",
+          img: 4,
+        });
+      }
     }
   }, [percent]);
 

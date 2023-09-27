@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";

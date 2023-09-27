@@ -19,6 +19,7 @@ import axios from "axios";
 import Reactotron from "reactotron-react-native";
 import { getAsyncData, setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 // interface LoginProps {
 //   onLogin: () => void; // onLogin의 타입을 명시
@@ -83,12 +84,11 @@ function Login() {
         Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
         Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
         Reactotron.log!("아이디 확인 성공!", responseGetId);
+        queryClient.invalidateQueries(["isLoggedIn"]);
         setShowWebView(false);
       } catch (error) {
         Reactotron.log!("액세스 토큰 확인 실패!", error);
       }
-
-      navigation.navigate("SettingEmail");
     } catch (error) {
       Reactotron.log!("인가 코드 전달 실패!", error);
     }
@@ -101,6 +101,7 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
+
       reactotron.log!("code", code);
       await fetchAccessToken(code);
     }

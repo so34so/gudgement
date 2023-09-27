@@ -48,7 +48,7 @@ export default function Home() {
   }, [percent]);
 
   async function fetchUser() {
-    const token = await getAsyncData("accessToken");
+    const token = (await getAsyncData("accessToken")) as string;
     try {
       const response: AxiosResponse<CommonType.TUser> = await axios.get(
         `${API_URL}/member/loadMyInfo`,

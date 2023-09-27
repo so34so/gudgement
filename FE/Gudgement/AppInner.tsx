@@ -12,10 +12,13 @@ import messaging from "@react-native-firebase/messaging";
 import { Linking } from "react-native";
 import reactotron from "reactotron-react-native";
 import PushNotification from "react-native-push-notification";
+import { useQuery } from "@tanstack/react-query";
+import { getAsyncData } from "./src/utils/common";
+import axios, { AxiosResponse } from "axios";
+import { API_URL } from "@env";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const config: {
     initialRouteName?: keyof CommonType.RootStackParamList;
     screens: PathConfigMap<CommonType.RootStackParamList>;
@@ -32,6 +35,38 @@ function AppInner() {
       },
     },
   };
+
+  const { data: isLoggedIn } = useQuery<boolean>({
+    queryKey: ["isLoggedIn"],
+    queryFn: async () => {
+      const id = await getAsyncData("id");
+      return !!id;
+    },
+  });
+  const { data: user } = useQuery({
+    queryKey: ["fetchUserInfo"],
+    queryFn: async () => {
+      const token = (await getAsyncData("accessToken")) as string;
+      if (!token) {
+        return null;
+      }
+      try {
+        const response: AxiosResponse<CommonType.TUser> = await axios.get(
+          `${API_URL}/member/loadMyInfo`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        reactotron.log!("fetchUser", response);
+        return response.data;
+      } catch (error) {
+        reactotron.log!("error", error);
+      }
+    },
+  });
+
   return (
     <NavigationContainer
       linking={{
@@ -78,11 +113,38 @@ function AppInner() {
     >
       {isLoggedIn ? (
         <Stack.Navigator>
-          <Stack.Screen
-            name="바텀"
-            component={BottomTabNavigator}
-            options={{ headerShown: false }}
-          />
+          {!user?.email ? (
+            <>
+              <Stack.Screen
+                name="SettingEmail"
+                component={SettingEmail}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SettingName"
+                component={SettingName}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SettingAccount"
+                component={SettingAccount}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="BottomTabNavigator"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="바텀"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+            </>
+          )}
           <Stack.Screen
             name="PlayNavigator"
             component={PlayNavigator}
@@ -94,26 +156,6 @@ function AppInner() {
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SettingEmail"
-            component={SettingEmail}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SettingName"
-            component={SettingName}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SettingAccount"
-            component={SettingAccount}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="BottomTabNavigator"
-            component={BottomTabNavigator}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

@@ -38,24 +38,21 @@ function AppInner() {
     return unsubscribe;
   }, []);
 
-  interface loginData {
-    accessToken: string;
-    refreshToken: string;
-    id: number;
-    info: boolean; // 로그인 절차 다 밟으면 true로 변경됨
-  }
-
-  const checkIsLoggedIn = async () => {
-    try {
-      const loginData = (await getAsyncData("loginData")) as loginData;
-      reactotron.log!("loginData 확인 성공!", loginData);
-      // setIsLoggedIn(true);
-    } catch (error) {
-      reactotron.log!("loginData 확인 실패!", error);
-    }
-  };
-
   useEffect(() => {
+    const checkIsLoggedIn = async () => {
+      try {
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        reactotron.log!("loginData 확인 성공!", loginData);
+
+        if (loginData.info === 4) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        reactotron.log!("loginData 확인 실패!", error);
+      }
+    };
     checkIsLoggedIn();
   }, []);
 
@@ -75,7 +72,7 @@ function AppInner() {
           />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="Splash">
           <Stack.Screen
             name="Splash"
             component={Splash}

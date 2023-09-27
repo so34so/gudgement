@@ -99,9 +99,8 @@ export declare module CommonType {
     accessToken: string;
     refreshToken: string;
     id: number;
-    info: boolean; // 로그인 절차 다 밟으면 true로 변경됨
     email: string; // 계좌 연동 시 보낼 인증된 email
-    hasAccounts: boolean; // 계좌 불러왔는지 확인
+    info: number; // 로그인 절차 0 1 2 3 4
   };
 
   export type TemailCode = string;
@@ -112,26 +111,42 @@ export declare module CommonType {
   };
 
   export type Taccount = {
-    virtualAccountId: number;
+    virtualAccountId?: number;
     bankName: string;
     accountName: string;
     accountNumber: string;
     accountHolder: string;
     email: string;
     balance: number;
-    selected: boolean;
+    selected?: boolean;
   };
 
-  export type TUser = {
+  export type Tuser = {
     memberId: number;
     email: string;
     nickname: string;
     emailApprove: boolean;
     nicknameApprove: boolean;
+    setItems: [
+      {
+        itemId: number;
+        itemName: string;
+        itemContent: string;
+        itemEffect: string;
+        image: string;
+        type: string;
+        subtype: string;
+      },
+    ];
     tiggle: number;
     exp: number;
     level: number;
     pedometer: number;
+    rate: {
+      payment: number;
+      rate: number;
+      balance: number;
+    };
   };
 
   export type Tplaymap = {

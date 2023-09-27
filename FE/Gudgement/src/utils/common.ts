@@ -45,6 +45,7 @@ export const getAsyncData = async <T>(key: string): Promise<T | null> => {
   return null;
 };
 
+// 데이터 수정
 export const updateAsyncData = async (key: string, updatedValue: unknown) => {
   try {
     // 1. 저장된 값을 불러옵니다.
@@ -77,45 +78,8 @@ export const removeAsyncData = async (key: string) => {
   }
 };
 
-// 해당 key가 AsyncStorage에 존재하는지 여부 확인
-export const containsAsyncKey = async (key: string) => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    return keys.includes(key);
-  } catch (error) {
-    reactotron.log!(error);
-  }
-};
-
 export const screenWidth = Math.round(Dimensions.get("window").width);
 export const screenHeight = Math.round(Dimensions.get("window").height);
-
-export const getLoginData = async (prop: string) => {
-  try {
-    const loginData = (await getAsyncData(
-      "loginData",
-    )) as CommonType.TloginData;
-    const id = loginData.id;
-    const accessToken = loginData.accessToken;
-    const refreshToken = loginData.refreshToken;
-    const email = loginData.email;
-    if (prop === "id") {
-      return id;
-    }
-    if (prop === "accessToken") {
-      return accessToken;
-    }
-    if (prop === "refreshToken") {
-      return refreshToken;
-    }
-    if (prop === "email") {
-      return email;
-    }
-  } catch (error) {
-    reactotron.log!("불러오기 실패!", error);
-    return;
-  }
-};
 
 export const BOTTOM_TAB_IMAGE = [
   "/asset/homeicon.png",

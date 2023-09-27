@@ -22,7 +22,7 @@ import AccountBox from "../components/AccountBox";
 import MyPageBackground from "../assets/images/mypageBackground.png";
 import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, getLoginData, updateAsyncData } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 
 function SettingAccount() {
   const mypageBackground: ImageSourcePropType =
@@ -43,11 +43,12 @@ function SettingAccount() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const email = await getLoginData("email");
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        const email = loginData.email;
         if (email) {
-          // reactotron.log!("이메일 업데이트", email as string);
-          setTempEmail(email as string);
-          // reactotron.log!("TempEmail", tempEmail);
+          setTempEmail(email);
         }
       } catch (error) {
         reactotron.log!("이메일 불러오기 실패!", error);
@@ -56,50 +57,14 @@ function SettingAccount() {
 
     fetchData();
 
-    const fetchAccount = async () => {
-      await handleCreateAccountRepeatedly(6);
-    };
-
     if (tempEmail.length > 0) {
-      const bringAccounts = async () => {
-        const loginData = (await getAsyncData(
-          "loginData",
-        )) as CommonType.TloginData;
-        if (!loginData.hasAccounts) {
-          fetchAccount();
-          const hasAccounts = {
-            hasAccounts: true,
-          };
-          updateAsyncData("loginData", hasAccounts);
-        }
+      handleReadAccount();
+      const info = {
+        info: 3,
       };
-      bringAccounts();
+      updateAsyncData("loginData", info);
     }
   }, [tempEmail]);
-
-  const handleCreateAccountRepeatedly = async (repetitions: number) => {
-    for (let i = 0; i < repetitions; i++) {
-      await handleCreateAccount();
-    }
-  };
-
-  const handleCreateAccount = async () => {
-    const sendBE = {
-      bankName: "shinhan",
-      accountName: "신한저축계좌",
-      accountNumber: "1002-345-234-124",
-      accountHolder: "강해빈",
-      email: tempEmail,
-      balance: 122395134,
-    };
-    try {
-      const response = await axios.post(`${API_URL}/account/virtual`, sendBE);
-      reactotron.log!("계좌 생성 성공!", response);
-      handleReadAccount();
-    } catch (error) {
-      reactotron.log!("계좌 생성 실패!", error);
-    }
-  };
 
   const handleReadAccount = async () => {
     // reactotron.log!("인증된 이메일", tempEmail);
@@ -149,12 +114,17 @@ function SettingAccount() {
         const response = await axios.post(`${API_URL}/account`, sendBE);
         reactotron.log!("계좌 연동 성공!", response);
 
+        const info = {
+          info: 4,
+        };
+        updateAsyncData("loginData", info);
+
         navigation.navigate("BottomTabNavigator");
-        // const settingAccountAction = CommonActions.reset({
-        //   index: 0,
-        //   routes: [{ name: "바텀" }],
-        // });
-        // navigation.dispatch(settingAccountAction);
+        const settingAccountAction = CommonActions.reset({
+          index: 0,
+          routes: [{ name: "BottomTabNavigator" }],
+        });
+        navigation.dispatch(settingAccountAction);
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);
       }

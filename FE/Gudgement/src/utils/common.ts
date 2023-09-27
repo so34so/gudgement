@@ -92,6 +92,14 @@ export const BOTTOM_TAB_IMAGE = [
   "/asset/rankingicon.png",
 ];
 
+export const ANALYZE_BOX_IMAGE = [
+  "/asset/analyzeNone.png",
+  "/asset/analyzeSave.png",
+  "/asset/analyzeGood.png",
+  "/asset/analyzeAlert.png",
+  "/asset/analyzeOver.png",
+];
+
 export const fetchUser = async (): Promise<CommonType.Tuser> => {
   const loginData = (await getAsyncData("loginData")) as CommonType.TloginData;
   reactotron.log!(loginData.accessToken);

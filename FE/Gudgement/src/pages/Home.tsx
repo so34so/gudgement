@@ -2,7 +2,6 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import {
   ImageBackground,
-  ImageSourcePropType,
   View,
   SafeAreaView,
   Text,
@@ -10,14 +9,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
-import GoodIcon from "../assets/icons/goodIcon.png";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
 import reactotron from "reactotron-react-native";
-import { fetchUser, getAsyncData, updateAsyncData } from "../utils/common";
+import { ANALYZE_BOX_IMAGE, fetchUser } from "../utils/common";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -33,52 +30,6 @@ export default function Home() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
-  const [percent, setPercent] = useState(0.6);
-  const [spend, setSpend] = useState<{ text: string; color: string }>({
-    text: "",
-    color: "",
-  });
-  const [isStartSingle] = useState(true);
-
-  useEffect(() => {
-    if (percent <= 0.5) {
-      setSpend({ text: "절약", color: "text-black" });
-    }
-    if (percent > 0.5 && percent <= 0.7) {
-      setSpend({ text: "안정", color: "text-black" });
-    }
-    if (percent > 0.7) {
-      setSpend({ text: "위험", color: "text-red" });
-    }
-  }, [percent]);
-
-  // const fetchUser = async () => {
-  //   const loginData = (await getAsyncData(
-  //     "loginData",
-  //   )) as CommonType.TloginData;
-  //   reactotron.log!(loginData.accessToken);
-  //   try {
-  //     const response: AxiosResponse<CommonType.Tuser> = await axios.get(
-  //       `${API_URL}/member/loadMyInfo`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${loginData.accessToken}`,
-  //         },
-  //       },
-  //     );
-  //     reactotron.log!("fetchUser", response);
-  //     return response.data;
-  //   } catch (error) {
-  //     const axiosError = error as AxiosError<CommonType.Terror>;
-  //     if (axiosError.response) {
-  //       const errorMessage = axiosError.response.data.message;
-  //       reactotron.log!("홈 에러", errorMessage);
-  //     }
-  //     throw error;
-  //   }
-  // };
-
   const {
     data: userData,
     error: fetchError,
@@ -87,6 +38,49 @@ export default function Home() {
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
+
+  const [isStartSingle] = useState(true);
+  const [percent, setPercent] = useState(userData?.rate.rate as number);
+  const [spend, setSpend] = useState<{
+    text: string;
+    color: string;
+    img: string;
+  }>({
+    text: "",
+    color: "",
+    img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}`,
+  });
+
+  useEffect(() => {
+    if (percent <= 0.5) {
+      setSpend({
+        text: "절약",
+        color: "text-black",
+        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[1]}`,
+      });
+    }
+    if (percent > 0.5 && percent <= 0.7) {
+      setSpend({
+        text: "안정",
+        color: "text-black",
+        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[2]}`,
+      });
+    }
+    if (percent > 0.7 && percent < 1.0) {
+      setSpend({
+        text: "위험",
+        color: "text-red",
+        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[3]}`,
+      });
+    }
+    if (percent >= 1.0) {
+      setSpend({
+        text: "초과",
+        color: "text-red",
+        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[4]}`,
+      });
+    }
+  }, [percent]);
 
   reactotron.log!("userData", userData);
 
@@ -118,32 +112,40 @@ export default function Home() {
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
         <View className="absolute top-20 left-6 bg-white rounded-lg flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
-          <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-[20px]">
+          <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-md">
             계좌 잔고
           </Text>
-          <Text className="text-center font-PretendardBlack bg-transparent text-black px-2 text-[20px] right-1">
-            999,999원
+          <Text className="text-center font-PretendardBlack bg-transparent text-black px-2 text-md right-1">
+            {userData?.rate.balance
+              ? userData?.rate.balance.toLocaleString("ko-KR")
+              : 0}{" "}
+            원
           </Text>
         </View>
         {isStartSingle ? (
           <>
-            <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-xl">
-              <Text
-                className={`font-PretendardBlack ${spend.color} text-[24px]`}
-              >
-                {spend.text}
-              </Text>
-              <Image
-                source={goodIcon}
-                className="w-16 h-12"
-                resizeMode="contain"
-              />
-              <View className="flex flex-col">
-                <Text className="text-black font-PretendardExtraBold text-[16px]">
+            <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-xl">
+              <View className="flex flex-row justify-center items-center space-x-6">
+                <Text
+                  className={`font-PretendardBlack ${spend.color} text-2lg`}
+                >
+                  {spend.text}
+                </Text>
+                <Image
+                  source={{ uri: spend.img }}
+                  className="w-16 h-12"
+                  resizeMode="contain"
+                />
+              </View>
+              <View className="flex flex-col items-end">
+                <Text className="text-black font-PretendardExtraBold text-sm">
                   이번 달 소비
                 </Text>
-                <Text className="text-black font-PretendardExtraBold text-[24px]">
-                  14,742,096원
+                <Text className="text-black font-PretendardExtraBold text-3lg">
+                  {userData?.rate.payment
+                    ? userData?.rate.payment.toLocaleString("ko-KR")
+                    : 0}{" "}
+                  원
                 </Text>
               </View>
             </View>
@@ -152,13 +154,13 @@ export default function Home() {
             </View>
           </>
         ) : (
-          <View className="w-[90%] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
+          <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
             <Image
-              source={goodIcon}
-              className="w-16 h-12"
+              source={{ uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}` }}
+              className="w-16 h-16"
               resizeMode="contain"
             />
-            <Text className="text-black font-PretendardExtraBold text-[18px]">
+            <Text className="text-black font-PretendardExtraBold text-sm">
               진행 중인 싱글 플레이가 없습니다!
             </Text>
           </View>

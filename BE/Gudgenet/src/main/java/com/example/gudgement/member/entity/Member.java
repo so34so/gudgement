@@ -145,4 +145,20 @@ public class Member implements Serializable {
     public void setFirebaseToken(String token) {
         this.firebaseToken = token;
     }
+
+    public void addTiggle(long tiggle) {
+        this.tiggle += tiggle;
+    }
+
+    public void subtractTiggle(long tiggle) {
+        if (this.tiggle < tiggle) {
+            throw new IllegalArgumentException("The user does not have enough money");
+        }
+        this.tiggle -= tiggle;
+    }
+
+    public void addExp(long exp) {
+        this.exp += exp;
+    }
+
 }

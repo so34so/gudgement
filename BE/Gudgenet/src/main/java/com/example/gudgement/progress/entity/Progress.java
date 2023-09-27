@@ -31,4 +31,10 @@ public class Progress {
         this.progressName = progressName;
         this.progressValue = progressValue;
     }
+
+    public void incrementProgressValue() {
+        this.progressValue += 1;
+    }
+
+
 }

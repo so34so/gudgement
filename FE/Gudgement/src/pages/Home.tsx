@@ -40,11 +40,11 @@ export default function Home() {
   const [spend, setSpend] = useState<{
     text: string;
     color: string;
-    img: string;
+    img: number;
   }>({
     text: "",
     color: "",
-    img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}`,
+    img: 0,
   });
 
   useEffect(() => {
@@ -52,28 +52,28 @@ export default function Home() {
       setSpend({
         text: "절약",
         color: "text-black",
-        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[1]}`,
+        img: 1,
       });
     }
     if (percent > 0.5 && percent <= 0.7) {
       setSpend({
         text: "안정",
         color: "text-black",
-        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[2]}`,
+        img: 2,
       });
     }
     if (percent > 0.7 && percent < 1.0) {
       setSpend({
         text: "위험",
         color: "text-red",
-        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[3]}`,
+        img: 3,
       });
     }
     if (percent >= 1.0) {
       setSpend({
         text: "초과",
         color: "text-red",
-        img: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[4]}`,
+        img: 4,
       });
     }
   }, [percent]);
@@ -126,7 +126,9 @@ export default function Home() {
                   {spend.text}
                 </Text>
                 <Image
-                  source={{ uri: spend.img }}
+                  source={{
+                    uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[spend.img]}`,
+                  }}
                   className="w-16 h-12"
                   resizeMode="contain"
                 />
@@ -151,7 +153,7 @@ export default function Home() {
           <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
             <Image
               source={{ uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}` }}
-              className="w-16 h-16"
+              className="w-16 h-12"
               resizeMode="contain"
             />
             <Text className="text-black font-PretendardExtraBold text-sm">

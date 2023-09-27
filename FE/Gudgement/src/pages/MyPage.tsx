@@ -1,9 +1,4 @@
-import {
-  View,
-  ImageBackground,
-  Image,
-  ImageSourcePropType,
-} from "react-native";
+import { View, ImageBackground, Image } from "react-native";
 
 import { ProgressChart } from "react-native-chart-kit";
 
@@ -12,23 +7,14 @@ import TagBoxLarge from "../components/TagBoxLarge";
 import TagBoxSmall from "../components/TagBoxSmall";
 import BasicBox from "../components/BasicBox";
 
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MypageIcon from "../assets/images/mypageIcon.png";
-import AnalysisIcon from "../assets/images/analysisIcon.png";
-import Character from "../assets/images/character.png";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityIndicator } from "react-native";
 import reactotron from "reactotron-react-native";
 import { useEffect } from "react";
 import { CommonType } from "../types/CommonType";
+import { IMAGE_URL } from "@env";
 
 function MyPage() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const mypageIcon: ImageSourcePropType = MypageIcon as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
-  const character: ImageSourcePropType = Character as ImageSourcePropType;
-
   const {
     data: userData,
     error: fetchError,
@@ -65,21 +51,32 @@ function MyPage() {
     // borderWidth: 2,
   };
 
+  const handleFetchMillion = async () => {
+    reactotron.log!("만보보상!");
+  };
+
   return (
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-full h-full"
       >
         <TagBoxLarge
           text01={userData?.email ? userData?.email : "인동파 행동대장"}
           text02={userData?.nickname ? userData?.nickname : "옥계공주"}
-          img={mypageIcon}
+          img={`${IMAGE_URL}/asset/mypageIcon.png`}
         />
         <View className="mb-10 flex flex-row justify-center items-center">
           <View>
-            <Image source={character} />
+            <Image
+              source={{
+                uri: `${IMAGE_URL}/asset/dogezaPenguin.png`,
+              }}
+              className="w-fill h-[100px] mb-4"
+            />
             <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
           </View>
           <View>
@@ -112,11 +109,26 @@ function MyPage() {
             />
           </View>
         </View>
-        <TagBoxSmall text={"이번달 소비 추이"} img={analysisIcon} />
-        <NavigationButton screenName="Pedometer" text="만보 걷기" />
-        <NavigationButton screenName="Analyze" text="분석" />
-        <NavigationButton screenName="SingleRecords" text="싱글플레이 상세" />
-        <NavigationButton screenName="MultiRecords" text="멀티플레이 상세" />
+        <TagBoxSmall
+          text={"이번달 소비 추이"}
+          img={`${IMAGE_URL}/asset/analysisIcon.png`}
+        />
+        <NavigationButton
+          handleFunction={() => handleFetchMillion()}
+          text="만보 걷기"
+          height="sm"
+          width="sm"
+          size="sm"
+          color="lightsky"
+        />
+        <NavigationButton
+          handleFunction={() => handleFetchMillion()}
+          text="분석"
+          height="sm"
+          width="sm"
+          size="md"
+          color="green"
+        />
       </ImageBackground>
     </View>
   );

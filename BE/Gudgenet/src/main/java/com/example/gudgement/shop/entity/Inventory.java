@@ -26,7 +26,7 @@ public class Inventory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
-    private Member memberId;
+    private Member member;
 
     // quantity field for consumable items.
     @Column(nullable = true)
@@ -37,10 +37,22 @@ public class Inventory {
     private boolean equipped;
 
     @Builder
-    Inventory(Item itemId , Member memberId, Integer quantity){
+    Inventory(Item itemId , Member member, Integer quantity){
         this.itemId = itemId;
-        this.memberId = memberId;
+        this.member = member;
         this.quantity = quantity == null ? 1 : quantity; // If quantity is not provided (null), set it to 1 by default.
+    }
+
+    @Override
+    public String toString() {
+        return "Inventory{" +
+                "invenId=" + invenId +
+                ", itemId=" + itemId +
+                // member 필드 대신 memberId 필드 사용
+                ", memberId=" + (member != null ? member.getMemberId() : null) +
+                ", quantity=" + quantity +
+                ", equipped=" + equipped +
+                '}';
     }
 
     public Inventory equip(){

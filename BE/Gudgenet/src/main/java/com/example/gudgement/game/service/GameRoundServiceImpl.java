@@ -29,7 +29,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         for(String member : members){
             if (!member.equals(currentUser)) {
                 // 상대방의 사용한 카드 중 랜덤으로 하나 가져오기
-                String usedCard = cardService.getRandomUsedCard(member);
+                String usedCard = cardService.getRandomUsedCard(roomNumber, member);
 
                 if (usedCard != null) {
                     // 가져온 카드 정보 삭제

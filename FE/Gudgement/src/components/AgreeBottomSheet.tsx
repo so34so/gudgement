@@ -19,7 +19,7 @@ import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
 
 interface BottomSheetProps {
   bottomSheetVisible: boolean;
-  setBottomSheetVisible: () => void;
+  setBottomSheetVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function BottomSheet({

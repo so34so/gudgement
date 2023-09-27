@@ -2,6 +2,7 @@ package com.example.gudgement.game.service;
 
 import com.example.gudgement.CardService;
 import com.example.gudgement.game.dto.EquippedItemsDto;
+import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
 import com.example.gudgement.game.entity.GameRoom;
@@ -10,6 +11,7 @@ import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
@@ -25,6 +27,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,16 +44,28 @@ public class GameServiceImpl implements GameService{
 
     private final CardService cardService;
 
-    @Scheduled(fixedRate = 1000)  // 매 초마다 실행
+    @Scheduled(fixedRate = 1000)
     public void checkUnresponsiveUsers() {
         LocalDateTime now = LocalDateTime.now();
-        List<GameUser> unresponsiveUsers = gameUserRepository.findAllByInvitedAtBeforeAndGameAcceptedIsNull(now.minusSeconds(15));
 
-        for (GameUser user : unresponsiveUsers) {
-            String roomNumber = user.getGameRoom().getRoomNumber();
-            rejectGame(roomNumber, user.getNickName());
+        List<String> roomNumbers = new ArrayList<>(redisTemplate.keys("*"));
 
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/timeout", user.getNickName() + " did not respond.");
+        for (String roomNumber : roomNumbers) {
+            Set<Object> memberKeys = redisTemplate.opsForHash().keys(roomNumber);
+
+            for (Object keyObject : memberKeys) {
+                String key = (String) keyObject;
+                String[] parts = key.split(":");
+
+                if (parts[1].equals("invitedAt")) {
+                    LocalDateTime invitedAt = LocalDateTime.parse((String) redisTemplate.opsForHash().get(roomNumber, key));
+
+                    if (!redisTemplate.opsForHash().hasKey(roomNumber, parts[0] + ":status") && invitedAt.isBefore(now.minusSeconds(15))) {
+                        rejectGame(roomNumber, parts[0]);
+                        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/timeout", parts[0] + " did not respond.");
+                    }
+                }
+            }
         }
     }
 
@@ -61,32 +77,44 @@ public class GameServiceImpl implements GameService{
 
     @Transactional
     public void acceptGame(String roomNumber, String nickname) {
-        // Find the user by nickname.
-        GameUser gameUser = gameUserRepository.findByNickName(nickname);
+        log.info("test");
+        // Check if the user exists in Redis.
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname + ":status");
 
-        if (gameUser == null) {
+        if (!hasKey) {
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }
 
-        // Call the method to accept the game.
-        gameUser.acceptGame();
-
         // Update the acceptance status in Redis.
-        redisTemplate.opsForHash().put(roomNumber, nickname, "accepted");
+        redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "success");
 
         if (allUsersAccepted(roomNumber)) {
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/start", "All users accepted.");
+            log.info("All users accepted. Sending start message and saving game room and users.");
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/start", "All users success");
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
-            Set<String> members = redisTemplate.opsForSet().members(roomNumber);
+
+            Set<Object> memberFields = redisTemplate.opsForHash().keys(roomNumber);
+
+            Set<String> members = memberFields.stream()
+                    .map(key -> ((String) key).split(":")[0])
+                    .collect(Collectors.toSet());
 
             for(String member : members){
-                cardService.generateAndStoreCards(member);
-                /* Fetch necessary information of each member from database or other services */
-                EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);  // This should be implemented
-                int level = fetchLevel(member);  // This should be implemented
-                Long tiggle = (Long) redisTemplate.opsForHash().get(roomNumber, member);
+                log.info("Processing member: " + member);
+
+                cardService.generateAndStoreCards(roomNumber, member);
+
+                EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);
+                log.info("장착아이템까지는 가지고 옴");
+                int level = fetchLevel(member);
+                log.info("레벨까지는 가지고 옴");
+                Object value = redisTemplate.opsForHash().get(roomNumber, member+":tiggle");
+                if (value == null) {
+                    throw new RuntimeException("Value is not found in Redis");
+                }
+                Long tiggle = Long.parseLong((String) value);
 
                 /* Construct a DTO that contains all necessary information */
                 GameUserInfoDto userInfoDto = GameUserInfoDto.builder()
@@ -96,111 +124,80 @@ public class GameServiceImpl implements GameService{
                         .equippedItems(equippedItemsDto)
                         .build();
 
+                log.info("userInfoDto: " + userInfoDto);
+
                 /* Send this DTO to client side */
                 messagingTemplate.convertAndSendToUser(member, "/queue/userInfo", userInfoDto);
             }
 
-            // Remove room information from Redis as it's no longer needed there.
-            redisTemplate.delete(roomNumber);
-
-            /* If you stored individual user acceptance status or any other related information in Redis,
-               you might also want to remove those at this point. */
-
-            Set<String> keys = redisTemplate.keys("*" + roomNumber + "*");
-            if (keys != null && !keys.isEmpty()) {
-                redisTemplate.delete(keys);
-            }
-        }
-    }
-
-    private void saveGameRoomAndUsers(String roomNumber) {
-         /*
-          Here you should implement your logic to fetch all necessary data about this game room and its users,
-          then save it into your database using appropriate repositories.
-
-          For example:
-         */
-
-        Set<String> members = redisTemplate.opsForSet().members(roomNumber);
-
-        if (members != null && !members.isEmpty()) {
-
-            GameRoom gameRoom = new GameRoom();
-            gameRoom.setRoomNumber(roomNumber);
-
-            for(String member : members){
-                GameUser user = gameUserRepository.findByNickName(member);
-
-                if(user!=null){
-                    GameUser gameUser=new GameUser();
-                    gameUser.setNickName(user.getNickName());
-                    gameUser.setGameRoom(gameRoom);
-
-                    /* You may want to set other properties of your 'game' or 'game user' objects as well */
-
-                    gameUserRepository.save(user);
-                    gameRoomRepository.save(gameRoom);
-                }
-            }
+        }else{
+            log.info("fail");
         }
     }
 
     private boolean allUsersAccepted(String roomNumber) {
+        // Get all keys (user info) from the Redis hash.
+        Set<Object> membersKeys = redisTemplate.opsForHash().keys(roomNumber);
 
-        Set<String> members = redisTemplate.opsForSet().members(roomNumber);
+        for (Object keyObject : membersKeys) {
+            String key = (String) keyObject;
+            if (!key.endsWith(":status")) {  // Ignore keys that are not related to status.
+                continue;
+            }
 
-        for (String member : members) {
-            Object acceptanceStatusObj =  redisTemplate.opsForHash().get(member,"accepted");
+            Object acceptanceStatusObj =  redisTemplate.opsForHash().get(roomNumber, key);
 
-            if(acceptanceStatusObj == null || !"accepted".equals(acceptanceStatusObj.toString())) {
-                return false;
+            if(acceptanceStatusObj == null || !"success".equals(acceptanceStatusObj.toString())) {
+                return false;  // If any user's status is not 'success', return false immediately.
             }
         }
 
-        return true;
+        return true;  // If all users' statuses are 'success', return true.
     }
 
+    private void saveGameRoomAndUsers(String roomNumber) {
+        log.info(roomNumber + "세이브까지 왔다.");
+        // Create and save a new GameRoom.
+        GameRoom gameRoom = new GameRoom();
+        gameRoom.setRoomNumber(roomNumber);
+        gameRoom = gameRoomRepository.save(gameRoom);
+        log.info(gameRoom.getRoomNumber() + "세이브까지 왔다.2");
+        // Get all keys (user info) from the Redis hash.
+        Set<Object> memberKeys = redisTemplate.opsForHash().keys(roomNumber);
+
+        for(Object keyObject : memberKeys){
+            String key = (String) keyObject;
+            String[] parts = key.split(":");
+            String nickname = parts[0];
+
+            // Check if we already processed this user.
+            if(parts[1].equals("status")) {
+                // Create and save a new GameUser for each nickname.
+                GameUser gameUser = new GameUser();
+                gameUser.setNickName(nickname);
+                gameUser.setGameRoom(gameRoom);
+                gameUser.setResult(false);  // set initial result as false
+
+                // Save the user.
+                gameUserRepository.save(gameUser);
+                log.info(gameUser.getNickName() + "유저세이브까지 왔다.");
+            }
+        }
+    }
 
     @Transactional
     public void rejectGame(String roomNumber, String nickname) {
-        // Find the user by nickname.
-        GameUser gameUser = gameUserRepository.findByNickName(nickname);
+        // Check if the user exists in Redis.
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname+":status");
 
-        if (gameUser == null) {
+        if (!hasKey) {
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }
 
-        // Call the method to reject the game.
-        gameUser.rejectGame();
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber+"/reject",nickname+" fail");
 
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/reject", nickname + " rejected.");
-
-        // Delete the room.
-        gameRoomRepository.deleteByRoomNumber(roomNumber);  // 게임 방 삭제 로직 추가.
-    }
-
-    @Transactional
-    public void addUserToRoom(String roomNumber, String nickname) {
-        // Find the game room by room number.
-        GameRoom gameRoom = gameRoomRepository.findByRoomNumber(roomNumber);
-
-        if (gameRoom == null) {
-            throw new IllegalArgumentException("Invalid room number: " + roomNumber);
-        }
-
-        // Create a new user and add it to the game room.
-        GameUser user = GameUser.builder()
-                .nickName(nickname)
-                .gameAccepted(null)
-                .gameRoom(gameRoom)
-                .invitedAt(LocalDateTime.now())
-                .build();
-
-        // Save the user.
-        gameUserRepository.save(user);
-
-        // Add the user to the game room's users list directly.
-        gameRoom.getUsers().add(user);
+        // Delete the user's information from Redis.
+        redisTemplate.delete(roomNumber);
     }
 
     private int fetchLevel(String nickname) {
@@ -218,32 +215,78 @@ public class GameServiceImpl implements GameService{
         Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> {
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         });
+        log.info(String.valueOf(member.getMemberId()));
 
-        // Find equipped items by memberId.
-        List<Inventory> equippedInventories = inventoryRepository.findByMemberIdAndEquipped(member.getMemberId(), true);
+        List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
+
+        log.info("equippedInventories: {}", equippedInventories.toString());
+
+        log.info(String.valueOf(member.getMemberId()));
 
         // Convert the entity list to DTO.
-        List<ItemDto> itemDtos = new ArrayList<>();
+        List<EquippedDto> equippedDtos = new ArrayList<>();
 
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
 
-            ItemDto itemDto = ItemDto.builder()
-                    .id(item.getItemId())
+            EquippedDto equippedDto= EquippedDto.builder()
+                    .invenId(inventory.getInvenId())
+                    .itemId(item.getItemId())
                     .itemName(item.getItemName())
                     .itemContent(item.getItemContent())
                     .itemEffect(item.getItemEffect())
                     .image(item.getImage())
-                    .type(item.getType())
-                    .subType(item.getType())
+                    .isEquipped(inventory.isEquipped())  // Assuming that isEquip() method exists in Inventory class.
+                    .quantity(inventory.getQuantity())  // Assuming that getQuantity() method exists in Inventory class.
                     .build();
 
-            itemDtos.add(itemDto);
+            equippedDtos.add(equippedDto);
         }
 
         return EquippedItemsDto.builder()
-                .items(itemDtos)
+                .items(equippedDtos)
                 .build();
+    }
+
+    public void endGame(GameResultDto gameResultDto) {
+
+        String nickname = gameResultDto.getNickName();
+        boolean isWinner = gameResultDto.isResult();
+
+        Optional<Member> user = memberRepository.findByNickname(nickname);
+
+        if (user == null) throw new IllegalArgumentException("Invalid nickname: " + nickname);
+
+        Object value = redisTemplate.opsForHash().get(gameResultDto.getRoomNumber(), nickname+":tiggle");
+        if (value == null) throw new RuntimeException("Value is not found in Redis");
+        Long tiggle = Long.parseLong((String) value);
+
+       /* if(isWinner){
+            user.setMoney(user.getMoney() + tiggle*2);
+            user.setExp(user.getExp() + 2);
+            user.setWinCount(user.getWinCount() + 1);
+
+        }else{
+            if (user.getMoney() < tiggle){
+                throw new IllegalArgumentException("The user does not have enough money");
+            }
+
+            user.setMoney(user.getMoney() - tiggle);
+            user.setExp(user.getExp() + 2);
+            user.setLoseCount(user.getLoseCount()+1);
+
+        }
+
+        // Update the user info in DB.
+        memberRepository.save(user);
+*/
+        // Delete all keys associated with the room number from Redis.
+        Set<Object> keysInRoom = redisTemplate.opsForHash().keys(gameResultDto.getRoomNumber());
+
+        for(Object key : keysInRoom){
+            redisTemplate.opsForHash().delete(gameResultDto.getRoomNumber(), key);
+        }
+
     }
 
 }

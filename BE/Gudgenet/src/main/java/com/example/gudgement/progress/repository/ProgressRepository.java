@@ -5,5 +5,5 @@ import com.example.gudgement.progress.entity.Progress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProgressRepository extends JpaRepository<Progress,Long> {
-    Progress findByMemberIdAndProgressName(Member memberId, String progressName);
+    Progress findByMemberAndProgressName(Member memberId, String progressName);
 }

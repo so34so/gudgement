@@ -27,7 +27,7 @@ public class InventoryServiceImpl implements InventoryService{
     private final ItemRepository itemRepository;
 
     public List<EquippedDto> findMemberitems(Member member) {
-        List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
+        List<Inventory> inventoryList = inventoryRepository.findAllByMember(member);
 
         List<EquippedDto> equippedList = inventoryList.stream()
                 .map(inventory -> {
@@ -53,7 +53,7 @@ public class InventoryServiceImpl implements InventoryService{
     }
 
     public List<EquippedDto> findMemberTypeitems(String type, Member member) {
-        List<Inventory> inventoryList = inventoryRepository.findAllByMemberId(member);
+        List<Inventory> inventoryList = inventoryRepository.findAllByMember(member);
         AtomicLong typeId = new AtomicLong(1);
         List<EquippedDto> equippedList = inventoryList.stream()
                 .filter(inventory -> type.equals(inventory.getItemId().getType()))

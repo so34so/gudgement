@@ -1,6 +1,6 @@
 package com.example.gudgement.game.dto;
 
-import com.example.gudgement.shop.dto.ItemDto;
+import com.example.gudgement.shop.dto.EquippedDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +12,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class EquippedItemsDto {
-    private List<ItemDto> items;
+    private List<EquippedDto> items;
 
     @Builder
-    public EquippedItemsDto(List<ItemDto> items) {
+    public EquippedItemsDto(List<EquippedDto> items) {
         this.items = items;
     }
 }

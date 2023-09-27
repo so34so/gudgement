@@ -181,7 +181,7 @@ function SettingName() {
                         height="lg"
                         width="sm"
                         size="md"
-                        color="lightsky"
+                        color="bluesky"
                       />
                     </View>
                     {checkName === 0 ? (

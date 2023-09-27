@@ -232,7 +232,7 @@ function SettingEmail() {
                         height="lg"
                         width="sm"
                         size="md"
-                        color="lightsky"
+                        color="bluesky"
                       />
                     </View>
                     <TextInput

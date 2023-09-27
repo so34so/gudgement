@@ -23,6 +23,7 @@ module.exports = {
         deepgreen: "#34b859",
         green: "#9bca69",
         lightsky: "#79b4ff",
+        bluesky: "#3190FF",
         red: "#f33434",
         sky: "#3786c0",
         sub01: "#4a4a4a",

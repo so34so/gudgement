@@ -8,7 +8,7 @@ interface TagBoxSmallProps {
 function TagBoxSmall({ text, img }: TagBoxSmallProps) {
   return (
     <View className="flex flex-row relative m-3 items-center">
-      <View className="z-10 bg-lightsky border-solid border-[2px] border-darkgray rounded-full">
+      <View className="z-10 bg-bluesky border-solid border-[2px] border-darkgray rounded-full">
         <Image
           source={{
             uri: img,

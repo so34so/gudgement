@@ -18,7 +18,7 @@ function NavigationButton({
 }) {
   const buttonStyle01 = (currentColor: string) =>
     `h-fill w-fill py-[1px] flex flex-row justify-center items-center ${
-      currentColor === "lightsky" ? "bg-lightsky" : "bg-deepgreen"
+      currentColor === "bluesky" ? "bg-bluesky" : "bg-deepgreen"
     } border-solid border-[3px] border-white70 rounded-xl`;
 
   const buttonStyle02 = (currentHeight: string, currentWidth: string) =>

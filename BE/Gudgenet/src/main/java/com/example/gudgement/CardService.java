@@ -12,7 +12,7 @@ public class CardService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void generateAndStoreCards(String user) {
+    public void generateAndStoreCards(String roomNumber, String user) {
         // 각 유저에 대해 10장의 카드 생성 (금액은 임의로 설정)
         List<String> cards = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -27,11 +27,11 @@ public class CardService {
             String cardInfo = cards.get(i) + ":" + (i+1); // 순서 번호 추가
 
             // 각 카드 정보를 Redis에 저장
-            redisTemplate.opsForSet().add("roomnumber:" + user + ":cards", cardInfo);
+            redisTemplate.opsForSet().add(roomNumber + ":" + user + ":cards", cardInfo);
         }
     }
-    public String getRandomUsedCard(String user) {
-        Set<String> usedCards = redisTemplate.opsForSet().members("roomnumber:" + user + ":usedcards");
+    public String getRandomUsedCard(String roomNumber, String user) {
+        Set<String> usedCards = redisTemplate.opsForSet().members(roomNumber + ":" + user + ":usedcards");
 
         if (usedCards != null && !usedCards.isEmpty()) {
             int size = usedCards.size();

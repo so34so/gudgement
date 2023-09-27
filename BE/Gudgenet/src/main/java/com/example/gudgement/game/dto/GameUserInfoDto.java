@@ -4,9 +4,11 @@ import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @NoArgsConstructor
+@ToString
 public class GameUserInfoDto {
     private String nickname;
     private int level;
@@ -21,4 +23,5 @@ public class GameUserInfoDto {
         this.tiggle = tiggle;
         this.equippedItems = equippedItems;
     }
+
 }

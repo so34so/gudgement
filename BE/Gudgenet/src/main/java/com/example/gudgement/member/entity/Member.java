@@ -76,9 +76,9 @@ public class Member implements Serializable {
     @Column(nullable = true)
     private Long virtualAccountId; // This replaces the VirtualAccount field
 
-        public void setVirtualAccountId(Long virtualAccountId) {
-            this.virtualAccountId = virtualAccountId;
-        }
+    public void setVirtualAccountId(Long virtualAccountId) {
+        this.virtualAccountId = virtualAccountId;
+    }
 
 
     // 연결 관계
@@ -90,10 +90,10 @@ public class Member implements Serializable {
 
     /* 연결 관계 */
     // 상점, 진행도 관련
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Inventory> set_item = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();
 
     // 미구현
@@ -142,7 +142,27 @@ public class Member implements Serializable {
         this.tiggle -= tiggle;
     }
 
+    public void addTiggle(Long tiggle) {
+        this.tiggle += tiggle;
+    }
+
     public void setFirebaseToken(String token) {
         this.firebaseToken = token;
     }
+
+    public void addTiggle(long tiggle) {
+        this.tiggle += tiggle;
+    }
+
+    public void subtractTiggle(long tiggle) {
+        if (this.tiggle < tiggle) {
+            throw new IllegalArgumentException("The user does not have enough money");
+        }
+        this.tiggle -= tiggle;
+    }
+
+    public void addExp(long exp) {
+        this.exp += exp;
+    }
+
 }

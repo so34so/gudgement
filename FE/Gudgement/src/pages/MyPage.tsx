@@ -25,8 +25,12 @@ function MyPage() {
   const character: ImageSourcePropType = Character as ImageSourcePropType;
 
   const data = {
-    labels: ["Swim", "Bike", "Run"], // optional
-    data: [0.4, 0.6, 0.8],
+    // labels: ["pedometer", "Bike", "Run"], // optional
+    data: [0.6],
+    // strokeWidth: 2,
+    // stroleColor: "#124518",
+    // borderColor: "#124518",
+    // borderWidth: 2,
   };
 
   return (
@@ -51,15 +55,17 @@ function MyPage() {
               data={data}
               width={200}
               height={220}
-              strokeWidth={16}
-              radius={32}
+              strokeWidth={30}
+              radius={59}
               chartConfig={{
-                backgroundColor: "#fff",
-                // backgroundGradientFrom: "#fff",
-                // backgroundGradientTo: "rgba(0,0,0,0)",
-                decimalPlaces: 2, // optional, defaults to 2dp
+                backgroundGradientFromOpacity: 0,
+                backgroundGradientToOpacity: 0,
+                // fillShadowGradientFrom: "#000000",
+                // fillShadowGradientFromOpacity: 1,
+                // fillShadowGradientFromOffset: 1,
+                decimalPlaces: 20, // optional, defaults to 2dp
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(25, 25, 55, ${opacity})`,
                 style: {
                   borderRadius: 16,
                 },
@@ -69,11 +75,8 @@ function MyPage() {
                   stroke: "#ffa726",
                 },
               }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-              hideLegend={false}
+              style={{}}
+              hideLegend={true}
             />
           </View>
         </View>

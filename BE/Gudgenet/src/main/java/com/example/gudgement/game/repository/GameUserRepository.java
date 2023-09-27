@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface GameUserRepository extends JpaRepository<GameUser,Long> {
 
-    GameUser findByNickName(String nickname);
 
-    List<GameUser> findAllByInvitedAtBeforeAndGameAcceptedIsNull(LocalDateTime localDateTime);
+
 }

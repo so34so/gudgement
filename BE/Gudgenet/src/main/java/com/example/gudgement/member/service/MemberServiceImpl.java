@@ -227,18 +227,16 @@ public class MemberServiceImpl implements MemberService {
         return !memberRepository.existsByNickname(nickname);
     }
 
-    public LocalDateTime getDateTime() {
-        LocalDateTime endDate = LocalDateTime.now();
-        LocalDateTime startDate = endDate.minusMonths(3);
+    @Override
+    @Transactional
+    public void addTiggle(Long id) {
+        Member member = memberRepository.findByMemberId(id).orElseThrow(() ->{
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
 
-        long startSeconds = startDate.toEpochSecond(ZoneOffset.UTC);
-        long endSeconds = endDate.toEpochSecond(ZoneOffset.UTC);
+        member.addTiggle(300L); // 기존 tiggles 값에 300을 더한 값을 저장
 
-        long randomEpochSecond = ThreadLocalRandom
-                .current()
-                .nextLong(startSeconds, endSeconds);
-
-        return LocalDateTime.ofEpochSecond(randomEpochSecond, 0, ZoneOffset.UTC);
+        memberRepository.save(member); // 변경된 정보 저장
     }
 }
 

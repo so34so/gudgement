@@ -8,10 +8,10 @@ import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
+import Splash from "./src/pages/Splash";
 import messaging from "@react-native-firebase/messaging";
 import reactotron from "reactotron-react-native";
 import { getAsyncData } from "./src/utils/common";
-import Splash from "./src/pages/Splash";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -38,23 +38,21 @@ function AppInner() {
     return unsubscribe;
   }, []);
 
-  interface loginData {
-    accessToken: string;
-    refreshToken: string;
-    id: number;
-  }
-
-  const checkIsLoggedIn = async () => {
-    try {
-      const loginData = (await getAsyncData("loginData")) as loginData;
-      reactotron.log!("loginData 확인 성공!", loginData);
-      setIsLoggedIn(true);
-    } catch (error) {
-      reactotron.log!("loginData 확인 실패!", error);
-    }
-  };
-
   useEffect(() => {
+    const checkIsLoggedIn = async () => {
+      try {
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        reactotron.log!("loginData 확인 성공!", loginData);
+
+        if (loginData.info === 4) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        reactotron.log!("loginData 확인 실패!", error);
+      }
+    };
     checkIsLoggedIn();
   }, []);
 

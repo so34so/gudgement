@@ -1,9 +1,11 @@
 package com.example.gudgement.game.controller;
 
 import com.example.gudgement.game.dto.GameRequestDto;
+import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,21 +19,18 @@ public class GameController {
     private final GameService gameService;
     private final GameRoundService gameRoundService;
 
-    @PostMapping("/accept")
-    public ResponseEntity<Void> acceptGame(@RequestBody GameRequestDto gameRequestDto) {
+    @MessageMapping("/game/accept")
+    public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
         String roomNumber = gameRequestDto.getRoomNumber();
         String username = gameRequestDto.getUserName();
 
         // Update the game acceptance status for the user.
         gameService.acceptGame(roomNumber, username);
-        gameService.addUserToRoom(roomNumber, username);
-        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reject")
-    public ResponseEntity<Void> rejectGame(@RequestBody GameRequestDto gameRequestDto) {
+    @MessageMapping("/game/reject")
+    public void rejectGame(@RequestBody GameRequestDto gameRequestDto) {
         gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getUserName());
-        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/stomp/{roomNumber}")
@@ -49,5 +48,11 @@ public class GameController {
         gameRoundService.startRound(roomNumber, username);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/end")
+    public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
+        gameService.endGame(gameResultDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

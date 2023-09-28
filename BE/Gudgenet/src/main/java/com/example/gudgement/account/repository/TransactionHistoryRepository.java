@@ -13,7 +13,4 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
                                                                             LocalDateTime startTime,
                                                                             LocalDateTime endTime,
                                                                             int type);
-
-
-
 }

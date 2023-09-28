@@ -22,7 +22,7 @@ public class MyPageExceptionHandler {
     }
 
     @ExceptionHandler(value = AccountException.class)
-    public ResponseEntity<ErrorResponse> emailException(EmailLogicException e) {
+    public ResponseEntity<ErrorResponse> AccountException(AccountException e) {
         log.error("[emailException] {} : {}", e.getErrorCode().getErrorCode(), e.getErrorCode().getMessage());
         return ErrorResponse.error(e);
     }

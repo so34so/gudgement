@@ -8,5 +8,6 @@ public interface MyPageService {
     int[] getWeekOfMonth();
     int[] getWeekOfMonth(String date);
     ChartDataDto todayWeekChartData(Long id);
+    ChartDataDto toDateWeekChartData(Long id, String date);
     Chart createChart(Member member, int month, int week);
 }

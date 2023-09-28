@@ -66,7 +66,7 @@ public class GameController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "게임 결과 보내기(미구현)")
+    @Operation(summary = "게임 결과 보내기")
     @PostMapping("/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         gameService.endGame(gameResultDto);

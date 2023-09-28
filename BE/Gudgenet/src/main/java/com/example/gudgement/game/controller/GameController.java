@@ -36,13 +36,13 @@ public class GameController {
     }
 
     @Operation(summary = "게임 수락")
-    @PostMapping("/game/accept")
+    @PostMapping("/accept")
     public ResponseEntity<Void> acceptGamePost(@RequestBody GameRequestDto gameRequestDto) {
         gameService.acceptGame(gameRequestDto.getRoomNumber(), gameRequestDto.getUserName());
         return ResponseEntity.ok().build();
     }
     @Operation(summary = "게임 거절")
-    @PostMapping("/game/reject")
+    @PostMapping("/reject")
     public ResponseEntity<Void> rejectGamePost(@RequestBody GameRequestDto gameRequestDto) {
         gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getUserName());
         return ResponseEntity.ok().build();

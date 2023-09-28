@@ -149,6 +149,19 @@ export declare module CommonType {
     };
   };
 
+  export type TanalyzeChart = {
+    month: number;
+    week: number;
+    data: {
+      type: string;
+      labels: string;
+      dateSet: {
+        amount: [number];
+        color: [string];
+      };
+    };
+  };
+
   export type Tplaymap = {
     ticle: string;
     image: string | ImageSourcePropType;

@@ -1,20 +1,46 @@
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
+import { IMAGE_URL } from "@env";
 
-function PointHeader() {
+interface PointHeaderProps {
+  tiggle: number | undefined;
+  level: number | undefined;
+}
+
+function PointHeader({ tiggle, level }: PointHeaderProps) {
   return (
     <View className="pt-4 pb-2 z-10 flex flex-row justify-center items-center w-fit h-fit bg-transparent">
-      <Text className="text-buy text-[22px] px-5 py-1 text-center bg-black font-PretendardExtraBold border-[3px] border-black rounded-l-[6px]">
-        티끌
-      </Text>
-      <Text className="bg-white text-black text-[22px] px-5 py-1 font-PretendardExtraBold border-[3px] border-black">
-        182,300
-      </Text>
-      <Text className="bg-black px-5 py-1 text-buy text-center font-PretendardExtraBold text-[22px] border-[3px] border-black">
-        레벨
-      </Text>
-      <Text className="bg-white px-5 py-1 text-black font-PretendardExtraBold text-[22px] border-[3px] border-black rounded-r-[6px]">
-        232
-      </Text>
+      <View className="flex justify-center items-center bg-black border-black border-[3px] rounded-l-xl">
+        <Text className="text-buy text-md px-3 py-1 font-PretendardExtraBold ">
+          티끌
+        </Text>
+      </View>
+      <View className="flex flex-row justify-center w-[170px] h-full items-center bg-white border-black border-[3px]">
+        <Image
+          source={{
+            uri: `${IMAGE_URL}/asset/tiggleIcon.png`,
+          }}
+          className="h-8 w-8"
+        />
+        <Text className="text-black text-sm p-1 font-PretendardExtraBold ">
+          {tiggle ? tiggle.toLocaleString("ko-KR") : 0}
+        </Text>
+      </View>
+      <View className="flex justify-center items-center bg-black border-black border-[3px]">
+        <Text className="text-buy text-md px-3 py-1 font-PretendardExtraBold ">
+          레벨
+        </Text>
+      </View>
+      <View className="flex flex-row justify-center items-center w-[80px] h-full bg-white border-black border-[3px] rounded-r-xl">
+        <Image
+          source={{
+            uri: `${IMAGE_URL}/asset/levelIcon.png`,
+          }}
+          className="h-9 w-9"
+        />
+        <Text className="text-black text-sm pr-3 font-PretendardExtraBold ">
+          {level}
+        </Text>
+      </View>
     </View>
   );
 }

@@ -1,90 +1,94 @@
-import {
-  View,
-  ImageBackground,
-  Image,
-  ImageSourcePropType,
-} from "react-native";
-
-import { ProgressChart } from "react-native-chart-kit";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
+import { View, ImageBackground } from "react-native";
 
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
-import TagBoxSmall from "../components/TagBoxSmall";
-import BasicBox from "../components/BasicBox";
 
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MypageIcon from "../assets/images/mypageIcon.png";
-import AnalysisIcon from "../assets/images/analysisIcon.png";
-import Character from "../assets/images/character.png";
+import { useQuery } from "@tanstack/react-query";
+import { ActivityIndicator } from "react-native";
+import reactotron from "reactotron-react-native";
+import { useEffect, useState } from "react";
+import { IMAGE_URL } from "@env";
 
-function MyPage() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const mypageIcon: ImageSourcePropType = MypageIcon as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
-  const character: ImageSourcePropType = Character as ImageSourcePropType;
+function MyPage(this: unknown) {
+  const {
+    data: userData,
+    error: fetchError,
+    isLoading,
+    refetch,
+  } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+    enabled: false,
+  });
 
-  const data = {
-    // labels: ["pedometer", "Bike", "Run"], // optional
-    data: [0.6],
-    // strokeWidth: 2,
-    // stroleColor: "#124518",
-    // borderColor: "#124518",
-    // borderWidth: 2,
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+  if (fetchError) {
+    reactotron.log!(fetchError);
+  } else {
+    reactotron.log!("홈 사용자 정보", userData);
+  }
+
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleMoveScreen = async (screen: string) => {
+    navigation.navigate(screen);
   };
 
   return (
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-full h-full"
       >
         <TagBoxLarge
-          text01={"인동파 행동대장"}
-          text02={"옥계공주"}
-          img={mypageIcon}
+          text01={userData?.email ? userData?.email : "인동파 행동대장"}
+          text02={userData?.nickname ? userData?.nickname : "옥계공주"}
+          img={`${IMAGE_URL}/asset/mypageIcon.png`}
         />
-        <View className="mb-10 flex flex-row justify-center items-center">
-          <View>
-            <Image source={character} />
-            <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
-          </View>
-          <View>
-            <ProgressChart
-              data={data}
-              width={200}
-              height={220}
-              strokeWidth={30}
-              radius={59}
-              chartConfig={{
-                backgroundGradientFromOpacity: 0,
-                backgroundGradientToOpacity: 0,
-                // fillShadowGradientFrom: "#000000",
-                // fillShadowGradientFromOpacity: 1,
-                // fillShadowGradientFromOffset: 1,
-                decimalPlaces: 20, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(25, 25, 55, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-                propsForDots: {
-                  r: "6",
-                  strokeWidth: "2",
-                  stroke: "#ffa726",
-                },
-              }}
-              style={{}}
-              hideLegend={true}
-            />
-          </View>
+        <View className="w-[80px]">
+          <NavigationButton
+            handleFunction={() => handleMoveScreen("Pedometer")}
+            text="만보"
+            height="sm"
+            width="sm"
+            size="md"
+            color="green"
+          />
+          <NavigationButton
+            handleFunction={() => handleMoveScreen("Analyze")}
+            text="만보"
+            height="sm"
+            width="sm"
+            size="md"
+            color="green"
+          />
         </View>
-        <TagBoxSmall text={"이번달 소비 추이"} img={analysisIcon} />
-        <NavigationButton screenName="Pedometer" text="만보 걷기" />
-        <NavigationButton screenName="Analyze" text="분석" />
-        <NavigationButton screenName="SingleRecords" text="싱글플레이 상세" />
-        <NavigationButton screenName="MultiRecords" text="멀티플레이 상세" />
       </ImageBackground>
     </View>
   );

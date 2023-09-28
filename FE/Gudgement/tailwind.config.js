@@ -15,6 +15,7 @@ module.exports = {
     extend: {
       colors: {
         black: "#000000",
+        black30: "rgba(0, 0, 0, 0.3)",
         black50: "#00000080",
         black70: "#000000b2",
         buy: "#ffb800",
@@ -23,6 +24,8 @@ module.exports = {
         deepgreen: "#34b859",
         green: "#9bca69",
         lightsky: "#79b4ff",
+        lightsky60: "#79b4ff99",
+        bluesky: "#3190FF",
         red: "#f33434",
         sky: "#3786c0",
         sub01: "#4a4a4a",
@@ -31,6 +34,7 @@ module.exports = {
         white: "#ffffff",
         white10: "#ffffff1a",
         white20: "rgba(255, 255, 255, 0.2)",
+        white50: "rgba(255, 255, 255, 0.5)",
         white70: "#ffffffb2",
         white90: "#ffffffe5",
         mainColor: "#21e5a9",

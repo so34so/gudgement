@@ -45,7 +45,9 @@ public class MyPageController {
 
     private Member getMember(HttpServletRequest httpServletRequest) {
         String header = httpServletRequest.getHeader("Authorization");
+        log.info("날아온 토큰 : " + header);
         String bearer = header.substring(7);
+        log.info("Bearer 제거 : " + bearer);
         Long memberId = (Long) jwtProvider.getClaims(bearer).get("id");
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {

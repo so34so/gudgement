@@ -1,8 +1,4 @@
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
@@ -10,25 +6,19 @@ import {
   ScrollView,
   Text,
   ImageBackground,
-  ImageSourcePropType,
   Image,
   Pressable,
 } from "react-native";
 import axios, { AxiosResponse } from "axios";
-import { API_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
-import reactotron from "reactotron-react-native";
 import { getAsyncData, updateAsyncData } from "../utils/common";
+import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 function SettingAccount() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -119,12 +109,11 @@ function SettingAccount() {
         };
         updateAsyncData("loginData", info);
 
-        navigation.navigate("BottomTabNavigator");
-        const settingAccountAction = CommonActions.reset({
-          index: 0,
-          routes: [{ name: "BottomTabNavigator" }],
-        });
-        navigation.dispatch(settingAccountAction);
+        /**
+         * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
+         * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
+         * */
+        queryClient.invalidateQueries(["fetchUserInfo"]);
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);
       }
@@ -134,7 +123,9 @@ function SettingAccount() {
   return (
     <View className="flex w-screen h-screen">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-screen h-screen"
       >
@@ -157,7 +148,12 @@ function SettingAccount() {
                 <View className="gap-4 flex flex-row items-center">
                   <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
                     <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
+                      <Image
+                        source={{
+                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                        }}
+                        className="h-10 w-10"
+                      />
                     </View>
                   </View>
                   <View className="flex felx-col">

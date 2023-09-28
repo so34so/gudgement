@@ -7,25 +7,18 @@ import {
   TextInput,
   SafeAreaView,
   ImageBackground,
-  ImageSourcePropType,
   Image,
   Pressable,
 } from "react-native";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { API_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
 
 function SettingEmail() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -164,7 +157,9 @@ function SettingEmail() {
     <View className="flex w-screen h-screen">
       <KeyboardAwareScrollView>
         <ImageBackground
-          source={mypageBackground}
+          source={{
+            uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          }}
           resizeMode="cover"
           className="flex w-screen h-screen"
         >
@@ -187,7 +182,12 @@ function SettingEmail() {
                   <View className="gap-4 flex flex-row items-center">
                     <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
                       <View className="bg-darkgray h-fill w-fill rounded-full">
-                        <Image source={analysisIcon} className="h-10 w-10" />
+                        <Image
+                          source={{
+                            uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                          }}
+                          className="h-10 w-10"
+                        />
                       </View>
                     </View>
                     <View className="flex felx-col">
@@ -232,7 +232,7 @@ function SettingEmail() {
                         height="lg"
                         width="sm"
                         size="md"
-                        color="lightsky"
+                        color="bluesky"
                       />
                     </View>
                     <TextInput

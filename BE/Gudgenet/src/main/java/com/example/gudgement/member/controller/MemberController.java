@@ -88,6 +88,13 @@ public class MemberController {
         return member;
     }
 
+    @PutMapping("/update/grade")
+    @Operation(summary = "유저 등급 결정", description = "이전 달 소비 내역기준으로 산정 \n" +
+            "[100 이하] : Gold\n            " + "100~200 Silver\n            " + "300이상 Bronze")
+    private void updateGrade(HttpServletRequest httpServletRequest) {
+        memberService.updateGrade(getMember(httpServletRequest));
+    }
+
     @PostMapping("/pedometer")
     @Operation(summary = "만보걷기 완료", description = "member의 tiggle값에 300을 더합니다.")
     public ResponseEntity<String> pedometerClear(@RequestParam(name = "memberId") Long id) {

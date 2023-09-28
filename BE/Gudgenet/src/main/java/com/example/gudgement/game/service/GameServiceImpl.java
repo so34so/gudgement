@@ -276,11 +276,11 @@ public class GameServiceImpl implements GameService{
 
         // Redis에서 해당 유저의 배팅 tiggle 값을 가져옴
         String roomNumber = gameResultDto.getRoomNumber();
-        String bettingField = nickname + ":betting";
 
-        Object value = redisTemplate.opsForHash().get(roomNumber, bettingField);
+        Object value = redisTemplate.opsForHash().get(roomNumber, nickname + ":betting");
 
         if (value == null) throw new RuntimeException("Betting tiggle value is not found in Redis");
+
         Long bettingTiggle = Long.parseLong(String.valueOf(value));
 
         if(isWinner){
@@ -288,33 +288,34 @@ public class GameServiceImpl implements GameService{
             user.get().addExp(2);
             progress.incrementProgressValue();
 
-            redisTemplate.opsForHash().put(roomNumber, nickname + ":betting", "0");
+            redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
 
             // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
-            deleteIfAllBettingtigglesAreZero(gameResultDto.getRoomNumber());
+            deleteIfAllUsersFinished(gameResultDto.getRoomNumber());
 
         }else{
             user.get().subtractTiggle(bettingTiggle);
             user.get().addExp(2);
             progress.incrementProgressValue();
 
-            redisTemplate.opsForHash().put(roomNumber, nickname + ":betting", "0");
+            redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
 
-            // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
-            deleteIfAllBettingtigglesAreZero(gameResultDto.getRoomNumber());
+            deleteIfAllUsersFinished(gameResultDto.getRoomNumber());
         }
 
     }
 
-    private void deleteIfAllBettingtigglesAreZero(String roomNumber) {
-        Set<String> keys = redisTemplate.keys(roomNumber + "*:betting");
-        for (String key : keys) {
-            String value = redisTemplate.opsForValue().get(key);
-            if (!"0".equals(value)) return;  // 아직 초기화되지 않은 키가 있으면 반환
-        }
+    private void deleteIfAllUsersFinished(String roomNumber) {
+        GameRoom gameRoom = gameRoomRepository.findByRoomNumber(roomNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room number: " + roomNumber));
 
-        // 모든 키가 초기화된 경우 해당 방의 데이터 삭제
-        deleteKeysByPattern(roomNumber + "*");
+        boolean allUsersFinished = gameRoom.getUsers().stream()
+                .allMatch(gameUser -> "finished".equals(redisTemplate.opsForHash().get(roomNumber, gameUser.getNickName() + ":status")));
+
+        if (allUsersFinished) {
+            deleteKeysByPattern(roomNumber + "*");
+            gameRoomRepository.delete(gameRoom);
+        }
     }
 
     public void deleteKeysByPattern(String pattern) {

@@ -1,29 +1,21 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useState } from "react";
-import {
-  Image,
-  View,
-  Text,
-  Pressable,
-  ImageSourcePropType,
-} from "react-native";
+import { Image, View, Text, Pressable } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import {
   KAKAO_LOGIN_REST_API_KEY,
   KAKAO_LOGIN_REDIRECT_URI,
   SERVER_URL,
+  IMAGE_URL,
 } from "@env";
 import axios from "axios";
-import { getAsyncData, setAsyncData } from "../utils/common";
-import KakaoLogoImg from "../assets/images/kakaoLogo.png";
+import { setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 function Login() {
-  const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
   const [showWebView, setShowWebView] = useState(false);
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -53,21 +45,15 @@ function Login() {
       } catch (error) {
         reactotron.log!("스토리지 초기화 실패!", error);
       }
-
-      // try {
-      //   const loginData = (await getAsyncData(
-      //     "loginData",
-      //   )) as CommonType.TloginData;
-      //   reactotron.log!("loginData 확인 성공!", loginData);
-      //   reactotron.log!("accessToken 확인 성공!", loginData.accessToken);
-      //   reactotron.log!("refreshToken 성공!", loginData.refreshToken);
-      //   reactotron.log!("id 확인 성공!", loginData.id);
-      //   reactotron.log!("info 확인 성공!", loginData.info);
-      // } catch (error) {
-      //   reactotron.log!("액세스 토큰 확인 실패!", error);
-      // }
       setShowWebView(false);
-      navigation.navigate("SettingEmail");
+
+      /**
+       * accessToken 잘 받아왔다면
+       * 로그인 여부는 asyncStorage에서,
+       * user정보는 서버로부터 다시 불러오게합니다.
+       */
+      queryClient.invalidateQueries(["isLoggedIn"]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }
@@ -80,6 +66,7 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
+
       reactotron.log!("code", code);
       await fetchAccessToken(code);
     }
@@ -97,7 +84,6 @@ function Login() {
     return (
       <WebView
         className="flex"
-        // 웹뷰 보여줄 페이지 주소
         source={{
           uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
         }}
@@ -119,7 +105,10 @@ function Login() {
         onPress={handleLogin}
         className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
       >
-        <Image source={kakaoLogoImg} className="h-8 w-9 mr-6" />
+        <Image
+          source={{ uri: `${IMAGE_URL}/asset/kakaoLogo.png` }}
+          className="h-8 w-9 mr-6"
+        />
         <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
           카카오로 시작하기
         </Text>

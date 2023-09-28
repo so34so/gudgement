@@ -21,26 +21,17 @@ public class GameUser {
     private String nickName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="room_id")
+    @JoinColumn(name="gameRoom")
     private GameRoom gameRoom;
 
-    private Boolean gameAccepted; // null: 아직 선택하지 않음, true: 수락, false: 거부
+    private boolean result;
 
-    private LocalDateTime invitedAt;
     @Builder
-    public GameUser(Long id, String nickName, GameRoom gameRoom, Boolean gameAccepted, LocalDateTime invitedAt){
+    public GameUser(Long id, String nickName, GameRoom gameRoom, boolean result){
         this.id = id;
         this.nickName = nickName;
         this.gameRoom = gameRoom;
-        this.gameAccepted = gameAccepted;
-        this.invitedAt = invitedAt;
+        this.result = result;
     }
 
-    public void acceptGame() {
-        this.gameAccepted = true;
-    }
-
-    public void rejectGame() {
-        this.gameAccepted = false;
-    }
 }

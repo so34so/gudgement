@@ -12,8 +12,6 @@ public class MemberResponseDto {
     private Long memberId;
     private String email;
     private String nickname;
-    private boolean emailApprove;
-    private boolean nicknameApprove;
     private List<Item> setItems;
     private Long tiggle;
     private Long exp;
@@ -22,14 +20,13 @@ public class MemberResponseDto {
     private Rate rate;
 
     @Builder
-    public MemberResponseDto (Long memberId, String email, String nickname, boolean emailApprove,
-                              boolean nicknameApprove, Long tiggle, Long exp, List<Item> setItems,
+    public MemberResponseDto (Long memberId, String email, String nickname,
+                              Long tiggle, Long exp, List<Item> setItems,
                               int level, int pedometer, Rate rate) {
+
         this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
-        this.emailApprove = emailApprove;
-        this.nicknameApprove = nicknameApprove;
         this.setItems = setItems;
         this.tiggle = tiggle;
         this.exp = exp;

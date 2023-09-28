@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -8,6 +8,7 @@ import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
+import Splash from "./src/pages/Splash";
 import messaging from "@react-native-firebase/messaging";
 import { Linking } from "react-native";
 import reactotron from "reactotron-react-native";

@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
-  ImageSourcePropType,
   SafeAreaView,
   Text,
   TouchableOpacity,
@@ -25,7 +24,6 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
-import MyCharacter from "../assets/images/character.png";
 import Reactotron from "reactotron-react-native";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";

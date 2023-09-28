@@ -6,6 +6,6 @@ import com.example.gudgement.fcm.exception.FcmErrorException;
 import java.io.IOException;
 
 public interface FcmService {
-    String sendNotificationDetail (FcmNotificationResponseDto requestDto) throws FcmErrorException;
+    String sendNotificationToChannel (FcmNotificationResponseDto requestDto) throws FcmErrorException;
     void setAccessToken(Long memberId, String firebaseToken) throws IOException;
 }

@@ -19,16 +19,22 @@ public class Progress {
 
     @ManyToOne
     @JoinColumn(name="member_id")
-    private Member memberId;
+    private Member member;
 
     private String progressName;
 
     private int progressValue;
 
     @Builder
-    public Progress(Member memberId, String progressName, int progressValue){
-        this.memberId = memberId;
+    public Progress(Member member, String progressName, int progressValue){
+        this.member = member;
         this.progressName = progressName;
         this.progressValue = progressValue;
     }
+
+    public void incrementProgressValue() {
+        this.progressValue += 1;
+    }
+
+
 }

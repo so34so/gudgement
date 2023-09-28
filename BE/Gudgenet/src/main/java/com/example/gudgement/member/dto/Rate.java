@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Rate {
-    private int payment;
-    private double rate;
-    private Long balance;
+    private long totalAmount;
+    private Double rate;
+    private long balance;
 
     @Builder
-    public Rate(int payment, double rate, Long balance) {
-        this.payment = payment;
+    public Rate(long totalAmount, Double rate, long balance) {
+        this.totalAmount = totalAmount;
         this.rate = rate;
         this.balance = balance;
     }

@@ -71,7 +71,7 @@ spring:
       strategy: org.hibernate.cfg.ImprovedNamingStrategy
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # ddl-auto ?? ?? ??
-      generate-ddl: false
+      generate-ddl: true
     # SQL? ?? ??
     properties:
       hibernate:
@@ -114,4 +114,4 @@ jwt:
 #spring.jpa.show-sql=true
 #spring.hibernate.ddl-auto=none
 
-# yml push 안되게 설정.
+# yml push 안되게 설정 2트.

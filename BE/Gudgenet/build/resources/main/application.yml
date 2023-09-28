@@ -114,4 +114,4 @@ jwt:
 #spring.jpa.show-sql=true
 #spring.hibernate.ddl-auto=none
 
-# yml push 안되게 설정.
+# yml push 안되게 설정 2트.

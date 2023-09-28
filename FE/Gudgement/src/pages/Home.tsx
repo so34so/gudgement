@@ -46,7 +46,7 @@ export default function Home() {
     }
   }, [percent]);
 
-  async function fetchUser() {
+  async function fetchUser(): Promise<CommonType.TUser | undefined> {
     const token = await getAsyncData("accessToken");
     try {
       const response: AxiosResponse<CommonType.TUser> = await axios.get(
@@ -58,6 +58,7 @@ export default function Home() {
         },
       );
       reactotron.log!("fetchUser", response);
+      return response.data;
     } catch (error) {
       reactotron.log!("error", error);
     }
@@ -88,7 +89,7 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">
-        <PointHeader />
+        <PointHeader tiggle={user?.tiggle} level={user?.level} />
         <ImageBackground
           source={{
             uri: `${IMAGE_URL}/asset/homeBackground.png`,

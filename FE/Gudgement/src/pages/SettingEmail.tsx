@@ -19,7 +19,6 @@ import NavigationButton from "../components/NavigationButton";
 import reactotron from "reactotron-react-native";
 
 function SettingEmail() {
-
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 

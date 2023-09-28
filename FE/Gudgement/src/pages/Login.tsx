@@ -16,8 +16,6 @@ import { queryClient } from "../../queryClient";
 
 function Login() {
   const [showWebView, setShowWebView] = useState(false);
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);

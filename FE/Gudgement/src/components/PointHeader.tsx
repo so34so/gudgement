@@ -40,7 +40,7 @@ function PointHeader({ tiggle, level }: PointHeaderProps) {
         />
         <Text className="text-black text-sm pr-3 font-PretendardExtraBold ">
           {level}
-        </Text>{" "}
+        </Text>
       </View>
     </View>
   );

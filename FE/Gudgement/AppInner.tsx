@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -8,15 +8,12 @@ import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
-import Splash from "./src/pages/Splash";
 import messaging from "@react-native-firebase/messaging";
-import { Linking } from "react-native";
+import { Linking, Text, View } from "react-native";
 import reactotron from "reactotron-react-native";
 import PushNotification from "react-native-push-notification";
 import { useQuery } from "@tanstack/react-query";
-import { getAsyncData } from "./src/utils/common";
-import axios, { AxiosResponse } from "axios";
-import { API_URL } from "@env";
+import { fetchUser, getAsyncData } from "./src/utils/common";
 import SplashScreen from "react-native-splash-screen";
 
 function AppInner() {
@@ -38,36 +35,36 @@ function AppInner() {
     },
   };
 
-  const { data: isLoggedIn } = useQuery<boolean>({
+  /**
+   * 카카오 로그인을 하면 id를 받아서 asyncStorage에 저장합니다.
+   * 이 때, asyncStorage에 아이디가 있는지 여부를 useQuery를 통해 캐싱하고 있으면
+   * 로그인 여부를 판단할 수 있을 것 같아서 아래와 같이 구현했습니다.
+   */
+  const { data: isLoggedIn, isLoading: isLoggedInLoading } = useQuery<boolean>({
     queryKey: ["isLoggedIn"],
     queryFn: async () => {
-      const id = await getAsyncData("id");
+      const loginData: CommonType.TloginData | null = await getAsyncData(
+        "loginData",
+      );
 
-      return !!id;
+      return !!loginData?.id;
     },
   });
-  const { data: user, isFetched } = useQuery({
+
+  /**
+   * 카카오 로그인이 성공했을 때 해당 유저가 처음 로그인이라
+   * email이랑 account랑 닉네임을 등록했는지 여부를 판단하기 위한 query입니다.
+   *
+   * fetchUser를 통해 서버로부터 유저정보를 받아옵니다. 받아온 후 data에 email이 있는지 여부를 판단해서
+   * email이 있다면 홈화면으로, 아니라면 이메일 등록화면으로 이동시킵니다.
+   */
+  const {
+    data: user,
+    isFetched,
+    isLoading: fetchUserInfoLoading,
+  } = useQuery({
     queryKey: ["fetchUserInfo"],
-    queryFn: async () => {
-      const token = (await getAsyncData("accessToken")) as string;
-      if (!token) {
-        return null;
-      }
-      try {
-        const response: AxiosResponse<CommonType.TUser> = await axios.get(
-          `${API_URL}/member/loadMyInfo`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        reactotron.log!("fetchUser", response);
-        return response.data;
-      } catch (error) {
-        reactotron.log!("error", error);
-      }
-    },
+    queryFn: () => fetchUser(),
     onError: () => {
       setTimeout(() => {
         SplashScreen.hide();
@@ -82,6 +79,13 @@ function AppInner() {
     }, 100);
   }
 
+  if (isLoggedInLoading || fetchUserInfoLoading) {
+    return (
+      <View>
+        <Text>로딩 중</Text>
+      </View>
+    );
+  }
   return (
     <NavigationContainer
       linking={{
@@ -100,9 +104,6 @@ function AppInner() {
               reactotron.log!("deeplink subscribe", url);
 
               if (url) {
-                // Any custom logic to check whether the URL needs to be handled
-
-                // Call the listener to let React Navigation handle the URL
                 listener(url);
               }
             },
@@ -128,7 +129,7 @@ function AppInner() {
     >
       {isLoggedIn ? (
         <Stack.Navigator>
-          {!(user && user.email) ? (
+          {!(user && user.email && user.nickname && user.rate) ? (
             <>
               <Stack.Screen
                 name="SettingEmail"

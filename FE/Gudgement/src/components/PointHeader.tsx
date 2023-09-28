@@ -2,7 +2,13 @@ import { View, Text, Image, ImageSourcePropType } from "react-native";
 import Tiggle from "../assets/icons/tiggle.png";
 import Level from "../assets/icons/level.png";
 import { screenWidth } from "../utils/common";
-function PointHeader() {
+function PointHeader({
+  tiggle,
+  level,
+}: {
+  tiggle: number | undefined;
+  level: number | undefined;
+}) {
   return (
     <View
       className="pt-4 pb-2 z-10 flex flex-row justify-center items-center h-fit bg-transparent"
@@ -19,7 +25,7 @@ function PointHeader() {
           className="w-6 h-6 left-3"
         />
         <Text className="text-black text-[18px] px-4 py-1 font-PretendardExtraBold">
-          182,300
+          {tiggle}
         </Text>
       </View>
       <Text className="bg-black px-3 py-1 text-buy text-center font-PretendardExtraBold text-[20px] border-[3px] border-black">
@@ -31,7 +37,7 @@ function PointHeader() {
           className="w-10 h-10 left-1"
         />
         <Text className="px-3 py-1 text-black font-PretendardExtraBold text-[16px] rounded-r-[6px]">
-          232
+          {level}
         </Text>
       </View>
     </View>

@@ -74,11 +74,10 @@ export default function Home() {
   //   updateLoginData();
   // }, []);
 
-  async function fetchUser() {
+  async function fetchUser(): Promise<CommonType.TUser | undefined> {
     const loginData = (await getAsyncData(
       "loginData",
     )) as CommonType.TloginData;
-    reactotron.log!(loginData.accessToken);
     try {
       const response: AxiosResponse<CommonType.Tuser> = await axios.get(
         `${API_URL}/member/loadMyInfo`,
@@ -151,7 +150,7 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">
-        <PointHeader />
+        <PointHeader tiggle={user?.tiggle} level={user?.level} />
         <ImageBackground
           source={{
             uri: `${IMAGE_URL}/asset/homeBackground.png`,

@@ -25,9 +25,6 @@ public class MatchingEventListener {
         // Extract the matching request data from the event.
         MatchDto request = event.getMatchDto();
 
-        // Perform your matching logic here...
-        // For example:
-
         String tierKey = "Room:" + request.getTiggle() + ":" + request.getRoleUser();
         SetOperations<String, String> setOps = redisTemplate.opsForSet();
 

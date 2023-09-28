@@ -43,18 +43,18 @@ public class Member implements Serializable {
     @Column(nullable = false)
     private boolean nicknameApprove;
 
-    @Column(nullable = false, columnDefinition = "bigint default 500")
+    @Column(nullable = false)
     private long tiggle;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0")
+    @Column(nullable = false)
     private long exp;
 
     @Column(nullable = false)
     private int level;
-
-    // 임시, 아마 추후엔 게임 룸에서 싱글 플레이의 내용에서 끌어와서 사용할 예정
+    
+    // 달 별 과소비금액
     @Column
-    private int target_payment;
+    private Long monthOverconsumption;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int pedometer;
@@ -115,6 +115,8 @@ public class Member implements Serializable {
         this.age = age;
         this.nickname = nickname;
         this.refreshToken = refreshToken;
+        this.exp = 0L;
+        this.tiggle = 500L;
     }
 
     @PrePersist
@@ -165,4 +167,12 @@ public class Member implements Serializable {
         this.exp += exp;
     }
 
+
+
+
+
+
+    public void updateGrade(Grade grade) {
+        this.grade = grade;
+    }
 }

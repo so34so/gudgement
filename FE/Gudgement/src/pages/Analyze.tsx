@@ -7,17 +7,17 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { BarChart, ProgressChart } from "react-native-chart-kit";
+import { BarChart } from "react-native-chart-kit";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
-import { textShadow } from "../utils/common";
+import { API_URL, IMAGE_URL } from "@env";
+import { getAsyncData } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
 import TagBoxSmall from "../components/TagBoxSmall";
-import BasicBox from "../components/BasicBox";
 import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
+import axios, { AxiosResponse } from "axios";
 
 function MyPage(this: unknown) {
   const {
@@ -35,6 +35,7 @@ function MyPage(this: unknown) {
 
   useEffect(() => {
     refetch();
+    fetchAnalyzeChartToday();
   }, []);
 
   if (isLoading) {
@@ -50,18 +51,31 @@ function MyPage(this: unknown) {
     reactotron.log!("홈 사용자 정보", userData);
   }
 
+  const fetchAnalyzeChartToday = async () => {
+    const loginData = (await getAsyncData(
+      "loginData",
+    )) as CommonType.TloginData;
+    reactotron.log!("이거지금", loginData.accessToken);
+    try {
+      const response: AxiosResponse<CommonType.TanalyzeChart> =
+        await axios.post(`${API_URL}/mypage`, {
+          headers: {
+            Authorization: `Bearer ${loginData.accessToken}`,
+          },
+        });
+      reactotron.log!("fetchAnalyzeChartToday", response);
+      return response.data;
+    } catch (error) {
+      reactotron.log!("fetchAnalyzeChartToday", error);
+    }
+  };
+
   const openModal = () => {
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
-  };
-
-  const handleFetchMillion = async () => {
-    reactotron.log!("만보보상!");
-    setModalText("만보보상!");
-    openModal();
   };
 
   return (

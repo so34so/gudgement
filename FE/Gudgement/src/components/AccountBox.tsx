@@ -28,6 +28,20 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
     }
   };
 
+  const maskAccountNumber = (currentAccountNum: string) => {
+    const parts = currentAccountNum.split("-");
+
+    const maskedParts = parts.map((part, index) => {
+      if (index === 0 || index === parts.length - 1) {
+        return part;
+      } else {
+        return "*".repeat(part.length);
+      }
+    });
+
+    return maskedParts.join("-");
+  };
+
   return (
     <View className="m-2 p-4 flex flex-row justify-between items-center rounded-2xl bg-white border-[3px] border-darkgray border-solid">
       <View className="flex flex-row items-center">
@@ -35,14 +49,14 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
           <Image source={shinhanLogo} className="z-11 w-12 h-12" />
         </View>
         <View className="flex flex-col gap-1">
-          <Text className="text-darkgray text-md font-PretendardBold">
+          <Text className="text-darkgray text-sm font-PretendardBold">
             {account.accountName}
           </Text>
           <Text className="text-darkgray50 text-2xs font-PretendardBold">
-            {account.accountNumber}
+            {maskAccountNumber(account.accountNumber)}
           </Text>
           <Text className="text-sub02 text-xs font-PretendardBold">
-            잔액 {account.balance} 원
+            잔액 {account.balance.toLocaleString("ko-KR")} 원
           </Text>
         </View>
       </View>

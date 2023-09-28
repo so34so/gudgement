@@ -10,24 +10,18 @@ import {
   ScrollView,
   Text,
   ImageBackground,
-  ImageSourcePropType,
   Image,
   Pressable,
 } from "react-native";
 import axios, { AxiosResponse } from "axios";
-import { API_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
 import reactotron from "reactotron-react-native";
 import { getAsyncData, updateAsyncData } from "../utils/common";
 
 function SettingAccount() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -134,7 +128,9 @@ function SettingAccount() {
   return (
     <View className="flex w-screen h-screen">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-screen h-screen"
       >
@@ -157,7 +153,12 @@ function SettingAccount() {
                 <View className="gap-4 flex flex-row items-center">
                   <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
                     <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
+                      <Image
+                        source={{
+                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                        }}
+                        className="h-10 w-10"
+                      />
                     </View>
                   </View>
                   <View className="flex felx-col">

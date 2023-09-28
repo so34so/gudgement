@@ -2,13 +2,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dimensions } from "react-native";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { API_URL } from "@env";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
+
 export const textShadow = {
-  textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
-  textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
-  textShadowRadius: 5, // 그림자의 블러 정도
+  textShadowColor: "rgba(0, 0, 0, 0.5)",
+  textShadowOffset: { width: 2, height: 2 },
+  textShadowRadius: 5,
 };
+
 export const INVENTORY_CATEGORY: {
   [key: string]: string;
 } = {
@@ -88,3 +92,78 @@ export const BOTTOM_TAB_IMAGE = [
   "/asset/myinfoicon.png",
   "/asset/rankingicon.png",
 ];
+
+export const ANALYZE_BOX_IMAGE = [
+  "/asset/analyzeNone.png",
+  "/asset/analyzeSave.png",
+  "/asset/analyzeGood.png",
+  "/asset/analyzeAlert.png",
+  "/asset/analyzeOver.png",
+];
+
+export const fetchUser = async (): Promise<CommonType.Tuser> => {
+  const loginData = (await getAsyncData("loginData")) as CommonType.TloginData;
+  reactotron.log!(loginData.accessToken);
+  try {
+    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+      `${API_URL}/member/loadMyInfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${loginData.accessToken}`,
+        },
+      },
+    );
+    reactotron.log!("fetchUser", response);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<CommonType.Terror>;
+    if (axiosError.response) {
+      const errorMessage = axiosError.response.data.message;
+      reactotron.log!("홈 에러", errorMessage);
+    }
+    throw error;
+  }
+};
+
+export const checkSpendRate = (
+  userData: CommonType.Tuser,
+  percent: number,
+  setSpend: React.Dispatch<
+    React.SetStateAction<{
+      text: string;
+      color: string;
+      img: number;
+    }>
+  >,
+) => {
+  if (userData) {
+    if (percent <= 0.5) {
+      setSpend({
+        text: "절약",
+        color: "text-black",
+        img: 1,
+      });
+    }
+    if (percent > 0.5 && percent <= 0.7) {
+      setSpend({
+        text: "안정",
+        color: "text-black",
+        img: 2,
+      });
+    }
+    if (percent > 0.7 && percent < 1.0) {
+      setSpend({
+        text: "위험",
+        color: "text-red",
+        img: 3,
+      });
+    }
+    if (percent >= 1.0) {
+      setSpend({
+        text: "초과",
+        color: "text-red",
+        img: 4,
+      });
+    }
+  }
+};

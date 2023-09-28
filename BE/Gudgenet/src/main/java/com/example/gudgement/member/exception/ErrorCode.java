@@ -27,8 +27,11 @@ public enum ErrorCode {
 
     // appPush
     FAIL_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "F-001", "FCM Push에 실패하였습니다."),
-    NOT_REGISTRATION_FCM_TOKEN(HttpStatus.NOT_FOUND, "F-002", "Fcm 토큰이 존재하지 않습니다.");
+    NOT_REGISTRATION_FCM_TOKEN(HttpStatus.NOT_FOUND, "F-002", "Fcm 토큰이 존재하지 않습니다."),
 
+    // account
+    NOT_FOUND_ACCOUNT(HttpStatus.BAD_REQUEST, "A-001", "존재하지 않는 계좌입니다."),
+    AMOUNT_NOT_NUMBER(HttpStatus.BAD_REQUEST, "A-002", "계좌 거래금액이 숫자형이 아닙니다.");
 
     private HttpStatus httpStatus;
     private String errorCode;

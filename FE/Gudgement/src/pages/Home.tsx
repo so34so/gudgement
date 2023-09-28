@@ -8,19 +8,11 @@ import {
 } from "react-native";
 import PointHeader from "../components/PointHeader";
 import { useEffect, useState } from "react";
-import { API_URL, IMAGE_URL, SERVER_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import messaging from "@react-native-firebase/messaging";
-import {
-  getAsyncData,
-  screenHeight,
-  screenWidth,
-  updateAsyncData,
-} from "../utils/common";
 import { checkSpendRate, fetchUser } from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -33,109 +25,15 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 console.log(API_URL);
 console.log(IMAGE_URL);
 export default function Home() {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-  const goodIcon: ImageSourcePropType = GoodIcon as ImageSourcePropType;
-  const [percent, setPercent] = useState(0.6);
-  const [spend, setSpend] = useState<{ text: string; color: string }>({
-    text: "",
-    color: "",
-  });
-  const [isStartSingle] = useState(true);
-
-  useEffect(() => {
-    if (percent <= 0.5) {
-      setSpend({ text: "절약", color: "text-black" });
-    }
-    if (percent > 0.5 && percent <= 0.7) {
-      setSpend({ text: "안정", color: "text-black" });
-    }
-    if (percent > 0.7) {
-      setSpend({ text: "위험", color: "text-red" });
-    }
-  }, [percent]);
-
-  // const updateLoginData = async () => {
-  //   try {
-  //     const loginData = {
-  //       info: true,
-  //     };
-  //     await updateAsyncData("loginData", loginData);
-  //   } catch (error) {
-  //     reactotron.log!(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   updateLoginData();
-  // }, []);
-
-  async function fetchUser(): Promise<CommonType.TUser | undefined> {
-    const loginData = (await getAsyncData(
-      "loginData",
-    )) as CommonType.TloginData;
-    try {
-      const response: AxiosResponse<CommonType.Tuser> = await axios.get(
-        `${API_URL}/member/loadMyInfo`,
-        {
-          headers: {
-            Authorization: `Bearer ${loginData.accessToken}`,
-          },
-        },
-      );
-      reactotron.log!("fetchUser", response);
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError<CommonType.Terror>;
-      if (axiosError.response) {
-        const errorMessage = axiosError.response.data.message;
-        // navigation.navigate("Login");
-        reactotron.log!("홈 에러", errorMessage);
-      }
-    }
-  }
   const {
     data: userData,
     error: fetchError,
     isLoading,
-    isSuccess,
-  } = useQuery({
+  } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });
 
-  useEffect(() => {
-    async function sendToken(myInfo: CommonType.TUser) {
-      try {
-        if (!messaging().isDeviceRegisteredForRemoteMessages) {
-          await messaging().registerDeviceForRemoteMessages();
-        }
-        const token = await messaging().getToken();
-        console.log("phone token", token);
-        // dispatch(userSlice.actions.setPhoneToken(token));
-        const response = await axios.put(`${SERVER_URL}/fcm/token`, {
-          id: myInfo.memberId,
-          firebaseToken: token,
-        });
-        reactotron.log!(response.data);
-        return response;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    if (isSuccess && userData) {
-      sendToken(userData);
-    }
-  }, [isSuccess, userData]);
-
-  // if (fetchError) {
-  //   return (
-  //     <View>
-  //       <Text>에러</Text>
-  //     </View>
-  //   );
-  // }
   const [percent, setPercent] = useState(userData?.rate.rate as number);
   const [spend, setSpend] = useState<{
     text: string;
@@ -171,7 +69,6 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View className="w-full h-full flex justify-start items-center">
-        <PointHeader tiggle={user?.tiggle} level={user?.level} />
         <ImageBackground
           source={{
             uri: `${IMAGE_URL}/asset/homeBackground.png`,

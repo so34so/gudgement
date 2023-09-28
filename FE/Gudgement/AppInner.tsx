@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAsyncData } from "./src/utils/common";
 import axios, { AxiosResponse } from "axios";
 import { API_URL } from "@env";
+import SplashScreen from "react-native-splash-screen";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -40,10 +41,11 @@ function AppInner() {
     queryKey: ["isLoggedIn"],
     queryFn: async () => {
       const id = await getAsyncData("id");
+
       return !!id;
     },
   });
-  const { data: user } = useQuery({
+  const { data: user, isFetched } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: async () => {
       const token = (await getAsyncData("accessToken")) as string;
@@ -65,7 +67,19 @@ function AppInner() {
         reactotron.log!("error", error);
       }
     },
+    onError: () => {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 100);
+    },
   });
+  if (isFetched) {
+    // 화면전환보다 스플래시 스크린이 너무 빨리 사라져서 user 데이터
+    // 다 받아온 후에 강제로 100ms이후에 사라지게끔 구현
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 100);
+  }
 
   return (
     <NavigationContainer
@@ -113,7 +127,7 @@ function AppInner() {
     >
       {isLoggedIn ? (
         <Stack.Navigator>
-          {!user?.email ? (
+          {!(user && user.email) ? (
             <>
               <Stack.Screen
                 name="SettingEmail"

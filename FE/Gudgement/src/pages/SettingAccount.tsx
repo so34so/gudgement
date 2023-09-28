@@ -1,8 +1,4 @@
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import {
   View,
@@ -22,6 +18,7 @@ import axios from "axios";
 import { API_URL } from "@env";
 import Reactotron from "reactotron-react-native";
 import CustomModal from "../components/CustomModal";
+import { queryClient } from "../../queryClient";
 
 export interface IAccount {
   id: number;
@@ -136,7 +133,7 @@ function SettingAccount() {
         //   routes: [{ name: "바텀" }],
         // });
         // navigation.dispatch(settingAccountAction);
-        navigation.navigate("BottomTabNavigator");
+        queryClient.invalidateQueries(["fetchUserInfo"]);
       }
     }
   };

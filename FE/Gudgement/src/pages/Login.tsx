@@ -85,6 +85,7 @@ function Login() {
         Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
         Reactotron.log!("아이디 확인 성공!", responseGetId);
         queryClient.invalidateQueries(["isLoggedIn"]);
+        queryClient.invalidateQueries(["fetchUserInfo"]);
         setShowWebView(false);
       } catch (error) {
         Reactotron.log!("액세스 토큰 확인 실패!", error);

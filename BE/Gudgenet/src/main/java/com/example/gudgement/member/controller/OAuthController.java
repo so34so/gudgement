@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/oauth")
+@RequestMapping("/")
 @Tag(name = "Kakao", description = "카카오 로그인 기능입니다.")
 public class OAuthController {
 
     private final OauthServiceImpl oauthService;
 
-    @PostMapping("/kakao/callback")
+    @PostMapping("")
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 or 회원가입")
     public ResponseEntity<OAuthSignInResponse> redirect(@RequestParam String code) {
         OAuthSignInResponse oAuthSignInResponse = oauthService.redirect(code);

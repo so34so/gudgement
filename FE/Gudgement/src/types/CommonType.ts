@@ -115,7 +115,6 @@ export declare module CommonType {
     id: number;
     expiredTime: string;
     email: string; // 계좌 연동 시 보낼 인증된 email
-    info: number; // 로그인 절차 0 1 2 3 4
   };
 
   export type TemailCode = string;

@@ -37,7 +37,6 @@ function Login() {
           refreshToken: refreshToken,
           expiredTime: expiredTime,
           id: id,
-          info: 0,
           email: "none",
         };
         const responseLogin = await setAsyncData("loginData", loginData);

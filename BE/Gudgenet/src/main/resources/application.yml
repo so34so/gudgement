@@ -90,7 +90,7 @@ spring:
       registration:
         kakao:
           client-id: 4cd45261b839373b375e0766220b3428
-          redirect-uri: http://http://j9d106.p.ssafy.io:8080//oauth/login/auth/kakao/callback
+          redirect-uri: http://j9d106.p.ssafy.io:8080/oauth/login/auth/kakao/callback
           client-authentication-method: POST
           authorization-grant-type: authorization_code
           scope: account_email

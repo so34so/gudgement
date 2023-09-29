@@ -6,6 +6,8 @@ import SmallCloseButton from "../components/SmallCloseButton";
 import BlueFlame from "../assets/images/blueflame.gif";
 import MatchingInfoBox from "../assets/images/matchingInfoBox.png";
 import React, { useEffect, useRef, useState } from "react";
+import Reactotron from "reactotron-react-native";
+import axios from "axios";
 import {
   View,
   StyleSheet,
@@ -26,10 +28,74 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import Reactotron from "reactotron-react-native";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { SERVER_URL } from '@env'; 
+
 
 export default function PlayMatchingWait({ route }) {
   const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
+  const socket = new SockJS("http://j9d106.p.ssafy.io:8080/ws");
+  const stompClient = Stomp.over(socket);
+  stompClient.connect({}, function(frame) {
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/user/queue/start', function(messageOutput) {
+        console.log('Room number: ' + messageOutput.body);
+    });
+});
+
+  // const client = useRef<CompatClient>();
+  // const handleGameRoomCreated = (message) => {
+  //   // 이 함수는 서버에서 게임 방이 생성되었을 때 호출됩니다.
+  //   const messageBody = JSON.parse(message.body);
+  //   Reactotron.log!("게임 방이 생성되었습니다. 방 번호:", messageBody.roomNumber);
+  //   // 여기에서 게임 방 번호를 저장하거나 처리할 수 있습니다.
+  // };
+
+
+  // const connectHandler = () => {
+  //   client.current = Stomp.over(() => {
+  //     const sock = new SockJS(`${SERVER_URL}`);
+  //     Reactotron.log!(sock);
+  //     return sock;
+  //   });
+
+  //   client.current.connect({}, (frame) => {
+  //     Reactotron.log!("Connected: " + frame);
+  //     client.current.subscribe('/queue/start', function(messageOutput) {
+  //       Reactotron.log!('Room number: ' + messageOutput.body);
+  //     });
+  //   });
+  // };
+
+//   // URL 정의
+// const serverUrl = 'http://j9d106.p.ssafy.io:8080/ws/info?t=1695980196936';
+
+// // Axios를 사용하여 GET 요청 보내기
+// axios.get(serverUrl)
+//   .then(response => {
+//     // 성공적으로 데이터를 받았을 때 수행할 작업
+//     const responseData = response.data; // 서버에서 반환한 데이터
+//     console.log('서버로부터 반환된 데이터:', responseData);
+//     navigation.navigate("PlayMatchingQueue");
+//     // 이곳에서 responseData를 가공하거나 처리할 수 있습니다.
+//   })
+//   .catch(error => {
+//     // 요청이 실패했을 때 수행할 작업
+//     console.error('GET 요청 중 오류 발생:', error);
+//     // 에러 처리 로직을 추가할 수 있습니다.
+//   });
+
+  // useEffect(() => {
+  //   connectHandler();
+
+  //   return () => {
+  //     if (client.current && client.current.connected) {
+  //       client.current.disconnect();
+  //     }
+  //   };
+  // }, []);
+
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueBlur: ImageSourcePropType = BlueBlur as ImageSourcePropType;
@@ -41,87 +107,57 @@ export default function PlayMatchingWait({ route }) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
-
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
 
   const [elapsedTime, setElapsedTime] = useState(0);
-  useEffect(() => {
-    const WSUrl = "http://j9d106.p.ssafy.io:8080";
-    const ws = new WebSocket(WSUrl);
 
-    ws.onopen = () => {
-      // 연결이 열린 경우
-      ws.send("something"); // 메시지 전송
-      console.log("새로운 클라이언트 접속");
-    };
 
-    ws.onmessage = e => {
-      // 메시지를 받은 경우
-      console.log(e.data);
-    };
-
-    ws.onerror = e => {
-      // 오류가 발생한 경우
-      console.log(e.message);
-    };
-
-    ws.onclose = e => {
-      // 연결이 닫힌 경우
-      console.log(e.code, e.reason);
-    };
-
-    return () => {
-      // 컴포넌트가 언마운트될 때 웹 소켓 연결 정리
-      ws.close();
-    };
-  }, []);
-
-  useEffect(() => {
-    offset.value = withRepeat(
-      withTiming(-offset.value, { duration: 300 }),
-      -1,
-      true,
-    );
-    const intervalId = setInterval(() => {
-      setElapsedTime(prevTime => prevTime + 1);
-    }, 1000);
-
-    // 컴포넌트가 언마운트될 때 인터벌 정리
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [offset]);
-
-  // 매칭하기 함수
+  // 매칭 취소 함수
   async function postMatchClose() {
     try {
-      const response = await axios.post(`${MATCH_URL}/matching/removeUser`, {
+      const response = await axios.post(`${SERVER_URL}/match/removeUser`, {
         memberId: memberId,
         nickName: nickName,
         roleUser: roleUser,
         tiggle: tiggle,
         timestamp: timestamp,
       });
-      Reactotron.log!("흠", response.data);
+      console.log("응답:", response.data);
       return response;
     } catch (error) {
-      Reactotron.log!(error);
+      console.error("에러:", error);
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
+
   const handleCloseMatch = async () => {
     try {
-      postMatchClose();
-      navigation.navigate("PlayMatchingQueue");
+      await postMatchClose();
+      navigation.navigate("PlayMatchingSelect");
     } catch (error) {
       console.error("매칭 취소 중 오류 발생", error);
       // 오류가 발생했을 때의 처리를 수행
     }
   };
+
+  // useEffect(() => {
+  //   offset.value = withRepeat(
+  //     withTiming(-offset.value, { duration: 300 }),
+  //     -1,
+  //     true,
+  //   );
+  //   const intervalId = setInterval(() => {
+  //     setElapsedTime(prevTime => prevTime + 1);
+  //   }, 1000);
+
+  //   // 컴포넌트가 언마운트될 때 인터벌 정리
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [offset]);
 
   return (
     <View className="flex w-full h-full">
@@ -138,10 +174,8 @@ export default function PlayMatchingWait({ route }) {
             />
           </Animated.View>
           <Image style={styles.blueBlur} source={blueBlur} />
-
           <Image style={styles.flamematch} source={flameMatch} />
         </View>
-
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
           <Pressable onPress={handleCloseMatch}>

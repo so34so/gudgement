@@ -42,7 +42,7 @@ function PlaySelect() {
   // 매칭하기 함수
   async function postMatchStart() {
     try {
-      const response = await axios.post(`${MATCH_URL}/matching/addUser`, {
+      const response = await axios.post(`${API_URL}/match/addUser`, {
         memberId: MEMBER_ID,
         nickName: MEMBER_NickName,
         roleUser: MEMBER_RoleUser,

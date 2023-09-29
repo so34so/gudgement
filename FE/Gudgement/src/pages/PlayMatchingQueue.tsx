@@ -5,6 +5,8 @@ import AcceptButton from "../assets/images/accept.png";
 import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { API_URL, IMAGE_URL } from "@env";
 import {
   View,
   StyleSheet,
@@ -30,7 +32,6 @@ export default function PlayMatchingQueue() {
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
   const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
   const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
-
   const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();

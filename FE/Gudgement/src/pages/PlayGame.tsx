@@ -14,6 +14,7 @@ import {
   ImageSourcePropType,
   StatusBar,
 } from "react-native";
+
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,

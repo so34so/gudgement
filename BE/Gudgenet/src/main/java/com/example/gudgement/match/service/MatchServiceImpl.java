@@ -25,14 +25,14 @@ public class MatchServiceImpl implements MatchService {
         if (user.get().getTiggle() < matchDto.getTiggle()){
             throw new IllegalArgumentException("The user does not have enough money");
         }
-        String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getRoleUser();
+        String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
         redisTemplate.opsForSet().add(key, matchDto.getNickName());
 
         eventPublisher.publishEvent(new MatchRequestEvent(this, matchDto));
     }
 
     public void removeUserFromGroup(MatchDto matchDto) {
-        String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getRoleUser();
+        String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
         redisTemplate.opsForSet().remove(key, matchDto.getNickName());
     }
 }

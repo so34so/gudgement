@@ -12,11 +12,10 @@ import {
 import axios from "axios";
 import { setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 function Login() {
   const [showWebView, setShowWebView] = useState(false);
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -47,7 +46,14 @@ function Login() {
         reactotron.log!("스토리지 초기화 실패!", error);
       }
       setShowWebView(false);
-      navigation.navigate("SettingEmail");
+
+      /**
+       * accessToken 잘 받아왔다면
+       * 로그인 여부는 asyncStorage에서,
+       * user정보는 서버로부터 다시 불러오게합니다.
+       */
+      queryClient.invalidateQueries(["isLoggedIn"]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }
@@ -60,6 +66,7 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
+
       reactotron.log!("code", code);
       await fetchAccessToken(code);
     }

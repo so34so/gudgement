@@ -21,7 +21,7 @@ public class GameRoom {
 
     private String roomNumber;
 
-    @OneToMany(mappedBy = "gameRoom")
+    @OneToMany(mappedBy = "gameRoom", cascade = CascadeType.ALL)
     private List<GameUser> users = new ArrayList<>();
 
     @Builder

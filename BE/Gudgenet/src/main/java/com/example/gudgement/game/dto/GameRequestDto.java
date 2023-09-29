@@ -11,11 +11,11 @@ import lombok.Setter;
 public class GameRequestDto {
 
     private String roomNumber;
-    private String userName;
+    private String nickName;
 
     @Builder
-    public GameRequestDto(String roomNumber, String userName) {
+    public GameRequestDto(String roomNumber, String nickName) {
         this.roomNumber = roomNumber;
-        this.userName = userName;
+        this.nickName = nickName;
     }
 }

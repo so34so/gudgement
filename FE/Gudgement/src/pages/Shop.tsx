@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
-  ImageSourcePropType,
   SafeAreaView,
   Text,
   TouchableOpacity,
@@ -25,7 +24,6 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
-import MyCharacter from "../assets/images/character.png";
 import Reactotron from "reactotron-react-native";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
@@ -40,7 +38,6 @@ import { API_URL } from "@env";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-export const MEMBER_ID = 3025827319;
 export interface IresponseParams {
   itemId: number;
   memberId: number;
@@ -50,7 +47,6 @@ type ShopProps = NativeStackScreenProps<CommonType.RootStackParamList, "Shop">;
 function Shop({ route }: ShopProps) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-  const myCharacter: ImageSourcePropType = MyCharacter as ImageSourcePropType;
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
@@ -80,6 +76,10 @@ function Shop({ route }: ShopProps) {
     queryFn: () => fetchShopItem(),
   });
 
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
+
   const [itemStatus, setItemStatus] = useState(true);
   const [quantity, setQuantity] = useState(0);
 
@@ -101,7 +101,7 @@ function Shop({ route }: ShopProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[selectCategory],
-            memberId: MEMBER_ID,
+            memberId: userInfo?.memberId,
           },
         },
       );
@@ -191,7 +191,10 @@ function Shop({ route }: ShopProps) {
   const handleItem = useCallback(() => {
     if (fetchItem?.length) {
       if (selectText() === "해금 필요") {
-        unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+        unlockItem({
+          itemId: fetchItem[selectItem].id,
+          memberId: userInfo!.memberId,
+        });
       } else {
         if (selectCategory === "소모품") {
           setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
@@ -201,7 +204,10 @@ function Shop({ route }: ShopProps) {
             ...modalVisible,
             complete: !modalVisible.complete,
           });
-          buyItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+          buyItem({
+            itemId: fetchItem[selectItem].id,
+            memberId: userInfo!.memberId,
+          });
         }
       }
     }
@@ -210,6 +216,7 @@ function Shop({ route }: ShopProps) {
     selectText,
     unlockItem,
     selectItem,
+    userInfo,
     selectCategory,
     modalVisible,
     buyItem,
@@ -217,10 +224,12 @@ function Shop({ route }: ShopProps) {
 
   const handleGetTitle = useCallback(() => {
     if (fetchItem?.length) {
-      unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+      unlockItem({
+        itemId: fetchItem[selectItem].id,
+        memberId: userInfo!.memberId,
+      });
     }
-    Reactotron.log!("획득 완료");
-  }, [fetchItem, selectItem, unlockItem]);
+  }, [fetchItem, selectItem, unlockItem, userInfo]);
 
   if (error) {
     <View>
@@ -238,7 +247,9 @@ function Shop({ route }: ShopProps) {
   return (
     <SafeAreaView className="bg-sky w-full h-full">
       <View className="w-full h-fit bg-deepgreen">
-        <PointHeader />
+        <View className="w-full flex items-center">
+          <PointHeader />
+        </View>
         <View className="w-full h-12 justify-around space-x-36 flex flex-row top-2">
           <View className="bg-white border-2 border-black w-28 h-8 flex justify-center items-center rounded-[4px]">
             <View className="bg-black w-[96%] h-[88%] rounded-[4px]">
@@ -268,7 +279,15 @@ function Shop({ route }: ShopProps) {
           <View className="w-full h-52 flex flex-row justify-center space-x-24 mt-8">
             <View className="w-1/4 h-fit items-center ">
               <Animated.View style={[animatedStyles]}>
-                <Image source={myCharacter} ref={imageRef} />
+                {fetchItem?.[selectItem] && (
+                  <Image
+                    source={{
+                      uri: fetchItem?.[selectItem].image,
+                    }}
+                    ref={imageRef}
+                    className="w-44 h-40 left-4"
+                  />
+                )}
                 <View
                   className="z-10"
                   style={{
@@ -276,9 +295,7 @@ function Shop({ route }: ShopProps) {
                     top: imageDirection.dx,
                     left: imageDirection.dy,
                   }}
-                >
-                  <Image source={myCharacter} className="w-10 h-10 z-10" />
-                </View>
+                />
               </Animated.View>
             </View>
             <View className="flex items-center">
@@ -309,9 +326,9 @@ function Shop({ route }: ShopProps) {
                     </SvgText>
                   </Svg>
                   <Text
-                    numberOfLines={4}
+                    numberOfLines={1}
                     ellipsizeMode="tail"
-                    className="text-white font-PretendardMedium text-[16px] w-24"
+                    className="text-white font-PretendardMedium text-[16px] w-28"
                   >
                     {fetchItem && fetchItem[selectItem].itemContent}
                   </Text>
@@ -334,7 +351,7 @@ function Shop({ route }: ShopProps) {
                 </>
               ) : (
                 <View>
-                  <Text className="top-10 font-PretendardBlack text-white text-[16px]">
+                  <Text className="right-24 top-10 font-PretendardBlack text-white text-[20px]">
                     선택한 아이템이 없습니다.
                   </Text>
                 </View>

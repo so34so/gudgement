@@ -36,6 +36,12 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+
   mvc:
     path match:
       matching-strategy: ant_path_matcher
@@ -84,7 +90,7 @@ spring:
       registration:
         kakao:
           client-id: 4cd45261b839373b375e0766220b3428
-          redirect-uri: http://j9d106.p.ssafy.io:8080/oauth/login/auth/kakao/callback
+          redirect-uri: http://http://j9d106.p.ssafy.io:8080//oauth/login/auth/kakao/callback
           client-authentication-method: POST
           authorization-grant-type: authorization_code
           scope: account_email

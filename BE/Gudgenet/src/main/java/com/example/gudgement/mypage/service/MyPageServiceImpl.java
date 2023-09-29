@@ -188,10 +188,10 @@ public class MyPageServiceImpl implements MyPageService{
                 .data(ChartDataDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
-                                startDate.getDayOfMonth() + " (월)", startDate.plusDays(1).getDayOfMonth() + " (화)",
-                                startDate.plusDays(2).getDayOfMonth() + " (수)", startDate.plusDays(3).getDayOfMonth() + " (목)",
-                                startDate.plusDays(4).getDayOfMonth() + " (금)", startDate.plusDays(5).getDayOfMonth() + " (토)",
-                                startDate.plusDays(6).getDayOfMonth() + " (일)"
+                                startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
+                                startDate.plusDays(2).getDayOfMonth() + " 수", startDate.plusDays(3).getDayOfMonth() + " 목",
+                                startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
+                                startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
                         .dateSet(ChartDataDto.Data.DataSet.builder()
                                 .amount(new Long[] {
@@ -318,10 +318,10 @@ public class MyPageServiceImpl implements MyPageService{
                 .data(ChartDataDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
-                                startDate.getDayOfMonth() + " (월)", startDate.plusDays(1).getDayOfMonth() + " (화)",
-                                startDate.plusDays(2).getDayOfMonth() + " (수)", startDate.plusDays(3).getDayOfMonth() + " (목)",
-                                startDate.plusDays(4).getDayOfMonth() + " (금)", startDate.plusDays(5).getDayOfMonth() + " (토)",
-                                startDate.plusDays(6).getDayOfMonth() + " (일)"
+                                startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
+                                startDate.plusDays(2).getDayOfMonth() + " 수", startDate.plusDays(3).getDayOfMonth() + " 목",
+                                startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
+                                startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
                         .dateSet(ChartDataDto.Data.DataSet.builder()
                                 .amount(new Long[] {

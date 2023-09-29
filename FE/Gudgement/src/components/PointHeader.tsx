@@ -8,7 +8,7 @@ interface PointHeaderProps {
 
 function PointHeader({ tiggle, level }: PointHeaderProps) {
   return (
-    <View className="pt-4 pb-2 z-10 flex flex-row justify-center items-center w-fit h-fit bg-transparent">
+    <View className="z-10 flex flex-row justify-center items-center w-fit h-fit bg-transparent">
       <View className="flex justify-center items-center bg-black border-black border-[3px] rounded-l-xl">
         <Text className="text-buy text-md px-3 py-1 font-PretendardExtraBold ">
           티끌

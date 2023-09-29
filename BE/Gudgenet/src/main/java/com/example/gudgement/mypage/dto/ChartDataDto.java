@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ChartDataDto {
+    private int year;
     private int month;
     private int week;
     private Data data;
@@ -27,10 +28,10 @@ public class ChartDataDto {
         @Getter
         public static class DataSet {
             Long[] amount;
-            String[] color;
+            boolean[] color;
 
             @Builder
-            public DataSet(Long[] amount, String[] color) {
+            public DataSet(Long[] amount, boolean[] color) {
                 this.amount = amount;
                 this.color = color;
             }
@@ -38,7 +39,8 @@ public class ChartDataDto {
     }
 
     @Builder
-    public ChartDataDto(Data data, int month, int week) {
+    public ChartDataDto(Data data, int year, int month, int week) {
+        this.year = year;
         this.data = data;
         this.month = month;
         this.week = week;

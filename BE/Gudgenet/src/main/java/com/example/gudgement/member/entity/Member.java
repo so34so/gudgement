@@ -175,4 +175,8 @@ public class Member implements Serializable {
     public void updateGrade(Grade grade) {
         this.grade = grade;
     }
+
+    public void updateOverConsumption(Long monthOverconsumption) {
+        this.monthOverconsumption = monthOverconsumption;
+    }
 }

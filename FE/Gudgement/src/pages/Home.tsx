@@ -51,8 +51,6 @@ export default function Home() {
     }
   }, [percent]);
 
-  reactotron.log!("userData", userData);
-
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -77,8 +75,10 @@ export default function Home() {
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
-        <View className="space-y-2 flex flex-col w-fill justify-center items-start">
-          <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
+        <View className="space-y-2 m-3 flex flex-col w-fill justify-center items-start">
+          <View className="mb-3 w-full flex justify-center items-center">
+            <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
+          </View>
           <View className="mx-1 bg-white rounded-xl flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
             <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-md">
               계좌 잔고
@@ -91,7 +91,7 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[90%]">
-            <AnalysisBox />
+            <AnalysisBox ProgressBarVisible={true} />
           </View>
         </View>
       </View>

@@ -7,6 +7,7 @@ import BlueFlame from "../assets/images/blueflame.gif";
 import MatchingInfoBox from "../assets/images/matchingInfoBox.png";
 import React, { useEffect, useRef, useState } from "react";
 import Reactotron from "reactotron-react-native";
+import "../../globals.js";
 import axios from "axios";
 import {
   View,
@@ -35,38 +36,34 @@ import { SERVER_URL } from '@env';
 
 export default function PlayMatchingWait({ route }) {
   const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
-  const socket = new SockJS("http://j9d106.p.ssafy.io:8080/ws");
-  const stompClient = Stomp.over(socket);
-  stompClient.connect({}, function(frame) {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/user/queue/start', function(messageOutput) {
-        console.log('Room number: ' + messageOutput.body);
+//   const socket = new SockJS("http://j9d106.p.ssafy.io:8080/ws");
+//   const stompClient = Stomp.over(socket);
+//   stompClient.connect({}, function(frame) {
+//     console.log('Connected: ' + frame);
+//     stompClient.subscribe('/user/queue/start', function(messageOutput) {
+//         console.log('Room number: ' + messageOutput.body);
+//     });
+// });
+
+  const client = useRef<CompatClient>();
+
+  const connectHandler = () => {
+    client.current = Stomp.over(() => {
+      const sock = new SockJS(`${SERVER_URL}`);
+      // Reactotron.log!(sock);
+      return sock;
     });
-});
 
-  // const client = useRef<CompatClient>();
-  // const handleGameRoomCreated = (message) => {
-  //   // 이 함수는 서버에서 게임 방이 생성되었을 때 호출됩니다.
-  //   const messageBody = JSON.parse(message.body);
-  //   Reactotron.log!("게임 방이 생성되었습니다. 방 번호:", messageBody.roomNumber);
-  //   // 여기에서 게임 방 번호를 저장하거나 처리할 수 있습니다.
-  // };
+    client.current.connect({}, (frame) => {
+      // Reactotron.log!("Connected: " + frame);
+      client.current.subscribe("/queue/start/", function(messageOutput) {
+        Reactotron.log!('야!! Room number: ' + messageOutput.body);
+        console.log('야!! Room number: ' + messageOutput.body);
 
+      });
+    });
+  };
 
-  // const connectHandler = () => {
-  //   client.current = Stomp.over(() => {
-  //     const sock = new SockJS(`${SERVER_URL}`);
-  //     Reactotron.log!(sock);
-  //     return sock;
-  //   });
-
-  //   client.current.connect({}, (frame) => {
-  //     Reactotron.log!("Connected: " + frame);
-  //     client.current.subscribe('/queue/start', function(messageOutput) {
-  //       Reactotron.log!('Room number: ' + messageOutput.body);
-  //     });
-  //   });
-  // };
 
 //   // URL 정의
 // const serverUrl = 'http://j9d106.p.ssafy.io:8080/ws/info?t=1695980196936';
@@ -86,15 +83,15 @@ export default function PlayMatchingWait({ route }) {
 //     // 에러 처리 로직을 추가할 수 있습니다.
 //   });
 
-  // useEffect(() => {
-  //   connectHandler();
+  useEffect(() => {
+    connectHandler();
 
-  //   return () => {
-  //     if (client.current && client.current.connected) {
-  //       client.current.disconnect();
-  //     }
-  //   };
-  // }, []);
+    return () => {
+      if (client.current && client.current.connected) {
+        client.current.disconnect();
+      }
+    };
+  }, []);
 
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
@@ -136,7 +133,7 @@ export default function PlayMatchingWait({ route }) {
   const handleCloseMatch = async () => {
     try {
       await postMatchClose();
-      navigation.navigate("PlayMatchingSelect");
+      navigation.navigate("PlaySelect");
     } catch (error) {
       console.error("매칭 취소 중 오류 발생", error);
       // 오류가 발생했을 때의 처리를 수행

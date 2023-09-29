@@ -292,6 +292,7 @@ public class GameServiceImpl implements GameService{
             // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
             deleteIfAllUsersFinished(gameResultDto.getRoomNumber());
 
+            setUserGameResult(nickname, roomNumber, isWinner);
         }else{
             user.get().subtractTiggle(bettingTiggle);
             user.get().addExp(2);
@@ -300,6 +301,8 @@ public class GameServiceImpl implements GameService{
             redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
 
             deleteIfAllUsersFinished(gameResultDto.getRoomNumber());
+
+            setUserGameResult(nickname, roomNumber, isWinner);
         }
 
     }
@@ -313,7 +316,6 @@ public class GameServiceImpl implements GameService{
 
         if (allUsersFinished) {
             deleteKeysByPattern(roomNumber + "*");
-            gameRoomRepository.delete(gameRoom);
         }
     }
 
@@ -322,5 +324,17 @@ public class GameServiceImpl implements GameService{
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
+    }
+
+    private void setUserGameResult(String username,String roomnumber ,boolean result){
+
+        Optional<GameUser> gameUserOptional=gameUserRepository.findByNickNameAndGameRoom_RoomNumber(username,roomnumber);
+
+        if(!gameUserOptional.isPresent()){
+            throw new RuntimeException("Game user not found");
+        }
+
+        GameUser gameUser=gameUserOptional.get();
+        gameUser.setResult(result);
     }
 }

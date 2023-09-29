@@ -3,7 +3,6 @@ package com.example.gudgement.game.service;
 import com.example.gudgement.CardService;
 import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameResultDto;
-import com.example.gudgement.game.dto.GameUserDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
 import com.example.gudgement.game.entity.GameRoom;
 import com.example.gudgement.game.entity.GameUser;

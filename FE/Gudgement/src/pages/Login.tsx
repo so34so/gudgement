@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
@@ -24,22 +23,23 @@ function Login() {
   const fetchAccessToken = async (code: string) => {
     try {
       const response = await axios.post<CommonType.TkakaoLogin>(
-        `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
+        `${SERVER_URL}/?code=${code}`,
       );
-
+      setShowWebView(false);
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const id = response.data.id;
+      const expiredTime = response.data.refreshTokenExpiration;
 
       try {
         const loginData: CommonType.TloginData = {
           accessToken: accessToken,
           refreshToken: refreshToken,
+          expiredTime: expiredTime,
           id: id,
           info: 0,
           email: "none",
         };
-
         const responseLogin = await setAsyncData("loginData", loginData);
         reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {

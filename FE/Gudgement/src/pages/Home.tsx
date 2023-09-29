@@ -12,9 +12,7 @@ import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import messaging from "@react-native-firebase/messaging";
 import {
-  getAsyncData,
   checkSpendRate,
   fetchUser,
   screenHeight,
@@ -59,8 +57,6 @@ export default function Home() {
     }
   }, [percent]);
 
-  reactotron.log!("userData", userData);
-
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -101,7 +97,7 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[90%]">
-            <AnalysisBox />
+            <AnalysisBox ProgressBarVisible={true} />
           </View>
         </View>
         <Image

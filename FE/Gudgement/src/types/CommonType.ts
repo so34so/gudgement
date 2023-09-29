@@ -113,6 +113,7 @@ export declare module CommonType {
     accessToken: string;
     refreshToken: string;
     id: number;
+    expiredTime: string;
     email: string; // 계좌 연동 시 보낼 인증된 email
     info: number; // 로그인 절차 0 1 2 3 4
   };
@@ -168,10 +169,10 @@ export declare module CommonType {
     week: number;
     data: {
       type: string;
-      labels: string;
+      labels: string[];
       dateSet: {
-        amount: [number];
-        color: [string];
+        amount: number[];
+        color: string[];
       };
     };
   };

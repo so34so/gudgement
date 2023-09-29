@@ -10,19 +10,19 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 public class MatchDto implements Serializable {
-    private Long memberId;
+
     private String nickName;
-    private String roleUser;
+    private String grade;
     private Long tiggle;
-    private Long timestamp;
+
 
     @Builder
-    public MatchDto(Long memberId, String nickName, String roleUser, Long tiggle, Long timestamp){
-        this.memberId = memberId;
+    public MatchDto(Long memberId, String nickName, String grade, Long tiggle, Long timestamp){
+
         this.nickName = nickName;
-        this.roleUser = roleUser;
+        this.grade = grade;
         this.tiggle = tiggle;
-        this.timestamp = timestamp;
+
     }
 
 }

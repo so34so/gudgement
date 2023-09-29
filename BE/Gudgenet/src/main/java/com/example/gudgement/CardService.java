@@ -31,7 +31,7 @@ public class CardService {
         }
     }
     public String getRandomUsedCard(String roomNumber, String user) {
-        Set<String> usedCards = redisTemplate.opsForSet().members(roomNumber + ":" + user + ":usedcards");
+        Set<String> usedCards = redisTemplate.opsForSet().members(roomNumber + ":" + user + ":cards");
 
         if (usedCards != null && !usedCards.isEmpty()) {
             int size = usedCards.size();

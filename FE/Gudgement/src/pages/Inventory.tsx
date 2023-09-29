@@ -31,6 +31,7 @@ import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
+import InventoryShop from "../assets/icons/inventoryShop.png";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -55,7 +56,6 @@ function Inventory({ route }: InventoryProps) {
   const [selectItem, setSelectItem] = useState(0);
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
-  const [carouselPage, setCarouselPage] = useState(0);
 
   const { data: userInfo } = useQuery<CommonType.TUser>({
     queryKey: ["fetchUserInfo"],
@@ -153,6 +153,17 @@ function Inventory({ route }: InventoryProps) {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <WithLocalSvg width={42} height={42} asset={closeInventory} />
           </TouchableOpacity>
+        </View>
+        <View
+          className="absolute top-[18px] w-12 h-12
+       left-2 rounded-full bg-white border-2 border-black justify-center items-center"
+        >
+          <View className="absolute z-10">
+            <Image
+              source={InventoryShop as ImageSourcePropType}
+              className="w-10 h-10 bg-black rounded-full"
+            />
+          </View>
         </View>
 
         <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">

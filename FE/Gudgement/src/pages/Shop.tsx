@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  ImageSourcePropType,
   SafeAreaView,
   Text,
   TouchableOpacity,
@@ -29,6 +30,7 @@ import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
 import BuyConsumptionModal from "../components/BuyConsumptionModal";
+import InventoryShop from "../assets/icons/inventoryShop.png";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -270,10 +272,15 @@ function Shop({ route }: ShopProps) {
           </TouchableOpacity>
         </View>
         <View
-          className="absolute top-[70px] w-12 h-12
+          className="absolute top-[68px] w-12 h-12
        left-2 rounded-full bg-white border-2 border-black justify-center items-center"
         >
-          <View className="absolute top-[70px] rounded-full h-10 z-10 flex bg-darkgray" />
+          <View className="absolute z-10">
+            <Image
+              source={InventoryShop as ImageSourcePropType}
+              className="w-10 h-10 bg-black rounded-full"
+            />
+          </View>
         </View>
         {selectCategory !== "칭호" ? (
           <View className="w-full h-52 flex flex-row justify-center space-x-24 mt-8">

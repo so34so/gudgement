@@ -18,6 +18,7 @@ import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
 import axios, { AxiosResponse } from "axios";
+import AnalysisBox from "../components/AnalysisBox";
 
 function MyPage(this: unknown) {
   const {
@@ -32,6 +33,18 @@ function MyPage(this: unknown) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [chartData, setChartData] = useState<CommonType.TanalyzeChart>({
+    month: 0,
+    week: 0,
+    data: {
+      type: "",
+      labels: ["월", "화", "수", "목", "금", "토", "일"],
+      dateSet: {
+        amount: [0, 0, 0, 0, 0, 0, 0],
+        color: ["", "", "", "", "", "", ""],
+      },
+    },
+  });
 
   useEffect(() => {
     refetch();
@@ -55,16 +68,15 @@ function MyPage(this: unknown) {
     const loginData = (await getAsyncData(
       "loginData",
     )) as CommonType.TloginData;
-    reactotron.log!("이거지금", loginData.accessToken);
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
-        await axios.post(`${API_URL}/mypage`, {
+        await axios.post(`${API_URL}/mypage`, null, {
           headers: {
             Authorization: `Bearer ${loginData.accessToken}`,
           },
         });
       reactotron.log!("fetchAnalyzeChartToday", response);
-      return response.data;
+      setChartData(response.data);
     } catch (error) {
       reactotron.log!("fetchAnalyzeChartToday", error);
     }
@@ -76,6 +88,10 @@ function MyPage(this: unknown) {
 
   const closeModal = () => {
     setModalVisible(false);
+  };
+
+  const handleFetchAnalyze = () => {
+    reactotron.log!("분석 클릭!");
   };
 
   return (
@@ -92,72 +108,101 @@ function MyPage(this: unknown) {
           visible={modalVisible}
           closeModal={closeModal}
         />
-        {/* <View className="absolute bg-black30 w-screen h-screen" /> */}
-        <TagBoxLarge
-          text01={userData?.email ? userData?.email : "인동파 행동대장"}
-          text02={userData?.nickname ? userData?.nickname : "옥계공주"}
-          img={`${IMAGE_URL}/asset/mypageIcon.png`}
-        />
-        <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">
-          <View className="absolute -top-8 -left-5">
-            <TagBoxSmall
-              text={"옥계공주 님의 소비 추이"}
-              img={`${IMAGE_URL}/asset/analysisIcon.png`}
-            />
+        <View className="absolute bg-black30 w-screen h-screen" />
+        <View className="flex flex-row justify-between items-center">
+          <TagBoxSmall
+            text={`${userData?.nickname} 님의 소비 추이`}
+            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+          />
+        </View>
+        <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-6 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
+          <View className="-mt-1">
+            <AnalysisBox ProgressBarVisible={false} />
           </View>
           <View className="w-full">
+            <View className="flex flex-row justify-between items-center">
+              <View className="flex flex-row justify-start items-center m-4 space-x-2">
+                <View className="bg-white50 w-[64px] rounded-lg flex justify-center items-center border-solid border-darkgray border-[2px]">
+                  <Text
+                    className="font-PretendardBold text-black px-2 py-[2px] text-xs"
+                    numberOfLines={1}
+                  >
+                    {chartData.month}월 >
+                  </Text>
+                </View>
+                <View className="bg-white50 w-[80px] rounded-lg flex justify-center items-center border-solid border-darkgray border-[2px]">
+                  <Text
+                    className="font-PretendardBold text-black px-2 py-[2px] text-xs"
+                    numberOfLines={1}
+                  >
+                    {chartData.week}주차 >
+                  </Text>
+                </View>
+              </View>
+              <View className="bg-lightsky w-[24px] h-[24px] rounded-full flex justify-center items-center m-4 ">
+                <Text
+                  className="font-PretendardBold text-white text-2xs"
+                  numberOfLines={1}
+                >
+                  i
+                </Text>
+              </View>
+            </View>
             <BarChart
               data={{
-                labels: ["월", "화", "수", "목", "금", "토", "일"],
+                labels: chartData.data.labels,
                 datasets: [
                   {
-                    data: [20, 45, 28, 80, 99, 43],
+                    data: chartData.data.dateSet.amount,
                   },
                 ],
               }}
-              width={340}
+              width={400}
               height={220}
-              yAxisLabel={"원"}
               chartConfig={{
                 backgroundGradientFromOpacity: 0,
                 backgroundGradientToOpacity: 0,
-                barPercentage: 0.7,
-                height: 5000,
-                fillShadowGradient: "rgba(1, 122, 205, 1)",
+                barPercentage: 0.4,
+                fillShadowGradient: "rgba(52, 184, 89, 1)",
+                fillShadowGradientFromOpacity: 1,
+                fillShadowGradientToOpacity: 1,
                 fillShadowGradientOpacity: 1,
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => "rgba(1, 122, 205, 1)",
-                labelColor: (opacity = 1) => "rgba(0, 0, 0, 1)",
-
-                style: {
-                  borderRadius: 16,
-                  fontFamily: "Bogle-Regular",
-                },
-                propsForBackgroundLines: {
-                  strokeWidth: 1,
-                  stroke: "#e3e3e3",
-                  strokeDasharray: "0",
-                },
+                fillShadowGradientTo: "rgba(52, 184, 89, 1)",
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`,
+                strokeWidth: 40,
+                barRadius: 6,
                 propsForLabels: {
-                  fontFamily: "PretendardExtraBold",
+                  fontSize: 12,
+                  fontFamily: "Pretendard-Bold",
                 },
               }}
+              showBarTops={false}
+              showValuesOnTopOfBars={true}
+              fromZero
+              fromNumber={0}
+              withInnerLines={false}
+              withHorizontalLabels={false}
+              withVerticalLabels={true}
+              // withCustomBarColorFromData={true}
+              flatColor={true}
               style={{
-                marginVertical: 8,
-                borderRadius: 16,
+                marginVertical: 0,
+                marginHorizontal: -40,
               }}
             />
+            <View className="px-4 pb-4">
+              <NavigationButton
+                handleFunction={() => handleFetchAnalyze()}
+                text={`${chartData.month}월 분석`}
+                height="sm"
+                width="md"
+                size="sm"
+                color="green"
+              />
+            </View>
           </View>
-        </View>
-        <View className="flex w-fill p-5">
-          <NavigationButton
-            handleFunction={() => handleFetchMillion()}
-            text="분석"
-            height="lg"
-            width="lg"
-            size="md"
-            color="green"
-          />
         </View>
       </ImageBackground>
     </View>

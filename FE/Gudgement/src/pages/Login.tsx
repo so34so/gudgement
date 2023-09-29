@@ -27,26 +27,26 @@ function Login() {
       const response = await axios.post<CommonType.TkakaoLogin>(
         `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
       );
-
+      setShowWebView(false);
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const id = response.data.id;
+      const expiredTime = response.data.refreshTokenExpiration;
 
       try {
         const loginData: CommonType.TloginData = {
           accessToken: accessToken,
           refreshToken: refreshToken,
+          expiredTime: expiredTime,
           id: id,
           info: 0,
           email: "none",
         };
-
         const responseLogin = await setAsyncData("loginData", loginData);
         reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {
         reactotron.log!("스토리지 초기화 실패!", error);
       }
-      setShowWebView(false);
       navigation.navigate("SettingEmail");
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);

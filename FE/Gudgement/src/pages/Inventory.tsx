@@ -61,9 +61,12 @@ function Inventory({ route }: InventoryProps) {
     queryKey: ["fetchUserInfo"],
   });
 
-  const categoryStyle = (category: string) =>
-    `rounded-[8px] py-[1px] border-2 bg-darkgray50 
-    ${category === selectCategory ? "border-mainColor" : "border-darkgray50"}`;
+  const categoryStyle = useCallback(
+    (category: string) =>
+      `rounded-[8px] py-[1px] border-2 bg-darkgray50 
+    ${category === selectCategory ? "border-mainColor" : "border-darkgray50"}`,
+    [selectCategory],
+  );
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-buy";
   };
@@ -196,6 +199,9 @@ function Inventory({ route }: InventoryProps) {
                 activeOpacity={0.8}
                 onPress={() => {
                   setSelectCategory(category);
+                  if (!fetchItem) {
+                    setItemStatus(true);
+                  }
                   setItemStatus(false);
                   reactotron.log!("category", selectItem);
                   setSelectItem(0);

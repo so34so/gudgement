@@ -25,7 +25,7 @@ public class MatchingEventListener {
         // Extract the matching request data from the event.
         MatchDto request = event.getMatchDto();
 
-        String tierKey = "Room:" + request.getTiggle() + ":" + request.getRoleUser();
+        String tierKey = "Room:" + request.getTiggle() + ":" + request.getGrade();
         SetOperations<String, String> setOps = redisTemplate.opsForSet();
 
         if (setOps.size(tierKey) >= 2) {
@@ -43,14 +43,12 @@ public class MatchingEventListener {
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":status", "refuse");
-            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":invitedAt", currentTime);
 
 
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":tiggle", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "refuse");
-            redisTemplate.opsForHash().put(roomNumber, otherUser + ":invitedAt", currentTime);
 
             messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
             messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);

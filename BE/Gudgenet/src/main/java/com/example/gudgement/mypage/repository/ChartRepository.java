@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ChartRepository extends JpaRepository<Chart, Long> {
-    Optional<Chart> findByMemberIdAndMonthAndWeek(Member member, int month, int week);
+    Optional<Chart> findByMemberIdAndYearAndMonthAndWeek(Member member,int year, int month, int week);
 }

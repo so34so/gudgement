@@ -22,8 +22,14 @@ public class Chart {
     @JoinColumn(nullable = false, name = "member_id")
     private Member memberId;
 
+    @Column
+    private Long monthOverconsumption;
+
     @Column(nullable = false)
     private long accountId;
+
+    @Column(nullable = false)
+    private int year;
 
     @Column(nullable = false)
     private int month;
@@ -53,9 +59,11 @@ public class Chart {
     private Long sun;
 
     @Builder
-    public Chart(Member memberId, Long accountId, int month, int week) {
+    public Chart(Member memberId, Long monthOverconsumption, Long accountId, int year, int month, int week) {
         this.memberId = memberId;
+        this.monthOverconsumption = monthOverconsumption;
         this.accountId = accountId;
+        this.year = year;
         this.month = month;
         this.week = week;
     }
@@ -106,4 +114,9 @@ public class Chart {
     public void updateFri(Long fri) { this.fri = fri; }
     public void updateSat(Long sat) { this.sat = sat; }
     public void updateSun(Long sun) { this.sun = sun; }
+    
+    // 과소비 금액을 설정했을 때 업데이트
+    public void updateOverconsumption(Long monthOverconsumption) {
+        this.monthOverconsumption = monthOverconsumption;
+    }
 }

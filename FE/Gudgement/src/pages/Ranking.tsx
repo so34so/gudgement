@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Jilta from "../assets/images/jilta.png";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { IMAGE_URL } from "@env";
+import { useQuery } from "@tanstack/react-query";
+import { CommonType } from "../types/CommonType";
 
 interface Irank {
   rank: number;
@@ -44,6 +46,9 @@ export default function Ranking() {
     }
   };
   console.log(IMAGE_URL);
+  const { data: user } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
   const flatListProps: FlatListProps<Irank> = {
     data: RANKING.slice(3, RANKING.length),
     renderItem: ({ item }) => {
@@ -145,15 +150,15 @@ export default function Ranking() {
                   y={30}
                   textAnchor="middle"
                 >
-                  옥계공주
+                  {user?.nickname}
                 </SvgText>
               </Svg>
               <View className="relative right-[-40px] flex flex-row justify-center items-center rounded-[20px] w-fit bg-white box-border h-8 text-center text-black border-[2px] border-solid border-black">
                 <Text className="text-white w-10 rounded-l-[20px] h-full bg-black text-center text-[18px] font-PretendardMedium">
                   Lv
                 </Text>
-                <Text className="text-black text-[18px] font-PretendardBold px-2">
-                  130
+                <Text className="text-black text-[18px] font-PretendardBold px-2 w-12 text-center">
+                  {user?.level}
                 </Text>
               </View>
             </View>

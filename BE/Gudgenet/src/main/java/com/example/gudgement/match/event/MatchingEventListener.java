@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -24,9 +25,6 @@ public class MatchingEventListener {
         // Extract the matching request data from the event.
         MatchDto request = event.getMatchDto();
 
-        // Perform your matching logic here...
-        // For example:
-
         String tierKey = "Room:" + request.getTiggle() + ":" + request.getRoleUser();
         SetOperations<String, String> setOps = redisTemplate.opsForSet();
 
@@ -39,8 +37,20 @@ public class MatchingEventListener {
 
             List<String> matchedUsers = Arrays.asList(request.getNickName(), otherUser);
 
-            // Redis에 게임 방 정보와 유저들의 정보 저장
-            redisTemplate.opsForSet().add(roomNumber, matchedUsers.toArray(new String[0]));
+            String currentTime = LocalDateTime.now().toString();
+
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":tiggle", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":betting", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":status", "refuse");
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":invitedAt", currentTime);
+
+
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":tiggle", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":betting", String.valueOf(request.getTiggle()));
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "refuse");
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":invitedAt", currentTime);
 
             messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
             messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);

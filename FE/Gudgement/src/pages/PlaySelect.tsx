@@ -3,7 +3,7 @@ import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
-import BettingMachine from "../components/BettingMachine";
+import { API_URL, IMAGE_URL } from "@env";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import {
   ImageBackground,
@@ -47,12 +47,12 @@ function PlaySelect() {
         </View>
         {/* <BettingMachine /> */}
 
-        <View style={styles.lineGradi}>
+        <View style={styles.lineGradi} className="flex items-center">
           <Pressable onPress={() => navigation.navigate("PlayMatchingWait")}>
-            <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[32px] font-PretendardExtraBold">
+            <Text className="flex m-auto justify-center rounded-lg text-white text-[32px] font-PretendardExtraBold">
               대전 찾기
             </Text>
-            <Image source={lineGradi} />
+            <Image className="mt-12" source={lineGradi} />
           </Pressable>
         </View>
       </ImageBackground>

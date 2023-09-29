@@ -22,6 +22,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+
 export default function PlayMatchingWait() {
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
@@ -78,7 +79,9 @@ export default function PlayMatchingWait() {
 
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
-          <SmallCloseButton />
+          <Pressable onPress={() => navigation.navigate("PlayMatchingQueue")}>
+            <SmallCloseButton />
+          </Pressable>
         </View>
         <View style={styles.matchInfobox}>
           <Text
@@ -149,13 +152,13 @@ const styles = StyleSheet.create({
 });
 
 // 경과 시간을 MM:SS 형식으로 포맷하는 함수
-function formatElapsedTime(seconds) {
+function formatElapsedTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   return `${padWithZero(minutes)}:${padWithZero(remainingSeconds)}`;
 }
 
 // 숫자를 두 자릿수로 맞춰줍니다 (0을 추가)
-function padWithZero(number) {
+function padWithZero(number: number) {
   return number.toString().padStart(2, "0");
 }

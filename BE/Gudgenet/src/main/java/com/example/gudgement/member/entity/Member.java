@@ -1,5 +1,6 @@
 package com.example.gudgement.member.entity;
 
+import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.shop.entity.Inventory;
 import lombok.*;
@@ -42,18 +43,18 @@ public class Member implements Serializable {
     @Column(nullable = false)
     private boolean nicknameApprove;
 
-    @Column(nullable = false, columnDefinition = "bigint default 500")
+    @Column(nullable = false)
     private long tiggle;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0")
+    @Column(nullable = false)
     private long exp;
 
     @Column(nullable = false)
     private int level;
-
-    // 임시, 아마 추후엔 게임 룸에서 싱글 플레이의 내용에서 끌어와서 사용할 예정
+    
+    // 달 별 과소비금액
     @Column
-    private int target_payment;
+    private Long monthOverconsumption;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int pedometer;
@@ -68,16 +69,31 @@ public class Member implements Serializable {
     @Column
     private String refreshToken;
 
+
+    //계좌 연동을 위한 노아가 작성한 코드
+//    @OneToOne(mappedBy = "member")
+//    private VirtualAccount virtualAccount;
+    @Column(nullable = true)
+    private Long virtualAccountId; // This replaces the VirtualAccount field
+
+    public void setVirtualAccountId(Long virtualAccountId) {
+        this.virtualAccountId = virtualAccountId;
+    }
+
+
+    // 연결 관계
+//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+//    private List<Item> set_item = new ArrayList<Item>();
     @Lob
     @Column
     private String firebaseToken;
 
     /* 연결 관계 */
     // 상점, 진행도 관련
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Inventory> set_item = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();
 
     // 미구현
@@ -99,6 +115,8 @@ public class Member implements Serializable {
         this.age = age;
         this.nickname = nickname;
         this.refreshToken = refreshToken;
+        this.exp = 0L;
+        this.tiggle = 500L;
     }
 
     @PrePersist
@@ -126,7 +144,35 @@ public class Member implements Serializable {
         this.tiggle -= tiggle;
     }
 
+    public void addTiggle(Long tiggle) {
+        this.tiggle += tiggle;
+    }
+
     public void setFirebaseToken(String token) {
         this.firebaseToken = token;
+    }
+
+    public void addTiggle(long tiggle) {
+        this.tiggle += tiggle;
+    }
+
+    public void subtractTiggle(long tiggle) {
+        if (this.tiggle < tiggle) {
+            throw new IllegalArgumentException("The user does not have enough money");
+        }
+        this.tiggle -= tiggle;
+    }
+
+    public void addExp(long exp) {
+        this.exp += exp;
+    }
+
+
+
+
+
+
+    public void updateGrade(Grade grade) {
+        this.grade = grade;
     }
 }

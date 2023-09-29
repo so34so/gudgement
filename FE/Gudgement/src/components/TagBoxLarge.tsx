@@ -1,9 +1,9 @@
-import { Text, View, Image, ImageSourcePropType } from "react-native";
+import { Text, View, Image } from "react-native";
 
 interface TagBoxLargeProps {
   text01: string;
   text02: string;
-  img: ImageSourcePropType;
+  img: string;
 }
 
 function TagBoxLarge({ text01, text02, img }: TagBoxLargeProps) {
@@ -11,7 +11,12 @@ function TagBoxLarge({ text01, text02, img }: TagBoxLargeProps) {
     <View className="flex flex-row relative m-3 items-center">
       <View className="z-10 p-[2px] bg-white70 border-solid border-[2px] border-darkgray rounded-full">
         <View className="bg-darkgray rounded-full">
-          <Image source={img} className="h-10 w-10" />
+          <Image
+            source={{
+              uri: img,
+            }}
+            className="h-10 w-10"
+          />
         </View>
       </View>
       <View className="z-9 absolute ml-7 pl-2 pr-[2px] py-[2px] flex flex-row h-fill justify-center items-center bg-white70 border-solid border-[2px] rounded-lg border-darkgray">

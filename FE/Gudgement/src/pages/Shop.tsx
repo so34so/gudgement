@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
-  ImageSourcePropType,
   SafeAreaView,
   Text,
   TouchableOpacity,
@@ -25,7 +24,6 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
-import MyCharacter from "../assets/images/character.png";
 import Reactotron from "reactotron-react-native";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
@@ -40,7 +38,6 @@ import { API_URL } from "@env";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-export const MEMBER_ID = 3025827319;
 export interface IresponseParams {
   itemId: number;
   memberId: number;
@@ -79,6 +76,10 @@ function Shop({ route }: ShopProps) {
     queryFn: () => fetchShopItem(),
   });
 
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
+
   const [itemStatus, setItemStatus] = useState(true);
   const [quantity, setQuantity] = useState(0);
 
@@ -100,7 +101,7 @@ function Shop({ route }: ShopProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[selectCategory],
-            memberId: MEMBER_ID,
+            memberId: userInfo?.memberId,
           },
         },
       );
@@ -190,7 +191,10 @@ function Shop({ route }: ShopProps) {
   const handleItem = useCallback(() => {
     if (fetchItem?.length) {
       if (selectText() === "해금 필요") {
-        unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+        unlockItem({
+          itemId: fetchItem[selectItem].id,
+          memberId: userInfo!.memberId,
+        });
       } else {
         if (selectCategory === "소모품") {
           setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
@@ -200,7 +204,10 @@ function Shop({ route }: ShopProps) {
             ...modalVisible,
             complete: !modalVisible.complete,
           });
-          buyItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+          buyItem({
+            itemId: fetchItem[selectItem].id,
+            memberId: userInfo!.memberId,
+          });
         }
       }
     }
@@ -209,6 +216,7 @@ function Shop({ route }: ShopProps) {
     selectText,
     unlockItem,
     selectItem,
+    userInfo,
     selectCategory,
     modalVisible,
     buyItem,
@@ -216,10 +224,12 @@ function Shop({ route }: ShopProps) {
 
   const handleGetTitle = useCallback(() => {
     if (fetchItem?.length) {
-      unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+      unlockItem({
+        itemId: fetchItem[selectItem].id,
+        memberId: userInfo!.memberId,
+      });
     }
-    Reactotron.log!("획득 완료");
-  }, [fetchItem, selectItem, unlockItem]);
+  }, [fetchItem, selectItem, unlockItem, userInfo]);
 
   if (error) {
     <View>

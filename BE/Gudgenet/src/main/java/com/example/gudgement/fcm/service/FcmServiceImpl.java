@@ -6,10 +6,7 @@ import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +19,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FcmServiceImpl implements FcmService{
 
-    private final FirebaseMessaging firebaseMessaging;
     private final MemberRepository memberRepository;
 
     @Override
@@ -35,22 +31,32 @@ public class FcmServiceImpl implements FcmService{
         memberRepository.save(member);
     }
 
+    // 채널별 송신
     @Override
-    public String sendNotificationDetail(FcmNotificationResponseDto requestDto) throws FcmErrorException {
+    public String sendNotificationToChannel(FcmNotificationResponseDto requestDto) throws FcmErrorException {
         Optional<Member> member = memberRepository.findByMemberId(requestDto.getMemberId());
         if (member.isPresent()) {
             if (member.get().getFirebaseToken() != null) {
                 Notification notification = Notification.builder()
+                        .setTitle(requestDto.getTitle())
+                        .setBody(requestDto.getContent())
                         .build();
 
                 Message message = Message.builder()
                         .setToken(member.get().getFirebaseToken())
                         .setNotification(notification)
+                        .setAndroidConfig(AndroidConfig.builder()
+                                .setTtl(3600*1000)
+                                .setNotification(AndroidNotification.builder()
+                                        .setIcon("https://gudgement.s3.ap-northeast-2.amazonaws.com/asset/appicon.png")
+                                        .setChannelId(requestDto.getChannel())
+                                        .build())
+                                .build())
                         .build();
 
                 try {
-                    firebaseMessaging.send(message);
-                    return "성공!";
+                    String response = FirebaseMessaging.getInstance().send(message);
+                    return response;
                 } catch (FirebaseMessagingException e) {
                     throw new FcmErrorException(ErrorCode.NOT_REGISTRATION_NICKNAME);
                 }

@@ -28,6 +28,7 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 600000
+
   redis:
     host: myredis
     port: 6379
@@ -42,10 +43,12 @@ spring:
   # datasource
   datasource:
 #    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    # 한국시간으로 DB저장되게 !!
+#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
 #    username: root
 #    password: ssafy
 
-    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
     username: gudgement
     password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -110,3 +113,5 @@ jwt:
 #spring.datasource.username=sa
 #spring.jpa.show-sql=true
 #spring.hibernate.ddl-auto=none
+
+# yml push 안되게 설정 2트.

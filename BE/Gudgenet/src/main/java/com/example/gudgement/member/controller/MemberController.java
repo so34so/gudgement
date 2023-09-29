@@ -73,9 +73,7 @@ public class MemberController {
     @GetMapping("/loadMyInfo")
     @Operation(summary = "유저 정보", description = "로그인 되어있는 유저의 정보를 확인합니다. \n 토큰 앞에 항상 'Bearer '를 붙여주세요!")
     public ResponseEntity<MemberResponseDto> loadInfo(HttpServletRequest httpServletRequest) {
-        System.out.println(httpServletRequest.getHeader("Authorization"));
         Member member = getMember(httpServletRequest);
-        System.out.println(member.getEmail());
         return ResponseEntity.ok(memberService.loadInfo(member.getMemberId()));
     }
 
@@ -89,4 +87,19 @@ public class MemberController {
         });
         return member;
     }
+
+    @PutMapping("/update/grade")
+    @Operation(summary = "유저 등급 결정", description = "이전 달 소비 내역기준으로 산정 \n" +
+            "[100 이하] : Gold\n            " + "100~200 Silver\n            " + "300이상 Bronze")
+    private void updateGrade(HttpServletRequest httpServletRequest) {
+        memberService.updateGrade(getMember(httpServletRequest));
+    }
+
+    @PostMapping("/pedometer")
+    @Operation(summary = "만보걷기 완료", description = "member의 tiggle값에 300을 더합니다.")
+    public ResponseEntity<String> pedometerClear(@RequestParam(name = "memberId") Long id) {
+        memberService.addTiggle(id);
+        return ResponseEntity.ok("만보걷기 완료");
+    }
+
 }

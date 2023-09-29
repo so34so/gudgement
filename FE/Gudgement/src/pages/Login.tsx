@@ -25,7 +25,7 @@ function Login() {
   const fetchAccessToken = async (code: string) => {
     try {
       const response = await axios.post<CommonType.TkakaoLogin>(
-        `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
+        `${SERVER_URL}/?code=${code}`,
       );
       setShowWebView(false);
       const accessToken = response.data.accessToken;

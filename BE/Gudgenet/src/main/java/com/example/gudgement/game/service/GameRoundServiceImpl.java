@@ -1,10 +1,7 @@
 package com.example.gudgement.game.service;
 
 import com.example.gudgement.CardService;
-import com.example.gudgement.game.dto.CardInfoDto;
-import com.example.gudgement.game.dto.GameRequestDto;
-import com.example.gudgement.game.dto.GameRoundDto;
-import com.example.gudgement.game.dto.UserTiggleDto;
+import com.example.gudgement.game.dto.*;
 import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +67,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         String cardString= cardService.getRandomUsedCard(roomNumber, otherUser);
 
         // 해당 카드 정보를 Redis에서 삭제합니다.
-        redisTemplate.opsForSet().remove(roomNumber + ":" + otherUser + ":cards", cardString);
+//        redisTemplate.opsForSet().remove(roomNumber + ":" + otherUser + ":cards", cardString);
 
         CardInfoDto cardInfo= new CardInfoDto();
         cardInfo.setName(cardString.split(":")[0]);
@@ -80,5 +77,33 @@ public class GameRoundServiceImpl implements GameRoundService {
         return new GameRoundDto(userTiggles ,cardInfo,rounds);
     }
 
+    /*public GameResultDto playRound(BettingDto bettingDto) {
+
+        String storeKey = "store1:" + bettingDto.getCardOrder() + ":" + bettingDto.getRounds();
+        Long cardValue = (Long) redisTemplate.opsForValue().get(storeKey);
+
+        if (cardValue == null) throw new RuntimeException("Card value not found in Redis");
+
+        String userBettingKey = bettingDto.getNickname() + ":betting";
+        redisTemplate.opsForHash().put(userBettingKey, "amount", bettingDto.getBettingAmount());
+
+        // 비교 로직 및 승패 결정 로직은 여기에 추가
+
+        // 카드값이 작은 사람이 이기는 로직 구현 필요
+
+        // 승자의 username:tiggle 에 배팅금액 추가하는 로직 구현 필요
+
+        // 패자의 username:tiggle 에서 배팅금액 차감하는 로직 구현 필요
+
+        // 게임 결과 생성 및 WebSocket 메시지 전송
+
+        GameResultDto gameResult = new GameResultDto();
+
+        // 승/패 정보와 라운드 번호 설정 필요
+
+        simpMessagingTemplate.convertAndSend("/topic/game/" + bettingDto.getRoomNumber(), gameResult);
+
+        return gameResult;
+    }*/
 
 }

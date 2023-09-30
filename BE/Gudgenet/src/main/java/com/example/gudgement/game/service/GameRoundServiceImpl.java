@@ -66,8 +66,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         // 상대방의 랜덤 카드 한 장을 가져옵니다.
         String cardString= cardService.getRandomUsedCard(roomNumber, otherUser);
 
-        // 해당 카드 정보를 Redis에서 삭제합니다.
-//        redisTemplate.opsForSet().remove(roomNumber + ":" + otherUser + ":cards", cardString);
+        redisTemplate.opsForHash().put(roomNumber, otherUser + ":currentCard", cardString);
 
         CardInfoDto cardInfo= new CardInfoDto();
         cardInfo.setName(cardString.split(":")[0]);
@@ -77,33 +76,85 @@ public class GameRoundServiceImpl implements GameRoundService {
         return new GameRoundDto(userTiggles ,cardInfo,rounds);
     }
 
-    /*public GameResultDto playRound(BettingDto bettingDto) {
+    public void playRound(BettingDto bettingDto) {
+        String roomNumber = bettingDto.getRoomNumber();
+        int round = bettingDto.getRounds();
+        // Check if the user exists in Redis.
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
 
-        String storeKey = "store1:" + bettingDto.getCardOrder() + ":" + bettingDto.getRounds();
-        Long cardValue = (Long) redisTemplate.opsForValue().get(storeKey);
+        if (!hasKey) {
+            throw new IllegalArgumentException("Invalid nickname: " + bettingDto.getNickName());
+        }
 
-        if (cardValue == null) throw new RuntimeException("Card value not found in Redis");
+        // Update the acceptance status in Redis.
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "betting");
 
-        String userBettingKey = bettingDto.getNickname() + ":betting";
-        redisTemplate.opsForHash().put(userBettingKey, "amount", bettingDto.getBettingAmount());
+        // If both users have bet, then proceed with the comparison and result calculation
+        if (allUsersBetting(roomNumber)) {
+            // Both users have bet. Now we need to compare the cards and calculate the result
 
-        // 비교 로직 및 승패 결정 로직은 여기에 추가
+            String myCardString = (String)redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName()+":currentCard");
+            String otherCardString = (String)redisTemplate.opsForHash().get(roomNumber ,  bettingDto.getOrderName()+":currentCard");
 
-        // 카드값이 작은 사람이 이기는 로직 구현 필요
 
-        // 승자의 username:tiggle 에 배팅금액 추가하는 로직 구현 필요
+            Long myValue= Long.parseLong(myCardString.split(":")[1]);
+            Long otherValue= Long.parseLong(otherCardString.split(":")[1]);
 
-        // 패자의 username:tiggle 에서 배팅금액 차감하는 로직 구현 필요
+            RoundResultDto myResult = RoundResultDto.builder()
+                    .isResult(myValue > otherValue)
+                    .rounds(round)
+                    .roomNumber(roomNumber)
+                    .build();
 
-        // 게임 결과 생성 및 WebSocket 메시지 전송
+            RoundResultDto otherResult = RoundResultDto.builder()
+                    .isResult(myValue < otherValue)
+                    .rounds(round)
+                    .roomNumber(roomNumber)
+                    .build();
 
-        GameResultDto gameResult = new GameResultDto();
+            messagingTemplate.convertAndSendToUser(bettingDto.getNickName(), "/queue/start", myResult);
+            messagingTemplate.convertAndSendToUser(bettingDto.getOrderName(), "/queue/start", otherResult);
 
-        // 승/패 정보와 라운드 번호 설정 필요
 
-        simpMessagingTemplate.convertAndSend("/topic/game/" + bettingDto.getRoomNumber(), gameResult);
+            /* Reset status for next round */
+            resetStatusForNextRound(roomNumber);
+        }
+    }
 
-        return gameResult;
-    }*/
+    private boolean allUsersBetting(String roomNumber) {
+        // Get all keys (user info) from the Redis hash.
+        Set<Object> membersKeys = redisTemplate.opsForHash().keys(roomNumber);
+
+        for (Object keyObject : membersKeys) {
+            String key = (String) keyObject;
+            if (!key.endsWith(":status")) {  // Ignore keys that are not related to status.
+                continue;
+            }
+
+            Object acceptanceStatusObj =  redisTemplate.opsForHash().get(roomNumber, key);
+
+            if(acceptanceStatusObj == null || !"betting".equals(acceptanceStatusObj.toString())) {
+                return false;  // If any user's status is not 'success', return false immediately.
+            }
+        }
+
+        return true;  // If all users' statuses are 'success', return true.
+    }
+
+    private void resetStatusForNextRound(String roomNumber){
+        // Get all keys (user info) from the Redis hash.
+        Set<Object> membersKeys = redisTemplate.opsForHash().keys(roomNumber);
+
+        for (Object keyObject : membersKeys) {
+            String key = (String) keyObject;
+            if (!key.endsWith(":status")) {  // Ignore keys that are not related to status.
+                continue;
+            }
+
+            // Update the acceptance status in Redis to 'play'.
+            redisTemplate.opsForHash().put(roomNumber, key, "play");
+        }
+    }
+
 
 }

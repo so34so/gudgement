@@ -1,102 +1,67 @@
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
+import { useEffect, useState } from "react";
 import {
   View,
   ScrollView,
   Text,
   ImageBackground,
-  ImageSourcePropType,
   Image,
   Pressable,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
+import axios, { AxiosResponse } from "axios";
+import { API_URL, IMAGE_URL } from "@env";
+import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
-import { useState } from "react";
-import axios from "axios";
-import { API_URL } from "@env";
-import Reactotron from "reactotron-react-native";
-import CustomModal from "../components/CustomModal";
-
-export interface IAccount {
-  id: number;
-  bankName: string;
-  accountName: string;
-  accountNumber: string;
-  accountHolder: string;
-  email: string;
-  balance: 231333512000;
-  isSelected: boolean;
-}
-
-const ACCOUNTS: Array<IAccount> = [
-  {
-    id: 1,
-    bankName: "신한",
-    accountName: "신한저축예금",
-    accountNumber: "1002-283-1234-1234",
-    accountHolder: "강해빈",
-    email: "aubrienid@naver.com",
-    balance: 231333512000,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    bankName: "우리",
-    accountName: "신한저축예금",
-    accountNumber: "1002-283-1234-1234",
-    accountHolder: "강해빈",
-    email: "aubrienid@naver.com",
-    balance: 231333512000,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    bankName: "하나",
-    accountName: "신한저축예금",
-    accountNumber: "1002-283-1234-1234",
-    accountHolder: "강해빈",
-    email: "aubrienid@naver.com",
-    balance: 231333512000,
-    isSelected: false,
-  },
-  {
-    id: 4,
-    bankName: "토스",
-    accountName: "신한저축예금",
-    accountNumber: "1002-283-1234-1234",
-    accountHolder: "강해빈",
-    email: "aubrienid@naver.com",
-    balance: 231333512000,
-    isSelected: false,
-  },
-  {
-    id: 5,
-    bankName: "토스",
-    accountName: "신한저축예금",
-    accountNumber: "1002-283-1234-1234",
-    accountHolder: "강해빈",
-    email: "aubrienid@naver.com",
-    balance: 231333512000,
-    isSelected: false,
-  },
-];
+import { getAsyncData } from "../utils/common";
+import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 function SettingAccount() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [tempEmail, setTempEmail] = useState("");
+  const [accounts, setAccounts] = useState<CommonType.Taccount[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const loginData = (await getAsyncData(
+          "loginData",
+        )) as CommonType.TloginData;
+        const email = loginData.email;
+        if (email) {
+          setTempEmail(email);
+        }
+      } catch (error) {
+        reactotron.log!("이메일 불러오기 실패!", error);
+      }
+    };
+
+    fetchData();
+
+    if (tempEmail.length > 0) {
+      handleReadAccount();
+    }
+  }, [tempEmail]);
+
+  const handleReadAccount = async () => {
+    // reactotron.log!("인증된 이메일", tempEmail);
+    try {
+      const response: AxiosResponse<CommonType.Taccount[]> = await axios.get(
+        `${API_URL}/account/${tempEmail}`,
+      );
+      const responseAccount = response.data;
+      setAccounts(responseAccount);
+      // reactotron.log!("계좌 불러오기 성공!", accounts);
+    } catch (error) {
+      reactotron.log!("계좌 불러오기 실패!", error);
+    }
+  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -106,37 +71,38 @@ function SettingAccount() {
     setModalVisible(false);
   };
 
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
-    null,
-  );
-
   const handleSelect = (accountId: number) => {
     setSelectedAccountId(accountId);
-    ACCOUNTS[accountId - 1].isSelected = !ACCOUNTS[accountId - 1].isSelected;
+    accounts.map(account => {
+      if (account.virtualAccountId === accountId) {
+        account.selected = !account.selected;
+      }
+    });
   };
 
   const submitSelect = async () => {
-    Reactotron.log!(selectedAccountId);
+    reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
       setModalText("계좌를 선택해주세요");
       openModal();
       return;
     }
+
     if (selectedAccountId !== null) {
+      const sendBE = {
+        email: tempEmail,
+        virtualAccountId: selectedAccountId,
+      };
       try {
-        const response = await axios.post(`${API_URL}/select/accounts`, {
-          accountId: ACCOUNTS[selectedAccountId - 1].id,
-        });
-        Reactotron.log!(response.data);
+        const response = await axios.post(`${API_URL}/account`, sendBE);
+        reactotron.log!("계좌 연동 성공!", response);
+        /**
+         * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
+         * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
+         * */
+        queryClient.invalidateQueries(["fetchUserInfo"]);
       } catch (error) {
-        Reactotron.log!(error);
-        Reactotron.log!("handleSelect", ACCOUNTS[selectedAccountId - 1]);
-        // const settingAccountAction = CommonActions.reset({
-        //   index: 0,
-        //   routes: [{ name: "바텀" }],
-        // });
-        // navigation.dispatch(settingAccountAction);
-        navigation.navigate("BottomTabNavigator");
+        reactotron.log!("계좌 연동 실패!", error);
       }
     }
   };
@@ -144,7 +110,9 @@ function SettingAccount() {
   return (
     <View className="flex w-screen h-screen">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-screen h-screen"
       >
@@ -167,7 +135,12 @@ function SettingAccount() {
                 <View className="gap-4 flex flex-row items-center">
                   <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
                     <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
+                      <Image
+                        source={{
+                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                        }}
+                        className="h-10 w-10"
+                      />
                     </View>
                   </View>
                   <View className="flex felx-col">
@@ -201,17 +174,19 @@ function SettingAccount() {
               </View>
               <ScrollView className="h-[74%] w-fill p-3">
                 <View className="mb-6">
-                  {ACCOUNTS.map((account: IAccount) => {
+                  {accounts.map((account: CommonType.Taccount) => {
                     return (
                       <Pressable
-                        key={account.id}
+                        key={account.virtualAccountId}
                         onPress={() => {
-                          handleSelect(account.id);
+                          handleSelect(account.virtualAccountId);
                         }}
                       >
                         <AccountBox
                           account={account}
-                          isSelected={selectedAccountId === account.id}
+                          isSelected={
+                            selectedAccountId === account.virtualAccountId
+                          }
                           onSelect={handleSelect}
                         />
                       </Pressable>

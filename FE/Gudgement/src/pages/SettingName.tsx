@@ -5,25 +5,20 @@ import {
   TextInput,
   SafeAreaView,
   ImageBackground,
-  ImageSourcePropType,
   Image,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
-import NavigationButton from "../components/NavigationButton";
-import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import Reactotron from "reactotron-react-native";
-import { API_URL } from "@env";
+import { API_URL, IMAGE_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getTempUserId } from "../utils/common";
+import { getAsyncData, updateAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
+import NavigationButton from "../components/NavigationButton";
+import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
 
 function SettingName() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-
   const [name, setName] = useState("");
   const [checkName, setCheckName] = useState(0);
   const [tempId, setTempId] = useState(0);
@@ -32,9 +27,15 @@ function SettingName() {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
   useEffect(() => {
-    getTempUserId().then(tempUserId => {
-      setTempId(tempUserId);
-    });
+    const getLoginData = async () => {
+      const loginData = (await getAsyncData(
+        "loginData",
+      )) as CommonType.TloginData;
+
+      setTempId(loginData.id);
+      reactotron.log!("이메일 업뎃", loginData.email);
+    };
+    getLoginData();
   }, []);
 
   const openModal = () => {
@@ -93,7 +94,9 @@ function SettingName() {
     <View className="flex w-screen h-screen">
       <KeyboardAwareScrollView>
         <ImageBackground
-          source={mypageBackground}
+          source={{
+            uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          }}
           resizeMode="cover"
           className="flex w-screen h-screen"
         >
@@ -116,7 +119,12 @@ function SettingName() {
                   <View className="gap-4 flex flex-row items-center">
                     <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
                       <View className="bg-darkgray h-fill w-fill rounded-full">
-                        <Image source={analysisIcon} className="h-10 w-10" />
+                        <Image
+                          source={{
+                            uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                          }}
+                          className="h-10 w-10"
+                        />
                       </View>
                     </View>
                     <View className="flex felx-col">
@@ -166,7 +174,7 @@ function SettingName() {
                         height="lg"
                         width="sm"
                         size="md"
-                        color="lightsky"
+                        color="bluesky"
                       />
                     </View>
                     {checkName === 0 ? (

@@ -1,3 +1,4 @@
+import { CommonType } from "../types/CommonType";
 import {
   View,
   Text,
@@ -9,10 +10,9 @@ import { WithLocalSvg } from "react-native-svg";
 import ShinhanLogo from "../assets/images/shinhanLogo.png";
 import CheckBoxOn from "../assets/icons/checkBoxOn.svg";
 import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
-import { IAccount } from "../pages/SettingAccount";
 
 interface AccountBoxProps {
-  account: IAccount;
+  account: CommonType.Taccount;
   isSelected: boolean;
   onSelect: (accountId: number) => void;
 }
@@ -23,7 +23,23 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
   const shinhanLogo: ImageSourcePropType = ShinhanLogo as ImageSourcePropType;
 
   const handleSelect = () => {
-    onSelect(account.id);
+    if (account.virtualAccountId !== undefined) {
+      onSelect(account.virtualAccountId);
+    }
+  };
+
+  const maskAccountNumber = (currentAccountNum: string) => {
+    const parts = currentAccountNum.split("-");
+
+    const maskedParts = parts.map((part, index) => {
+      if (index === 0 || index === parts.length - 1) {
+        return part;
+      } else {
+        return "*".repeat(part.length);
+      }
+    });
+
+    return maskedParts.join("-");
   };
 
   return (
@@ -33,14 +49,14 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
           <Image source={shinhanLogo} className="z-11 w-12 h-12" />
         </View>
         <View className="flex flex-col gap-1">
-          <Text className="text-darkgray text-md font-PretendardBold">
+          <Text className="text-darkgray text-sm font-PretendardBold">
             {account.accountName}
           </Text>
           <Text className="text-darkgray50 text-2xs font-PretendardBold">
-            {account.accountNumber}
+            {maskAccountNumber(account.accountNumber)}
           </Text>
           <Text className="text-sub02 text-xs font-PretendardBold">
-            잔액 {account.balance} 원
+            잔액 {account.balance.toLocaleString("ko-KR")} 원
           </Text>
         </View>
       </View>

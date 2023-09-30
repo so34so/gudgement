@@ -1,13 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dimensions } from "react-native";
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
+import { CommonType } from "../types/CommonType";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { API_URL } from "@env";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
+
 export const textShadow = {
-  textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
-  textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
-  textShadowRadius: 5, // 그림자의 블러 정도
+  textShadowColor: "rgba(0, 0, 0, 0.5)",
+  textShadowOffset: { width: 2, height: 2 },
+  textShadowRadius: 5,
 };
+
 export const INVENTORY_CATEGORY: {
   [key: string]: string;
 } = {
@@ -24,7 +29,7 @@ export const setAsyncData = async (key: string, value: unknown) => {
     await AsyncStorage.setItem(key, stringValue);
     return true;
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!(error);
     return false;
   }
 };
@@ -38,12 +43,13 @@ export const getAsyncData = async <T>(key: string): Promise<T | null> => {
       return data;
     }
   } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!("getAsyncData 불러오기 실패", error);
   }
 
   return null;
 };
 
+// 데이터 수정
 export const updateAsyncData = async (key: string, updatedValue: unknown) => {
   try {
     // 1. 저장된 값을 불러옵니다.
@@ -58,12 +64,12 @@ export const updateAsyncData = async (key: string, updatedValue: unknown) => {
 
       // 3. 수정된 값을 다시 저장합니다.
       await setAsyncData(key, updatedData);
-      Reactotron.log!("값이 업데이트되었습니다.");
+      reactotron.log!("값이 업데이트되었습니다.");
     } else {
-      Reactotron.log!("값이 존재하지 않습니다.");
+      reactotron.log!("값이 존재하지 않습니다.");
     }
   } catch (error) {
-    Reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
+    reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
   }
 };
 
@@ -72,32 +78,12 @@ export const removeAsyncData = async (key: string) => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (error) {
-    Reactotron.log!(error);
-  }
-};
-
-// 해당 key가 AsyncStorage에 존재하는지 여부 확인
-export const containsAsyncKey = async (key: string) => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    return keys.includes(key);
-  } catch (error) {
-    Reactotron.log!(error);
+    reactotron.log!(error);
   }
 };
 
 export const screenWidth = Math.round(Dimensions.get("window").width);
 export const screenHeight = Math.round(Dimensions.get("window").height);
-
-export const getTempUserId = async () => {
-  try {
-    const responseGetId = await getAsyncData("id");
-    return responseGetId ? parseInt(responseGetId, 10) : 0;
-  } catch (error) {
-    Reactotron.log!("아이디 확인 실패!", error);
-    return 0;
-  }
-};
 
 export const BOTTOM_TAB_IMAGE = [
   "/asset/homeicon.png",
@@ -106,3 +92,78 @@ export const BOTTOM_TAB_IMAGE = [
   "/asset/myinfoicon.png",
   "/asset/rankingicon.png",
 ];
+
+export const ANALYZE_BOX_IMAGE = [
+  "/asset/analyzeNone.png",
+  "/asset/analyzeSave.png",
+  "/asset/analyzeGood.png",
+  "/asset/analyzeAlert.png",
+  "/asset/analyzeOver.png",
+];
+
+export const fetchUser = async (): Promise<CommonType.Tuser> => {
+  const loginData = (await getAsyncData("loginData")) as CommonType.TloginData;
+  reactotron.log!(loginData.accessToken);
+  try {
+    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+      `${API_URL}/member/loadMyInfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${loginData.accessToken}`,
+        },
+      },
+    );
+    reactotron.log!("fetchUser", response);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<CommonType.Terror>;
+    if (axiosError.response) {
+      const errorMessage = axiosError.response.data.message;
+      reactotron.log!("홈 에러", errorMessage);
+    }
+    throw error;
+  }
+};
+
+export const checkSpendRate = (
+  userData: CommonType.Tuser,
+  percent: number,
+  setSpend: React.Dispatch<
+    React.SetStateAction<{
+      text: string;
+      color: string;
+      img: number;
+    }>
+  >,
+) => {
+  if (userData) {
+    if (percent <= 0.5) {
+      setSpend({
+        text: "절약",
+        color: "text-black",
+        img: 1,
+      });
+    }
+    if (percent > 0.5 && percent <= 0.7) {
+      setSpend({
+        text: "안정",
+        color: "text-black",
+        img: 2,
+      });
+    }
+    if (percent > 0.7 && percent < 1.0) {
+      setSpend({
+        text: "위험",
+        color: "text-red",
+        img: 3,
+      });
+    }
+    if (percent >= 1.0) {
+      setSpend({
+        text: "초과",
+        color: "text-red",
+        img: 4,
+      });
+    }
+  }
+};

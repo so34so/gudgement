@@ -1,105 +1,162 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  View,
   Text,
-  TextInput,
-  SafeAreaView,
+  View,
   ImageBackground,
-  ImageSourcePropType,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
+
+import { ProgressChart } from "react-native-chart-kit";
+import { useQuery } from "@tanstack/react-query";
+import { CommonType } from "../types/CommonType";
+import { IMAGE_URL } from "@env";
+import { textShadow } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
+import TagBoxLarge from "../components/TagBoxLarge";
+import TagBoxSmall from "../components/TagBoxSmall";
+import BasicBox from "../components/BasicBox";
+import CustomModal from "../components/CustomModal";
+import reactotron from "reactotron-react-native";
 
-function Pedometer() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
+function MyPage(this: unknown) {
+  const {
+    data: userData,
+    error: fetchError,
+    isLoading,
+    refetch,
+  } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+    enabled: false,
+  });
 
-  const TextInputExample = () => {
-    const [text, onChangeText] = useState("");
-    const [number, onChangeNumber] = useState("");
+  useEffect(() => {
+    refetch();
+  }, []);
 
+  if (isLoading) {
     return (
-      <SafeAreaView className="mx-4 w-fit">
-        <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
-          <TextInput
-            onChangeText={onChangeText}
-            value={text}
-            placeholder="이메일"
-            placeholderTextColor="darkgray"
-            className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-sm font-PretendardExtraBold"
-          />
-          <NavigationButton screenName="Pedometer" text="인증받기" />
-        </View>
-        <TextInput
-          onChangeText={onChangeNumber}
-          value={number}
-          placeholder="인증 번호"
-          placeholderTextColor="darkgray"
-          keyboardType="numeric"
-          className="h-[60px] bt-3 mb-4 p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray50 text-sm font-PretendardExtraBold"
-        />
-      </SafeAreaView>
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
     );
+  }
+  if (fetchError) {
+    reactotron.log!(fetchError);
+  } else {
+    reactotron.log!("홈 사용자 정보", userData);
+  }
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleFetchMillion = async () => {
+    reactotron.log!("만보보상!");
+    setModalText("만보보상!");
+    openModal();
   };
 
   return (
-    <View className="">
+    <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-full h-full"
       >
-        <View className="flex flex-col">
-          <View className="flex flex-row justify-between items-center">
-            <View className="bg-green h-10 w-10" />
-            <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
-              <Text className="py-1 px-2 w-full text-center bg-darkgray rounded-lg text-white text-sm font-PretendardExtraBold">
-                본인 인증
-              </Text>
-            </View>
-            <View className="bg-transparent h-10 w-10" />
+        <CustomModal
+          alertText={modalText}
+          visible={modalVisible}
+          closeModal={closeModal}
+        />
+        {/* <View className="absolute bg-black30 w-screen h-screen" /> */}
+        <TagBoxSmall
+          text={"만보 걷기 챌린지"}
+          img={`${IMAGE_URL}/asset/analysisIcon.png`}
+        />
+        <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">
+          <View className="ml-8 mt-4">
+            <Image
+              source={{
+                uri: `${IMAGE_URL}/asset/dogezaPenguin.png`,
+              }}
+              className="w-fill h-[100px] mb-4"
+            />
+            <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
           </View>
-          <View className="flex justify-center items-center">
-            <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
-              <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
-                <View className="gap-4 flex flex-row items-center">
-                  <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
-                    <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
-                    </View>
-                  </View>
-                  <View className="flex felx-col">
-                    <View className="flex flex-row">
-                      <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
-                        인증된 이메일정보는
-                      </Text>
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        안전하게
-                      </Text>
-                    </View>
-                    <View className="flex flex-row">
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        보관
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        되며 다른 사용자에게
-                      </Text>
-                    </View>
-                    <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                      공개되지 않아요.
-                    </Text>
-                  </View>
-                </View>
-                <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                  1/3
-                </Text>
-              </View>
-              <View className="h-fill w-fill">
-                <TextInputExample />
-              </View>
+          <View className="flex justify-center items-center mt-6 mr-2">
+            <View className="flex justify-center items-center">
+              <ProgressChart
+                data={{
+                  data: [0.6],
+                  colors: ["#3190FF"],
+                }}
+                width={200}
+                height={200}
+                strokeWidth={30}
+                radius={59}
+                chartConfig={{
+                  backgroundGradientFromOpacity: 0,
+                  backgroundGradientToOpacity: 0,
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                }}
+                withCustomBarColorFromData={true}
+                style={{ zIndex: 2 }}
+                hideLegend={true}
+              />
+              <ProgressChart
+                data={{
+                  data: [0.6],
+                  colors: ["#000000b2"],
+                }}
+                width={200}
+                height={200}
+                strokeWidth={38}
+                radius={59}
+                chartConfig={{
+                  backgroundGradientFromOpacity: 0,
+                  backgroundGradientToOpacity: 0,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                withCustomBarColorFromData={true}
+                style={{ position: "absolute", zIndex: 1 }}
+                hideLegend={true}
+              />
+            </View>
+            <View className="absolute z-10 pb-[150px]">
+              <NavigationButton
+                handleFunction={() => handleFetchMillion()}
+                text="보상 받기"
+                height="sm"
+                width="sm"
+                size="sm"
+                color="bluesky"
+              />
+            </View>
+            <View className="flex flex-col bg-darkgray50 h-20 w-20 justify-center items-center absolute z-0 rounded-full">
+              <Text
+                style={textShadow}
+                className="text-center text-white text-md font-PretendardExtraBold"
+                numberOfLines={1}
+              >
+                10000
+              </Text>
+              <Text
+                style={textShadow}
+                className="text-center text-white text-xs font-PretendardBold"
+                numberOfLines={1}
+              >
+                걸음
+              </Text>
             </View>
           </View>
         </View>
@@ -108,4 +165,4 @@ function Pedometer() {
   );
 }
 
-export default Pedometer;
+export default MyPage;

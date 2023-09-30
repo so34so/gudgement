@@ -7,6 +7,7 @@ import {
 import { BOTTOM_TAB_IMAGE } from "../utils/common";
 import { IMAGE_URL } from "@env";
 import NavBlur from "../assets/images/navBlur.png";
+
 interface ITabBarProps {
   item: string;
   index: number;

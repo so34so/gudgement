@@ -1,5 +1,6 @@
 package com.example.gudgement.member.exception;
 
+import com.example.gudgement.mypage.exception.AccountException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,15 @@ public class ErrorResponse {
     }
 
     public static ResponseEntity<ErrorResponse> error(AuthorizationException e) {
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .httpStatus(e.getErrorCode().getHttpStatus())
+                        .code(e.getErrorCode().getErrorCode())
+                        .message(e.getErrorCode().getMessage())
+                        .build());
+    }
+
+    public static ResponseEntity<ErrorResponse> error(AccountException e) {
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(ErrorResponse.builder()
                         .httpStatus(e.getErrorCode().getHttpStatus())

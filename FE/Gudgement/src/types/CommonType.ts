@@ -34,9 +34,8 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-
+    PlayGame: undefined;
     /**
-     * ShopScreen child Type
      * MyPage child Type
      */
     MyPageNavigator: undefined;
@@ -62,7 +61,7 @@ export declare module CommonType {
     id: number;
     itemName: string;
     itemContent: string;
-    image: string | ImageSourcePropType;
+    image: string;
     price: number;
     equipped: boolean;
     typeId: number;
@@ -81,13 +80,19 @@ export declare module CommonType {
     equipped: false;
   };
 
+  export type Terror = {
+    httpStatus: string;
+    code: string;
+    message: string;
+  };
+
   export type TkakaoLogin = {
     id: number;
     nickname: string;
     email: string;
     accessToken: string;
     refreshToken: string;
-    refreshTokenExpiration: Date;
+    refreshTokenExpiration: string;
   };
   export type TUser = {
     memberId: number;
@@ -99,6 +104,17 @@ export declare module CommonType {
     exp: number;
     level: number;
     pedometer: number;
+    rate: {
+      payment: number;
+      rate: number;
+    };
+  };
+  export type TloginData = {
+    accessToken: string;
+    refreshToken: string;
+    id: number;
+    expiredTime: string;
+    email: string; // 계좌 연동 시 보낼 인증된 email
   };
 
   export type TemailCode = string;
@@ -107,6 +123,59 @@ export declare module CommonType {
     id: number;
     email: string;
   };
+
+  export type Taccount = {
+    virtualAccountId?: number;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    accountHolder: string;
+    email: string;
+    balance: number;
+    selected?: boolean;
+  };
+
+  export type Tuser = {
+    memberId: number;
+    email: string;
+    nickname: string;
+    emailApprove: boolean;
+    nicknameApprove: boolean;
+    setItems: [
+      {
+        itemId: number;
+        itemName: string;
+        itemContent: string;
+        itemEffect: string;
+        image: string;
+        type: string;
+        subtype: string;
+      },
+    ];
+    tiggle: number;
+    exp: number;
+    level: number;
+    pedometer: number;
+    rate: {
+      payment: number;
+      rate: number;
+      balance: number;
+    };
+  };
+
+  export type TanalyzeChart = {
+    month: number;
+    week: number;
+    data: {
+      type: string;
+      labels: string[];
+      dateSet: {
+        amount: number[];
+        color: string[];
+      };
+    };
+  };
+
   export type Tplaymap = {
     ticle: string;
     image: string | ImageSourcePropType;

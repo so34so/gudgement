@@ -9,5 +9,5 @@ public interface GameRoundService {
 
     GameRoundDto getGameStatus(GameRequestDto gameRequestDto);
 
-//    GameResultDto playRound(BettingDto bettingDto);
+    void playRound(BettingDto bettingDto);
 }

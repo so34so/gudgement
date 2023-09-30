@@ -21,7 +21,7 @@ import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import { SERVER_URL } from '@env'; 
+import { WEBSOCKET_URL } from '@env'; 
 
 
 const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
@@ -82,17 +82,28 @@ function PlaySelect() {
     }
   };
   const client = useRef<CompatClient>(null);
-useEffect(() => {
-  client.current = Stomp.over(() => {
-    const sock = new SockJS(`${SERVER_URL}`);
-    return sock;
-  });
-
-  client.current.connect({}, (frame) => {
-    console.log("Connected: " + frame);
-  });
-}, []);
-
+  useEffect(() => {
+    client.current = Stomp.over(() => {
+      const sock = new SockJS(`${WEBSOCKET_URL}`);
+      return sock;
+    });
+  
+    client.current.connect({}, (frame) => {
+      console.log("Connected: " + frame);
+  
+      // 연결 성공 후 구독 설정
+      const subscription = client.current.subscribe(`/user/${MEMBER_NickName}/queue/start`, (message) => {
+        // 여기서 message.body를 통해 서버로부터 받은 메시지의 내용에 접근 가능합니다.
+        console.log(message.body);
+      });
+  
+      return () => {
+        // 컴포넌트 언마운트 시 구독 취소
+        subscription.unsubscribe();
+      };
+    });
+  }, []);
+  
   return (
     <View style={styles.container}>
       <ImageBackground

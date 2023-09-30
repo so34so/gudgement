@@ -32,38 +32,24 @@ import Animated, {
 } from "react-native-reanimated";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import { SERVER_URL } from '@env'; 
+import { API_URL } from '@env'; 
 
 
 export default function PlayMatchingWait({ route }) {
-  const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
-  const client = useRef<CompatClient>();
+  const { memberId, nickName, roleUser, tiggle, timestamp, websocketClient } = route.params;
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // 화면이 활성화될 때 웹 소켓 연결 설정
-      client.current = Stomp.over(() => {
-        const sock = new SockJS(`${SERVER_URL}`);
-        return sock;
-      });
+  useEffect(() => {
+    // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
+    websocketClient.subscribe("/user/queue/start", function(messageOutput) {
+      console.log('Room number: ' + messageOutput.body);
+      Reactotron.log!('Room number: ' + messageOutput.body);
+    });
 
-      client.current.connect({}, (frame) => {
-        console.log("Connected: " + frame);
-        client.current.subscribe("/user/queue/start/sub-0", function(messageOutput) {
-          console.log('Room number: ' + messageOutput.body);
-        });
-      });
-
-      return () => {
-        // 화면이 비활성화될 때 웹 소켓 연결 해제
-        if (client.current && client.current.connected) {
-          client.current.disconnect();
-        }
-      };
-    }, [])
-  );
-
-
+    return () => {
+      // 언마운트 시 구독 해제 - 필요에 따라 조정하세요.
+      websocketClient.unsubscribe("/user/queue/start");
+    };
+  }, []);
 //   // URL 정의
 // const serverUrl = 'http://j9d106.p.ssafy.io:8080/ws/info?t=1695980196936';
 
@@ -114,7 +100,7 @@ export default function PlayMatchingWait({ route }) {
   // 매칭 취소 함수
   async function postMatchClose() {
     try {
-      const response = await axios.post(`${SERVER_URL}/match/removeUser`, {
+      const response = await axios.post(`${API_URL}/match/removeUser`, {
         memberId: memberId,
         nickName: nickName,
         roleUser: roleUser,

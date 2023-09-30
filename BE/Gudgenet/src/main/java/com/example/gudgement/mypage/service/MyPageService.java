@@ -9,5 +9,6 @@ public interface MyPageService {
     int[] getWeekOfMonth(String date);
     ChartDataDto todayWeekChartData(Long id);
     ChartDataDto toDateWeekChartData(Long id, String date);
-    Chart createChart(Member member, int month, int week);
+    Chart createChart(Member member, Long overconsumption, int year, int month, int week);
+    boolean Overconsumption(long overAmountRate, long amount);
 }

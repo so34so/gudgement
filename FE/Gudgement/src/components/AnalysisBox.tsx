@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
 import reactotron from "reactotron-react-native";
 
-function AnalysisBox() {
+function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
   const {
     data: userData,
     error: fetchError,
@@ -54,12 +54,14 @@ function AnalysisBox() {
   }
 
   return (
-    <View>
+    <View className="w-fill">
       {isStartSingle ? (
         <>
-          <View className="w-[full] h-[100px] bg-white py-4 flex-row justify-around items-center border-[3px] border-black rounded-3xl">
+          <View className="w-[380px] h-fill bg-white py-4 flex-row justify-evenly items-center border-[3px] border-darkgray rounded-2xl">
             <View className="flex flex-row justify-center items-center space-x-6">
-              <Text className={`font-PretendardBlack ${spend.color} text-2lg`}>
+              <Text
+                className={`font-PretendardExtraBold ${spend.color} text-2lg`}
+              >
                 {spend.text}
               </Text>
               <Image
@@ -71,10 +73,10 @@ function AnalysisBox() {
               />
             </View>
             <View className="flex flex-col items-end">
-              <Text className="text-black font-PretendardExtraBold text-sm">
+              <Text className="text-darkgray font-PretendardExtraBold text-xs">
                 이번 달 소비
               </Text>
-              <Text className="text-black font-PretendardExtraBold text-3lg">
+              <Text className="text-darkgray font-PretendardExtraBold text-lg">
                 {userData?.rate.payment
                   ? userData?.rate.payment.toLocaleString("ko-KR")
                   : 0}{" "}
@@ -82,20 +84,24 @@ function AnalysisBox() {
               </Text>
             </View>
           </View>
-          <View className="">
-            <ProgressBar percent={percent} />
-          </View>
+          {ProgressBarVisible && (
+            <View className="">
+              <ProgressBar percent={percent} />
+            </View>
+          )}
         </>
       ) : (
-        <View className="w-[90%] h-[100px] top-[64px] bg-white py-4 flex-row justify-center space-x-6 items-center border-[3px] border-black rounded-xl">
-          <Image
-            source={{ uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}` }}
-            className="w-16 h-12"
-            resizeMode="contain"
-          />
-          <Text className="text-black font-PretendardExtraBold text-sm">
-            진행 중인 싱글 플레이가 없습니다!
-          </Text>
+        <View className="w-[380px] h-fill bg-white py-4 flex-row justify-evenly items-center border-[3px] border-darkgray rounded-2xl">
+          <View className="flex flex-row justify-center items-center space-x-6">
+            <Image
+              source={{ uri: `${IMAGE_URL}${ANALYZE_BOX_IMAGE[0]}` }}
+              className="w-16 h-12"
+              resizeMode="contain"
+            />
+            <Text className="text-black font-PretendardExtraBold text-sm">
+              목표 절약 금액을 설정해주세요!
+            </Text>
+          </View>
         </View>
       )}
     </View>

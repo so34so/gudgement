@@ -88,7 +88,8 @@ public class InventoryServiceImpl implements InventoryService{
 
         // Find an already equipped item of the same type and unequip it.
         Optional<Inventory> equippedInventoryOpt =
-                inventoryRepository.findByItemId_TypeAndEquipped(selectedInventory.getItemId().getType(), true);
+                inventoryRepository.findByMember_MemberIdAndItemId_TypeAndEquipped(selectedInventory.getMember().getMemberId(), selectedInventory.getItemId().getType(), true);
+
 
         if (equippedInventoryOpt.isPresent()) {
             equippedInventoryOpt.get().unequip();

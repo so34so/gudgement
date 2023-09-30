@@ -38,13 +38,6 @@ function SettingName() {
     getLoginData();
   }, []);
 
-  useEffect(() => {
-    const info = {
-      info: 2,
-    };
-    updateAsyncData("loginData", info);
-  }, []);
-
   const openModal = () => {
     setModalVisible(true);
   };

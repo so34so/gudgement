@@ -1,7 +1,7 @@
 import { Animated, Easing, Text, View, Image } from "react-native";
 import { CommonType } from "../types/CommonType";
 import Svg, { Text as SvgText } from "react-native-svg";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import reactotron from "reactotron-react-native";
 
 function RenderItems({
@@ -29,14 +29,17 @@ function RenderItems({
       setTranslateY(new Animated.Value(-5));
     }
   }, [page, item.typeId]);
-  const itemWidth = component === "Shop" ? "w-[300px]" : "w-[200px]";
+  const itemWidth = useCallback(
+    () => (component === "Shop" ? "w-[300px]" : "w-[200px]"),
+    [component],
+  );
   return (
     <Animated.View
       style={{
         elevation: 5,
         transform: [{ translateY: translateY }], // translateY로 margin-y 적용
       }}
-      className={`h-36 mx-[5px] ${itemWidth} my-8 justify-center items-center bg-white rounded-[10px] flex-row space-x-10`}
+      className={`h-36 mx-[5px] ${itemWidth()} my-8 justify-center items-center bg-white rounded-[10px] flex-row space-x-10`}
     >
       <Image
         source={{

@@ -85,13 +85,13 @@ public class MyPageServiceImpl implements MyPageService{
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
 
-        Optional<Chart> chart = chartRepository.findByMemberIdAndMonthAndWeek(member, dayData[1], dayData[3]);
+        Optional<Chart> chart = chartRepository.findByMemberIdAndYearAndMonthAndWeek(member, dayData[0], dayData[1], dayData[3]);
         Chart chartData;
         // 차트가 없을 때
         if (chart.isEmpty()) {
-            chartData = createChart(member, dayData[1], dayData[3]);
+            chartData = createChart(member, member.getMonthOverconsumption(), dayData[0], dayData[1], dayData[3]);
 
-            log.info("차트의 주차 / " + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
+            log.info("차트의 주차 / " + "Year : " + chartData.getYear() + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
 
             VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
@@ -138,7 +138,12 @@ public class MyPageServiceImpl implements MyPageService{
         } else {
             chartData = chart.get();
 
-            log.info("차트의 주차 / " + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
+            log.info("차트의 주차 / " + "Year : " + chartData.getYear() + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
+
+            if (chartData.getMonthOverconsumption() == null) {
+                chartData.updateOverconsumption(member.getMonthOverconsumption());
+                chartRepository.saveAndFlush(chartData);
+            }
 
             VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
@@ -184,21 +189,35 @@ public class MyPageServiceImpl implements MyPageService{
             }
         }
 
+        long overAmountRate;
+        if (chartData.getMonthOverconsumption() != null) {
+            overAmountRate = member.getMonthOverconsumption() / 7;
+        } else {
+            overAmountRate = Long.MAX_VALUE;
+        }
+
         return ChartDataDto.builder()
                 .data(ChartDataDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
-                                startDate.getDayOfMonth() + " (월)", startDate.plusDays(1).getDayOfMonth() + " (화)",
-                                startDate.plusDays(2).getDayOfMonth() + " (수)", startDate.plusDays(3).getDayOfMonth() + " (목)",
-                                startDate.plusDays(4).getDayOfMonth() + " (금)", startDate.plusDays(5).getDayOfMonth() + " (토)",
-                                startDate.plusDays(6).getDayOfMonth() + " (일)"
+                                startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
+                                startDate.plusDays(2).getDayOfMonth() + " 수", startDate.plusDays(3).getDayOfMonth() + " 목",
+                                startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
+                                startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
                         .dateSet(ChartDataDto.Data.DataSet.builder()
                                 .amount(new Long[] {
                                         chartData.getMon(), chartData.getTue(), chartData.getWen(),
                                         chartData.getThu(), chartData.getFri(), chartData.getSat(), chartData.getSun()})
+                                .color(new boolean[] {
+                                        Overconsumption(overAmountRate, chartData.getMon()), Overconsumption(overAmountRate, chartData.getTue()),
+                                        Overconsumption(overAmountRate, chartData.getWen()), Overconsumption(overAmountRate, chartData.getThu()),
+                                        Overconsumption(overAmountRate, chartData.getFri()), Overconsumption(overAmountRate, chartData.getSat()),
+                                        Overconsumption(overAmountRate, chartData.getSun())
+                                })
                                 .build())
                         .build())
+                .year(dayData[0])
                 .month(dayData[1])
                 .week(dayData[3])
                 .build();
@@ -207,18 +226,24 @@ public class MyPageServiceImpl implements MyPageService{
     // 특정일 기준 주차 차트 가져오기
     public ChartDataDto toDateWeekChartData(Long id, String date) {
         int[] dayData = getWeekOfMonth(date);
-        LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2] + (7 - dayData[4]),23,59,59);
+        int nowMonth = LocalDate.now().getMonthValue();
+        LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2],23,59,59).minusDays(7 - dayData[4]);
         LocalDateTime startDate = endDate.minusDays(endDate.getDayOfWeek().getValue()).plusSeconds(1);
 
         Member member = memberRepository.findByMemberId(id).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
 
-        Optional<Chart> chart = chartRepository.findByMemberIdAndMonthAndWeek(member, dayData[1], dayData[3]);
+        Optional<Chart> chart = chartRepository.findByMemberIdAndYearAndMonthAndWeek(member, dayData[0], dayData[1], dayData[3]);
         Chart chartData;
         // 차트가 없을 때
         if (chart.isEmpty()) {
-            chartData = createChart(member, dayData[1], dayData[3]);
+            // 이번 달이면 이번 달 목표 금액으로
+            if (nowMonth == dayData[1]){
+                chartData = createChart(member, member.getMonthOverconsumption(), dayData[0], dayData[1], dayData[3]);
+            } else {
+                chartData = createChart(member, null, dayData[0], dayData[1], dayData[3]);
+            }
 
             log.info("차트의 주차 / " + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
 
@@ -263,7 +288,7 @@ public class MyPageServiceImpl implements MyPageService{
                 log.error(e.getMessage());
                 throw new AccountException(ErrorCode.AMOUNT_NOT_NUMBER);
             }
-            // 차트가 이미 있다면
+        // 차트가 이미 있다면
         } else {
             chartData = chart.get();
 
@@ -314,31 +339,47 @@ public class MyPageServiceImpl implements MyPageService{
             }
         }
 
+        long overAmountRate;
+        if (chartData.getMonthOverconsumption() != null) {
+            overAmountRate = member.getMonthOverconsumption() / 7;
+        } else {
+            overAmountRate = Long.MAX_VALUE;
+        }
+
         return ChartDataDto.builder()
                 .data(ChartDataDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
-                                startDate.getDayOfMonth() + " (월)", startDate.plusDays(1).getDayOfMonth() + " (화)",
-                                startDate.plusDays(2).getDayOfMonth() + " (수)", startDate.plusDays(3).getDayOfMonth() + " (목)",
-                                startDate.plusDays(4).getDayOfMonth() + " (금)", startDate.plusDays(5).getDayOfMonth() + " (토)",
-                                startDate.plusDays(6).getDayOfMonth() + " (일)"
+                                startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
+                                startDate.plusDays(2).getDayOfMonth() + " 수", startDate.plusDays(3).getDayOfMonth() + " 목",
+                                startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
+                                startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
                         .dateSet(ChartDataDto.Data.DataSet.builder()
                                 .amount(new Long[] {
                                         chartData.getMon(), chartData.getTue(), chartData.getWen(),
                                         chartData.getThu(), chartData.getFri(), chartData.getSat(), chartData.getSun()})
+                                .color(new boolean[] {
+                                        Overconsumption(overAmountRate, chartData.getMon()), Overconsumption(overAmountRate, chartData.getTue()),
+                                        Overconsumption(overAmountRate, chartData.getWen()), Overconsumption(overAmountRate, chartData.getThu()),
+                                        Overconsumption(overAmountRate, chartData.getFri()), Overconsumption(overAmountRate, chartData.getSat()),
+                                        Overconsumption(overAmountRate, chartData.getSun())
+                                })
                                 .build())
                         .build())
+                .year(dayData[0])
                 .month(dayData[1])
                 .week(dayData[3])
                 .build();
     }
 
     @Override
-    public Chart createChart(Member member, int month, int week) {
+    public Chart createChart(Member member, Long overconsumption,int year, int month, int week) {
         Chart chart = Chart.builder()
                 .memberId(member)
+                .monthOverconsumption(overconsumption)
                 .accountId(member.getVirtualAccountId())
+                .year(year)
                 .month(month)
                 .week(week)
                 .build();
@@ -346,6 +387,12 @@ public class MyPageServiceImpl implements MyPageService{
         chartRepository.saveAndFlush(chart);
 
         return chart;
+    }
+
+    @Override
+    public boolean Overconsumption(long overAmountRate, long amount) {
+        if (amount <= overAmountRate) return true;
+        return false;
     }
 
     public int getWeekOfMonth(LocalDate localDate) {

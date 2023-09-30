@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface GameRoomRepository extends JpaRepository<GameRoom,Long> {
 
-    void deleteByRoomNumber(String roomNumber);
 
     Optional<GameRoom> findByRoomNumber(String roomNumber);
 }

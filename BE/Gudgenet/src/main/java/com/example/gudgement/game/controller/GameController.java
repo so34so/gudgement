@@ -1,5 +1,6 @@
 package com.example.gudgement.game.controller;
 
+import com.example.gudgement.game.dto.BettingDto;
 import com.example.gudgement.game.dto.GameRequestDto;
 import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameRoundDto;
@@ -57,6 +58,14 @@ public class GameController {
         GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
+
+
+/*    @PostMapping("/playRound")
+    public ResponseEntity<?> playRound(@RequestBody BettingDto bettingDto){
+        GameResultDto gameResult = gameRoundService.playRound3(bettingDto);
+        return ResponseEntity.ok().build();
+    }*/
+
 
     @Operation(summary = "게임 결과 보내기")
     @PostMapping("/end")

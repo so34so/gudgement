@@ -145,8 +145,6 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .emailApprove(member.isEmailApprove())
-                .nicknameApprove(member.isNicknameApprove())
                 .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())

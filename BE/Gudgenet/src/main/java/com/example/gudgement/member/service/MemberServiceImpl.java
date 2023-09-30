@@ -10,12 +10,17 @@ import com.example.gudgement.member.exception.EmailLogicException;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.shop.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NonUniqueResultException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -23,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Override
     @Transactional
@@ -85,12 +91,19 @@ public class MemberServiceImpl implements MemberService {
         }
         log.info("닉네임 설정 확인 ==============================");
 
+        List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
+        List<Item> equippedItems = new ArrayList<>();
+        for (Inventory inventory : equippedInventories) {
+            equippedItems.add(inventory.getItemId()); // assuming getItemId() returns an Item object.
+        }
+
         return MemberResponseDto.builder()
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .emailApprove(member.isEmailApprove())
                 .nicknameApprove(member.isNicknameApprove())
+                .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())

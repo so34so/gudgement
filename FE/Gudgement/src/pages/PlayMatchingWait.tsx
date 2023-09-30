@@ -40,14 +40,14 @@ export default function PlayMatchingWait({ route }) {
 
   useEffect(() => {
     // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
-    websocketClient.subscribe("/user/queue/start", function(messageOutput) {
-      console.log('Room number: ' + messageOutput.body);
-      Reactotron.log!('Room number: ' + messageOutput.body);
+    websocketClient.subscribe(`/user/${nickName}/queue/start`, (message) => {
+      console.log('Room number: ' + message.body);
+      Reactotron.log!('Room number: ' + message.body);
     });
 
     return () => {
       // 언마운트 시 구독 해제 - 필요에 따라 조정하세요.
-      websocketClient.unsubscribe("/user/queue/start");
+      websocketClient.unsubscribe(`/user/${nickName}/queue/start`,);
     };
   }, []);
 //   // URL 정의

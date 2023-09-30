@@ -27,7 +27,7 @@ interface Game {
   message: string;
 }
 
-export default function PlayGame() {
+export default function PlayGameResult() {
   useEffect(() => {
     StatusBar.setHidden(true);
   }, []);

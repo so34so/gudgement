@@ -22,6 +22,7 @@ import {
   NavigationProp,
   useNavigation,
   useRoute,
+  useFocusEffect,
 } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -36,33 +37,31 @@ import { SERVER_URL } from '@env';
 
 export default function PlayMatchingWait({ route }) {
   const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
-//   const socket = new SockJS("http://j9d106.p.ssafy.io:8080/ws");
-//   const stompClient = Stomp.over(socket);
-//   stompClient.connect({}, function(frame) {
-//     console.log('Connected: ' + frame);
-//     stompClient.subscribe('/user/queue/start', function(messageOutput) {
-//         console.log('Room number: ' + messageOutput.body);
-//     });
-// });
-
   const client = useRef<CompatClient>();
 
-  const connectHandler = () => {
-    client.current = Stomp.over(() => {
-      const sock = new SockJS(`${SERVER_URL}`);
-      // Reactotron.log!(sock);
-      return sock;
-    });
-
-    client.current.connect({}, (frame) => {
-      // Reactotron.log!("Connected: " + frame);
-      client.current.subscribe("/queue/start/", function(messageOutput) {
-        Reactotron.log!('야!! Room number: ' + messageOutput.body);
-        console.log('야!! Room number: ' + messageOutput.body);
-
+  useFocusEffect(
+    React.useCallback(() => {
+      // 화면이 활성화될 때 웹 소켓 연결 설정
+      client.current = Stomp.over(() => {
+        const sock = new SockJS(`${SERVER_URL}`);
+        return sock;
       });
-    });
-  };
+
+      client.current.connect({}, (frame) => {
+        console.log("Connected: " + frame);
+        client.current.subscribe("/user/queue/start/sub-0", function(messageOutput) {
+          console.log('Room number: ' + messageOutput.body);
+        });
+      });
+
+      return () => {
+        // 화면이 비활성화될 때 웹 소켓 연결 해제
+        if (client.current && client.current.connected) {
+          client.current.disconnect();
+        }
+      };
+    }, [])
+  );
 
 
 //   // URL 정의
@@ -83,15 +82,15 @@ export default function PlayMatchingWait({ route }) {
 //     // 에러 처리 로직을 추가할 수 있습니다.
 //   });
 
-  useEffect(() => {
-    connectHandler();
+  // useEffect(() => {
+  //   connectHandler();
 
-    return () => {
-      if (client.current && client.current.connected) {
-        client.current.disconnect();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (client.current && client.current.connected) {
+  //       client.current.disconnect();
+  //     }
+  //   };
+  // }, []);
 
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;

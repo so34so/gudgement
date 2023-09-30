@@ -19,12 +19,18 @@ import {
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { SERVER_URL } from '@env'; 
+
+
 const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
 const MEMBER_ID = 3032257068;
 const MEMBER_NickName = "KII";
 const MEMBER_RoleUser = "silver";
 
 function PlaySelect() {
+  
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
   const lineGradi: ImageSourcePropType = LineGradi as ImageSourcePropType;
@@ -67,6 +73,7 @@ function PlaySelect() {
           roleUser: MEMBER_RoleUser,
           tiggle: selectedMap.ticle,
           timestamp: 0,
+          websocketClient: client.current,
         });
       }
     } catch (error) {
@@ -74,6 +81,17 @@ function PlaySelect() {
       // 오류가 발생했을 때의 처리를 수행
     }
   };
+  const client = useRef<CompatClient>(null);
+useEffect(() => {
+  client.current = Stomp.over(() => {
+    const sock = new SockJS(`${SERVER_URL}`);
+    return sock;
+  });
+
+  client.current.connect({}, (frame) => {
+    console.log("Connected: " + frame);
+  });
+}, []);
 
   return (
     <View style={styles.container}>

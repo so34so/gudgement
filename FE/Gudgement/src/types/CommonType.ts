@@ -34,7 +34,11 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-    PlayGame: undefined;
+    PlayGameStart: undefined;
+    PlayGameProgress: undefined;
+    PlayGameResult: undefined;
+    PlayGameFinalResult: undefined;
+        
     /**
      * MyPage child Type
      */

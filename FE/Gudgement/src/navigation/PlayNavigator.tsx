@@ -2,7 +2,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { CommonType } from "../types/CommonType";
 import PlaySelect from "../pages/PlaySelect";
-import PlayGame from "../pages/PlayGame";
+import PlayGameStart from "../pages/PlayGameStart";
+import PlayGameProgress from "../pages/PlayGameProgress";
+import PlayGameResult from '../pages/PlayGameResult';
+import PlayGameFinalResult from '../pages/PlayGameFinalResult';
 import PlayMatchingWait from "../pages/PlayMatchingWait";
 import PlayMatchingQueue from "../pages/PlayMatchingQueue";
 function PlayNavigator() {
@@ -28,8 +31,23 @@ function PlayNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="PlayGame"
-        component={PlayGame}
+        name="PlayGameStart"
+        component={PlayGameStart}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayGameProgress"
+        component={PlayGameProgress}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayGameResult"
+        component={PlayGameResult}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayGameFinalResult"
+        component={PlayGameFinalResult}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

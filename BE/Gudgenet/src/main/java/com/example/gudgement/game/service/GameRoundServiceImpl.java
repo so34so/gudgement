@@ -112,8 +112,8 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .roomNumber(roomNumber)
                     .build();
 
-            messagingTemplate.convertAndSendToUser(bettingDto.getNickName(), "/queue/start", myResult);
-            messagingTemplate.convertAndSendToUser(bettingDto.getOrderName(), "/queue/start", otherResult);
+            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getNickName(), myResult);
+            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getOrderName(),otherResult);
 
 
             /* Reset status for next round */

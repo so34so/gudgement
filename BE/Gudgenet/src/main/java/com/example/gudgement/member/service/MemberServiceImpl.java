@@ -147,7 +147,11 @@ public class MemberServiceImpl implements MemberService {
         List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
         List<Item> equippedItems = new ArrayList<>();
         for (Inventory inventory : equippedInventories) {
-            equippedItems.add(inventory.getItemId()); // assuming getItemId() returns an Item object.
+            Item item = inventory.getItemId();
+            if (item == null) {
+                throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
+            }
+            equippedItems.add(item);
         }
 
         return MemberResponseDto.builder()

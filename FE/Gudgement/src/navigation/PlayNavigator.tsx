@@ -8,6 +8,7 @@ import PlayGameResult from '../pages/PlayGameResult';
 import PlayGameFinalResult from '../pages/PlayGameFinalResult';
 import PlayMatchingWait from "../pages/PlayMatchingWait";
 import PlayMatchingQueue from "../pages/PlayMatchingQueue";
+import PlayMatchingQueueWait from '../pages/PlayMatchingQueueWait';
 function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
@@ -28,6 +29,11 @@ function PlayNavigator() {
       <Stack.Screen
         name="PlayMatchingQueue"
         component={PlayMatchingQueue}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PlayMatchingQueueWait"
+        component={PlayMatchingQueueWait}
         options={{ headerShown: false }}
       />
       <Stack.Screen

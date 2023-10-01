@@ -24,8 +24,13 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import SockJS from "sockjs-client";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import { WEBSOCKET_URL } from '@env'; 
 
-export default function PlayMatchingQueue() {
+
+export default function PlayMatchingQueue({ route }) {
+  const { roomNumber } = route.params; // 추가
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -36,6 +41,17 @@ export default function PlayMatchingQueue() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
+    // WebSocket connection
+const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+
+stompClient.connect({}, function(frame) {
+  stompClient.subscribe("/topic/game/" +roomNumber, function(messageOutput) {
+    console.log(messageOutput)
+    
+    // Save or use the room number received from server
+  });
+});
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -44,7 +60,7 @@ export default function PlayMatchingQueue() {
         className="flex-1"
       >
         <View style={styles.buttonwrapper}>
-          <TouchableOpacity onPress={() => navigation.navigate("PlayGame")}>
+          <TouchableOpacity onPress={() => navigation.navigate("PlayMatchingQueueWait")}>
             <Image style={styles.acceptbutton} source={acceptButton} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>

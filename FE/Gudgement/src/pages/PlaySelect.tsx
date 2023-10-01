@@ -67,6 +67,7 @@ function PlaySelect() {
       const response = await postMatchStart();
       if (response) {
         // 응답이 유효한 경우에만 navigation을 진행합니다.
+        
         navigation.navigate("PlayMatchingWait", {
           memberId: MEMBER_ID,
           nickName: MEMBER_NickName,
@@ -91,16 +92,16 @@ function PlaySelect() {
     client.current.connect({}, (frame) => {
       console.log("Connected: " + frame);
   
-      // 연결 성공 후 구독 설정
-      const subscription = client.current.subscribe(`/user/${MEMBER_NickName}/queue/start`, (message) => {
-        // 여기서 message.body를 통해 서버로부터 받은 메시지의 내용에 접근 가능합니다.
-        console.log(message.body);
-      });
+    //   // 연결 성공 후 구독 설정
+    //   const subscription = client.current.subscribe("/queue/start/" + MEMBER_NickName, (message) => {
+    //     // 여기서 message.body를 통해 서버로부터 받은 메시지의 내용에 접근 가능합니다.
+    //     console.log(message.body);
+    //   });
   
-      return () => {
-        // 컴포넌트 언마운트 시 구독 취소
-        subscription.unsubscribe();
-      };
+    //   return () => {
+    //     // 컴포넌트 언마운트 시 구독 취소
+    //     subscription.unsubscribe();
+    //   };
     });
   }, []);
   

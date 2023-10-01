@@ -40,43 +40,18 @@ export default function PlayMatchingWait({ route }) {
 
   useEffect(() => {
     // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
-    websocketClient.subscribe(`/user/${nickName}/queue/start`, (message) => {
+    websocketClient.subscribe("/queue/start/" + nickName,  (message) => {
       console.log('Room number: ' + message.body);
       Reactotron.log!('Room number: ' + message.body);
+      navigation.navigate("PlayMatchingQueue", { roomNumber: message.body });
     });
-
+    
     return () => {
       // 언마운트 시 구독 해제 - 필요에 따라 조정하세요.
-      websocketClient.unsubscribe(`/user/${nickName}/queue/start`,);
+      websocketClient.unsubscribe("/queue/start/" + nickName,);
     };
   }, []);
-//   // URL 정의
-// const serverUrl = 'http://j9d106.p.ssafy.io:8080/ws/info?t=1695980196936';
 
-// // Axios를 사용하여 GET 요청 보내기
-// axios.get(serverUrl)
-//   .then(response => {
-//     // 성공적으로 데이터를 받았을 때 수행할 작업
-//     const responseData = response.data; // 서버에서 반환한 데이터
-//     console.log('서버로부터 반환된 데이터:', responseData);
-//     navigation.navigate("PlayMatchingQueue");
-//     // 이곳에서 responseData를 가공하거나 처리할 수 있습니다.
-//   })
-//   .catch(error => {
-//     // 요청이 실패했을 때 수행할 작업
-//     console.error('GET 요청 중 오류 발생:', error);
-//     // 에러 처리 로직을 추가할 수 있습니다.
-//   });
-
-  // useEffect(() => {
-  //   connectHandler();
-
-  //   return () => {
-  //     if (client.current && client.current.connected) {
-  //       client.current.disconnect();
-  //     }
-  //   };
-  // }, []);
 
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
@@ -88,7 +63,6 @@ export default function PlayMatchingWait({ route }) {
     MatchingInfoBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
@@ -125,21 +99,21 @@ export default function PlayMatchingWait({ route }) {
     }
   };
 
-  // useEffect(() => {
-  //   offset.value = withRepeat(
-  //     withTiming(-offset.value, { duration: 300 }),
-  //     -1,
-  //     true,
-  //   );
-  //   const intervalId = setInterval(() => {
-  //     setElapsedTime(prevTime => prevTime + 1);
-  //   }, 1000);
+  useEffect(() => {
+    offset.value = withRepeat(
+      withTiming(-offset.value, { duration: 300 }),
+      -1,
+      true,
+    );
+    const intervalId = setInterval(() => {
+      setElapsedTime(prevTime => prevTime + 1);
+    }, 1000);
 
-  //   // 컴포넌트가 언마운트될 때 인터벌 정리
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, [offset]);
+    // 컴포넌트가 언마운트될 때 인터벌 정리
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [offset]);
 
   return (
     <View className="flex w-full h-full">

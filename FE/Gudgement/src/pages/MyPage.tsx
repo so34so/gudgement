@@ -82,7 +82,7 @@ function MyPage(this: unknown) {
           />
           <NavigationButton
             handleFunction={() => handleMoveScreen("Analyze")}
-            text="만보"
+            text="분석"
             height="sm"
             width="sm"
             size="md"

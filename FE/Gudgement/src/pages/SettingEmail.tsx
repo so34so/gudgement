@@ -40,13 +40,6 @@ function SettingEmail() {
     getLoginData();
   }, []);
 
-  useEffect(() => {
-    const info = {
-      info: 1,
-    };
-    updateAsyncData("loginData", info);
-  }, []);
-
   const openModal = () => {
     setModalVisible(true);
   };

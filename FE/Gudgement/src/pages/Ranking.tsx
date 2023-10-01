@@ -43,6 +43,7 @@ export default function Ranking() {
         return "bg-deepgreen";
     }
   };
+  console.log(IMAGE_URL);
   const flatListProps: FlatListProps<Irank> = {
     data: RANKING.slice(3, RANKING.length),
     renderItem: ({ item }) => {

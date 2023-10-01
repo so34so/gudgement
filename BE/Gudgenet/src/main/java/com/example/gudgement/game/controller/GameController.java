@@ -1,8 +1,6 @@
 package com.example.gudgement.game.controller;
 
-import com.example.gudgement.game.dto.GameRequestDto;
-import com.example.gudgement.game.dto.GameResultDto;
-import com.example.gudgement.game.dto.GameRoundDto;
+import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/game")
@@ -58,7 +58,13 @@ public class GameController {
         return ResponseEntity.ok(gameRoundInfo);
     }
 
-    @Operation(summary = "게임 결과 보내기")
+    @Operation(summary = "카드 게임 배팅")
+    @PostMapping("/playRound")
+    public void playRound(@RequestBody BettingDto bettingDto){
+        gameRoundService.playRound(bettingDto);
+    }
+
+    @Operation(summary = "최종 게임 결과 저장")
     @PostMapping("/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         gameService.endGame(gameResultDto);

@@ -57,8 +57,6 @@ export default function Home() {
     }
   }, [percent]);
 
-  reactotron.log!("userData", userData);
-
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -99,7 +97,7 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[90%]">
-            <AnalysisBox />
+            <AnalysisBox ProgressBarVisible={true} />
           </View>
         </View>
         <Image

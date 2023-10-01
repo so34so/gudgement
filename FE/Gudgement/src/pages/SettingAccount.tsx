@@ -14,14 +14,11 @@ import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 
 function SettingAccount() {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [tempEmail, setTempEmail] = useState("");
@@ -49,10 +46,6 @@ function SettingAccount() {
 
     if (tempEmail.length > 0) {
       handleReadAccount();
-      const info = {
-        info: 3,
-      };
-      updateAsyncData("loginData", info);
     }
   }, [tempEmail]);
 
@@ -103,12 +96,6 @@ function SettingAccount() {
       try {
         const response = await axios.post(`${API_URL}/account`, sendBE);
         reactotron.log!("계좌 연동 성공!", response);
-
-        const info = {
-          info: 4,
-        };
-        updateAsyncData("loginData", info);
-
         /**
          * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
          * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.

@@ -364,6 +364,7 @@ public class MemberServiceImpl implements MemberService {
         inventory.equip();
 
         inventoryRepository.save(inventory);
+        log.info("================ 기본 생성 이상 없음 =======================");
     }
 }
 

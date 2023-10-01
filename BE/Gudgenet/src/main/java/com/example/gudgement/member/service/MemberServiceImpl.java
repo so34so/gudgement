@@ -33,7 +33,7 @@ import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-=======
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -145,8 +145,6 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .emailApprove(member.isEmailApprove())
-                .nicknameApprove(member.isNicknameApprove())
                 .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())

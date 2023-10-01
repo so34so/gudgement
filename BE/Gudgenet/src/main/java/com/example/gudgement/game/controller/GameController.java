@@ -59,15 +59,15 @@ public class GameController {
         return ResponseEntity.ok(gameRoundInfo);
     }
 
+    @Operation(summary = "카드 게임 배팅")
+    @PostMapping("/playRound")
+    public ResponseEntity<Void>  playRound(@RequestBody BettingDto bettingDto){
+        gameRoundService.playRound(bettingDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-/*    @PostMapping("/playRound")
-    public ResponseEntity<?> playRound(@RequestBody BettingDto bettingDto){
-        GameResultDto gameResult = gameRoundService.playRound3(bettingDto);
-        return ResponseEntity.ok().build();
-    }*/
 
-
-    @Operation(summary = "게임 결과 보내기")
+    @Operation(summary = "최종 게임 결과 저장")
     @PostMapping("/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         gameService.endGame(gameResultDto);

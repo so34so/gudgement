@@ -50,8 +50,8 @@ public class MatchingEventListener {
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "refuse");
 
-            messagingTemplate.convertAndSendToUser(request.getNickName(), "/queue/start", roomNumber);
-            messagingTemplate.convertAndSendToUser(otherUser, "/queue/start", roomNumber);
+            messagingTemplate.convertAndSend("/queue/start/" + request.getNickName(), roomNumber);
+            messagingTemplate.convertAndSend("/queue/start/" + otherUser, roomNumber);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
         }

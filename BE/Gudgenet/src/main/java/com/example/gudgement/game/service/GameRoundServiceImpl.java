@@ -76,9 +76,10 @@ public class GameRoundServiceImpl implements GameRoundService {
         return new GameRoundDto(userTiggles ,cardInfo,rounds);
     }
 
-    public void playRound(BettingDto bettingDto) {
+    public void  playRound(BettingDto bettingDto) {
         String roomNumber = bettingDto.getRoomNumber();
         int round = bettingDto.getRounds();
+
         // Check if the user exists in Redis.
         Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
 
@@ -88,38 +89,65 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         // Update the acceptance status in Redis.
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "betting");
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":bet", String.valueOf(bettingDto.getBettingAmount()));
 
         // If both users have bet, then proceed with the comparison and result calculation
         if (allUsersBetting(roomNumber)) {
-            // Both users have bet. Now we need to compare the cards and calculate the result
+            int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":bet"));
+            int otherBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":bet"));
 
             String myCardString = (String)redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName()+":currentCard");
             String otherCardString = (String)redisTemplate.opsForHash().get(roomNumber ,  bettingDto.getOtherName()+":currentCard");
 
-
             Long myValue= Long.parseLong(myCardString.split(":")[1]);
             Long otherValue= Long.parseLong(otherCardString.split(":")[1]);
 
+            boolean iWon = !(myValue > otherValue);
+
+            // Fetch the current tiggle values for each player
+            int myTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":tiggle"));
+            int otherTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":tiggle"));
+
+            if(iWon) {  // If I won...
+                myTiggle += otherBet;  // Add the amount that the opponent bet to my tiggles.
+                otherTiggle -= otherBet;  // Subtract the amount that the opponent bet from his/her own tiggles.
+            } else {  // If I lost...
+                myTiggle -= myBet;  // Subtract the amount that I bet from my own tiggles.
+                otherTiggle += myBet;  // Add the amount that I bet to the opponent's tiggles.
+            }
+
+            if (myTiggle <=0 || otherTiggle <=0){
+                round=10;
+            }
+
             RoundResultDto myResult = RoundResultDto.builder()
-                    .isResult(myValue > otherValue)
+                    .nickName(bettingDto.getNickName())
+                    .isResult(iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
                     .build();
 
             RoundResultDto otherResult = RoundResultDto.builder()
-                    .isResult(myValue < otherValue)
+                    .nickName(bettingDto.getOtherName())
+                    .isResult(!iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
                     .build();
 
-            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getNickName(), myResult);
-            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getOtherName(),otherResult);
+            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
+            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
 
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber , myResult);
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber , otherResult);
 
             /* Reset status for next round */
             resetStatusForNextRound(roomNumber);
+
+
         }
+
     }
+
 
     private boolean allUsersBetting(String roomNumber) {
         // Get all keys (user info) from the Redis hash.

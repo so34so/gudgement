@@ -24,8 +24,12 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import SockJS from "sockjs-client";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import { WEBSOCKET_URL } from "@env";
 
-export default function PlayMatchingQueueWait() {
+export default function PlayMatchingQueueWait({ route }) {
+  const { roomNumber, nickName } = route.params; // 추가
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -36,6 +40,16 @@ export default function PlayMatchingQueueWait() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
+  // WebSocket connection
+  const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+
+  stompClient.connect({}, function (frame) {
+    stompClient.subscribe("/topic/game/" + roomNumber, function (message) {
+      console.log(message);
+      navigation.navigate("PlayGameStart", { roomNumber: message.body });
+    });
+  });
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -43,9 +57,7 @@ export default function PlayMatchingQueueWait() {
         resizeMode="cover"
         className="flex-1"
       >
-        <View style={styles.buttonwrapper}>
-          
-        </View>
+        <View style={styles.buttonwrapper} />
 
         <View className="flex z-20">
           <Image style={styles.bluecard} source={blueCard} />

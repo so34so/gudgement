@@ -26,11 +26,10 @@ import Animated, {
 } from "react-native-reanimated";
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
-import { WEBSOCKET_URL } from '@env'; 
-
+import { WEBSOCKET_URL } from "@env";
 
 export default function PlayMatchingQueue({ route }) {
-  const { roomNumber } = route.params; // 추가
+  const { roomNumber, nickName } = route.params; // 추가
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -41,16 +40,36 @@ export default function PlayMatchingQueue({ route }) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-    // WebSocket connection
-const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+  // WebSocket connection
+  const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
 
-stompClient.connect({}, function(frame) {
-  stompClient.subscribe("/topic/game/" +roomNumber, function(messageOutput) {
-    console.log(messageOutput)
-    
-    // Save or use the room number received from server
+  stompClient.connect({}, function (frame) {
+    stompClient.subscribe(
+      "/topic/game/" + roomNumber,
+      function (messageOutput) {
+        console.log(messageOutput);
+      },
+    );
   });
-});
+
+  // 매칭 수락 함수
+  const acceptMatch = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/game/accept`, {
+        roomNumber: roomNumber,
+        nickName: nickName,
+      });
+      if (response.status === 200) {
+        // If successful...
+        navigation.navigate("PlayMatchingQueueWait", {
+          roomNumber: roomNumber,
+          nickName: nickName,
+        });
+      }
+    } catch (error) {
+      console.error("Error accepting match:", error);
+    }
+  };
 
   return (
     <View className="flex w-full h-full">
@@ -60,7 +79,7 @@ stompClient.connect({}, function(frame) {
         className="flex-1"
       >
         <View style={styles.buttonwrapper}>
-          <TouchableOpacity onPress={() => navigation.navigate("PlayMatchingQueueWait")}>
+          <TouchableOpacity onPress={acceptMatch}>
             <Image style={styles.acceptbutton} source={acceptButton} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>

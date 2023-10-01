@@ -32,26 +32,28 @@ import Animated, {
 } from "react-native-reanimated";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import { API_URL } from '@env'; 
-
+import { API_URL } from "@env";
 
 export default function PlayMatchingWait({ route }) {
-  const { memberId, nickName, roleUser, tiggle, timestamp, websocketClient } = route.params;
+  const { memberId, nickName, roleUser, tiggle, timestamp, websocketClient } =
+    route.params;
 
   useEffect(() => {
     // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
-    websocketClient.subscribe("/queue/start/" + nickName,  (message) => {
-      console.log('Room number: ' + message.body);
-      Reactotron.log!('Room number: ' + message.body);
-      navigation.navigate("PlayMatchingQueue", { roomNumber: message.body });
+    websocketClient.subscribe("/queue/start/" + nickName, message => {
+      console.log("Room number: " + message.body);
+      Reactotron.log!("Room number: " + message.body);
+      navigation.navigate("PlayMatchingQueue", {
+        roomNumber: message.body,
+        nickName: nickName,
+      });
     });
-    
+
     return () => {
-      // 언마운트 시 구독 해제 - 필요에 따라 조정하세요.
-      websocketClient.unsubscribe("/queue/start/" + nickName,);
+      // 언마운트 시 구독 해제 - 필요에 따라 조정
+      websocketClient.unsubscribe("/queue/start/" + nickName);
     };
   }, []);
-
 
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
@@ -69,7 +71,6 @@ export default function PlayMatchingWait({ route }) {
   }));
 
   const [elapsedTime, setElapsedTime] = useState(0);
-
 
   // 매칭 취소 함수
   async function postMatchClose() {

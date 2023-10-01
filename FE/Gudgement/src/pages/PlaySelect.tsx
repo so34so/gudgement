@@ -21,20 +21,23 @@ import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import { WEBSOCKET_URL } from '@env'; 
-
-
-const MATCH_URL = "http://j9d106.p.ssafy.io:8080/";
-const MEMBER_ID = 3032257068;
-const MEMBER_NickName = "KII";
-const MEMBER_RoleUser = "silver";
+import { WEBSOCKET_URL } from "@env";
+import { queryClient } from "../../queryClient";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 function PlaySelect() {
-  
+  // 유저 정보 가져오기
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
+
+  const MEMBER_ID = userInfo?.memberId;
+  const MEMBER_NickName = userInfo?.nickname;
+  const MEMBER_RoleUser = "silver";
+
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
   const lineGradi: ImageSourcePropType = LineGradi as ImageSourcePropType;
-
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -67,7 +70,6 @@ function PlaySelect() {
       const response = await postMatchStart();
       if (response) {
         // 응답이 유효한 경우에만 navigation을 진행합니다.
-        
         navigation.navigate("PlayMatchingWait", {
           memberId: MEMBER_ID,
           nickName: MEMBER_NickName,
@@ -88,23 +90,12 @@ function PlaySelect() {
       const sock = new SockJS(`${WEBSOCKET_URL}`);
       return sock;
     });
-  
-    client.current.connect({}, (frame) => {
+
+    client.current.connect({}, frame => {
       console.log("Connected: " + frame);
-  
-    //   // 연결 성공 후 구독 설정
-    //   const subscription = client.current.subscribe("/queue/start/" + MEMBER_NickName, (message) => {
-    //     // 여기서 message.body를 통해 서버로부터 받은 메시지의 내용에 접근 가능합니다.
-    //     console.log(message.body);
-    //   });
-  
-    //   return () => {
-    //     // 컴포넌트 언마운트 시 구독 취소
-    //     subscription.unsubscribe();
-    //   };
     });
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <ImageBackground

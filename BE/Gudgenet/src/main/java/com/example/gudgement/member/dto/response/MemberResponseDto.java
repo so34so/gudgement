@@ -5,12 +5,11 @@ import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class MemberResponseDto implements Serializable {
+public class MemberResponseDto {
     private Long memberId;
     private String email;
     private String nickname;

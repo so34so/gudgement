@@ -202,12 +202,10 @@ public class GameServiceImpl implements GameService{
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }
 
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber+"/reject",nickname+" fail");
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber,nickname+" fail");
 
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
-
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname + " fail");
     }
 
     private int fetchLevel(String nickname) {

@@ -94,7 +94,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             // Both users have bet. Now we need to compare the cards and calculate the result
 
             String myCardString = (String)redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName()+":currentCard");
-            String otherCardString = (String)redisTemplate.opsForHash().get(roomNumber ,  bettingDto.getOrderName()+":currentCard");
+            String otherCardString = (String)redisTemplate.opsForHash().get(roomNumber ,  bettingDto.getOtherName()+":currentCard");
 
 
             Long myValue= Long.parseLong(myCardString.split(":")[1]);
@@ -113,7 +113,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .build();
 
             messagingTemplate.convertAndSend("/queue/start" + bettingDto.getNickName(), myResult);
-            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getOrderName(),otherResult);
+            messagingTemplate.convertAndSend("/queue/start" + bettingDto.getOtherName(),otherResult);
 
 
             /* Reset status for next round */

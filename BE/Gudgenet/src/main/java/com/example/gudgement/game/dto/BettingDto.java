@@ -8,16 +8,16 @@ import lombok.*;
 @ToString
 public class BettingDto {
     private String nickName;
-    private String orderName;
+    private String otherName;
     private Long bettingAmount;
     private int rounds;
     private int cardOrder;
     private String roomNumber;
 
     @Builder
-    public BettingDto(String nickName,String orderName, Long bettingAmount, int rounds, int cardOrder, String roomNomber){
+    public BettingDto(String nickName,String otherName, Long bettingAmount, int rounds, int cardOrder, String roomNomber){
         this.nickName = nickName;
-        this.orderName = orderName;
+        this.otherName = otherName;
         this.bettingAmount = bettingAmount;
         this.rounds = rounds;
         this.cardOrder = cardOrder;

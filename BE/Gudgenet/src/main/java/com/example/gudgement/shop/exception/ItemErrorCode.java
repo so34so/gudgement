@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 public enum ItemErrorCode {
     // 아이템
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "I-001", "존재하지 않는 아이템입니다."),
-    // 토큰
+    // 인벤토리
     NOT_AUTHORIZATION_TOKEN(HttpStatus.BAD_REQUEST, "T-001", "올바른 토큰이 아닙니다."),
     ACCESS_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-002", "Access토큰의 기간이 만료되었습니다."),
     REFRESH_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-003-", "Refresh토큰의 기간이 만료되었습니다."),

@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class Price extends Item implements Serializable {
+public class Price extends Item  {
 
     private Long price;
 

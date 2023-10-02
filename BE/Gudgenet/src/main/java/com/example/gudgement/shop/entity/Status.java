@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class Status extends Item implements Serializable {
+public class Status extends Item {
 
 
     private String statusName;

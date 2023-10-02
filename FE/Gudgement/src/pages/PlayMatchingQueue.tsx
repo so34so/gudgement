@@ -27,9 +27,13 @@ import Animated, {
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { WEBSOCKET_URL } from "@env";
+import { CommonType } from "../types/CommonType";
+import { useWebSocket } from "../components/WebSocketContext";
 
 export default function PlayMatchingQueue({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
+  const websocketClient = useWebSocket();
+
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -41,16 +45,32 @@ export default function PlayMatchingQueue({ route }) {
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   // WebSocket connection
-  const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
 
-  stompClient.connect({}, function (frame) {
-    stompClient.subscribe(
-      "/topic/game/" + roomNumber,
-      function (messageOutput) {
-        console.log(messageOutput);
-      },
-    );
-  });
+  // websocketClient.connect({}, function (frame) {
+  //   websocketClient.subscribe(
+  //     "/topic/game/" + roomNumber,
+  //     function (messageOutput) {
+  //       console.log(messageOutput);
+  //     },
+  //   );
+  // });
+  useEffect(() => {
+    websocketClient.connect({}, function (frame) {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log(messageOutput);
+        },
+      );
+    });
+
+    // Unmount 시점에 웹소켓 연결 종료
+    return () => {
+      if (websocketClient.connected) {
+        websocketClient.disconnect();
+      }
+    };
+  }, []);
 
   // 매칭 수락 함수
   const acceptMatch = async () => {

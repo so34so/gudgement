@@ -33,27 +33,42 @@ import Animated, {
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { API_URL } from "@env";
+import { useWebSocket } from "../components/WebSocketContext";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { CommonType } from "../types/CommonType";
 
 export default function PlayMatchingWait({ route }) {
-  const { memberId, nickName, roleUser, tiggle, timestamp, websocketClient } =
-    route.params;
+  const { memberId, nickName, roleUser, tiggle, timestamp } = route.params;
+  const websocketClient = useWebSocket();
 
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
+  const MEMBER_ID = userInfo?.memberId;
+  const MEMBER_NickName = userInfo?.nickname;
+  const MEMBER_RoleUser = "silver";
   useEffect(() => {
-    // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
-    websocketClient.subscribe("/queue/start/" + nickName, message => {
-      console.log("Room number: " + message.body);
-      Reactotron.log!("Room number: " + message.body);
-      navigation.navigate("PlayMatchingQueue", {
-        roomNumber: message.body,
-        nickName: nickName,
-      });
-    });
+    postMatchStart();
 
+    if (websocketClient) {
+      // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
+      websocketClient.subscribe("/queue/start/" + nickName, message => {
+        console.log("Room number: " + message.body);
+        Reactotron.log!("Room number: " + message.body);
+        navigation.navigate("PlayMatchingQueue", {
+          roomNumber: message.body,
+          nickName: nickName,
+        });
+      });
+    }
     return () => {
       // 언마운트 시 구독 해제 - 필요에 따라 조정
+      if (websocketClient.connected) {
+        websocketClient.disconnect();
+      }
       websocketClient.unsubscribe("/queue/start/" + nickName);
     };
-  }, []);
+  }, [websocketClient]);
 
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
@@ -71,7 +86,23 @@ export default function PlayMatchingWait({ route }) {
   }));
 
   const [elapsedTime, setElapsedTime] = useState(0);
-
+  // 매칭 수락 함수
+  async function postMatchStart() {
+    try {
+      const response = await axios.post(`${API_URL}/match/addUser`, {
+        memberId: MEMBER_ID,
+        nickName: MEMBER_NickName,
+        roleUser: MEMBER_RoleUser,
+        tiggle: tiggle,
+        timestamp: 0,
+      });
+      Reactotron.log!("흠", response.data);
+      return response;
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
   // 매칭 취소 함수
   async function postMatchClose() {
     try {
@@ -99,22 +130,26 @@ export default function PlayMatchingWait({ route }) {
       // 오류가 발생했을 때의 처리를 수행
     }
   };
-
   useEffect(() => {
-    offset.value = withRepeat(
-      withTiming(-offset.value, { duration: 300 }),
-      -1,
-      true,
-    );
-    const intervalId = setInterval(() => {
-      setElapsedTime(prevTime => prevTime + 1);
-    }, 1000);
+    postMatchStart();
+  }, []);
 
-    // 컴포넌트가 언마운트될 때 인터벌 정리
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [offset]);
+  // useEffect(() => {
+  //   offset.value = withRepeat(
+  //     withTiming(-offset.value, { duration: 300 }),
+  //     -1,
+  //     true,
+  //   );
+
+  //   const intervalId = setInterval(() => {
+  //     setElapsedTime(prevTime => prevTime + 1);
+  //   }, 1000);
+
+  //   // 컴포넌트가 언마운트될 때 인터벌 정리
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [offset]);
 
   return (
     <View className="flex w-full h-full">

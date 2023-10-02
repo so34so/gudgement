@@ -1,6 +1,7 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
 import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
+import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import { WEBSOCKET_URL } from "@env";
 import GameUi from "../components/GameUi";
@@ -14,7 +15,9 @@ import {
   ImageSourcePropType,
   StatusBar,
 } from "react-native";
-
+import { CommonType } from "../types/CommonType";
+import { useQueryClient } from "react-query";
+import { IMAGE_URL } from "@env";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -22,47 +25,90 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-interface Game {
-  user: string;
-  message: string;
-}
+import SockJS from "sockjs-client";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import { useQuery } from "react-query";
+import Reactotron from "reactotron-react-native";
+import { useWebSocket } from "../components/WebSocketContext";
 
-export default function PlayGameStart() {
+type PlayGameStartRouteProp = RouteProp<
+  CommonType.RootStackParamList,
+  "PlayGameStart"
+>;
+
+export default function PlayGameStart({
+  route,
+}: {
+  route: PlayGameStartRouteProp;
+}) {
+  // WebSocket connection
+
+  const { roomNumber } = route.params; // 추가
+  const websocketClient = useWebSocket();
+
+  // const queryClient = useQueryClient();
+  useEffect(() => {
+    websocketClient.connect({}, function (frame) {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log("이거뭐냐?", messageOutput);
+          Reactotron.log!("정보들:", messageOutput);
+
+          const userInfoDtos = JSON.parse(
+            messageOutput.body,
+          ) as CommonType.TGameUserInfoDto;
+          const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+          const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+          Reactotron.log!("내 정보:", myInfo);
+          Reactotron.log!("적 정보", enemyInfo);
+        },
+      );
+    });
+
+    return () => {
+      // Clean up on unmount
+      if (websocketClient.connected) {
+        websocketClient.disconnect();
+      }
+    };
+  }, []);
+
+  // websocketClient.connect({}, function (frame) {
+  //   websocketClient.subscribe("/topic/game/" + roomNumber, function (massage) {
+  //     console.log(massage.body);
+  //     const userInfoDtos = JSON.parse(
+  //       massage.body,
+  //     ) as CommonType.TGameUserInfoDto;
+  //     const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+  //     const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+  //     console.log("내 정보:", myInfo);
+  //     console.log("적 정보", enemyInfo);
+  //     Reactotron.log!("dddd");
+  //     Reactotron.log!("내 정보:", myInfo);
+  //     Reactotron.log!("적 정보", enemyInfo);
+
+  //     // queryClient.setQueryData("myGameinfo", myInfo);
+  //     // queryClient.setQueryData("enemyGameinfo", enemyInfo);
+  //   });
+  // });
+
   useEffect(() => {
     StatusBar.setHidden(true);
   }, []);
 
-  const [serverState, setServerState] = useState("Loading...");
-  const [messageText, setMessageText] = useState("");
-  const [serverMessages, setServerMessages] = useState([]);
-  const userId = "ddd";
-  const WSUrl = "http://j9d106.p.ssafy.io:8080";
-  console.log(WSUrl);
+  // const { data: enemyInfo } =
+  //   useQuery<CommonType.TenemyGameinfo>("enemyGameinfo");
+  // const enemyImage = enemyInfo?.equippedItems.items.find(
+  //   item => item.typeId === null,
+  // )?.image;
+  // const { data: myInfo } = useQuery<CommonType.TenemyGameinfo>("myGameinfo");
+  // const myImage = myInfo?.equippedItems.items.find(
+  //   item => item.typeId === null,
+  // )?.image;
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
   const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-
-  const ws = new WebSocket(WSUrl);
-  ws.onopen = () => {
-    // connection opened
-    ws.send("something"); // send a message
-    console.log("새로운 클라이언트 접속");
-  };
-
-  ws.onmessage = e => {
-    // a message was received
-    console.log(e.data);
-  };
-
-  ws.onerror = e => {
-    // an error occurred
-    console.log(e.message);
-  };
-
-  ws.onclose = e => {
-    // connection closed
-    console.log(e.code, e.reason);
-  };
+  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
 
   return (
     <View className="flex w-full h-full">
@@ -87,13 +133,20 @@ export default function PlayGameStart() {
           잠시후 게임이 시작됩니다
         </Text> */}
 
+        {/* <Image
+          style={styles.mycharacter}
+          source={{ uri: `${IMAGE_URL}/character/${myImage}` }}
+        />
+        <Image
+          style={styles.enemy}
+          source={{ uri: `${IMAGE_URL}/character/${enemyImage}` }}
+        /> */}
         <Image style={styles.mycharacter} source={pingping} />
         <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

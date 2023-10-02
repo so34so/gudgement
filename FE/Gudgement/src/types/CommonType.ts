@@ -34,11 +34,11 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-    PlayGameStart: undefined;
+    PlayGameStart: { roomNumber: string; websocketClient: string };
     PlayGameProgress: undefined;
     PlayGameResult: undefined;
     PlayGameFinalResult: undefined;
-        
+
     /**
      * MyPage child Type
      */
@@ -193,5 +193,30 @@ export declare module CommonType {
     cost: string;
     number: number;
     title: string;
+  };
+  export type TGameUserInfoDto = {
+    enemy_info: object;
+    my_info: object;
+  };
+
+  export type TmyGameinfo = {
+    equippedItems: {
+      items: TinvenItem[];
+    };
+    level: number;
+    nickname: string;
+    tiggle: number;
+  };
+  export type TenemyGameinfo = {
+    equippedItems: {
+      items: TinvenItem[];
+    };
+    level: number;
+    nickname: string;
+    tiggle: number;
+  };
+
+  export type TGameParams = {
+    roomNumber: string;
   };
 }

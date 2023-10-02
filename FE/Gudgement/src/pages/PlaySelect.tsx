@@ -6,7 +6,14 @@ import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
 import axios from "axios";
 import { API_URL, IMAGE_URL } from "@env";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from "react";
 import {
   ImageBackground,
   Image,
@@ -24,12 +31,13 @@ import SockJS from "sockjs-client";
 import { WEBSOCKET_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
-
+import { useWebSocket } from "../components/WebSocketContext";
 function PlaySelect() {
   // 유저 정보 가져오기
   const { data: userInfo } = useQuery<CommonType.TUser>({
     queryKey: ["fetchUserInfo"],
   });
+  const websocketClient = useWebSocket();
 
   const MEMBER_ID = userInfo?.memberId;
   const MEMBER_NickName = userInfo?.nickname;
@@ -65,6 +73,7 @@ function PlaySelect() {
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
+
   const handleStartMatch = async () => {
     try {
       const response = await postMatchStart();
@@ -76,7 +85,7 @@ function PlaySelect() {
           roleUser: MEMBER_RoleUser,
           tiggle: selectedMap.ticle,
           timestamp: 0,
-          websocketClient: client.current,
+          websocketClient: websocketClient,
         });
       }
     } catch (error) {
@@ -84,17 +93,6 @@ function PlaySelect() {
       // 오류가 발생했을 때의 처리를 수행
     }
   };
-  const client = useRef<CompatClient>(null);
-  useEffect(() => {
-    client.current = Stomp.over(() => {
-      const sock = new SockJS(`${WEBSOCKET_URL}`);
-      return sock;
-    });
-
-    client.current.connect({}, frame => {
-      console.log("Connected: " + frame);
-    });
-  }, []);
 
   return (
     <View style={styles.container}>

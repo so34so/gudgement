@@ -27,9 +27,12 @@ import Animated, {
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { WEBSOCKET_URL } from "@env";
+import { CommonType } from "../types/CommonType";
+import { useWebSocket } from "../components/WebSocketContext";
 
 export default function PlayMatchingQueueWait({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
+  const websocketClient = useWebSocket();
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -40,15 +43,43 @@ export default function PlayMatchingQueueWait({ route }) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  // WebSocket connection
-  const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+  useEffect(() => {
+    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
+    const connectWebSocket = () => {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (message) {
+          console.log("수락 모두 완료!", message);
+          navigation.navigate("PlayGameStart", {
+            roomNumber: roomNumber,
+          });
+        },
+      );
+    };
 
-  stompClient.connect({}, function (frame) {
-    stompClient.subscribe("/topic/game/" + roomNumber, function (message) {
-      console.log(message);
-      navigation.navigate("PlayGameStart", { roomNumber: message.body });
-    });
-  });
+    // 연결 함수 호출
+    connectWebSocket();
+
+    // Unmount 시점에 웹소켓 연결 종료
+    return () => {
+      if (websocketClient.connected) {
+        websocketClient.disconnect();
+      }
+    };
+  }, [websocketClient, roomNumber, navigation]);
+
+  // // WebSocket connection
+  // const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+
+  // stompClient.connect({}, function (frame) {
+  //   stompClient.subscribe("/topic/game/" + roomNumber, function (message) {
+  //     console.log(message);
+  //     navigation.navigate("PlayGameStart", {
+  //       roomNumber: roomNumber,
+  //       websocketClient: websocketClient,
+  //     });
+  //   });
+  // });
 
   return (
     <View className="flex w-full h-full">

@@ -109,15 +109,12 @@ export declare module CommonType {
       rate: number;
     };
   };
-  export type TloginData = {
-    accessToken: string;
-    refreshToken: string;
-    id: number;
-    expiredTime: string;
-    email: string; // 계좌 연동 시 보낼 인증된 email
-  };
 
   export type TemailCode = string;
+
+  export type TrefreshToken = {
+    accessToken: string;
+  };
 
   export type TemailUpdate = {
     id: number;

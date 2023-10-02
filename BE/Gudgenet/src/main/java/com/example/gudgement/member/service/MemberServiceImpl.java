@@ -30,21 +30,15 @@ import com.example.gudgement.mypage.exception.AccountException;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.util.privilegedactions.LoadClass;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NonUniqueResultException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -158,7 +152,7 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .setItems(equippedItems)
+//                .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())
@@ -368,6 +362,7 @@ public class MemberServiceImpl implements MemberService {
         inventory.equip();
 
         inventoryRepository.save(inventory);
+        log.info("================ 기본 생성 이상 없음 =======================");
     }
 }
 

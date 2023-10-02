@@ -13,7 +13,6 @@ import { CommonType } from "../types/CommonType";
 import { IMAGE_URL } from "@env";
 import { textShadow } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
-import TagBoxLarge from "../components/TagBoxLarge";
 import TagBoxSmall from "../components/TagBoxSmall";
 import BasicBox from "../components/BasicBox";
 import CustomModal from "../components/CustomModal";
@@ -78,7 +77,7 @@ function MyPage(this: unknown) {
           visible={modalVisible}
           closeModal={closeModal}
         />
-        {/* <View className="absolute bg-black30 w-screen h-screen" /> */}
+        <View className="absolute bg-black30 w-screen h-screen" />
         <TagBoxSmall
           text={"만보 걷기 챌린지"}
           img={`${IMAGE_URL}/asset/analysisIcon.png`}

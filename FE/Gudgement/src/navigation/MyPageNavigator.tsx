@@ -3,8 +3,9 @@ import { CommonType } from "../types/CommonType";
 import MyPage from "../pages/MyPage";
 import Pedometer from "../pages/Pedometer";
 import Analyze from "../pages/Analyze";
-import SingleRecords from "../pages/SingleRecords";
-import MultiRecords from "../pages/MultiRecords";
+import SettingAccount from "../pages/SettingAccount";
+import AnalyzeGoal from "../pages/AnalyzeGoal";
+import AnalyzeDetail from "../pages/AnalyzeDetail";
 
 function MyPageNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -29,14 +30,19 @@ function MyPageNavigator() {
         options={{ title: "Analyze" }}
       />
       <Stack.Screen
-        name="SingleRecords"
-        component={SingleRecords}
-        options={{ title: "SingleRecords" }}
+        name="SettingAccount"
+        component={SettingAccount}
+        options={{ title: "SettingAccount" }}
       />
       <Stack.Screen
-        name="MultiRecords"
-        component={MultiRecords}
-        options={{ title: "MultiRecords" }}
+        name="AnalyzeGoal"
+        component={AnalyzeGoal}
+        options={{ title: "AnalyzeGoal" }}
+      />
+      <Stack.Screen
+        name="AnalyzeDetail"
+        component={AnalyzeDetail}
+        options={{ title: "AnalyzeDetail" }}
       />
     </Stack.Navigator>
   );

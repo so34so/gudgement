@@ -33,7 +33,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService{
                 .depositSource(transactionHistoryDto.getDepositSource())
                 .withdrawalDestination(transactionHistoryDto.getWithdrawalDestination())
                 // 입력받은 시간을 저장합니다.
-                .transactionDate(transactionHistoryDto.getTransactionDate())
+                .transactionDate(transactionHistoryDto.getTransactionDate().withNano(0))
                 .build();
 
         TransactionHistory savedHistory = transactionRepository.save(history);
@@ -45,7 +45,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService{
                 .amount(savedHistory.getAmount())
                 .depositSource(savedHistory.getDepositSource())
                 .withdrawalDestination(savedHistory.getWithdrawalDestination())
-                .transactionDate(savedHistory.getTransactionDate()).build();
+                .transactionDate(savedHistory.getTransactionDate().withNano(0)).build();
     }
 
     @Override

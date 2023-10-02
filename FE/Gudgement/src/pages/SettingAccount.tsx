@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
@@ -30,10 +29,8 @@ function SettingAccount() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const loginData = (await getAsyncData(
-          "loginData",
-        )) as CommonType.TloginData;
-        const email = loginData.email;
+        const getEmail = await getAsyncData<string>("email");
+        const email = getEmail;
         if (email) {
           setTempEmail(email);
         }

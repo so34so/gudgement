@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Base64;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.Base64;
 @SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Item {
+public class Item implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

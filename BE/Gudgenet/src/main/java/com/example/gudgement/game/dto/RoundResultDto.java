@@ -7,12 +7,14 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class RoundResultDto {
+    private String nickName;
     private boolean isResult;
     private int rounds;
     private String roomNumber;
 
     @Builder
-    public RoundResultDto(boolean isResult,int rounds, String roomNumber){
+    public RoundResultDto(String nickName, boolean isResult,int rounds, String roomNumber){
+        this.nickName = nickName;
         this.isResult = isResult;
         this.rounds = rounds;
         this.roomNumber =roomNumber;

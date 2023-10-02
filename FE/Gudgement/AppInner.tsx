@@ -43,11 +43,9 @@ function AppInner() {
   const { data: isLoggedIn, isLoading: isLoggedInLoading } = useQuery<boolean>({
     queryKey: ["isLoggedIn"],
     queryFn: async () => {
-      const loginData: CommonType.TloginData | null = await getAsyncData(
-        "loginData",
-      );
+      const loginData: number | null = await getAsyncData("id");
 
-      return !!loginData?.id;
+      return !!loginData;
     },
   });
 

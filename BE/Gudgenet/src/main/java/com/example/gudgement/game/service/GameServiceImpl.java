@@ -136,7 +136,7 @@ public class GameServiceImpl implements GameService{
             }
 
             /* Send this DTO list to client side */
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/userInfoList", userInfoDtos);
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, userInfoDtos);
 
         }else{
             log.info("fail");
@@ -202,12 +202,10 @@ public class GameServiceImpl implements GameService{
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }
 
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber+"/reject",nickname+" fail");
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname+" fail");
 
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
-
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname + " fail");
     }
 
     private int fetchLevel(String nickname) {
@@ -289,7 +287,6 @@ public class GameServiceImpl implements GameService{
 
             redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
 
-            // 모든 유저의 배팅 tiggles 값이 0인지 확인 후 데이터 삭제
             deleteIfAllUsersFinished(gameResultDto.getRoomNumber());
 
             setUserGameResult(nickname, roomNumber, isWinner);

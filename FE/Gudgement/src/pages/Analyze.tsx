@@ -119,9 +119,7 @@ function MyPage(this: unknown) {
   }
 
   const fetchAnalyzeChart = async () => {
-    const loginData = (await getAsyncData(
-      "loginData",
-    )) as CommonType.TloginData;
+    const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
         await axios.post(
@@ -129,7 +127,7 @@ function MyPage(this: unknown) {
           null,
           {
             headers: {
-              Authorization: `Bearer ${loginData.accessToken}`,
+              Authorization: `Bearer ${getAccessToken}`,
             },
           },
         );

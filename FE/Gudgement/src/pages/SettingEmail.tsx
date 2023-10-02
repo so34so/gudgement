@@ -13,7 +13,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { API_URL, IMAGE_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import { getAsyncData, setAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import reactotron from "reactotron-react-native";
@@ -31,11 +31,10 @@ function SettingEmail() {
 
   useEffect(() => {
     const getLoginData = async () => {
-      const loginData = (await getAsyncData(
-        "loginData",
-      )) as CommonType.TloginData;
-
-      setTempId(loginData.id);
+      const getId = await getAsyncData<number>("id");
+      if (getId) {
+        setTempId(getId);
+      }
     };
     getLoginData();
   }, []);
@@ -89,19 +88,6 @@ function SettingEmail() {
     }
   };
 
-  const updateLoginData = async () => {
-    try {
-      const loginData = {
-        email: email,
-      };
-      await updateAsyncData("loginData", loginData);
-      return email; // 업데이트된 이메일 반환
-    } catch (error) {
-      reactotron.log!(error);
-      return null; // 에러 발생 시 null 반환
-    }
-  };
-
   const handleFetchNumber = async (currentNumber: string) => {
     if (currentNumber.length === 0) {
       setModalText("이메일로 전송된 인증 코드를 입력하세요.");
@@ -116,13 +102,14 @@ function SettingEmail() {
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
           await axios.post(`${API_URL}/member/update/email`, sendBE);
-        if (response.status === 200) {
-          setCheckNumber("");
-          setNumber("");
-          setEmail("");
-          await updateLoginData();
-          navigation.navigate("SettingName");
-        }
+        reactotron.log!("인증 메일 등록 성공!", response);
+        setCheckNumber("");
+        setNumber("");
+        setEmail("");
+        setAsyncData("email", email);
+        const getEmail = await getAsyncData<string>("email");
+        reactotron.log!("스토리지에 이메일 저장 성공!", getEmail);
+        navigation.navigate("SettingName");
       } catch (error) {
         const axiosError = error as AxiosError<{
           httpStatus: string;

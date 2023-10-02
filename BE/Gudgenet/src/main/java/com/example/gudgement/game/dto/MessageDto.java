@@ -1,4 +1,4 @@
-package com.example.gudgement.gamechat.dto;
+package com.example.gudgement.game.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class MessageDto {
-    Long memberId;
+    String roomNumber;
+    String nickName;
     String message;
 }

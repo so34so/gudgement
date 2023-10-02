@@ -13,6 +13,7 @@ public enum ErrorCode {
     NOT_EXISTS_MEMBER(HttpStatus.BAD_REQUEST, "M-001", "존재하지 않는 회웝입니다."),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "M-002", "존재하지 않는 회원입니다."),
     NOT_REGISTRATION_NICKNAME(HttpStatus.FORBIDDEN, "M-003", "닉네임이 설정되지 않은 회원입니다."),
+
     // 토큰
     NOT_AUTHORIZATION_TOKEN(HttpStatus.BAD_REQUEST, "T-001", "올바른 토큰이 아닙니다."),
     ACCESS_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-002", "Access토큰의 기간이 만료되었습니다."),

@@ -1,5 +1,7 @@
 package com.example.gudgement.match.service;
 
+import com.example.gudgement.game.exception.BaseErrorException;
+import com.example.gudgement.game.exception.GameErrorCode;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.match.event.MatchRequestEvent;
 import com.example.gudgement.member.entity.Member;
@@ -23,7 +25,7 @@ public class MatchServiceImpl implements MatchService {
     public void addUserToGroup(MatchDto matchDto) {
         Optional<Member> user = memberRepository.findByNickname(matchDto.getNickName());
         if (user.get().getTiggle() < matchDto.getTiggle()){
-            throw new IllegalArgumentException("The user does not have enough money");
+            throw new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL);
         }
         String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
         redisTemplate.opsForSet().add(key, matchDto.getNickName());

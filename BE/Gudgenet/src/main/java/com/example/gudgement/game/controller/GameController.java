@@ -3,17 +3,19 @@ package com.example.gudgement.game.controller;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
+import com.example.gudgement.game.dto.MessageDto;
+import com.example.gudgement.game.dto.SendMessageDto;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/game")
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class GameController {
     private final GameService gameService;
     private final GameRoundService gameRoundService;
 
+    private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/game/accept")
     public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
@@ -69,5 +72,29 @@ public class GameController {
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         gameService.endGame(gameResultDto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "게임 채팅")
+    @MessageMapping("/chat")
+    public void chatAll(@RequestBody MessageDto messageDto){
+        log.info(messageDto.getNickName()+"");
+
+        SendMessageDto message = SendMessageDto.builder()
+                .nickname(messageDto.getNickName())
+                .message(messageDto.getMessage()).build();
+
+        messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
+    }
+
+    @Operation(summary = "게임 채팅(/app/chat 이라는 게임 채팅이 있음)")
+    @PostMapping("/chat")
+    public void chatAllTest(@RequestBody MessageDto messageDto){
+        log.info(messageDto.getNickName()+"");
+
+        SendMessageDto message = SendMessageDto.builder()
+                .nickname(messageDto.getNickName())
+                .message(messageDto.getMessage()).build();
+
+        messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
     }
 }

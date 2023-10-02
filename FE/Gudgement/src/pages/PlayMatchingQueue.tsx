@@ -32,8 +32,9 @@ import { useWebSocket } from "../components/WebSocketContext";
 
 export default function PlayMatchingQueue({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
-  const websocketClient = useWebSocket();
 
+  const websocketClient = useWebSocket();
+  console.log("야!", typeof roomNumber);
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -44,16 +45,6 @@ export default function PlayMatchingQueue({ route }) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  // WebSocket connection
-
-  // websocketClient.connect({}, function (frame) {
-  //   websocketClient.subscribe(
-  //     "/topic/game/" + roomNumber,
-  //     function (messageOutput) {
-  //       console.log(messageOutput);
-  //     },
-  //   );
-  // });
   useEffect(() => {
     websocketClient.connect({}, function (frame) {
       websocketClient.subscribe(

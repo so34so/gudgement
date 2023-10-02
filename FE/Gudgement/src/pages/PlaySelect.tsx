@@ -37,12 +37,11 @@ function PlaySelect() {
   const { data: userInfo } = useQuery<CommonType.TUser>({
     queryKey: ["fetchUserInfo"],
   });
-  const websocketClient = useWebSocket();
 
   const MEMBER_ID = userInfo?.memberId;
   const MEMBER_NickName = userInfo?.nickname;
   const MEMBER_RoleUser = "silver";
-
+  console.log(typeof MEMBER_NickName);
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
   const lineGradi: ImageSourcePropType = LineGradi as ImageSourcePropType;
@@ -62,7 +61,7 @@ function PlaySelect() {
       const response = await axios.post(`${API_URL}/match/addUser`, {
         memberId: MEMBER_ID,
         nickName: MEMBER_NickName,
-        roleUser: MEMBER_RoleUser,
+        grade: MEMBER_RoleUser,
         tiggle: selectedMap.ticle,
         timestamp: 0,
       });
@@ -79,13 +78,12 @@ function PlaySelect() {
       const response = await postMatchStart();
       if (response) {
         // 응답이 유효한 경우에만 navigation을 진행합니다.
-        navigation.navigate("PlayMatchingWait", {
+        navigation.navigate("PlayGameStart", {
           memberId: MEMBER_ID,
           nickName: MEMBER_NickName,
-          roleUser: MEMBER_RoleUser,
+          grade: MEMBER_RoleUser,
           tiggle: selectedMap.ticle,
           timestamp: 0,
-          websocketClient: websocketClient,
         });
       }
     } catch (error) {

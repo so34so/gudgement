@@ -4,11 +4,11 @@ import { CommonType } from "../types/CommonType";
 import PlaySelect from "../pages/PlaySelect";
 import PlayGameStart from "../pages/PlayGameStart";
 import PlayGameProgress from "../pages/PlayGameProgress";
-import PlayGameResult from '../pages/PlayGameResult';
-import PlayGameFinalResult from '../pages/PlayGameFinalResult';
+import PlayGameResult from "../pages/PlayGameResult";
+import PlayGameFinalResult from "../pages/PlayGameFinalResult";
 import PlayMatchingWait from "../pages/PlayMatchingWait";
 import PlayMatchingQueue from "../pages/PlayMatchingQueue";
-import PlayMatchingQueueWait from '../pages/PlayMatchingQueueWait';
+import PlayMatchingQueueWait from "../pages/PlayMatchingQueueWait";
 function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (

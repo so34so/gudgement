@@ -122,14 +122,18 @@ export const ANALYZE_BOX_IMAGE = [
   "/asset/analyzeOver.png",
 ];
 
-export const fetchUser = async (): Promise<CommonType.Tuser> => {
-  const getAccessToken = await getAsyncData<string>("accessToken");
+export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
+  const getAccessTokenFetchUser = await getAsyncData<string>("accessToken");
+  console.log("accessToken", getAccessToken);
+  if (!getAccessToken) {
+    return null;
+  }
   try {
     const response: AxiosResponse<CommonType.Tuser> = await axios.get(
       `${API_URL}/member/loadMyInfo`,
       {
         headers: {
-          Authorization: `Bearer ${getAccessToken}`,
+          Authorization: `Bearer ${getAccessTokenFetchUser}`,
         },
       },
     );

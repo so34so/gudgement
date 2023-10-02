@@ -4,7 +4,12 @@ import axios, {
   AxiosError,
   AxiosRequestHeaders,
 } from "axios";
-import { getAccessToken, getAsyncData, refreshToken } from "../utils/common";
+import {
+  getAccessToken,
+  getAsyncData,
+  logoutUser,
+  refreshToken,
+} from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 

@@ -14,7 +14,7 @@ import java.util.Base64;
 @SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Item implements Serializable {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

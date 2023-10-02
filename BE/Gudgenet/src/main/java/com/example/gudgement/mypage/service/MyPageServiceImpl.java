@@ -17,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.List;
@@ -87,6 +89,7 @@ public class MyPageServiceImpl implements MyPageService{
 
         Optional<Chart> chart = chartRepository.findByMemberIdAndYearAndMonthAndWeek(member, dayData[0], dayData[1], dayData[3]);
         Chart chartData;
+
         // 차트가 없을 때
         if (chart.isEmpty()) {
             chartData = createChart(member, member.getMonthOverconsumption(), dayData[0], dayData[1], dayData[3]);
@@ -227,8 +230,11 @@ public class MyPageServiceImpl implements MyPageService{
     public ChartDataDto toDateWeekChartData(Long id, String date) {
         int[] dayData = getWeekOfMonth(date);
         int nowMonth = LocalDate.now().getMonthValue();
-        LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2],23,59,59).minusDays(7 - dayData[4]);
+        LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2],23,59,59).plusDays(7 - dayData[4]);
         LocalDateTime startDate = endDate.minusDays(endDate.getDayOfWeek().getValue()).plusSeconds(1);
+
+        log.info("시작 일자 : {}", startDate);
+        log.info("마지막 일자 : {}", endDate);
 
         Member member = memberRepository.findByMemberId(id).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
@@ -255,10 +261,13 @@ public class MyPageServiceImpl implements MyPageService{
             List<TransactionHistory> histories = transactionHistoryRepository.
                     findByVirtualAccountIdAndTransactionDateBetweenAndType(account, startDate, endDate, 1);
 
+            log.info("거래내역 개수 : {}", histories.size());
+
             try {
                 // 일주일 소비 내역
                 for (int i = 0; i < histories.size(); i++) {
                     LocalDateTime history = histories.get(i).getTransactionDate();
+                    log.info("시간 확인 : {}", history.getDayOfWeek().getValue());
                     long amount = histories.get(i).getAmount();
                     switch (history.getDayOfWeek().getValue()) {
                         case 7:
@@ -341,7 +350,8 @@ public class MyPageServiceImpl implements MyPageService{
 
         long overAmountRate;
         if (chartData.getMonthOverconsumption() != null) {
-            overAmountRate = member.getMonthOverconsumption() / 7;
+            YearMonth yearMonth = YearMonth.of(dayData[0], dayData[1]);
+            overAmountRate = member.getMonthOverconsumption() / yearMonth.lengthOfMonth();
         } else {
             overAmountRate = Long.MAX_VALUE;
         }
@@ -395,16 +405,22 @@ public class MyPageServiceImpl implements MyPageService{
         return false;
     }
 
-    public int getWeekOfMonth(LocalDate localDate) {
-        // WeekFields 객체 생성
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+    public int getWeekOfMonth(LocalDate localdate) {
+        LocalDate firstDayOfMonth = localdate.with(TemporalAdjusters.firstDayOfMonth());
+        int weekOfCurrentMonth;
 
-        // 이번 달의 첫 번째 주 시작일 계산
-        LocalDate firstWeekStartDate = localDate.with(TemporalAdjusters.firstDayOfMonth())
-                .with(weekFields.getFirstDayOfWeek());
+        if (firstDayOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            weekOfCurrentMonth = ((localdate.getDayOfMonth() + 5) / 7) + 1;
+        } else {
+            weekOfCurrentMonth = ((localdate.getDayOfMonth() + firstDayOfMonth.getDayOfWeek().getValue() - 2) / 7) + 1;
+        }
 
-        // 현재 날짜가 속한 주차 계산
-        return localDate.get(weekFields.weekOfMonth()) -
-                firstWeekStartDate.get(weekFields.weekOfMonth()) + 2;
+        return weekOfCurrentMonth;
+    }
+
+    @Override
+    public void updateOverConsumption(Member member, Long monthOverConsumption) {
+        member.updateOverConsumption(monthOverConsumption);
+        memberRepository.save(member);
     }
 }

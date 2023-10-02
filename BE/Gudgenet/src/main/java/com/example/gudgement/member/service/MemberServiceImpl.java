@@ -19,6 +19,7 @@ import com.example.gudgement.member.exception.EmailLogicException;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.mypage.repository.ChartRepository;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import com.example.gudgement.shop.entity.Inventory;
@@ -48,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
     private final InventoryRepository inventoryRepository;
     private final ProgressRepository progressRepository;
     private final ItemRepository itemRepository;
+    private final ChartRepository chartRepository;
 
     private final VirtualAccountService virtualAccountService;
     private final VirtualAccountRepository virtualAccountRepository;
@@ -334,6 +336,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Override
     @Transactional
     public void initializeProgressAndInventory(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->{
@@ -363,6 +366,18 @@ public class MemberServiceImpl implements MemberService {
 
         inventoryRepository.save(inventory);
         log.info("================ 기본 생성 이상 없음 =======================");
+    }
+
+    @Override
+    @Transactional
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
+
+        chartRepository.deleteAllByMemberId(member);
+        log.info("memberId : {}", member.toString());
+        memberRepository.deleteByMemberId(member.getMemberId());
     }
 }
 

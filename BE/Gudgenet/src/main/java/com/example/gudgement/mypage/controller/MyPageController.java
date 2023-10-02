@@ -43,6 +43,15 @@ public class MyPageController {
         return ResponseEntity.ok(myPageService.toDateWeekChartData(member.getMemberId(), date));
     }
 
+    @PutMapping("/update/{monthOverConsumption}")
+    @Operation(summary = "월 과소비 기준 설정", description = "Path에 추가해서 post하시면 됩니다.")
+    public void updateMonthOverConsumption(@PathVariable(name = "monthOverConsumption") Long monthOverConsumption,
+                                           HttpServletRequest httpServletRequest) {
+
+        Member member = getMember(httpServletRequest);
+        myPageService.updateOverConsumption(member, monthOverConsumption);
+    }
+
     private Member getMember(HttpServletRequest httpServletRequest) {
         String header = httpServletRequest.getHeader("Authorization");
         log.info("날아온 토큰 : " + header);

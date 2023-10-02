@@ -84,7 +84,10 @@ public class GameServiceImpl implements GameService{
         log.info("test");
         // Check if the user exists in Redis.
         Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname + ":status");
-
+        log.info(roomNumber +" + "+nickname);
+        log.info(roomNumber+":"+nickname+":status");
+        log.info(String.valueOf(hasKey));
+        
         if (!hasKey) {
             throw new IllegalArgumentException("Invalid nickname: " + nickname);
         }

@@ -5,12 +5,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
+import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class Status extends Item{
+public class Status extends Item implements Serializable {
 
 
     private String statusName;

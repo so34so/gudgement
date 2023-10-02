@@ -26,9 +26,10 @@ public class ItemDto implements Serializable {
     private boolean isSold;
     private boolean isEquipped;
     private boolean isHidden;
+    private String statusContent;
 
     @Builder
-    public ItemDto(Long id, String itemName, String itemContent, String itemEffect, String image, String subType, String type, Long price, Long typeId, boolean isUnlocked, boolean isSold, boolean isEquipped, boolean isHidden) {
+    public ItemDto(Long id, String itemName, String itemContent, String itemEffect, String image, String subType, String type, Long price, Long typeId, boolean isUnlocked, boolean isSold, boolean isEquipped, boolean isHidden,String statusContent) {
         this.id = id;
         this.itemName = itemName;
         this.itemContent = itemContent;
@@ -42,6 +43,7 @@ public class ItemDto implements Serializable {
         this.isSold = isSold;
         this.isEquipped = isEquipped;
         this.isHidden = isHidden;
+        this.statusContent = statusContent;
     }
 
 }

@@ -59,15 +59,7 @@ public class ShopServiceImpl implements ShopService{
                 .collect(Collectors.toList());
 
         for (Item item : items) {
-/*            try {*/
-                // 이미지를 byte[]로 변환
-/*                Path imageFilePath = Paths.get(IMAGE_PATH, item.getType(), item.getImage());
-                Resource resource = new ClassPathResource(imageFilePath.toString());
 
-                byte[] imageData = null;
-                if (resource != null) {
-                    imageData = resource.getInputStream().readAllBytes();
-                }*/
                 String imageData = IMAGE_PATH + item.getType() +"/"+ item.getImage();
 
                 boolean isSold = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()));
@@ -95,9 +87,6 @@ public class ShopServiceImpl implements ShopService{
                 }
 
                 itemDTOS.add(builder.build());
-/*            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
         }
         return itemDTOS;
     }
@@ -158,6 +147,7 @@ public class ShopServiceImpl implements ShopService{
                 boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
 
                 builder.isUnlocked(isUnlocked);
+                builder.statusContent(((Status) item).getStatusContent());
             }
 
             itemDTOS.add(builder.build());
@@ -177,12 +167,12 @@ public class ShopServiceImpl implements ShopService{
 
         // 이미 구매한 아이템인지 확인
         if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException("이미 구매한 아이템입니다.");
+            throw new AlreadyPurchasedException(ItemErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice()> member.getTiggle()) {
-            throw new InsufficientPointsException("티끌이 부족합니다.");
+            throw new InsufficientPointsException(ItemErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 포인트 차감
@@ -202,7 +192,7 @@ public class ShopServiceImpl implements ShopService{
 
         // 이미 해금한 아이템인지 확인
         if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException("이미 해금한 아이템입니다.");
+            throw new AlreadyPurchasedException(ItemErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 아이템 추가
@@ -220,7 +210,7 @@ public class ShopServiceImpl implements ShopService{
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice() * quantity > member.getTiggle()) {
-            throw new InsufficientPointsException("티끌이 부족합니다.");
+            throw new InsufficientPointsException(ItemErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 티끌 차감

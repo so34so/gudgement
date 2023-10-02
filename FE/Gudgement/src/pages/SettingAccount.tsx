@@ -1,8 +1,4 @@
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
@@ -18,14 +14,11 @@ import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
+import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import { queryClient } from "../../queryClient";
 
 function SettingAccount() {
-
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [tempEmail, setTempEmail] = useState("");
@@ -53,10 +46,6 @@ function SettingAccount() {
 
     if (tempEmail.length > 0) {
       handleReadAccount();
-      const info = {
-        info: 3,
-      };
-      updateAsyncData("loginData", info);
     }
   }, [tempEmail]);
 
@@ -107,18 +96,11 @@ function SettingAccount() {
       try {
         const response = await axios.post(`${API_URL}/account`, sendBE);
         reactotron.log!("계좌 연동 성공!", response);
-
-        const info = {
-          info: 4,
-        };
-        updateAsyncData("loginData", info);
-
-        navigation.navigate("BottomTabNavigator");
-        const settingAccountAction = CommonActions.reset({
-          index: 0,
-          routes: [{ name: "BottomTabNavigator" }],
-        });
-        navigation.dispatch(settingAccountAction);
+        /**
+         * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
+         * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
+         * */
+        queryClient.invalidateQueries(["fetchUserInfo"]);
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);
       }

@@ -31,7 +31,7 @@ import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
-import { MEMBER_ID } from "./Shop";
+import InventoryShop from "../assets/icons/inventoryShop.png";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -57,9 +57,16 @@ function Inventory({ route }: InventoryProps) {
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const categoryStyle = (category: string) =>
-    `rounded-[8px] py-[1px] border-2 bg-darkgray50 
-    ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
+  const { data: userInfo } = useQuery<CommonType.TUser>({
+    queryKey: ["fetchUserInfo"],
+  });
+
+  const categoryStyle = useCallback(
+    (category: string) =>
+      `rounded-[8px] py-[1px] border-2 bg-darkgray50 
+    ${category === selectCategory ? "border-mainColor" : "border-darkgray50"}`,
+    [selectCategory],
+  );
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-buy";
   };
@@ -71,7 +78,7 @@ function Inventory({ route }: InventoryProps) {
         {
           params: {
             type: INVENTORY_CATEGORY[category],
-            memberId: MEMBER_ID,
+            memberId: userInfo!.memberId,
           },
         },
       );
@@ -147,6 +154,17 @@ function Inventory({ route }: InventoryProps) {
             <WithLocalSvg width={42} height={42} asset={closeInventory} />
           </TouchableOpacity>
         </View>
+        <View
+          className="absolute top-[18px] w-12 h-12
+       left-2 rounded-full bg-white border-2 border-black justify-center items-center"
+        >
+          <View className="absolute z-10">
+            <Image
+              source={InventoryShop as ImageSourcePropType}
+              className="w-10 h-10 bg-black rounded-full"
+            />
+          </View>
+        </View>
 
         <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
@@ -190,7 +208,15 @@ function Inventory({ route }: InventoryProps) {
             <View key={category}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSelectCategory(category)}
+                onPress={() => {
+                  setSelectCategory(category);
+                  if (!fetchItem) {
+                    setItemStatus(true);
+                  }
+                  setItemStatus(false);
+                  reactotron.log!("category", selectItem);
+                  setSelectItem(0);
+                }}
                 className={categoryStyle(category)}
               >
                 <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">

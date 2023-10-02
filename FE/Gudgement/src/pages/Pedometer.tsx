@@ -79,18 +79,11 @@ function MyPage(this: unknown) {
           closeModal={closeModal}
         />
         {/* <View className="absolute bg-black30 w-screen h-screen" /> */}
-        <TagBoxLarge
-          text01={userData?.email ? userData?.email : "인동파 행동대장"}
-          text02={userData?.nickname ? userData?.nickname : "옥계공주"}
-          img={`${IMAGE_URL}/asset/mypageIcon.png`}
+        <TagBoxSmall
+          text={"만보 걷기 챌린지"}
+          img={`${IMAGE_URL}/asset/analysisIcon.png`}
         />
         <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">
-          <View className="absolute -top-8 -left-5">
-            <TagBoxSmall
-              text={"만보 걷기 챌린지"}
-              img={`${IMAGE_URL}/asset/analysisIcon.png`}
-            />
-          </View>
           <View className="ml-8 mt-4">
             <Image
               source={{

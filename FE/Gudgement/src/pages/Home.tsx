@@ -5,13 +5,19 @@ import {
   SafeAreaView,
   Text,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
 import { useEffect, useState } from "react";
 import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import { checkSpendRate, fetchUser } from "../utils/common";
+import {
+  checkSpendRate,
+  fetchUser,
+  screenHeight,
+  screenWidth,
+} from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
 
 /**
@@ -51,8 +57,6 @@ export default function Home() {
     }
   }, [percent]);
 
-  reactotron.log!("userData", userData);
-
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -77,9 +81,11 @@ export default function Home() {
           style={{ opacity: 0.8, backgroundColor: "black" }}
           className="absolute w-full h-full top-0 left-0 right-0 bottom-0"
         />
-        <View className="space-y-2 flex flex-col w-fill justify-center items-start">
+        <View className="flex w-full items-center">
           <PointHeader tiggle={userData?.tiggle} level={userData?.level} />
-          <View className="mx-1 bg-white rounded-xl flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
+        </View>
+        <View className="space-y-2 top-4 flex flex-col w-full justify-center items-start left-4">
+          <View className="bg-white rounded-xl flex w-fit h-fit justify-start space-x-2 items-center flex-row overflow-hidden border-[2.5px] border-black">
             <Text className="text-center font-PretendardBlack bg-green text-black px-2 py-[2px] text-md">
               계좌 잔고
             </Text>
@@ -91,9 +97,19 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[90%]">
-            <AnalysisBox />
+            <AnalysisBox ProgressBarVisible={true} />
           </View>
         </View>
+        <Image
+          source={{
+            uri: `${IMAGE_URL}/character/stoat.png`,
+          }}
+          className="w-32 h-48 z-1"
+          style={{
+            top: screenWidth / 3,
+            right: screenHeight / 50,
+          }}
+        />
       </View>
     </SafeAreaView>
   );

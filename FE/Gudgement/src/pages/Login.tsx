@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
@@ -12,11 +11,10 @@ import {
 import axios from "axios";
 import { setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
+import { queryClient } from "../../queryClient";
 
 function Login() {
   const [showWebView, setShowWebView] = useState(false);
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -25,29 +23,36 @@ function Login() {
   const fetchAccessToken = async (code: string) => {
     try {
       const response = await axios.post<CommonType.TkakaoLogin>(
-        `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
+        `${SERVER_URL}/?code=${code}`,
       );
-
+      setShowWebView(false);
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const id = response.data.id;
+      const expiredTime = response.data.refreshTokenExpiration;
 
       try {
         const loginData: CommonType.TloginData = {
           accessToken: accessToken,
           refreshToken: refreshToken,
+          expiredTime: expiredTime,
           id: id,
-          info: 0,
           email: "none",
         };
-
         const responseLogin = await setAsyncData("loginData", loginData);
         reactotron.log!("스토리지에 저장 성공!", responseLogin);
       } catch (error) {
         reactotron.log!("스토리지 초기화 실패!", error);
       }
       setShowWebView(false);
-      navigation.navigate("SettingEmail");
+
+      /**
+       * accessToken 잘 받아왔다면
+       * 로그인 여부는 asyncStorage에서,
+       * user정보는 서버로부터 다시 불러오게합니다.
+       */
+      queryClient.invalidateQueries(["isLoggedIn"]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }
@@ -60,6 +65,7 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
+
       reactotron.log!("code", code);
       await fetchAccessToken(code);
     }

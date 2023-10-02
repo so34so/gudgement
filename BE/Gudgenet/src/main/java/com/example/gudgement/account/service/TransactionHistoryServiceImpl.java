@@ -45,7 +45,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService{
                 .amount(savedHistory.getAmount())
                 .depositSource(savedHistory.getDepositSource())
                 .withdrawalDestination(savedHistory.getWithdrawalDestination())
-                .transactionDate(savedHistory.getTransactionDate()).build();
+                .transactionDate(savedHistory.getTransactionDate().withNano(0)).build();
     }
 
     @Override

@@ -61,7 +61,7 @@ export declare module CommonType {
     id: number;
     itemName: string;
     itemContent: string;
-    image: string | ImageSourcePropType;
+    image: string;
     price: number;
     equipped: boolean;
     typeId: number;
@@ -94,13 +94,27 @@ export declare module CommonType {
     refreshToken: string;
     refreshTokenExpiration: string;
   };
-
+  export type TUser = {
+    memberId: number;
+    email: string;
+    nickname: string;
+    emailApprove: boolean;
+    nicknameApprove: boolean;
+    tiggle: number;
+    exp: number;
+    level: number;
+    pedometer: number;
+    rate: {
+      payment: number;
+      rate: number;
+    };
+  };
   export type TloginData = {
     accessToken: string;
     refreshToken: string;
     id: number;
+    expiredTime: string;
     email: string; // 계좌 연동 시 보낼 인증된 email
-    info: number; // 로그인 절차 0 1 2 3 4
   };
 
   export type TemailCode = string;
@@ -154,10 +168,10 @@ export declare module CommonType {
     week: number;
     data: {
       type: string;
-      labels: string;
+      labels: string[];
       dateSet: {
-        amount: [number];
-        color: [string];
+        amount: number[];
+        color: string[];
       };
     };
   };

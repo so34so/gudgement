@@ -4,6 +4,7 @@ import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.exception.ItemErrorCode;
 import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
@@ -84,11 +85,12 @@ public class InventoryServiceImpl implements InventoryService{
     public InventoryDto equipItem(Long invenId) {
         // 그런 다음에 인벤토리를 조회합니다.
         Inventory selectedInventory = inventoryRepository.findByInvenId(invenId)
-                .orElseThrow(() -> new NotFoundItemException("해당 인벤토리가 없습니다."));
+                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
 
         // Find an already equipped item of the same type and unequip it.
         Optional<Inventory> equippedInventoryOpt =
-                inventoryRepository.findByItemId_TypeAndEquipped(selectedInventory.getItemId().getType(), true);
+                inventoryRepository.findByMember_MemberIdAndItemId_TypeAndEquipped(selectedInventory.getMember().getMemberId(), selectedInventory.getItemId().getType(), true);
+
 
         if (equippedInventoryOpt.isPresent()) {
             equippedInventoryOpt.get().unequip();

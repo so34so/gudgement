@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j
 @Component
@@ -63,25 +64,47 @@ public class JwtRefreshAuthFilter extends OncePerRequestFilter {
                     // refreshToken 만료
                 } else {
                     log.info("RefreshToken 만료. : {}", refreshToken);
-                    throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
+                    jwtExceptionHandler(response, "Refresh");
+                    return;
                 }
-                filterChain.doFilter(request, response);
-
             } else {
                 log.info("Token값이 존재하지 않습니다.");
-                throw new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN);
+                jwtExceptionHandler(response,null);
+                return;
             }
         }
         filterChain.doFilter(request, response);
     }
 
-    public ResponseEntity<ErrorResponse> jwtExceptionHandler(String Token){
-        if (Token.equals("Access")) {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
-        } else if (Token.equals("Refresh")) {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
+    public void jwtExceptionHandler(HttpServletResponse response, String token) {
+        ErrorResponse errorResponse;
+        int status;
+
+        if ("Access".equals(token)) {
+            errorResponse = new ErrorResponse(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+            status = HttpServletResponse.SC_UNAUTHORIZED;  // 401
+        } else if ("Refresh".equals(token)) {
+            errorResponse = new ErrorResponse(ErrorCode.REFRESH_TOKEN_EXPIRATION);
+            status = HttpServletResponse.SC_UNAUTHORIZED;  // 401
         } else {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN));
+            errorResponse = new ErrorResponse(ErrorCode.NOT_EXIST_TOKEN);
+            status = HttpServletResponse.SC_BAD_REQUEST;   // 400
+        }
+
+        response.setStatus(status);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+            response.setContentType("application/json");
+
+            PrintWriter out = response.getWriter();
+
+            out.print(jsonErrorResponse);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

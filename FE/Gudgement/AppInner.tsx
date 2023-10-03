@@ -153,17 +153,12 @@ function AppInner() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="바텀"
-                component={BottomTabNavigator}
+                name="PlayNavigator"
+                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </>
           )}
-          <Stack.Screen
-            name="PlayNavigator"
-            component={PlayNavigator}
-            options={{ headerShown: false }}
-          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Login">

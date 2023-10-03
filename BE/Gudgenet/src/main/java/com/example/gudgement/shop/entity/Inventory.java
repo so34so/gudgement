@@ -20,7 +20,7 @@ public class Inventory {
     @Column(name="inven_id")
     private long invenId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Item itemId;
 

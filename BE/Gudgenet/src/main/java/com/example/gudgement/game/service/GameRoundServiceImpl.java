@@ -2,6 +2,8 @@ package com.example.gudgement.game.service;
 
 import com.example.gudgement.CardService;
 import com.example.gudgement.game.dto.*;
+import com.example.gudgement.game.exception.BaseErrorException;
+import com.example.gudgement.game.exception.GameErrorCode;
 import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         if(otherUser == null){
-            throw new RuntimeException("Other user is not found in Redis");
+            throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
         }
 
         List<UserTiggleDto> userTiggles = new ArrayList<>();
@@ -49,7 +51,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         for (String userNickName : Arrays.asList(userName, otherUser)) {
             log.info(userNickName+"입니다.");
             Object valueObj= redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
-            if(valueObj == null) throw new RuntimeException("Tiggle value is not found in Redis");
+            if(valueObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
 
             Long tiggleValue= Long.parseLong(String.valueOf(valueObj));
 
@@ -59,7 +61,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         Object roundsObj= redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
-        if(roundsObj == null) throw new RuntimeException("Rounds value is not found in Redis");
+        if(roundsObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
 
         int rounds= Integer.parseInt(String.valueOf(roundsObj));
 
@@ -143,6 +145,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             /* Reset status for next round */
             resetStatusForNextRound(roomNumber);
 
+            /*해당 선택된 카드 내용 redis에서 삭제하는 내용 구현*/
 
         }
 

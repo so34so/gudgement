@@ -26,7 +26,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { INVENTORY_CATEGORY } from "../utils/common";
+import { INVENTORY_CATEGORY, getAccessToken } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
@@ -73,12 +73,16 @@ function Inventory({ route }: InventoryProps) {
 
   async function fetchInventoryItem(category: string) {
     try {
+      const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.TinvenItem[]> = await axios.get(
         `${API_URL}/inventory/type`,
         {
           params: {
             type: INVENTORY_CATEGORY[category],
             memberId: userInfo!.memberId,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
@@ -121,12 +125,17 @@ function Inventory({ route }: InventoryProps) {
   }, [refetch, selectCategory]);
 
   const { mutate: equippedItem } = useMutation({
-    mutationFn: (params: IresponseEquipment) =>
-      axios.put(`${API_URL}/inventory`, null, {
+    mutationFn: async (params: IresponseEquipment) => {
+      const accessToken = await getAccessToken();
+      return axios.put(`${API_URL}/inventory`, null, {
         params: {
           invenId: params.invenId,
         },
-      }),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);

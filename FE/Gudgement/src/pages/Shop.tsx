@@ -35,7 +35,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../queryClient";
-import { INVENTORY_CATEGORY, textShadow } from "../utils/common";
+import {
+  INVENTORY_CATEGORY,
+  getAccessToken,
+  textShadow,
+} from "../utils/common";
 import { API_URL } from "@env";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
@@ -53,6 +57,7 @@ function Shop({ route }: ShopProps) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
+
   const [modalVisible, setModalVisible] = useState<{
     buy?: boolean;
     complete: boolean;
@@ -90,17 +95,21 @@ function Shop({ route }: ShopProps) {
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-red";
   };
-  const selectText = () => {
+  const selectText = useCallback(() => {
     return fetchItem?.length && fetchItem[selectItem].price
       ? +fetchItem[selectItem].price + " 티끌"
       : "해금 필요";
-  };
+  }, [fetchItem, selectItem]);
 
   async function fetchShopItem() {
     try {
+      const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.Titem[]> = await axios.get(
         `${API_URL}/shop/type`,
         {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
           params: {
             type: INVENTORY_CATEGORY[selectCategory],
             memberId: userInfo?.memberId,
@@ -148,11 +157,14 @@ function Shop({ route }: ShopProps) {
   }, [offset, refetch]);
 
   const { mutate: buyItem } = useMutation({
-    mutationFn: (params: IresponseParams) =>
+    mutationFn: async (params: IresponseParams) =>
       axios.post(`${API_URL}/shop`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
+        },
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
         },
       }),
     onSuccess: () => {
@@ -162,14 +174,18 @@ function Shop({ route }: ShopProps) {
   });
 
   const { mutate: buyConsumable } = useMutation({
-    mutationFn: (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop/consumable`, null, {
+    mutationFn: async (params: IresponseParams) => {
+      return axios.post(`${API_URL}/shop/consumable`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
           quantity: quantity,
         },
-      }),
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
+        },
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);
@@ -177,13 +193,17 @@ function Shop({ route }: ShopProps) {
   });
 
   const { mutate: unlockItem } = useMutation({
-    mutationFn: (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop/hidden`, null, {
+    mutationFn: async (params: IresponseParams) => {
+      return axios.post(`${API_URL}/shop/hidden`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
         },
-      }),
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
+        },
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);

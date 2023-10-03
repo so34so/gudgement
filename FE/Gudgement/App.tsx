@@ -123,7 +123,7 @@ check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(async result => {
     await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
   }
 });
-
+console.log(WEBSOCKET_URL);
 function App(): JSX.Element {
   useEffect(() => {
     CodePush.sync(

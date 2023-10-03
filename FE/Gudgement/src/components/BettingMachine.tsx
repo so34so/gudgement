@@ -105,35 +105,43 @@ const BettingMachine = ({
   });
 
   return (
-    <View className="items-center" style={styles.bettingMachine}>
-      <View style={styles.machineContainer}>
-        <Image source={bettingMachine} style={styles.machineImage} />
-        <PanGestureHandler onGestureEvent={onGestureEvent}>
-          <Animated.View style={[styles.bettingSawtooth, animatedMachineStyle]}>
-            <Image source={bettingSawtooth} style={styles.sawtoothImage} />
-          </Animated.View>
-        </PanGestureHandler>
-      </View>
-      <Text
-        className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
-        style={styles.bettingAmountText}
-      >
-        {Math.round(bettingAmount)}개
-      </Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={isButtonActive ? postBettingInfo : null}>
-          <Image
-            className={
-              isButtonActive
-                ? " w-[94] h-[41]"
-                : "opacity-[60]	w-[94] h-[41] inactive-button"
-            }
-            source={bettingButton}
-          />
-        </TouchableOpacity>
-
-        <Image className="w-[94] h-[41]" source={giveUpButton} />
-      </View>
+    <View>
+      {/* isButtonActive 값에 따라 전체 영역을 조건부로 렌더링 */}
+      {isButtonActive ? (
+        <View className="items-center" style={styles.bettingMachine}>
+          <View style={styles.machineContainer}>
+            <Image source={bettingMachine} style={styles.machineImage} />
+            <PanGestureHandler onGestureEvent={onGestureEvent}>
+              <Animated.View
+                style={[styles.bettingSawtooth, animatedMachineStyle]}
+              >
+                <Image source={bettingSawtooth} style={styles.sawtoothImage} />
+              </Animated.View>
+            </PanGestureHandler>
+          </View>
+          <Text
+            className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
+            style={styles.bettingAmountText}
+          >
+            {Math.round(bettingAmount)}개
+          </Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={postBettingInfo}>
+              <Image className="w-[94] h-[41]" source={bettingButton} />
+            </TouchableOpacity>
+            <Image className="w-[94] h-[41]" source={giveUpButton} />
+          </View>
+        </View>
+      ) : (
+        <View className="items-center" style={styles.bettingMachine}>
+          <Text
+            className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
+            style={styles.bettingwaittext}
+          >
+            상대방의 베팅을 기다리는 중...
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -172,6 +180,15 @@ const styles = StyleSheet.create({
   bettingAmountText: {
     bottom: 52,
     right: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  bettingwaittext: {
+    width: 500,
+    height: 500,
+    bottom: 52,
+    right: "-70%",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
     textShadowRadius: 8, // 섀도우 반경 (두께)

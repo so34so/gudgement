@@ -380,4 +380,3 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.deleteByMemberId(member.getMemberId());
     }
 }
-

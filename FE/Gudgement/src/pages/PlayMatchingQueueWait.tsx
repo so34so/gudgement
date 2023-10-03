@@ -42,9 +42,6 @@ export default function PlayMatchingQueueWait({ route }) {
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
-  const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
-  const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
-  const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -130,10 +127,6 @@ export default function PlayMatchingQueueWait({ route }) {
         <View className="flex w-full h-full bg-black opacity-70" />
 
         <Image className="opacity-70" style={styles.bluFin} source={blueFin} />
-
-        <View style={styles.queuebox}>
-          <Image style={styles.queuebox} source={queueBox} />
-        </View>
       </ImageBackground>
     </View>
   );

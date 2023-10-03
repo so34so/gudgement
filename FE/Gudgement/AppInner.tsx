@@ -1,20 +1,24 @@
 import React from "react";
+import { Linking, Text, View } from "react-native";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUser, getAsyncData } from "./src/utils/common";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import PushNotification from "react-native-push-notification";
+import messaging from "@react-native-firebase/messaging";
+import SplashScreen from "react-native-splash-screen";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import PlayNavigator from "./src/navigation/PlayNavigator";
 import Login from "./src/pages/Login";
 import SettingEmail from "./src/pages/SettingEmail";
 import SettingName from "./src/pages/SettingName";
 import SettingAccount from "./src/pages/SettingAccount";
-import messaging from "@react-native-firebase/messaging";
-import { Linking, Text, View } from "react-native";
+import Pedometer from "./src/pages/Pedometer";
+import Analyze from "./src/pages/Analyze";
+import AnalyzeGoal from "./src/pages/AnalyzeGoal";
+import AnalyzeDetail from "./src/pages/AnalyzeDetail";
 import reactotron from "reactotron-react-native";
-import PushNotification from "react-native-push-notification";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUser, getAsyncData } from "./src/utils/common";
-import SplashScreen from "react-native-splash-screen";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -25,11 +29,7 @@ function AppInner() {
     screens: {
       BottomTabNavigator: {
         screens: {
-          MyPageNavigator: {
-            screens: {
-              MyPageDetail: "mypage",
-            },
-          },
+          MyPage: "mypage",
         },
       },
     },
@@ -159,6 +159,36 @@ function AppInner() {
               />
             </>
           )}
+          <Stack.Screen
+            name="PlayNavigator"
+            component={PlayNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Pedometer"
+            component={Pedometer}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Analyze"
+            component={Analyze}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SettingAccount"
+            component={SettingAccount}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AnalyzeGoal"
+            component={AnalyzeGoal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AnalyzeDetail"
+            component={AnalyzeDetail}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Login">

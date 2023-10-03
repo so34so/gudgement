@@ -3,8 +3,8 @@ import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
 import { WEBSOCKET_URL } from "@env";
-import BettingMachine from "../components/BettingMachine";
 import GameUi from "../components/GameUi";
+import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
   StyleSheet,
@@ -14,6 +14,7 @@ import {
   ImageSourcePropType,
   StatusBar,
 } from "react-native";
+
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -26,7 +27,7 @@ interface Game {
   message: string;
 }
 
-export default function PlayGame() {
+export default function PlayGameResult() {
   useEffect(() => {
     StatusBar.setHidden(true);
   }, []);
@@ -35,7 +36,7 @@ export default function PlayGame() {
   const [messageText, setMessageText] = useState("");
   const [serverMessages, setServerMessages] = useState([]);
   const userId = "ddd";
-  const WSUrl = "ws://j9d106.p.ssafy.io:8080";
+  const WSUrl = "http://j9d106.p.ssafy.io:8080";
   console.log(WSUrl);
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
   const snake: ImageSourcePropType = Snake as ImageSourcePropType;
@@ -71,7 +72,9 @@ export default function PlayGame() {
         className="flex-1"
       >
         <GameUi />
-        <Text
+
+        <GameBettingSyetem />
+        {/* <Text
           className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
           style={styles.loadingtext}
         >
@@ -82,10 +85,9 @@ export default function PlayGame() {
           style={styles.loadingtextkr}
         >
           잠시후 게임이 시작됩니다
-        </Text>
+        </Text> */}
 
         <Image style={styles.mycharacter} source={pingping} />
-        <BettingMachine />
         <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>

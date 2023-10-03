@@ -1,3 +1,4 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   Text,
@@ -7,7 +8,7 @@ import {
   ActivityIndicator,
   ViewStyle,
   TextStyle,
-  Pressable,
+  StyleProp,
 } from "react-native";
 import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
 import { BarChart } from "react-native-chart-kit";
@@ -21,8 +22,9 @@ import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
 import axios, { AxiosResponse } from "axios";
 import AnalysisBox from "../components/AnalysisBox";
+import fetchApi from "../utils/tokenUtils";
 
-function MyPage(this: unknown) {
+function Analyze(this: unknown) {
   const {
     data: userData,
     error: fetchError,
@@ -32,6 +34,9 @@ function MyPage(this: unknown) {
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
+
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const currentDate = new Date();
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
@@ -64,24 +69,31 @@ function MyPage(this: unknown) {
     }
   }, [selectedYear, selectedMonth, selectedDay]);
 
-  const handleSelectYear = useCallback((index: number, value: string) => {
-    setSelectedYear(Number(value.replace("년", "")));
-    reactotron.log!("년도 선택", value);
-  }, []);
-
-  const handleSelectMonth = useCallback((index: number, value: string) => {
-    setSelectedMonth(Number(value.replace("월", "")));
-    reactotron.log!("월 선택", index);
-  }, []);
-
-  const handleSelectDay = useCallback((index: number, value: string) => {
-    setSelectedDay(Number(value.replace("일", "")));
-    reactotron.log!("일 선택", value);
-  }, []);
+  const handleSelectDate = useCallback(
+    (type: string) => (indexString: string, value: string) => {
+      const numberValue = Number(value.replace(type, ""));
+      switch (type) {
+        case "년":
+          setSelectedYear(numberValue);
+          break;
+        case "월":
+          setSelectedMonth(numberValue);
+          break;
+        case "일":
+          setSelectedDay(numberValue);
+          break;
+        default:
+          break;
+      }
+      reactotron.log!(type + " 선택", value);
+    },
+    [],
+  );
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [chartData, setChartData] = useState<CommonType.TanalyzeChart>({
+    year: 0,
     month: 0,
     week: 0,
     data: {
@@ -89,7 +101,7 @@ function MyPage(this: unknown) {
       labels: ["월", "화", "수", "목", "금", "토", "일"],
       dateSet: {
         amount: [0, 0, 0, 0, 0, 0, 0],
-        color: ["", "", "", "", "", "", ""],
+        color: [true, true, true, true, true, true, true],
       },
     },
   });
@@ -97,9 +109,8 @@ function MyPage(this: unknown) {
   useEffect(() => {
     if (selectedYear > 0 && selectedMonth > 0 && selectedDay > 0) {
       fetchAnalyzeChart();
-      reactotron.log!("날짜 변경: ", selectedYear, selectedMonth, selectedDay);
     }
-  }, [selectedYear, selectedMonth, selectedDay]); // 년/월/일이 바뀔 때마다 실행됩니다.
+  }, []);
 
   useEffect(() => {
     refetch();
@@ -119,10 +130,24 @@ function MyPage(this: unknown) {
   }
 
   const fetchAnalyzeChart = async () => {
+    if (
+      (selectedYear === currentDate.getFullYear() &&
+        selectedMonth > currentDate.getMonth() + 1) ||
+      (selectedYear === currentDate.getFullYear() &&
+        selectedMonth >= currentDate.getMonth() + 1 &&
+        selectedDay > currentDate.getDate())
+    ) {
+      setModalText("선택할 수 없는 날짜 입니다.");
+      openModal();
+      setSelectedMonth(currentDate.getMonth() + 1);
+      setSelectedDay(currentDate.getDate());
+      return;
+    }
+    reactotron.log!("날짜: ", selectedYear, selectedMonth, selectedDay);
     const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
-        await axios.post(
+        await fetchApi.post(
           `${API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
           {
@@ -131,7 +156,7 @@ function MyPage(this: unknown) {
             },
           },
         );
-      reactotron.log!("fetchAnalyzeChart", response);
+      reactotron.log!("fetchAnalyzeChart", response.data);
       setChartData(response.data);
     } catch (error) {
       setModalText(
@@ -150,13 +175,8 @@ function MyPage(this: unknown) {
     setModalVisible(false);
   };
 
-  const handleInfo = () => {
-    setModalText("소비 분석 설명");
-    openModal();
-  }
-
-  const handleFetchAnalyze = () => {
-    reactotron.log!("분석 클릭!");
+  const handleFetchAnalyze = async () => {
+    navigation.navigate("AnalyzeDetail");
   };
 
   const getDropdownStyle = (): ViewStyle => ({
@@ -172,11 +192,11 @@ function MyPage(this: unknown) {
     index: number,
     isSelected?: boolean,
   ): ReactNode | null | undefined => {
-    const rowStyle = {
+    const rowStyle: StyleProp<ViewStyle> = {
       backgroundColor: isSelected ? "#79B4FF" : "#3190FF",
       display: "flex",
       justifyContent: "center",
-      alignItems: "start",
+      alignItems: "flex-start",
       paddingLeft: 12,
       paddingTop: 4,
       paddingBottom: 4,
@@ -196,7 +216,7 @@ function MyPage(this: unknown) {
 
   const getAdjustFrameFunc = (width: number, height: number) => {
     return (style: PositionStyle) => {
-      style.top += 10;
+      style.top = style.top ? style.top + 10 : 10;
       style.width = width;
       style.height = height;
       return style;
@@ -230,10 +250,10 @@ function MyPage(this: unknown) {
           </View>
           <View className="w-full">
             <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row justify-start items-center m-4 space-x-2">
+              <View className="flex flex-row justify-start items-center m-4 space-x-1 bg-lightsky60 p-[3px] rounded-xl">
                 <ModalDropdown
                   options={yearOptions}
-                  onSelect={handleSelectYear}
+                  onSelect={handleSelectDate("년")}
                   defaultIndex={selectedYear - 1}
                   defaultValue={`${selectedYear}년`}
                   dropdownStyle={getDropdownStyle()}
@@ -259,7 +279,7 @@ function MyPage(this: unknown) {
                 </ModalDropdown>
                 <ModalDropdown
                   options={monthOptions}
-                  onSelect={handleSelectMonth}
+                  onSelect={handleSelectDate("월")}
                   defaultIndex={selectedMonth - 1}
                   defaultValue={`${selectedMonth}월`}
                   dropdownStyle={getDropdownStyle()}
@@ -285,7 +305,7 @@ function MyPage(this: unknown) {
                 </ModalDropdown>
                 <ModalDropdown
                   options={dayOptions}
-                  onSelect={handleSelectDay}
+                  onSelect={handleSelectDate("일")}
                   defaultIndex={selectedDay - 1}
                   defaultValue={`${selectedDay}일`}
                   dropdownStyle={getDropdownStyle()}
@@ -310,17 +330,22 @@ function MyPage(this: unknown) {
                   </View>
                 </ModalDropdown>
               </View>
-              <Pressable
-                onPress={() => handleInfo()}
-                className="bg-lightsky w-[24px] h-[24px] rounded-full flex justify-center items-center m-4  border-solid border-black5 border-[2px]"
-              >
-                <Text
-                  className="font-PretendardBold text-white text-2xs"
-                  numberOfLines={1}
-                >
-                  i
-                </Text>
-              </Pressable>
+              <View className="pr-3">
+                <NavigationButton
+                  handleFunction={() => fetchAnalyzeChart()}
+                  text="차트 보기"
+                  height="sm"
+                  width="sm"
+                  size="2xs"
+                  color="bluesky"
+                />
+              </View>
+            </View>
+            <View className="py-1 mx-4 mb-4 flex justify-center items-center w-[46%] rounded-lg bg-white50">
+              <Text className="font-PretendardBold text-sub02 text-3xs">
+                {chartData.year}년 {chartData.month}월 {chartData.week}주차 소비
+                차트
+              </Text>
             </View>
             <BarChart
               data={{
@@ -328,6 +353,12 @@ function MyPage(this: unknown) {
                 datasets: [
                   {
                     data: chartData.data.dateSet.amount,
+                    colors: chartData.data.dateSet.color?.map(ele => {
+                      if (ele === true) {
+                        return (opacity = 1) => `rgba(52, 184, 89, ${opacity})`;
+                      }
+                      return (opacity = 1) => `rgba(243, 52, 52, ${opacity})`;
+                    }),
                   },
                 ],
               }}
@@ -359,12 +390,14 @@ function MyPage(this: unknown) {
               withInnerLines={false}
               withHorizontalLabels={false}
               withVerticalLabels={true}
-              // withCustomBarColorFromData={true}
+              withCustomBarColorFromData={true}
               flatColor={true}
               style={{
                 marginVertical: 0,
                 marginHorizontal: -40,
               }}
+              yAxisLabel={""}
+              yAxisSuffix={""}
             />
             <View className="px-4 pb-4">
               <NavigationButton
@@ -383,4 +416,4 @@ function MyPage(this: unknown) {
   );
 }
 
-export default MyPage;
+export default Analyze;

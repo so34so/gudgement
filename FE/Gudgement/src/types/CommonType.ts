@@ -34,17 +34,20 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-    PlayGame: undefined;
+    PlayGameStart: { roomNumber: string };
+    PlayGameProgress: undefined;
+    PlayGameResult: undefined;
+    PlayGameFinalResult: undefined;
+
     /**
      * MyPage child Type
      */
-    MyPageNavigator: undefined;
     MyPage: undefined;
     MyPageDetail: undefined;
     Pedometer: undefined;
     Analyze: undefined;
-    SingleRecords: undefined;
-    MultiRecords: undefined;
+    AnalyzeGoal: undefined;
+    AnalyzeDetail: undefined;
 
     /**
      * Login child Type
@@ -161,6 +164,7 @@ export declare module CommonType {
   };
 
   export type TanalyzeChart = {
+    year: number;
     month: number;
     week: number;
     data: {
@@ -168,15 +172,48 @@ export declare module CommonType {
       labels: string[];
       dateSet: {
         amount: number[];
-        color: string[];
+        color: boolean[];
       };
     };
   };
 
   export type Tplaymap = {
-    ticle: string;
+    ticle: number;
     image: string | ImageSourcePropType;
     title: string;
+    tiggle: number;
+    roleUser: string;
+    nickName: string;
     description: string;
+  };
+  export type TplayCard = {
+    cost: string;
+    number: number;
+    title: string;
+  };
+  export type TGameUserInfoDto = {
+    enemy_info: object;
+    my_info: object;
+  };
+
+  export type TmyGameinfo = {
+    equippedItems: {
+      items: TinvenItem[];
+    };
+    level: number;
+    nickname: string;
+    tiggle: number;
+  };
+  export type TenemyGameinfo = {
+    equippedItems: {
+      items: TinvenItem[];
+    };
+    level: number;
+    nickname: string;
+    tiggle: number;
+  };
+
+  export type TGameParams = {
+    roomNumber: string;
   };
 }

@@ -45,7 +45,7 @@ public class MyPageController {
 
     @PutMapping("/update/{monthOverConsumption}")
     @Operation(summary = "월 과소비 기준 설정", description = "Path에 추가해서 post하시면 됩니다.")
-    public void updateMonthOverConsumption(@PathVariable(name = "monthOverConsumption") Long monthOverConsumption,
+    public void updateMonthOverConsumption(@PathVariable("monthOverConsumption") Long monthOverConsumption,
                                            HttpServletRequest httpServletRequest) {
 
         Member member = getMember(httpServletRequest);

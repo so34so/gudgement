@@ -97,7 +97,7 @@ public class GameServiceImpl implements GameService{
 
         if (allUsersAccepted(roomNumber)) {
             log.info("All users accepted. Sending start message and saving game room and users.");
-            messagingTemplate.convertAndSend("/topic/game/alarm/" + roomNumber, "All users success");
+           // messagingTemplate.convertAndSend("/topic/game/alarm/" + roomNumber, "All users success");
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);

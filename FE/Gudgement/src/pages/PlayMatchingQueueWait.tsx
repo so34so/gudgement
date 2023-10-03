@@ -29,12 +29,15 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 import { WEBSOCKET_URL } from "@env";
 import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
+import { useQueryClient } from "react-query";
+import { useQuery } from "react-query";
+import { queryClient } from "../../queryClient";
 
-export default function PlayMatchingQueue({ route }) {
+export default function PlayMatchingQueueWait({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
-
+  console.log("매칭웨이트", roomNumber);
   const websocketClient = useWebSocket();
-  console.log("야!", typeof roomNumber);
+
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -46,41 +49,71 @@ export default function PlayMatchingQueue({ route }) {
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   useEffect(() => {
-    websocketClient.connect({}, function (frame) {
-      websocketClient.subscribe(
-        "/topic/game/" + roomNumber,
-        function (messageOutput) {
-          console.log(messageOutput);
-        },
-      );
-    });
-
-    // // Unmount 시점에 웹소켓 연결 종료
-    // return () => {
-    //   if (websocketClient.connected) {
-    //     websocketClient.disconnect();
-    //   }
-    // };
+    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
+    websocketClient.subscribe(
+      "/topic/game/" + roomNumber,
+      function (messageOutput) {
+        console.log("수락 모두 완료!", messageOutput.body);
+        const userInfoDtos = JSON.parse(
+          messageOutput.body,
+        ) as CommonType.TGameUserInfoDto;
+        const myInfo = userInfoDtos[0] as CommonType.TenemyGameinfo;
+        const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo; // Cast to the correct type
+        console.log("큐 웨이트 내 정보:", myInfo);
+        console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
+        console.log("큐 웨이트 정보", enemyInfo);
+        // 리액트 쿼리에 데이터 저장
+        queryClient.setQueryData(["myGameinfo"], myInfo);
+        queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
+        navigation.navigate("PlayGameStart", {
+          roomNumber: roomNumber,
+        });
+      },
+    );
   }, []);
 
-  // 매칭 수락 함수
-  const acceptMatch = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/game/accept`, {
-        roomNumber: roomNumber,
-        nickName: nickName,
-      });
-      if (response.status === 200) {
-        // If successful...
-        navigation.navigate("PlayMatchingQueueWait", {
-          roomNumber: roomNumber,
-          nickName: nickName,
-        });
-      }
-    } catch (error) {
-      console.error("Error accepting match:", error);
-    }
-  };
+  // websocketClient.subscribe(
+  //   "/topic/game/" + roomNumber,
+  //   function (messageOutput) {
+  //     console.log("큐웨이트", messageOutput.body);
+  //     const userInfoDtos = JSON.parse(
+  //       messageOutput.body,
+  //     ) as CommonType.TGameUserInfoDto;
+  //     const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+  //     const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+  //     console.log("큐 웨이트 내 정보:", myInfo);
+  //     console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
+  //     console.log("큐 웨이트 정보", enemyInfo);
+
+  //     setTimeout(() => {
+  //       navigation.navigate("PlayGameStart", {
+  //         roomNumber: roomNumber,
+  //       });
+  //     }, 1000); // Adjust this timeout if needed
+  //   },
+  // );
+  // 연결 함수 호출
+
+  // Unmount 시점에 웹소켓 연결 종료
+  // return () => {
+  //   if (websocketClient.connected) {
+  //     websocketClient.disconnect();
+  //   }
+  // };
+
+  // [websocketClient, roomNumber, navigation]
+  // // WebSocket connection
+  // const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
+
+  // stompClient.connect({}, function (frame) {
+  //   stompClient.subscribe("/topic/game/" + roomNumber, function (message) {
+  //     console.log(message);
+  //     navigation.navigate("PlayGameStart", {
+  //       roomNumber: roomNumber,
+  //       websocketClient: websocketClient,
+  //     });
+  //   });
+  // });
 
   return (
     <View className="flex w-full h-full">
@@ -89,14 +122,7 @@ export default function PlayMatchingQueue({ route }) {
         resizeMode="cover"
         className="flex-1"
       >
-        <View style={styles.buttonwrapper}>
-          <TouchableOpacity onPress={acceptMatch}>
-            <Image style={styles.acceptbutton} source={acceptButton} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>
-            <Image style={styles.rejectbutton} source={rejectButton} />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.buttonwrapper} />
 
         <View className="flex z-20">
           <Image style={styles.bluecard} source={blueCard} />

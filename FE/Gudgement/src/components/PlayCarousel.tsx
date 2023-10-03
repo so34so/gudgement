@@ -9,56 +9,39 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { mapInfoArray } from "./MapData";
 
 import { CommonType } from "../types/CommonType";
-import Map1 from "../assets/images/map1.png";
-import Map2 from "../assets/images/map2.png";
-import Map3 from "../assets/images/map3.png";
+
 import MapCard from "../assets/images/mapcard.png";
 import MapType from "../assets/images/maptype.png";
 
-const map1: ImageSourcePropType = Map1 as ImageSourcePropType;
-const map2: ImageSourcePropType = Map2 as ImageSourcePropType;
-const map3: ImageSourcePropType = Map3 as ImageSourcePropType;
 const mapCard: ImageSourcePropType = MapCard as ImageSourcePropType;
 
 const mapType: ImageSourcePropType = MapType as ImageSourcePropType;
-const mapInfoArray: CommonType.Tplaymap[] = [
-  {
-    title: "Map 1",
-    description: "맵 설명이 들어갈 자리 1",
-    image: map1, // 맵 이미지 경로
-    ticle: "x100",
-  },
-  {
-    title: "Map 2",
-    description: "맵 설명이 들어갈 자리 2",
-    image: map2,
-    ticle: "x300",
-  },
-  {
-    title: "Map 3",
-    description: "맵 설명이 들어갈 자리 3",
-    image: map3,
-    ticle: "x500",
-  },
-];
 
 const screenHeight = Math.round(Dimensions.get("window").height);
 
-function PlayCarousel() {
+function PlayCarousel({
+  onSelectMap,
+}: {
+  onSelectMap: (map: CommonType.Tplaymap) => void;
+}) {
   const [selectItem, setSelectItem] = useState(0);
 
   const nextMap = () => {
     // 다음 맵으로 이동
-    setSelectItem(prevItem => (prevItem + 1) % mapInfoArray.length);
+    const nextItem = (selectItem + 1) % mapInfoArray.length;
+    setSelectItem(nextItem);
+    onSelectMap(mapInfoArray[nextItem]);
   };
 
   const prevMap = () => {
     // 이전 맵으로 이동
-    setSelectItem(prevItem =>
-      prevItem === 0 ? mapInfoArray.length - 1 : prevItem - 1,
-    );
+    const prevItem =
+      selectItem === 0 ? mapInfoArray.length - 1 : selectItem - 1;
+    setSelectItem(prevItem);
+    onSelectMap(mapInfoArray[prevItem]);
   };
 
   return (
@@ -96,7 +79,7 @@ function PlayCarousel() {
         >
           <View style={styles.mapTextContainer}>
             <Text style={styles.mapTicle}>
-              {mapInfoArray[selectItem].ticle}
+              x{mapInfoArray[selectItem].ticle}
             </Text>
             <Text style={styles.mapTitle}>
               {mapInfoArray[selectItem].title}

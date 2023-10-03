@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class JwtRefreshAuthFilter extends OncePerRequestFilter {
 

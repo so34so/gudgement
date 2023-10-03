@@ -20,7 +20,7 @@ import PlayBackground from "../assets/images/playBackground.png";
 import Fin from "../assets/images/finfinee.png";
 import { API_URL, IMAGE_URL } from "@env";
 import { CommonType } from "../types/CommonType";
-
+console.log(IMAGE_URL);
 function Play() {
   const playBackground: ImageSourcePropType =
     PlayBackground as ImageSourcePropType;

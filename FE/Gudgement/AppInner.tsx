@@ -153,8 +153,8 @@ function AppInner() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="바텀"
-                component={BottomTabNavigator}
+                name="PlayNavigator"
+                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </>

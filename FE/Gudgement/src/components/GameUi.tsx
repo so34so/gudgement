@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import FastImage, { FastImageProps } from "react-native-fast-image";
 import {
   ImageBackground,
   Image,

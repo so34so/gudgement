@@ -4,7 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
-
+import { WebSocketProvider } from "./src/components/WebSocketContext";
+import { WEBSOCKET_URL } from "@env";
 import { useEffect } from "react";
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
@@ -153,7 +154,9 @@ function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
-        <AppInner />
+        <WebSocketProvider url={WEBSOCKET_URL}>
+          <AppInner />
+        </WebSocketProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

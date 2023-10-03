@@ -38,7 +38,6 @@ export declare module CommonType {
     /**
      * MyPage child Type
      */
-    MyPageNavigator: undefined;
     MyPage: undefined;
     MyPageDetail: undefined;
     Pedometer: undefined;

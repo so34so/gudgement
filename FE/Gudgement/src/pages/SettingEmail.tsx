@@ -10,13 +10,14 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { API_URL, IMAGE_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getAsyncData, setAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import reactotron from "reactotron-react-native";
+import fetchApi from "../utils/tokenUtils";
 
 function SettingEmail() {
   const navigation =
@@ -67,17 +68,13 @@ function SettingEmail() {
       email: currentEmail,
     };
     try {
-      const response: AxiosResponse<CommonType.TemailCode> = await axios.post(
-        `${API_URL}/member/email/send`,
-        sendBE,
-      );
-      if (response.status === 200) {
-        const mailCode = response.data.toString();
-        setCheckNumber(mailCode);
-        setEmail(currentEmail);
-        setModalText("이메일로 전송된 인증 코드를 입력하세요.");
-        openModal();
-      }
+      const response: AxiosResponse<CommonType.TemailCode> =
+        await fetchApi.post(`${API_URL}/member/email/send`, sendBE);
+      const mailCode = response.data.toString();
+      setCheckNumber(mailCode);
+      setEmail(currentEmail);
+      setModalText("이메일로 전송된 인증 코드를 입력하세요.");
+      openModal();
     } catch (error) {
       const axiosError = error as AxiosError<CommonType.Terror>;
       if (axiosError.response) {
@@ -101,7 +98,7 @@ function SettingEmail() {
           email: email,
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
-          await axios.post(`${API_URL}/member/update/email`, sendBE);
+          await fetchApi.post(`${API_URL}/member/update/email`, sendBE);
         reactotron.log!("인증 메일 등록 성공!", response);
         setCheckNumber("");
         setNumber("");

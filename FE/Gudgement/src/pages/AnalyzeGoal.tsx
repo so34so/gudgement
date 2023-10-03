@@ -16,6 +16,8 @@ import NavigationButton from "../components/NavigationButton";
 import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
 import TagBoxSmall from "../components/TagBoxSmall";
+import { getAsyncData } from "../utils/common";
+import axios from "axios";
 
 function AnalyzeGoal() {
   const {
@@ -76,16 +78,27 @@ function AnalyzeGoal() {
   };
 
   const handleFetchGoal = async (currentGoal: string) => {
-    if (!currentGoal.trim()) {
+    const numValue = currentGoal.replace(/,/g, "");
+    if (!numValue.trim()) {
       setModalText("목표 금액을 입력해주세요.");
       openModal();
       return;
     }
-    const numGoal = Number(currentGoal);
+    const numGoal = Number(numValue);
+    reactotron.log!(numGoal);
+    const getAccessToken = await getAsyncData<string>("accessToken");
     try {
-      const response = await axios.put(`${API_URL}/mypage/update`, {
-        monthOverConsumption: currentGoal,
-      });
+      const response = await axios.put(
+        `${API_URL}/mypage/update/${numGoal}`,
+        {
+          monthOverConsumption: numGoal,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getAccessToken}`,
+          },
+        },
+      );
       reactotron.log!("목표 금액 설정 성공!", response);
       setGoal("");
       setModalText(

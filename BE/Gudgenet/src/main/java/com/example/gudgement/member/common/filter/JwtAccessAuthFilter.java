@@ -52,7 +52,7 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
             // accessToken 값이 있음
             if (accessToken != null) {
                 // 유효성 검사
-                if (jwtProvider.validationToken(accessToken, "Access")) {
+                if (jwtProvider.validationToken(accessToken)) {
                     log.info("AccessToken 유효함. : {}", accessToken);
 
 //                Claims claims = jwtProvider.getClaims(accessToken);

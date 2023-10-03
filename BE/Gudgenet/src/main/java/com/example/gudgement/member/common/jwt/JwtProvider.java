@@ -62,7 +62,7 @@ public class JwtProvider {
     }
 
     // 토큰 유효성 검증
-    public boolean validationToken(String token , String type) {
+    public boolean validationToken(String token) {
         try {
             log.info("token 만료 시간 : {}", getClaims(token).getExpiration());
             return !getClaims(token).getExpiration().before(new Date());
@@ -112,31 +112,25 @@ public class JwtProvider {
     refreshToken을 유저에게
     */
     public AccessTokenDto tokenRefresh(String token) {
-        try {
-            log.info("token valid 확인 중...");
-            validationToken(token, "Refresh");
-            log.info("token valid!");
-
-            Claims claims = getClaims(token);
-            Member member = memberRepository.findByMemberId((Long)claims.get("id")).orElseThrow(() ->
-                    new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
-                    );
-
-            JwtToken jwt = createToken(member.getMemberId(), member.getEmail());
-            memberService.updateRefreshToken(member.getEmail(), jwt.getRefreshToken());
-
-            AccessTokenDto accessTokenDto = new AccessTokenDto(jwt.getAccessToken());
-
-            log.info(accessTokenDto.getAccessToken());
-            log.info("정상 리턴");
-            return accessTokenDto;
-
-        } catch (IllegalArgumentException | NoSuchElementException | JwtException e) {
-                log.info(e.toString());
-                log.error(e.getMessage());
-                log.info("null 값 리턴");
-                return null;
+        log.info("token valid 확인 중...");
+        if (!validationToken(token)) {
+            throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
         }
+        log.info("token valid!");
+
+        Claims claims = getClaims(token);
+        Member member = memberRepository.findByMemberId((Long)claims.get("id")).orElseThrow(() -> {
+                throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+            });
+
+        JwtToken jwt = createToken(member.getMemberId(), member.getEmail());
+//        memberService.updateRefreshToken(member.getEmail(), jwt.getRefreshToken());
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto(jwt.getAccessToken());
+
+        log.info(accessTokenDto.getAccessToken());
+        log.info("정상 리턴");
+        return accessTokenDto;
     }
 
     public Member extractMember (HttpServletRequest httpServletRequest) {

@@ -52,7 +52,7 @@ public class JwtRefreshAuthFilter extends OncePerRequestFilter {
             // refreshToken 값이 있음
             if (refreshToken != null) {
                 // 유효성 검사
-                if (jwtProvider.validationToken(refreshToken, "Refresh")) {
+                if (jwtProvider.validationToken(refreshToken)) {
                     log.info("RefreshToken 유효함. : {}", refreshToken);
 
 //                Claims claims = jwtProvider.getClaims(refreshToken);

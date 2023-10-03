@@ -57,8 +57,8 @@ export default function PlayMatchingQueueWait({ route }) {
         const userInfoDtos = JSON.parse(
           messageOutput.body,
         ) as CommonType.TGameUserInfoDto;
-        const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
-        const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+        const myInfo = userInfoDtos[0] as CommonType.TenemyGameinfo;
+        const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo; // Cast to the correct type
         console.log("큐 웨이트 내 정보:", myInfo);
         console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
         console.log("큐 웨이트 정보", enemyInfo);

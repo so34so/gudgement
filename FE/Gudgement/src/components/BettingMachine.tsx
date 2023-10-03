@@ -3,11 +3,13 @@ import Bettingmachine from "../assets/images/bettingmachine.png";
 import Bettingsawtooth from "../assets/images/bettingsawtooth.png";
 import GiveUpButton from "../assets/images/giveup.png";
 import BettingButton from "../assets/images/betting.png";
-
+import axios from "axios";
+import { API_URL } from "@env";
 import {
   View,
   StyleSheet,
   Image,
+  TouchableOpacity,
   ImageSourcePropType,
   Text,
 } from "react-native";
@@ -19,10 +21,48 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
+import Reactotron from "reactotron-react-native";
+
 const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
 const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
 
-const BettingMachine = () => {
+const BettingMachine = ({
+  maxBettingAmount,
+  roundInfo,
+  myInfoState,
+  otherName,
+  roomNumber,
+}: {
+  maxBettingAmount: number;
+  roundInfo: object;
+  myInfoState: object;
+  otherName: string;
+  roomNumber: string;
+}) => {
+  // 버튼 활성화 상태 변수 추가
+  const [isButtonActive, setIsButtonActive] = useState(true);
+  // 라운드 데이터 요청
+  async function postBettingInfo() {
+    try {
+      const response = await axios.post(`${API_URL}/game/playRound`, {
+        nickName: myInfoState.nickname,
+        otherName: otherName,
+        bettingAmount: bettingAmount,
+        rounds: roundInfo.rounds,
+        cardOrder: roundInfo.card.order,
+        roomNumber: roomNumber,
+      });
+      Reactotron.log!("베팅완료!", response.data);
+      setIsButtonActive(false);
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
+  console.log("베팅머신메시지", roundInfo);
+  console.log("베팅머신메시지", myInfoState);
+
+  console.log(maxBettingAmount);
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =
@@ -40,14 +80,23 @@ const BettingMachine = () => {
       context: { startY: number },
     ) => {
       const newYCoord = context.startY + event.translationY;
-      const newBettingAmount = Math.max(0, Math.min(newYCoord / 6, 1));
+
+      // 움직일 때마다 1씩 변하도록 변경
+      let newBettingAmount = Math.floor(newYCoord / 6); // Math.round 대신 Math.floor 사용
+
+      // 베팅 가능한 최대량으로 제한합니다.
+      newBettingAmount = Math.max(
+        0,
+        Math.min(newBettingAmount, maxBettingAmount),
+      );
+
       runOnJS(setBettingAmount)(newBettingAmount);
     },
     onEnd: () => {},
   });
 
   const translateY = useSharedValue(0);
-  translateY.value = bettingAmount * 6; // translateY 값을 베팅 숫자에 연동
+  translateY.value = bettingAmount * 0.06; // translateY 값을 베팅 숫자에 연동
 
   const animatedMachineStyle = useAnimatedStyle(() => {
     return {
@@ -69,10 +118,20 @@ const BettingMachine = () => {
         className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
         style={styles.bettingAmountText}
       >
-        {Math.round(bettingAmount * 60)}개
+        {Math.round(bettingAmount)}개
       </Text>
       <View style={styles.buttonContainer}>
-        <Image className="w-[94] h-[41]" source={bettingButton} />
+        <TouchableOpacity onPress={isButtonActive ? postBettingInfo : null}>
+          <Image
+            className={
+              isButtonActive
+                ? " w-[94] h-[41]"
+                : "opacity-[60]	w-[94] h-[41] inactive-button"
+            }
+            source={bettingButton}
+          />
+        </TouchableOpacity>
+
         <Image className="w-[94] h-[41]" source={giveUpButton} />
       </View>
     </View>

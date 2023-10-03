@@ -24,9 +24,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import SockJS from "sockjs-client";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import { WEBSOCKET_URL } from "@env";
+
 import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
 

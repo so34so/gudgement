@@ -57,7 +57,6 @@ function Play() {
               }}
             />
           </Animated.View>
-
           {/* <FastImage
                 source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
                 style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.

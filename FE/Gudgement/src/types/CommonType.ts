@@ -187,9 +187,9 @@ export declare module CommonType {
     description: string;
   };
   export type TplayCard = {
-    cost: string;
-    number: number;
-    title: string;
+    name: string;
+    amount: number;
+    order: number;
   };
   export type TGameUserInfoDto = {
     enemy_info: object;

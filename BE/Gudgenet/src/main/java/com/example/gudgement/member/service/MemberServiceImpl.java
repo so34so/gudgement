@@ -19,25 +19,38 @@ import com.example.gudgement.member.exception.EmailLogicException;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.mypage.repository.ChartRepository;
+import com.example.gudgement.progress.entity.Progress;
+import com.example.gudgement.progress.repository.ProgressRepository;
+import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.shop.exception.ItemErrorCode;
+import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.mypage.exception.AccountException;
+import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.util.privilegedactions.LoadClass;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.List;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final InventoryRepository inventoryRepository;
+    private final ProgressRepository progressRepository;
+    private final ItemRepository itemRepository;
+    private final ChartRepository chartRepository;
+
     private final VirtualAccountService virtualAccountService;
     private final VirtualAccountRepository virtualAccountRepository;
     private final TransactionHistoryService transactionHistoryService;
@@ -66,6 +79,8 @@ public class MemberServiceImpl implements MemberService {
             "(주) 우아한형제들","투썸플레이스 구미 진","한국맥도날드 (유)","GS 진평베스트점","카카오페이",
             "투썸플레이스 인동점","올리브영","강고기집 진평점","진미축산","권민우","여민수", "카카오법인택시_5",
              };
+    private static String[] progressNames = {"win", "lose", "pedometerValue"};
+
     @Override
     @Transactional
     public MemberResponseDto memberCreate(MemberCreateDto memberCreateDto) {
@@ -123,13 +138,23 @@ public class MemberServiceImpl implements MemberService {
         }
         log.info("닉네임 설정 확인 ==============================");
 
-
         Rate memberRate = memberRating(member);
+
+        List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
+        List<Item> equippedItems = new ArrayList<>();
+        for (Inventory inventory : equippedInventories) {
+            Item item = inventory.getItemId();
+            if (item == null) {
+                throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
+            }
+            equippedItems.add(item);
+        }
 
         return MemberResponseDto.builder()
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+//                .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())
@@ -310,5 +335,48 @@ public class MemberServiceImpl implements MemberService {
         member.updateGrade(Grade.ROLE_BRONZE);
         memberRepository.save(member);
     }
-}
 
+    @Override
+    @Transactional
+    public void initializeProgressAndInventory(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->{
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
+
+        for (String progressName : progressNames) {
+            Progress progress = Progress.builder()
+                    .member(member)
+                    .progressName(progressName)
+                    .progressValue(0)
+                    .build();
+            // Save the new Progress entity in the database
+            progressRepository.save(progress);
+        }
+
+        Item defaultItem = itemRepository.findById(1L).orElseThrow(() ->{
+            throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM);
+        });
+
+        Inventory inventory = Inventory.builder()
+                .itemId(defaultItem)
+                .member(member)
+                .build();
+
+        inventory.equip();
+
+        inventoryRepository.save(inventory);
+        log.info("================ 기본 생성 이상 없음 =======================");
+    }
+
+    @Override
+    @Transactional
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
+
+        chartRepository.deleteAllByMemberId(member);
+        log.info("memberId : {}", member.toString());
+        memberRepository.deleteByMemberId(member.getMemberId());
+    }
+}

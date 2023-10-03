@@ -41,6 +41,7 @@ module.exports = {
         mainColor: "#21e5a9",
       },
       fontSize: {
+        "3xs": 12,
         "2xs": 14,
         xs: 16,
         sm: 18,

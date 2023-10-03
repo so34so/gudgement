@@ -5,6 +5,8 @@ import AcceptButton from "../assets/images/accept.png";
 import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { API_URL, IMAGE_URL } from "@env";
 import {
   View,
   StyleSheet,
@@ -22,18 +24,63 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import SockJS from "sockjs-client";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import { WEBSOCKET_URL } from "@env";
+import { CommonType } from "../types/CommonType";
+import { useWebSocket } from "../components/WebSocketContext";
 
-export default function PlayMatchingQueue() {
+export default function PlayMatchingQueue({ route }) {
+  const { roomNumber, nickName } = route.params; // 추가
+
+  const websocketClient = useWebSocket();
+  console.log("야!", typeof roomNumber);
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
   const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
   const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
-
   const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  useEffect(() => {
+    websocketClient.connect({}, function (frame) {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log(messageOutput);
+        },
+      );
+    });
+
+    // // Unmount 시점에 웹소켓 연결 종료
+    // return () => {
+    //   if (websocketClient.connected) {
+    //     websocketClient.disconnect();
+    //   }
+    // };
+  }, []);
+
+  // 매칭 수락 함수
+  const acceptMatch = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/game/accept`, {
+        roomNumber: roomNumber,
+        nickName: nickName,
+      });
+      if (response.status === 200) {
+        // If successful...
+        navigation.navigate("PlayMatchingQueueWait", {
+          roomNumber: roomNumber,
+          nickName: nickName,
+        });
+      }
+    } catch (error) {
+      console.error("Error accepting match:", error);
+    }
+  };
 
   return (
     <View className="flex w-full h-full">
@@ -43,7 +90,7 @@ export default function PlayMatchingQueue() {
         className="flex-1"
       >
         <View style={styles.buttonwrapper}>
-          <TouchableOpacity onPress={() => navigation.navigate("PlayGame")}>
+          <TouchableOpacity onPress={acceptMatch}>
             <Image style={styles.acceptbutton} source={acceptButton} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>

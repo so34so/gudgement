@@ -4,6 +4,7 @@ import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { API_URL } from "@env";
+import fetchApi from "./tokenUtils";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 
@@ -49,34 +50,54 @@ export const getAsyncData = async <T>(key: string): Promise<T | null> => {
   return null;
 };
 
-// 데이터 수정
-export const updateAsyncData = async (key: string, updatedValue: unknown) => {
-  try {
-    // 1. 저장된 값을 불러옵니다.
-    const existingValue = await getAsyncData(key);
-
-    if (existingValue !== null) {
-      // 2. 원하는 값을 수정합니다.
-      const updatedData: unknown = {
-        ...(existingValue as object), // 기존 값이 객체여야 함
-        ...(updatedValue as object), // 업데이트할 값도 객체여야 함
-      };
-
-      // 3. 수정된 값을 다시 저장합니다.
-      await setAsyncData(key, updatedData);
-      reactotron.log!("값이 업데이트되었습니다.");
-    } else {
-      reactotron.log!("값이 존재하지 않습니다.");
-    }
-  } catch (error) {
-    reactotron.error!("데이터를 업데이트하는 중에 오류가 발생했습니다:", error);
-  }
-};
-
 // 데이터 삭제
 export const removeAsyncData = async (key: string) => {
   try {
     await AsyncStorage.removeItem(key);
+  } catch (error) {
+    reactotron.log!(error);
+  }
+};
+
+// Refresh Token으로 새 AccessToken 받아오기
+export const refreshToken = async () => {
+  try {
+    // AsyncStorage에서 refreshToken 가져오기
+    const getRefreshToken = await getAsyncData<string>("refreshToken");
+
+    if (!getRefreshToken) {
+      reactotron.log!("Refresh token이 없습니다.");
+      throw new Error("Refresh token이 없습니다.");
+    }
+
+    // 서버에 요청 보내서 새 AccessToken 받아옴
+    const response: AxiosResponse<CommonType.TrefreshToken> =
+      await fetchApi.post(`${API_URL}/member/token/refresh`, null, {
+        headers: {
+          Authorization: `Bearer ${getRefreshToken}`,
+        },
+      });
+    reactotron.log!("refreshToken으로 accessToken 발급", response.data);
+    // 새 AccessToken 저장
+    setAsyncData("accessToken", response.data.accessToken);
+    const getAccessToken = await getAsyncData<string>("accessToken");
+    reactotron.log!("새 accessToken 저장 성공!", getAccessToken);
+  } catch (error) {
+    reactotron.log!(error);
+  }
+};
+
+// 현재 저장된 AccessToken 가져오기
+export const getAccessToken = async (): Promise<string | null> => {
+  return getAsyncData<string>("accessToken");
+};
+
+// 사용자 로그아웃 처리
+export const logoutUser = async () => {
+  try {
+    // 모든 인증 정보 삭제 (여기서는 accessToken과 refreshToken만 삭제하였음)
+    await removeAsyncData("accessToken");
+    await removeAsyncData("refreshToken");
   } catch (error) {
     reactotron.log!(error);
   }
@@ -101,15 +122,18 @@ export const ANALYZE_BOX_IMAGE = [
   "/asset/analyzeOver.png",
 ];
 
-export const fetchUser = async (): Promise<CommonType.Tuser> => {
-  const loginData = (await getAsyncData("loginData")) as CommonType.TloginData;
-  reactotron.log!(loginData.accessToken);
+export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
+  const getAccessTokenFetchUser = await getAsyncData<string>("accessToken");
+  console.log("accessToken", getAccessToken);
+  if (!getAccessToken) {
+    return null;
+  }
   try {
-    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+    const response: AxiosResponse<CommonType.Tuser> = await fetchApi.get(
       `${API_URL}/member/loadMyInfo`,
       {
         headers: {
-          Authorization: `Bearer ${loginData.accessToken}`,
+          Authorization: `Bearer ${getAccessTokenFetchUser}`,
         },
       },
     );

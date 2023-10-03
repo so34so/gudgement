@@ -1,4 +1,4 @@
-package com.example.gudgement.gamechat.dto;
+package com.example.gudgement.game.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,13 +7,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class SendMessageDto {
-    Long sender;
     String nickname;
     String message;
 
     @Builder
-    public SendMessageDto(Long sender, String nickname, String message){
-        this.sender = sender;
+    public SendMessageDto(String nickname, String message){
         this.nickname = nickname;
         this.message = message;
     }

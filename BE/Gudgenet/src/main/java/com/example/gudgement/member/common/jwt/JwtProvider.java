@@ -4,12 +4,14 @@ import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.member.exception.ErrorResponse;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.service.MemberService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +45,8 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .setSubject(email)
-                .setExpiration(expireDate)
                 .setClaims(claim)
+                .setExpiration(expireDate)
                 .setIssuedAt(new Date())
                 .signWith(key, signatureAlgorithm)
                 .compact();
@@ -60,12 +62,17 @@ public class JwtProvider {
     }
 
     // 토큰 유효성 검증
-    public boolean validationToken(String token) {
+    public boolean validationToken(String token , String type) {
         try {
-            return getClaims(token).getExpiration().before(new Date());
+            log.info("token 만료 시간 : {}", getClaims(token).getExpiration());
+            return !getClaims(token).getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
-            throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
+            if (type.equals("Refresh")) {
+                throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
+            } else {
+                throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+            }
         }
     }
 
@@ -82,7 +89,7 @@ public class JwtProvider {
 
     // AccessToken
     public Date getExpireDateAccessToken() {
-        long expireTimeMils = 1000 * 60 * 60L; // 1 hours
+        long expireTimeMils = 1000 * 60 * 1L; // 1 hours
         return new Date(System.currentTimeMillis() + expireTimeMils);
     }
 
@@ -111,7 +118,7 @@ public class JwtProvider {
     public AccessTokenDto tokenRefresh(String token) {
         try {
             log.info("token valid 확인 중...");
-            validationToken(token);
+            validationToken(token, "Refresh");
             log.info("token valid!");
 
             Claims claims = getClaims(token);
@@ -145,5 +152,15 @@ public class JwtProvider {
                 () -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
         return member;
+    }
+
+    public ResponseEntity<ErrorResponse> jwtExceptionHandler(String Token){
+        if (Token.equals("Access")) {
+            return ErrorResponse.error(new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
+        } else if (Token.equals("Refresh")) {
+            return ErrorResponse.error(new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
+        } else {
+            return ErrorResponse.error(new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN));
+        }
     }
 }

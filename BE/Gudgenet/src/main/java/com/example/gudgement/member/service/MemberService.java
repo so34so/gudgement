@@ -18,4 +18,6 @@ public interface MemberService {
     boolean validNickname(String nickname);
     void updateGrade(Member member);
     void addTiggle(Long id);
+    void initializeProgressAndInventory(Long id);
+    void deleteMember(String email);
 }

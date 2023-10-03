@@ -3,6 +3,7 @@ package com.example.gudgement.member.controller;
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.dto.request.EmailDto;
+import com.example.gudgement.member.dto.request.LoginDto;
 import com.example.gudgement.member.dto.response.MemberResponseDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
@@ -62,6 +63,7 @@ public class MemberController {
     @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
     public void updateNickname(@RequestParam(name = "id") Long id, @RequestParam(name = "nickname") String nickname) {
         memberService.updateNickname(id, nickname);
+//        memberService.initializeProgressAndInventory(id);
     }
 
     @PostMapping("update/email")
@@ -102,4 +104,9 @@ public class MemberController {
         return ResponseEntity.ok("만보걷기 완료");
     }
 
+    @DeleteMapping("/delete/{email}")
+    @Operation(summary = "멤버 탈퇴", description = "해당 이메일을 가지고 있는 회원을 탈퇴시킵니다.")
+    public void deleteMember(@PathVariable(name = "email") String email) {
+        memberService.deleteMember(email);
+    }
 }

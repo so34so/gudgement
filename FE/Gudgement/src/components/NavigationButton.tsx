@@ -25,12 +25,14 @@ function NavigationButton({
   const buttonStyle02 = (currentHeight: string, currentWidth: string) =>
     `${currentHeight === "lg" ? "py-2" : "py-1"} ${
       currentWidth === "lg" && "px-[162px]"
-    } ${currentWidth === "md" && "px-[140px]"} ${
+    } ${currentWidth === "md" && "px-[106px]"} ${
       currentWidth === "sm" && "px-2"
     } h-fill w-fill flex flex-row justify-center items-center bg-transparent border-solid border-[3px] border-white20 rounded-lg`;
 
   const buttonStyle03 = (currentWidth: string, currentSize: string) =>
-    `text-center text-white ${currentSize === "md" ? "text-md " : "text-sm"}  ${
+    `text-center text-white ${currentSize === "2xs" && "text-2xs"} ${
+      currentSize === "sm" && "text-sm"
+    } ${currentSize === "md" && "text-md "} ${
       currentWidth === "md" && "w-[100px]"
     } font-PretendardExtraBold`;
 

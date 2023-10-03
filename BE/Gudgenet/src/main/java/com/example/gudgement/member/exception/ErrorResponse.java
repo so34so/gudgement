@@ -1,6 +1,7 @@
 package com.example.gudgement.member.exception;
 
 import com.example.gudgement.mypage.exception.AccountException;
+import com.example.gudgement.shop.exception.NotFoundItemException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -57,4 +58,5 @@ public class ErrorResponse {
                         .message(e.getErrorCode().getMessage())
                         .build());
     }
+
 }

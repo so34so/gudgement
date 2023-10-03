@@ -11,12 +11,10 @@ import Reactotron from "reactotron-react-native";
 import { API_URL, IMAGE_URL } from "@env";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getAsyncData, updateAsyncData } from "../utils/common";
+import { getAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import NavigationButton from "../components/NavigationButton";
-import reactotron from "reactotron-react-native";
-import { CommonType } from "../types/CommonType";
 
 function SettingName() {
   const [name, setName] = useState("");
@@ -28,12 +26,10 @@ function SettingName() {
 
   useEffect(() => {
     const getLoginData = async () => {
-      const loginData = (await getAsyncData(
-        "loginData",
-      )) as CommonType.TloginData;
-
-      setTempId(loginData.id);
-      reactotron.log!("이메일 업뎃", loginData.email);
+      const getId = await getAsyncData<number>("id");
+      if (getId) {
+        setTempId(getId);
+      }
     };
     getLoginData();
   }, []);

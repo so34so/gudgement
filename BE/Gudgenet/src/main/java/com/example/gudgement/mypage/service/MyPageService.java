@@ -11,4 +11,5 @@ public interface MyPageService {
     ChartDataDto toDateWeekChartData(Long id, String date);
     Chart createChart(Member member, Long overconsumption, int year, int month, int week);
     boolean Overconsumption(long overAmountRate, long amount);
+    void updateOverConsumption(Member member, Long monthOverConsumption);
 }

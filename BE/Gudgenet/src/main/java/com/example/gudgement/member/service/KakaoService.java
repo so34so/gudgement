@@ -76,6 +76,8 @@ public class KakaoService implements OauthService{
                 .refreshTokenExpiration(jwtToken.getRefreshTokenExpirationTime())
                 .build();
 
+        log.info("expration : {}", jwtProvider.getClaims(jwtToken.getAccessToken()).getExpiration());
+
         // 회원 존재 여부에 따라 다르게 저장
         Member saveMember;
         if (!memberRepository.existsByMemberId(kakaoProfile.getId())) {

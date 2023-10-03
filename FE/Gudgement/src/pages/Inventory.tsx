@@ -26,7 +26,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { INVENTORY_CATEGORY } from "../utils/common";
+import { INVENTORY_CATEGORY, getAccessToken } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
 import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
@@ -73,12 +73,16 @@ function Inventory({ route }: InventoryProps) {
 
   async function fetchInventoryItem(category: string) {
     try {
+      const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.TinvenItem[]> = await axios.get(
         `${API_URL}/inventory/type`,
         {
           params: {
             type: INVENTORY_CATEGORY[category],
             memberId: userInfo!.memberId,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
@@ -90,15 +94,15 @@ function Inventory({ route }: InventoryProps) {
       }
     }
   }
-  const {
-    data: fetchItem,
-    refetch,
-    isLoading,
-  } = useQuery({
+  const { data: fetchItem, isLoading: isInventoryLoading } = useQuery({
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
   reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
+  reactotron.log!("itemStatus", itemStatus);
+  const { data: fetchUser } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+  });
   useLayoutEffect(() => {
     if (
       fetchItem?.length &&
@@ -116,17 +120,18 @@ function Inventory({ route }: InventoryProps) {
     );
   }, [offset]);
 
-  useEffect(() => {
-    refetch();
-  }, [refetch, selectCategory]);
-
   const { mutate: equippedItem } = useMutation({
-    mutationFn: (params: IresponseEquipment) =>
-      axios.put(`${API_URL}/inventory`, null, {
+    mutationFn: async (params: IresponseEquipment) => {
+      const accessToken = await getAccessToken();
+      return axios.put(`${API_URL}/inventory`, null, {
         params: {
           invenId: params.invenId,
         },
-      }),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
@@ -138,6 +143,21 @@ function Inventory({ route }: InventoryProps) {
       equippedItem({ invenId: fetchItem[selectItem].invenId });
     }
   }, [equippedItem, fetchItem, selectItem]);
+
+  const disabledApply = useCallback(
+    (category: string) => {
+      setSelectCategory(category);
+      reactotron.log!("길이 및 패치 인벤 아이템", fetchItem, fetchItem?.length);
+      if (!fetchItem?.length) {
+        setItemStatus(true);
+        return;
+      }
+      setItemStatus(false);
+      reactotron.log!("category", selectItem);
+      setSelectItem(0);
+    },
+    [fetchItem, selectItem],
+  );
 
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
@@ -169,7 +189,15 @@ function Inventory({ route }: InventoryProps) {
         <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
-              <Image source={myCharacter} />
+              {fetchUser && fetchUser.setItems ? (
+                <Image
+                  source={{
+                    uri: fetchUser.setItems[0].image,
+                  }}
+                />
+              ) : (
+                <Image source={myCharacter} />
+              )}
             </Animated.View>
           </View>
           <View
@@ -209,13 +237,7 @@ function Inventory({ route }: InventoryProps) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                  setSelectCategory(category);
-                  if (!fetchItem) {
-                    setItemStatus(true);
-                  }
-                  setItemStatus(false);
-                  reactotron.log!("category", selectItem);
-                  setSelectItem(0);
+                  disabledApply(category);
                 }}
                 className={categoryStyle(category)}
               >
@@ -226,7 +248,7 @@ function Inventory({ route }: InventoryProps) {
             </View>
           ))}
         </View>
-        {isLoading ? (
+        {isInventoryLoading ? (
           <ActivityIndicator size="large" color="gray" className="top-20" />
         ) : (
           <Carousel

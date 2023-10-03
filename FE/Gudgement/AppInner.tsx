@@ -160,11 +160,6 @@ function AppInner() {
             </>
           )}
           <Stack.Screen
-            name="PlayNavigator"
-            component={PlayNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="Pedometer"
             component={Pedometer}
             options={{ headerShown: false }}

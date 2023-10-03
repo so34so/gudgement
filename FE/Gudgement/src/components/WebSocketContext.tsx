@@ -5,10 +5,10 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 // 웹소켓 컨텍스트 생성
 const WebSocketContext = createContext<CompatClient | null>(null);
 
-export const WebSocketProvider: React.FC<{ url: string }> = ({
-  url,
-  children,
-}) => {
+export const WebSocketProvider: React.FC<{
+  url: string;
+  children: JSX.Element;
+}> = ({ url, children }) => {
   const [client, setClient] = useState<CompatClient | null>(null);
 
   useEffect(() => {

@@ -16,7 +16,7 @@ import { CommonType } from "../types/CommonType";
 // AxiosRequestConfig 인터페이스를 확장하여 새로운 인터페이스를 정의
 interface AdaptAxiosRequestConfig extends AxiosRequestConfig {
   headers: AxiosRequestHeaders; // 헤더에 대한 타입 명시적으로 지정
-  retry?: boolean; // 재시도 여부 나타내는 프로퍼티 추가
+  retryCount?: number; // 재시도 횟수 나타내는 프로퍼티 추가
 }
 // Axios 인스턴스 생성
 const fetchApi: AxiosInstance = axios.create();
@@ -27,12 +27,12 @@ fetchApi.interceptors.request.use(
   async (config): Promise<AdaptAxiosRequestConfig> => {
     // 액세스 토큰을 요청 헤더에 추가
     // 로그인 데이터 가져오기
-    const getAccessToken = await getAsyncData<string>("accessToken");
+    const getAccessTokenForApi = await getAsyncData<string>("accessToken");
 
-    if (getAccessToken) {
+    if (getAccessTokenForApi) {
       // 헤더에 토큰 추가
       config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${getAccessToken}`;
+      config.headers.Authorization = `Bearer ${getAccessTokenForApi}`;
     }
     return config;
   },
@@ -41,12 +41,18 @@ fetchApi.interceptors.request.use(
   },
 );
 
+let retryCount = 0; // 클로저를 이용한 재시도 횟수 관리
+
 fetchApi.interceptors.response.use(
   response => response, // 응답이 성공적일 경우 그대로 반환
   async (error: AxiosError<CommonType.Terror>) => {
     const originalRequest = error.config as AdaptAxiosRequestConfig;
 
-    if (error.response && !originalRequest.retry) {
+    if (
+      error.response &&
+      retryCount < 10 // 최대 두 번만 요청되게 설정
+    ) {
+      retryCount++; // 재시도 횟수 증가
       const errorCode = error.response.data.code;
       const errorMessage = error.response.data.message;
       let newAccessToken;
@@ -56,9 +62,9 @@ fetchApi.interceptors.response.use(
           break;
         case "T-002":
           reactotron.log!("엑세스 토큰 기간 만료", errorMessage); // Access 토큰 기간 만료
-          originalRequest.retry = true;
           await refreshToken(); // Refresh Token으로 새 AccessToken을 받아옴
           newAccessToken = await getAccessToken();
+          reactotron.log!("뉴 엑세스", newAccessToken);
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // 새 AccessToken으로 업데이트
           return fetchApi(originalRequest); // 업데이트된 AccessToken으로 다시 원래의 request 재요청
         case "T-003":
@@ -73,6 +79,7 @@ fetchApi.interceptors.response.use(
           break;
       }
     }
+    return Promise.reject(error);
   },
 );
 

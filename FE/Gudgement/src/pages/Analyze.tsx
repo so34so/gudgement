@@ -20,7 +20,7 @@ import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import AnalysisBox from "../components/AnalysisBox";
 import fetchApi from "../utils/tokenUtils";
 

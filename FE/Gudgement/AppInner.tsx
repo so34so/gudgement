@@ -175,11 +175,6 @@ function AppInner() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="SettingAccount"
-            component={SettingAccount}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="AnalyzeGoal"
             component={AnalyzeGoal}
             options={{ headerShown: false }}

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Dimensions } from "react-native";
+import { Dimensions, BackHandler } from "react-native";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -70,6 +70,8 @@ export const refreshToken = async () => {
       throw new Error("Refresh token이 없습니다.");
     }
 
+    reactotron.log!("Refresh token으로 발급받는 중..", getRefreshToken);
+
     // 서버에 요청 보내서 새 AccessToken 받아옴
     const response: AxiosResponse<CommonType.TrefreshToken> =
       await fetchApi.post(`${API_URL}/member/token/refresh`, null, {
@@ -82,8 +84,11 @@ export const refreshToken = async () => {
     setAsyncData("accessToken", response.data.accessToken);
     const getAccessToken = await getAsyncData<string>("accessToken");
     reactotron.log!("새 accessToken 저장 성공!", getAccessToken);
+    return getAccessToken;
   } catch (error) {
-    reactotron.log!(error);
+    reactotron.log!("리프레시 토큰 기간 만료", error); // Refresh 토큰 기간 만료
+    logoutUser(); // 사용자를 로그아웃 시킴
+    return Promise.reject(error);
   }
 };
 
@@ -98,6 +103,10 @@ export const logoutUser = async () => {
     // 모든 인증 정보 삭제 (여기서는 accessToken과 refreshToken만 삭제하였음)
     await removeAsyncData("accessToken");
     await removeAsyncData("refreshToken");
+    reactotron.log!("로그아웃 시킬게요..");
+    const getAccessToken = await getAsyncData<string>("accessToken");
+    reactotron.log!("과연?", getAccessToken);
+    BackHandler.exitApp();
   } catch (error) {
     reactotron.log!(error);
   }
@@ -124,12 +133,12 @@ export const ANALYZE_BOX_IMAGE = [
 
 export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
   const getAccessTokenFetchUser = await getAsyncData<string>("accessToken");
-  console.log("accessToken", getAccessToken);
-  if (!getAccessToken) {
+  console.log("accessToken", getAccessTokenFetchUser);
+  if (!getAccessTokenFetchUser) {
     return null;
   }
   try {
-    const response: AxiosResponse<CommonType.Tuser> = await fetchApi.get(
+    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
       `${API_URL}/member/loadMyInfo`,
       {
         headers: {

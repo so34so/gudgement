@@ -17,7 +17,7 @@ public enum ErrorCode {
     // 토큰
     NOT_AUTHORIZATION_TOKEN(HttpStatus.BAD_REQUEST, "T-001", "올바른 토큰이 아닙니다."),
     ACCESS_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-002", "Access토큰의 기간이 만료되었습니다."),
-    REFRESH_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-003-", "Refresh토큰의 기간이 만료되었습니다."),
+    REFRESH_TOKEN_EXPIRATION(HttpStatus.UNAUTHORIZED, "T-003", "Refresh토큰의 기간이 만료되었습니다."),
     NOT_EXIST_TOKEN(HttpStatus.BAD_REQUEST, "T-004", "토큰이 없습니다."),
     NOT_SAME_TOKEN_AND_MEMBER(HttpStatus.BAD_REQUEST, "T-005", "토큰에 담긴 유저와 토큰을 보낸 유저가 같지 않습니다."),
     

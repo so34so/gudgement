@@ -5,10 +5,13 @@ import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.exception.AuthorizationException;
 import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
+import com.example.gudgement.member.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,8 +20,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
@@ -28,70 +33,78 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Filter : JwtAccessFilter");
-
-        if(whiteListCheck(request.getRequestURI())){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
-        String accessToken = jwtProvider.getHeaderToken(request, "Authorization");
-
-        if (accessToken != null && accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring(7);
-        } else {
-            throw new BaseErrorException(ErrorCode.NOT_AUTHORIZATION_TOKEN);
-        }
-
-        // accessToken 값이 있음
-        if (accessToken != null) {
-            // 유효성 검사
-            if (jwtProvider.validationToken(accessToken)) {
-                log.info("AccessToken 유효함. : {}", accessToken);
-
-                Claims claims = jwtProvider.getClaims(accessToken);
-                if (attribute.getId().equals(claims.get("id"))) {
-                    throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
-                }
-                log.info("요청 ID 일치함. : {}", claims.get("id"));
-
-            // accessToken 만료
-            } else {
-                log.info("AccessToken 만료. : {}", accessToken);
-                jwtExceptionHandler(response, "Access");
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/api")) {
+            if(whiteListCheck(request.getRequestURI())){
+                filterChain.doFilter(request, response);
+                return;
             }
-            filterChain.doFilter(request, response);
 
-        } else {
-            jwtExceptionHandler(response, "null");
+//        MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
+            String accessToken = jwtProvider.getHeaderToken(request, "Authorization");
+
+            if (accessToken != null && accessToken.startsWith("Bearer ")) {
+                accessToken = accessToken.substring(7);
+            } else {
+                throw new BaseErrorException(ErrorCode.NOT_AUTHORIZATION_TOKEN);
+            }
+
+            // accessToken 값이 있음
+            if (accessToken != null) {
+                // 유효성 검사
+                if (jwtProvider.validationToken(accessToken, "Access")) {
+                    log.info("AccessToken 유효함. : {}", accessToken);
+
+//                Claims claims = jwtProvider.getClaims(accessToken);
+//                if (attribute.getId().equals(claims.get("id"))) {
+//                    throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
+//                }
+//                log.info("요청 ID 일치함. : {}", claims.get("id"));
+
+                    // accessToken 만료
+                } else {
+                    log.info("AccessToken 만료. : {}", accessToken);
+                    jwtExceptionHandler(response, "Access");
+                    return;
+                }
+            } else {
+                jwtExceptionHandler(response, null);
+                return;
+            }
         }
+
+        filterChain.doFilter(request, response);
     }
 
-    public void jwtExceptionHandler(HttpServletResponse response, String Token){
-        response.setStatus(400);
-        response.setContentType("application/json");
+    public void jwtExceptionHandler(HttpServletResponse response, String token) {
+        ErrorResponse errorResponse;
+        int status;
 
-        if (Token.equals("Access")) {
-            try{
-                String json = new ObjectMapper().writeValueAsString(new AuthorizationException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
-                response.getWriter().write(json);
-            } catch (Exception e){
-                log.error(e.getMessage());
-            }
-        } else if (Token.equals("Refresh")) {
-            try{
-                String json = new ObjectMapper().writeValueAsString(new AuthorizationException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
-                response.getWriter().write(json);
-            } catch (Exception e){
-                log.error(e.getMessage());
-            }
+        if ("Access".equals(token)) {
+            errorResponse = new ErrorResponse(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+            status = HttpServletResponse.SC_UNAUTHORIZED;  // 401
+        } else if ("Refresh".equals(token)) {
+            errorResponse = new ErrorResponse(ErrorCode.REFRESH_TOKEN_EXPIRATION);
+            status = HttpServletResponse.SC_UNAUTHORIZED;  // 401
         } else {
-            try {
-                String json = new ObjectMapper().writeValueAsString(new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN));
-                response.getWriter().write(json);
-            } catch (Exception e){
-                log.error(e.getMessage());
-            }
+            errorResponse = new ErrorResponse(ErrorCode.NOT_EXIST_TOKEN);
+            status = HttpServletResponse.SC_BAD_REQUEST;   // 400
+        }
+
+        response.setStatus(status);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonErrorResponse = mapper.writeValueAsString(errorResponse);
+
+            response.setContentType("application/json");
+
+            PrintWriter out = response.getWriter();
+
+            out.print(jsonErrorResponse);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

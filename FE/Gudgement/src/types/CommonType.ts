@@ -42,13 +42,12 @@ export declare module CommonType {
     /**
      * MyPage child Type
      */
-    MyPageNavigator: undefined;
     MyPage: undefined;
     MyPageDetail: undefined;
     Pedometer: undefined;
     Analyze: undefined;
-    SingleRecords: undefined;
-    MultiRecords: undefined;
+    AnalyzeGoal: undefined;
+    AnalyzeDetail: undefined;
 
     /**
      * Login child Type
@@ -165,6 +164,7 @@ export declare module CommonType {
   };
 
   export type TanalyzeChart = {
+    year: number;
     month: number;
     week: number;
     data: {
@@ -172,7 +172,7 @@ export declare module CommonType {
       labels: string[];
       dateSet: {
         amount: number[];
-        color: string[];
+        color: boolean[];
       };
     };
   };

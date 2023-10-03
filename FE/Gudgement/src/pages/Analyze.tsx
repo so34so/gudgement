@@ -22,6 +22,7 @@ import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
 import axios, { AxiosResponse } from "axios";
 import AnalysisBox from "../components/AnalysisBox";
+import fetchApi from "../utils/tokenUtils";
 
 function Analyze(this: unknown) {
   const {
@@ -146,7 +147,7 @@ function Analyze(this: unknown) {
     const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
-        await axios.post(
+        await fetchApi.post(
           `${API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
           {

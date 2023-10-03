@@ -129,7 +129,7 @@ export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
     return null;
   }
   try {
-    const response: AxiosResponse<CommonType.Tuser> = await axios.get(
+    const response: AxiosResponse<CommonType.Tuser> = await fetchApi.get(
       `${API_URL}/member/loadMyInfo`,
       {
         headers: {

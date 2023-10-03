@@ -55,14 +55,14 @@ fetchApi.interceptors.response.use(
           reactotron.log!(errorMessage); // 올바른 토큰 아님
           break;
         case "T-002":
-          reactotron.log!(errorMessage); // Access 토큰 기간 만료
+          reactotron.log!("엑세스 토큰 기간 만료", errorMessage); // Access 토큰 기간 만료
           originalRequest.retry = true;
           await refreshToken(); // Refresh Token으로 새 AccessToken을 받아옴
           newAccessToken = await getAccessToken();
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // 새 AccessToken으로 업데이트
           return fetchApi(originalRequest); // 업데이트된 AccessToken으로 다시 원래의 request 재요청
         case "T-003":
-          reactotron.log!(errorMessage); // Refresh 토큰 기간 만료
+          reactotron.log!("리프레시 토큰 기간 만료", errorMessage); // Refresh 토큰 기간 만료
           logoutUser(); // 사용자를 로그아웃 시킴
           break;
         case "T-004":

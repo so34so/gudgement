@@ -68,11 +68,7 @@ public class JwtProvider {
             return !getClaims(token).getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
-            if (type.equals("Refresh")) {
-                throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
-            } else {
-                throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
-            }
+            return false;
         }
     }
 
@@ -152,15 +148,5 @@ public class JwtProvider {
                 () -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
         return member;
-    }
-
-    public ResponseEntity<ErrorResponse> jwtExceptionHandler(String Token){
-        if (Token.equals("Access")) {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION));
-        } else if (Token.equals("Refresh")) {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION));
-        } else {
-            return ErrorResponse.error(new BaseErrorException(ErrorCode.NOT_EXIST_TOKEN));
-        }
     }
 }

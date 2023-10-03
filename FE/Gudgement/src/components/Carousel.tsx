@@ -52,7 +52,7 @@ function Carousel({
     flatListRef.current!.scrollToOffset({ animated: false, offset: 0 });
     setPage(0);
     setSelectItem(0);
-  }, [items, setSelectItem]);
+  }, [items]);
   return (
     <View className="flex justify-center items-center">
       <FlatList

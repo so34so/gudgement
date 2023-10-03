@@ -23,7 +23,6 @@ import java.io.IOException;
 * */
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class MemberVerifyFilter extends OncePerRequestFilter {
     // 두번 찍히면 getSimpleName;

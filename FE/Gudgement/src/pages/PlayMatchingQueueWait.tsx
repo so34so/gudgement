@@ -29,10 +29,15 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 import { WEBSOCKET_URL } from "@env";
 import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
+import { useQueryClient } from "react-query";
+import { useQuery } from "react-query";
+import { queryClient } from "../../queryClient";
 
 export default function PlayMatchingQueueWait({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
+  console.log("매칭웨이트", roomNumber);
   const websocketClient = useWebSocket();
+
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -45,29 +50,58 @@ export default function PlayMatchingQueueWait({ route }) {
 
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
-    const connectWebSocket = () => {
-      websocketClient.subscribe(
-        "/topic/game/" + roomNumber,
-        function (message) {
-          console.log("수락 모두 완료!", message);
-          navigation.navigate("PlayGameStart", {
-            roomNumber: roomNumber,
-          });
-        },
-      );
-    };
+    websocketClient.subscribe(
+      "/topic/game/" + roomNumber,
+      function (messageOutput) {
+        console.log("수락 모두 완료!", messageOutput.body);
+        const userInfoDtos = JSON.parse(
+          messageOutput.body,
+        ) as CommonType.TGameUserInfoDto;
+        const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+        const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+        console.log("큐 웨이트 내 정보:", myInfo);
+        console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
+        console.log("큐 웨이트 정보", enemyInfo);
+        // 리액트 쿼리에 데이터 저장
+        queryClient.setQueryData(["myGameinfo"], myInfo);
+        queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
+        navigation.navigate("PlayGameStart", {
+          roomNumber: roomNumber,
+        });
+      },
+    );
+  }, []);
 
-    // 연결 함수 호출
-    connectWebSocket();
+  // websocketClient.subscribe(
+  //   "/topic/game/" + roomNumber,
+  //   function (messageOutput) {
+  //     console.log("큐웨이트", messageOutput.body);
+  //     const userInfoDtos = JSON.parse(
+  //       messageOutput.body,
+  //     ) as CommonType.TGameUserInfoDto;
+  //     const myInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+  //     const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo; // Cast to the correct type
+  //     console.log("큐 웨이트 내 정보:", myInfo);
+  //     console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
+  //     console.log("큐 웨이트 정보", enemyInfo);
 
-    // Unmount 시점에 웹소켓 연결 종료
-    return () => {
-      if (websocketClient.connected) {
-        websocketClient.disconnect();
-      }
-    };
-  }, [websocketClient, roomNumber, navigation]);
+  //     setTimeout(() => {
+  //       navigation.navigate("PlayGameStart", {
+  //         roomNumber: roomNumber,
+  //       });
+  //     }, 1000); // Adjust this timeout if needed
+  //   },
+  // );
+  // 연결 함수 호출
 
+  // Unmount 시점에 웹소켓 연결 종료
+  // return () => {
+  //   if (websocketClient.connected) {
+  //     websocketClient.disconnect();
+  //   }
+  // };
+
+  // [websocketClient, roomNumber, navigation]
   // // WebSocket connection
   // const stompClient = Stomp.over(new SockJS(WEBSOCKET_URL));
 

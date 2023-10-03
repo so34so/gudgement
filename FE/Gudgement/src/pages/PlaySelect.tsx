@@ -78,7 +78,7 @@ function PlaySelect() {
       const response = await postMatchStart();
       if (response) {
         // 응답이 유효한 경우에만 navigation을 진행합니다.
-        navigation.navigate("PlayGameStart", {
+        navigation.navigate("PlayMatchingWait", {
           memberId: MEMBER_ID,
           nickName: MEMBER_NickName,
           grade: MEMBER_RoleUser,

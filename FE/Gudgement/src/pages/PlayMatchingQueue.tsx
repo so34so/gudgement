@@ -55,12 +55,12 @@ export default function PlayMatchingQueue({ route }) {
       );
     });
 
-    // Unmount 시점에 웹소켓 연결 종료
-    return () => {
-      if (websocketClient.connected) {
-        websocketClient.disconnect();
-      }
-    };
+    // // Unmount 시점에 웹소켓 연결 종료
+    // return () => {
+    //   if (websocketClient.connected) {
+    //     websocketClient.disconnect();
+    //   }
+    // };
   }, []);
 
   // 매칭 수락 함수

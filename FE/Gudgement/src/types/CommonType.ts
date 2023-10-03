@@ -34,7 +34,7 @@ export declare module CommonType {
     PlayMatchingWait: undefined;
     PlayMatchingQueue: undefined;
     PlaySelect: undefined;
-    PlayGameStart: { roomNumber: string; websocketClient: string };
+    PlayGameStart: { roomNumber: string };
     PlayGameProgress: undefined;
     PlayGameResult: undefined;
     PlayGameFinalResult: undefined;

@@ -94,15 +94,15 @@ function Inventory({ route }: InventoryProps) {
       }
     }
   }
-  const {
-    data: fetchItem,
-    refetch,
-    isLoading,
-  } = useQuery({
+  const { data: fetchItem, isLoading: isInventoryLoading } = useQuery({
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
   reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
+  reactotron.log!("itemStatus", itemStatus);
+  const { data: fetchUser } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+  });
   useLayoutEffect(() => {
     if (
       fetchItem?.length &&
@@ -119,10 +119,6 @@ function Inventory({ route }: InventoryProps) {
       true,
     );
   }, [offset]);
-
-  useEffect(() => {
-    refetch();
-  }, [refetch, selectCategory]);
 
   const { mutate: equippedItem } = useMutation({
     mutationFn: async (params: IresponseEquipment) => {
@@ -147,6 +143,21 @@ function Inventory({ route }: InventoryProps) {
       equippedItem({ invenId: fetchItem[selectItem].invenId });
     }
   }, [equippedItem, fetchItem, selectItem]);
+
+  const disabledApply = useCallback(
+    (category: string) => {
+      setSelectCategory(category);
+      reactotron.log!("길이 및 패치 인벤 아이템", fetchItem, fetchItem?.length);
+      if (!fetchItem?.length) {
+        setItemStatus(true);
+        return;
+      }
+      setItemStatus(false);
+      reactotron.log!("category", selectItem);
+      setSelectItem(0);
+    },
+    [fetchItem, selectItem],
+  );
 
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
@@ -178,7 +189,15 @@ function Inventory({ route }: InventoryProps) {
         <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
-              <Image source={myCharacter} />
+              {fetchUser && fetchUser.setItems ? (
+                <Image
+                  source={{
+                    uri: fetchUser.setItems[0].image,
+                  }}
+                />
+              ) : (
+                <Image source={myCharacter} />
+              )}
             </Animated.View>
           </View>
           <View
@@ -218,13 +237,7 @@ function Inventory({ route }: InventoryProps) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                  setSelectCategory(category);
-                  if (!fetchItem) {
-                    setItemStatus(true);
-                  }
-                  setItemStatus(false);
-                  reactotron.log!("category", selectItem);
-                  setSelectItem(0);
+                  disabledApply(category);
                 }}
                 className={categoryStyle(category)}
               >
@@ -235,7 +248,7 @@ function Inventory({ route }: InventoryProps) {
             </View>
           ))}
         </View>
-        {isLoading ? (
+        {isInventoryLoading ? (
           <ActivityIndicator size="large" color="gray" className="top-20" />
         ) : (
           <Carousel

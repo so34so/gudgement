@@ -1,1 +1,1 @@
-global.TextEncoder = require('text-encoding').TextEncoder;
+global.TextEncoder = require("text-encoding").TextEncoder;

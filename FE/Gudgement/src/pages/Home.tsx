@@ -30,12 +30,25 @@ import AnalysisBox from "../components/AnalysisBox";
  */
 console.log(API_URL);
 console.log(IMAGE_URL);
+
 export default function Home() {
+  /**
+   * useQuery data 타입에 대하여
+   * 1. data타입은 queryFunction(여기선 fetchUser)의 return 타입과 일치해야 한다.
+   * 2. 만약 queryFn에서 함수의 리턴타입을 지정해줬다면 reactQuery는 자동으로 타입을 추론해서 data의 타입에 적용시킨다.
+   *
+   * 요약: queryFn에 할당한 콜백 함수의 리턴타입을 지정해줬다면 따로 useQuery 옆에 제네릭 타입을 지정해주지 않아도 된다.
+   * queryFn을 작성하지 않았다면(다른 컴포넌트에서 데이터만 땡겨오는 경우) 제네릭 타입을 지정해줘야 한다.
+   *
+   * 아래에서 userData가 ts 에러가 발생한 이유: queryFn에 있는 fetchUser의 리턴타입은 Promise<Tuser | null> 인데
+   * data타입은 Tuser로 지정해줬기 때문
+   *  */
+
   const {
     data: userData,
     error: fetchError,
     isLoading,
-  } = useQuery<CommonType.Tuser>({
+  } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
   });

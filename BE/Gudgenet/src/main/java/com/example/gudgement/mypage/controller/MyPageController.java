@@ -8,6 +8,7 @@ import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.mypage.dto.ChartDataDto;
 import com.example.gudgement.mypage.service.MyPageService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

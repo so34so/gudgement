@@ -5,7 +5,6 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
 import { WebSocketProvider } from "./src/components/WebSocketContext";
-import { WEBSOCKET_URL } from "@env";
 import { useEffect } from "react";
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
@@ -14,6 +13,7 @@ import CodePush, { CodePushOptions } from "react-native-code-push";
 import AppInner from "./AppInner";
 import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
 import { Linking } from "react-native";
+import Config from "react-native-config";
 
 if (__DEV__) {
   import("./reactotron");
@@ -123,7 +123,6 @@ check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(async result => {
     await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
   }
 });
-console.log(WEBSOCKET_URL);
 function App(): JSX.Element {
   useEffect(() => {
     CodePush.sync(
@@ -154,7 +153,7 @@ function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
-        <WebSocketProvider url={WEBSOCKET_URL}>
+        <WebSocketProvider url={Config.WEBSOCKET_URL as string}>
           <AppInner />
         </WebSocketProvider>
       </GestureHandlerRootView>

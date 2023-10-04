@@ -1,17 +1,13 @@
-import { IMAGE_URL } from "@env";
 import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
 import { CommonType } from "../types/CommonType";
 import {
-  ImageBackground,
   Image,
   ImageSourcePropType,
-  Pressable,
   Text,
   View,
   StyleSheet,
 } from "react-native";
-console.log(IMAGE_URL);
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 const myCards: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 

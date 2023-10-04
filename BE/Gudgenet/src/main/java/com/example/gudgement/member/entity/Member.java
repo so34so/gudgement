@@ -3,6 +3,7 @@ package com.example.gudgement.member.entity;
 import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
 import lombok.*;
 
 import javax.persistence.*;
@@ -91,7 +92,7 @@ public class Member implements Serializable {
     /* 연결 관계 */
     // 상점, 진행도 관련
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<Inventory> set_item = new ArrayList<>();
+    private List<Inventory> setItem = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();

@@ -98,6 +98,7 @@ public class MemberServiceImpl implements MemberService {
                 .tiggle(member.getTiggle())
                 .exp(member.getExp())
                 .level(member.getLevel())
+                .monthOverconsumption(member.getMonthOverconsumption())
                 .pedometer(member.getPedometer())
                 .build();
     }
@@ -142,6 +143,7 @@ public class MemberServiceImpl implements MemberService {
 
         List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
         List<Item> equippedItems = new ArrayList<>();
+
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
             if (item == null) {
@@ -154,10 +156,11 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-//                .setItems(equippedItems)
+                .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())
+                .monthOverconsumption(member.getMonthOverconsumption())
                 .pedometer(member.getPedometer())
                 .rate(memberRate)
                 .build();
@@ -248,12 +251,13 @@ public class MemberServiceImpl implements MemberService {
 
         for (int i = 0; i < 100; i++) {
             int random_num = rd.nextInt(bank_name.length);
+            VirtualAccount virtualAccount = accounts.get(rd.nextInt(accounts.size()));
             transactionHistoryService.create(TransactionHistoryDto.builder()
-                    .virtualAccountId(accounts.get(rd.nextInt(accounts.size())).getVirtualAccountId())
+                    .virtualAccountId(virtualAccount.getVirtualAccountId())
                     .type(1)
                     .amount(rd.nextInt(9999) * 10)
-                    .depositSource(".")
-                    .withdrawalDestination(Destination[rd.nextInt(Destination.length)])
+                    .depositSource(Destination[rd.nextInt(Destination.length)])
+                    .withdrawalDestination(virtualAccount.getAccountHolder())
                     .transactionDate(getDateTime())
                     .build());
         }
@@ -326,6 +330,7 @@ public class MemberServiceImpl implements MemberService {
             memberRepository.save(member);
             return;
         }
+
         if (total < 2000000) {
             member.updateGrade(Grade.ROLE_SILVER);
             memberRepository.save(member);

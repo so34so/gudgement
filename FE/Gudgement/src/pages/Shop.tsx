@@ -25,7 +25,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
@@ -117,11 +117,10 @@ function Shop({ route }: ShopProps) {
           },
         },
       );
-      Reactotron.log!("fetchShopItem", response.data);
       return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
-        Reactotron.log!("fetchShopItemError", errorResponse);
+        reactotron.log!("fetchShopItemError", errorResponse);
       }
     }
   }

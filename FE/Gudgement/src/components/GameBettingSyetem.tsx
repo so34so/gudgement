@@ -17,46 +17,20 @@ const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 export default function GameBettingSyetem({
   roundInfo,
   roomNumber,
+  nickName,
+  enemyInfoState,
+  myInfoState,
 }: {
   roundInfo: object;
   roomNumber: string;
+  nickName: string;
+  enemyInfoState: object;
+  myInfoState: object;
 }) {
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
-  const [enemyInfoState, setEnemyInfoState] = useState(null);
-  const [myInfoState, setMyInfoState] = useState([null]);
-  const [myCharacterState, setMyCharacterState] = useState(null);
-  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
-
-  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
-
-  useEffect(() => {
-    const fetchInfo = async () => {
-      const enemyData = await queryClient.getQueryData(["enemyGameinfo"]);
-      const myData = await queryClient.getQueryData(["myGameinfo"]);
-      const myCharacter = await queryClient.getQueryData(["myCharacter"]);
-      const enemyCharacter = await queryClient.getQueryData(["enemyCharacter"]);
-
-      if (enemyData) {
-        setEnemyInfoState(enemyData);
-      }
-
-      if (myData) {
-        setMyInfoState(myData);
-      }
-
-      if (enemyCharacter) {
-        setEnemyCharacterState(enemyCharacter);
-      }
-
-      if (myCharacter) {
-        setMyCharacterState(myCharacter);
-      }
-    };
-
-    fetchInfo();
-  }, []);
 
   console.log("흠", roundInfo.card);
+  console.log("베팅시스템", myInfoState);
   const enemyCards: CommonType.TplayCard[] = roundInfo.card;
   return (
     <View style={styles.bettingwrapper}>
@@ -85,8 +59,8 @@ export default function GameBettingSyetem({
         roomNumber={roomNumber}
         otherName={enemyInfoState?.nickname}
         roundInfo={roundInfo}
-        myInfoState={myInfoState}
-        maxBettingAmount={myInfoState.tiggle / 10}
+        nickName={myInfoState?.nickname}
+        maxBettingAmount={myInfoState?.tiggle / 10}
       />
     </View>
   );

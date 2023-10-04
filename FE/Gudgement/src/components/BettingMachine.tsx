@@ -32,13 +32,13 @@ const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
 const BettingMachine = ({
   maxBettingAmount,
   roundInfo,
-  myInfoState,
+  nickName,
   otherName,
   roomNumber,
 }: {
   maxBettingAmount: number;
   roundInfo: object;
-  myInfoState: object;
+  nickName: string;
   otherName: string;
   roomNumber: string;
 }) => {
@@ -48,7 +48,6 @@ const BettingMachine = ({
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const nickName = myInfoState.nickname;
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
@@ -92,7 +91,7 @@ const BettingMachine = ({
   async function postBettingInfo() {
     try {
       const response = await axios.post(`${Config.API_URL}/game/playRound`, {
-        nickName: myInfoState.nickname,
+        nickName: nickName,
         otherName: otherName,
         bettingAmount: bettingAmount,
         rounds: roundInfo.rounds,
@@ -110,7 +109,7 @@ const BettingMachine = ({
   async function postGiveup() {
     try {
       const response = await axios.post(`${Config.API_URL}/game/giveUpRound`, {
-        nickName: myInfoState.nickname,
+        nickName: nickName,
         otherName: otherName,
         bettingAmount: bettingAmount,
         rounds: roundInfo.rounds,

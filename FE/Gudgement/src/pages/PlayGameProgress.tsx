@@ -31,15 +31,15 @@ export default function PlayGameProgress({
 }: {
   route: PlayGameStartRouteProp;
 }) {
-  const { roomNumber, nickName, myInfoState, enemyInfoState } = route.params; // 추가
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  const { roomNumber, nickName } = route.params; // 추가
   const [roundInfo, setRoundInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [myCharacterState, setMyCharacterState] = useState(null);
   const [enemyCharacterState, setEnemyCharacterState] = useState(null);
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+  const [enemyInfoState, setEnemyInfoState] = useState(null);
+  const [myInfoState, setMyInfoState] = useState(null);
 
   // 라운드 데이터 요청
   async function postRoundStart() {
@@ -65,7 +65,16 @@ export default function PlayGameProgress({
   useEffect(() => {
     const myCharacter = queryClient.getQueryData(["myCharacter"]);
     const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
+    const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
+    const myData = queryClient.getQueryData(["myGameinfo"]);
 
+    if (enemyData) {
+      setEnemyInfoState(enemyData);
+    }
+
+    if (myData) {
+      setMyInfoState(myData);
+    }
     if (myCharacter) {
       setMyCharacterState(myCharacter);
     }
@@ -92,7 +101,13 @@ export default function PlayGameProgress({
         <GameTimerBar duration={10} />
 
         <GameUi />
-        <GameBettingSyetem roundInfo={roundInfo} roomNumber={roomNumber} />
+        <GameBettingSyetem
+          roundInfo={roundInfo}
+          roomNumber={roomNumber}
+          nickName={nickName}
+          myInfoState={myInfoState}
+          enemyInfoState={enemyInfoState}
+        />
         <Image
           style={styles.mycharacter}
           source={{

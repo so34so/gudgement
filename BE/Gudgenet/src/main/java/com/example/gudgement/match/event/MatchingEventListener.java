@@ -43,12 +43,14 @@ public class MatchingEventListener {
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":status", "refuse");
+            redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":item", "unuse");
 
 
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":tiggle", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":rounds", "1");
             redisTemplate.opsForHash().put(roomNumber, otherUser + ":status", "refuse");
+            redisTemplate.opsForHash().put(roomNumber, otherUser + ":item", "unuse");
 
             messagingTemplate.convertAndSend("/queue/start/" + request.getNickName(), roomNumber);
             messagingTemplate.convertAndSend("/queue/start/" + otherUser, roomNumber);

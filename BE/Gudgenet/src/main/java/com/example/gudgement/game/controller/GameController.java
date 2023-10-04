@@ -5,9 +5,11 @@ import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
 import com.example.gudgement.game.dto.MessageDto;
 import com.example.gudgement.game.dto.SendMessageDto;
+import com.example.gudgement.shop.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -23,8 +25,10 @@ public class GameController {
 
     private final GameService gameService;
     private final GameRoundService gameRoundService;
+    private final InventoryService inventoryService;
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @MessageMapping("/game/accept")
     public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
@@ -102,5 +106,16 @@ public class GameController {
                 .message(messageDto.getMessage()).build();
 
         messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
+    }
+
+    @Operation(summary = "소비아이템 사용")
+    @PostMapping("/useItem")
+    public void useItem(ItemUserDto request) {
+        // Use the item in the database.
+        inventoryService.useItem(request.getInvenId());
+
+        redisTemplate.opsForHash().put(request.getRoomNumber(), request.getNickname() + ":item", "use");
+
+//        messagingTemplate.convertAndSend("/topic/game/" + ItemUserDto.getRoomNumber() , "사용 완료");
     }
 }

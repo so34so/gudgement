@@ -5,6 +5,14 @@ import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.exception.BaseErrorException;
 import com.example.gudgement.game.exception.GameErrorCode;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.shop.dto.EquippedDto;
+import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.shop.exception.ItemErrorCode;
+import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.shop.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,7 +31,8 @@ public class GameRoundServiceImpl implements GameRoundService {
     private final CardService cardService;
     private final RedisTemplate<String, String> redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
-
+    private final MemberRepository memberRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Transactional
     public GameRoundDto getGameStatus(GameRequestDto requestDto) {
@@ -78,7 +87,31 @@ public class GameRoundServiceImpl implements GameRoundService {
         cardInfo.setAmount(Long.parseLong(cardString.split(":")[1]));
         cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
 
-        return new GameRoundDto(userTiggles, cardInfo, rounds);
+        Member member = memberRepository.findByNickname(userName)
+                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+
+        List<Inventory> inventories = inventoryRepository.findByMemberAndItemId_TypeAndEquipped(member, "consumable", true);
+
+        List<EquippedDto> equippedItems = new ArrayList<>();
+
+        for (Inventory inventory : inventories) {
+            Item item = inventory.getItemId();
+            EquippedDto equippedItem = EquippedDto.builder()
+                    .invenId(inventory.getInvenId())
+                    .itemId(item.getItemId())
+                    .itemName(item.getItemName())
+                    .itemContent(item.getItemContent())
+                    .itemEffect(item.getItemEffect())
+                    .image(item.getImage())
+                    .isEquipped(inventory.isEquipped())
+                    .type(item.getType())
+                    .quantity(inventory.getQuantity())  // This field may be null if the item is not consumable.
+                    .build();
+
+            equippedItems.add(equippedItem);
+        }
+
+        return new GameRoundDto(userTiggles, cardInfo, rounds,equippedItems);
     }
 
     @Transactional
@@ -107,8 +140,34 @@ public class GameRoundServiceImpl implements GameRoundService {
             String myCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":currentCard");
             String otherCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":currentCard");
 
-            Long myValue = Long.parseLong(myCardString.split(":")[1]);
-            Long otherValue = Long.parseLong(otherCardString.split(":")[1]);
+            CardInfoDto myCard= CardInfoDto.builder()
+                    .name(myCardString.split(":")[0])
+                    .amount(Long.parseLong(myCardString.split(":")[1]))
+                    .order(Integer.parseInt(myCardString.split(":")[2]))
+                    .build();
+
+            CardInfoDto otherCard= CardInfoDto.builder()
+                    .name(otherCardString.split(":")[0])
+                    .amount(Long.parseLong(otherCardString.split(":")[1]))
+                    .order(Integer.parseInt(otherCardString.split(":")[2]))
+                    .build();
+
+            String myItemStatus = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":item");
+            String otherItemStatus = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":item");
+
+            Long myValue;
+            Long otherValue;
+
+            if ("use".equals(myItemStatus) ^ "use".equals(otherItemStatus)) {  // If only one user has the item status as 'use'...
+                otherValue = Long.parseLong(myCardString.split(":")[1]);
+                myValue = Long.parseLong(otherCardString.split(":")[1]);
+            } else {
+                myValue = Long.parseLong(myCardString.split(":")[1]);
+                otherValue = Long.parseLong(otherCardString.split(":")[1]);
+            }
+
+            redisTemplate.opsForHash().put(roomNumber, bettingDto.getNickName() + ":item", "unuse");
+            redisTemplate.opsForHash().put(roomNumber, bettingDto.getOtherName() + ":item", "unuse");
 
             boolean iWon = !(myValue > otherValue);
 
@@ -137,6 +196,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                         .isResult(iWonFinal)
                         .rounds(round)
                         .roomNumber(roomNumber)
+                        .cardInfo(myCard)
                         .build();
 
                 otherResult = RoundResultDto.builder()
@@ -144,6 +204,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                         .isResult(!iWonFinal)
                         .rounds(round)
                         .roomNumber(roomNumber)
+                        .cardInfo(otherCard)
                         .build();
             } else {
                 myResult = RoundResultDto.builder()
@@ -151,6 +212,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                         .isResult(iWon)
                         .rounds(round)
                         .roomNumber(roomNumber)
+                        .cardInfo(myCard)
                         .build();
 
                 otherResult = RoundResultDto.builder()
@@ -158,6 +220,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                         .isResult(!iWon)
                         .rounds(round)
                         .roomNumber(roomNumber)
+                        .cardInfo(otherCard)
                         .build();
             }
 
@@ -204,12 +267,28 @@ public class GameRoundServiceImpl implements GameRoundService {
         myBet /= 10;
 
         String myCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":currentCard");
+        String otherCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":currentCard");
+
+        CardInfoDto myCard= CardInfoDto.builder()
+                .name(myCardString.split(":")[0])
+                .amount(Long.parseLong(myCardString.split(":")[1]))
+                .order(Integer.parseInt(myCardString.split(":")[2]))
+                .build();
+
+        CardInfoDto otherCard= CardInfoDto.builder()
+                .name(otherCardString.split(":")[0])
+                .amount(Long.parseLong(otherCardString.split(":")[1]))
+                .order(Integer.parseInt(otherCardString.split(":")[2]))
+                .build();
 
         Long myValue = Long.parseLong(myCardString.split(":")[2]);
 
         if (myValue == 10) {
             myBet *= 2;
         }
+
+        redisTemplate.opsForHash().put(roomNumber, bettingDto.getNickName() + ":item", "unuse");
+        redisTemplate.opsForHash().put(roomNumber, bettingDto.getOtherName() + ":item", "unuse");
 
         boolean iWon = false;
 
@@ -233,6 +312,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .isResult(iWonFinal)
                     .rounds(round)
                     .roomNumber(roomNumber)
+                    .cardInfo(myCard)
                     .build();
 
             otherResult = RoundResultDto.builder()
@@ -240,6 +320,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .isResult(!iWonFinal)
                     .rounds(round)
                     .roomNumber(roomNumber)
+                    .cardInfo(otherCard)
                     .build();
         } else {
             myResult = RoundResultDto.builder()
@@ -247,6 +328,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .isResult(iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
+                    .cardInfo(myCard)
                     .build();
 
             otherResult = RoundResultDto.builder()
@@ -254,14 +336,16 @@ public class GameRoundServiceImpl implements GameRoundService {
                     .isResult(!iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
+                    .cardInfo(otherCard)
                     .build();
         }
 
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
 
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, myResult);
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, otherResult);
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getNickName(), myResult);
+
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getOtherName(), otherResult);
 
         /* Reset status for next round */
         resetStatusForNextRound(roomNumber);

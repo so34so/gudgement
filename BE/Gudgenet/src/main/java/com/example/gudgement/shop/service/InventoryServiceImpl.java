@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -80,6 +81,20 @@ public class InventoryServiceImpl implements InventoryService{
                 .collect(Collectors.toList());
 
         return equippedList;
+    }
+
+
+    @Transactional
+    public void useItem(Long invenId) {
+        // Fetch the item from the database.
+        Inventory item = inventoryRepository.findById(invenId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid invenId: " + invenId));
+
+        // Decrease quantity by 1.
+        item.decreaseQuantity(1);
+
+        // Save the updated item back to the database.
+        inventoryRepository.save(item);
     }
 
 

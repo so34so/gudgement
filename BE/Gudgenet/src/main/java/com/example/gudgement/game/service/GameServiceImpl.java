@@ -3,6 +3,7 @@ package com.example.gudgement.game.service;
 import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.account.repository.VirtualAccountRepository;
 import com.example.gudgement.card.service.CardService;
+import com.example.gudgement.game.dto.CardInfoDto;
 import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
@@ -132,12 +133,28 @@ public class GameServiceImpl implements GameService{
 
                 Long tiggle = Long.parseLong((String) value);
 
+                Set<String> redisCardsObjectSet= redisTemplate.opsForSet().members(roomNumber + ":" + member + ":cards");
+
+                /* Convert fetched data into CardInfoDtos and add them to a list */
+                List<CardInfoDto> cardDtosList= new ArrayList<>();
+
+                for (Object cardData : redisCardsObjectSet) {
+                    String[] partsOfCardData= ((String)cardData).split(":");
+                    CardInfoDto singleCard= CardInfoDto.builder()
+                            .name(partsOfCardData[0])
+                            .amount(Long.parseLong(partsOfCardData[1]))
+                            .order(Integer.parseInt(partsOfCardData[2]))
+                            .build();
+                    cardDtosList.add(singleCard);
+                }
+
                 /* Construct a DTO that contains all necessary information */
                 GameUserInfoDto userInfoDto = GameUserInfoDto.builder()
                         .nickname(member)
                         .level(level)
                         .tiggle(tiggle)
                         .equippedItems(equippedItemsDto)
+                        .cards(cardDtosList)
                         .build();
 
                 // Add the dto to the list
@@ -146,6 +163,7 @@ public class GameServiceImpl implements GameService{
 
             /* Send this DTO list to client side */
             messagingTemplate.convertAndSend("/topic/game/" + roomNumber, userInfoDtos);
+            log.info(userInfoDtos.toString());
 
         }else{
             log.info("fail");
@@ -306,7 +324,7 @@ public class GameServiceImpl implements GameService{
         Long bettingTiggle = Long.parseLong(String.valueOf(value));
 
         if(isWinner){
-            user.get().addTiggle(bettingTiggle*2);
+            user.get().addTiggle(bettingTiggle);
             user.get().addExp(2);
             progress.incrementProgressValue();
 

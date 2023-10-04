@@ -6,22 +6,23 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-
 import { ProgressChart } from "react-native-chart-kit";
 import { useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
-import { textShadow } from "../utils/common";
-import NavigationButton from "../components/NavigationButton";
-import TagBoxSmall from "../components/TagBoxSmall";
+import Config from "react-native-config";
+
 import BasicBox from "../components/BasicBox";
 import CustomModal from "../components/CustomModal";
+import NavigationButton from "../components/NavigationButton";
+import TagBoxSmall from "../components/TagBoxSmall";
+
 import reactotron from "reactotron-react-native";
-import Config from "react-native-config";
+
+import { CommonType } from "../types/CommonType";
+import { textShadow } from "../utils/common";
 
 function MyPage(this: unknown) {
   const {
     data: userData,
-    error: fetchError,
     isLoading,
     refetch,
   } = useQuery<CommonType.Tuser>({
@@ -42,11 +43,6 @@ function MyPage(this: unknown) {
         <ActivityIndicator size="large" color="blue" />
       </View>
     );
-  }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
   }
 
   const openModal = () => {

@@ -7,19 +7,29 @@ import {
   Image,
   TextInput,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
-import TagBoxSmall from "../components/TagBoxSmall";
+import reactotron from "reactotron-react-native";
+
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import reactotron from "reactotron-react-native";
+import TagBoxSmall from "../components/TagBoxSmall";
+
 import fetchApi from "../utils/tokenUtils";
 import { Config } from "react-native-config";
 
+import { CommonType } from "../types/CommonType";
+
 function AnalyzeGoal() {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [goal, setGoal] = useState("");
+
   const {
     data: userData,
-    error: fetchError,
     isLoading,
     refetch,
   } = useQuery<CommonType.Tuser>({
@@ -27,20 +37,11 @@ function AnalyzeGoal() {
     enabled: false,
   });
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState("");
-  const [goal, setGoal] = useState("");
-  const [isGoal, setIsGoal] = useState(userData?.monthOverconsumption);
-
-  const currentDate = new Date();
-
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  useEffect(() => {
+    if (userData?.monthOverconsumption) {
+      setGoal(userData.monthOverconsumption.toLocaleString("ko-KR") + " 원");
+    }
+  }, [userData?.monthOverconsumption]);
 
   useEffect(() => {
     refetch();
@@ -53,27 +54,34 @@ function AnalyzeGoal() {
       </View>
     );
   }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
-  }
+
+  const isGoal = userData?.monthOverconsumption;
+
+  const currentDate = new Date();
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleInputChange = (value: string) => {
     const numValue = parseInt(value.replace(/,/g, ""), 10);
     if (!isNaN(numValue)) {
-      setGoal(numValue.toLocaleString());
+      setGoal(numValue.toLocaleString("ko-KR"));
     } else {
       setGoal("");
     }
   };
 
   const handleFetchGoal = async (currentGoal: string) => {
-    if (isGoal !== 0) {
+    if (isGoal !== null) {
       setModalText(
-        `목표 금액이 이미 ${Number(
-          isGoal,
-        ).toLocaleString()}원으로 설정되었습니다.`,
+        `목표 금액이 이미 ${Number(isGoal).toLocaleString(
+          "ko-KR",
+        )}원으로 설정되었습니다.`,
       );
       openModal();
       return;
@@ -86,27 +94,22 @@ function AnalyzeGoal() {
     }
     const numGoal = Number(numValue);
     reactotron.log!(numGoal);
-    // const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response = await fetchApi.put(
         `${Config.API_URL}/mypage/update/${numGoal}`,
         {
           monthOverConsumption: numGoal,
         },
-        // {
-        //   headers: {
-        //     Authorization: `Bearer ${getAccessToken}`,
-        //   },
-        // },
       );
       reactotron.log!("목표 금액 설정 성공!", response);
-      setGoal("");
       setModalText(
         `목표 금액이 ${numGoal.toLocaleString("ko-KR")}원으로 설정되었습니다.`,
       );
       openModal();
     } catch (error) {
       reactotron.log!("목표 금액 설정 실패!", error);
+      setModalText("목표 금액 설정 중 오류가 발생했습니다. 다시 시도해주세요.");
+      openModal();
     }
   };
 
@@ -122,12 +125,17 @@ function AnalyzeGoal() {
         <CustomModal
           alertText={modalText}
           visible={modalVisible}
-          closeModal={closeModal}
+          closeModal={() => {
+            closeModal();
+            if (modalText === `목표 금액이 ${goal}원으로 설정되었습니다.`) {
+              navigation.goBack();
+            }
+          }}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
-            text={`${userData?.nickname} 님의 소비 목표 금액 설정`}
+            text={`${userData?.nickname} 님의 소비 목표 금액`}
             img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
@@ -151,7 +159,7 @@ function AnalyzeGoal() {
                     목표 금액은 한 달에 한 번 설정하면
                   </Text>
                   <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                    내정보의 소비 분석에서
+                    내 정보의 소비 분석에서
                   </Text>
                   <View className="flex flex-row">
                     <Text className="text-darkgray text-xs font-PretendardExtraBold">
@@ -164,7 +172,7 @@ function AnalyzeGoal() {
                 </View>
               </View>
               <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                {isGoal === 0 ? "0" : "1"}/1
+                {isGoal === null ? "0" : "1"}/1
               </Text>
             </View>
             <View className="h-fill w-fill px-4">
@@ -176,24 +184,25 @@ function AnalyzeGoal() {
                   placeholderTextColor="darkgray"
                   keyboardType="numeric"
                   className="h-[58px] w-full p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
+                  editable={isGoal !== userData?.monthOverconsumption}
                 />
               </View>
               <View className="w-full px-2">
-                {isGoal === 0 ? (
+                {isGoal === null ? (
                   <Text className="text-darkgray70 text-xs font-PretendardExtraBold pb-4">
                     숫자만 입력해주세요.
                   </Text>
                 ) : (
                   <Text className="text-sky text-xs font-PretendardExtraBold pb-4">
-                    이미 {currentDate.getFullYear()}년{" "}
-                    {currentDate.getMonth() + 1}월 목표 금액이 설정되었습니다.
+                    {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+                    목표 금액이 이미 설정되었습니다.
                   </Text>
                 )}
               </View>
             </View>
           </View>
         </View>
-        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-4 flex justify-end items-center">
           <NavigationButton
             handleFunction={() => handleFetchGoal(goal)}
             text="설정 완료"

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { View, ScrollView, Text, Image, Pressable } from "react-native";
-import { CommonType } from "../types/CommonType";
 import { AxiosResponse } from "axios";
-import AccountBox from "../components/AccountBox";
-import { getAsyncData } from "../utils/common";
-import reactotron from "reactotron-react-native";
-import fetchApi from "../utils/tokenUtils";
 import { Config } from "react-native-config";
+
+import AccountBox from "../components/AccountBox";
+import reactotron from "reactotron-react-native";
+
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData, screenHeight } from "../utils/common";
+import { CommonType } from "../types/CommonType";
 
 function SettingAccountBox({
   numberVisible,
@@ -73,7 +75,10 @@ function SettingAccountBox({
   };
 
   return (
-    <View className="flex w-full justify-start items-center">
+    <View
+      className="flex w-full h-full justify-start items-center"
+      style={{ height: screenHeight - 170 }}
+    >
       <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
         <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
           <View className="gap-4 flex flex-row items-center">

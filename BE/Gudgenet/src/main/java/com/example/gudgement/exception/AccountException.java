@@ -1,15 +1,15 @@
-package com.example.gudgement.member.exception;
+package com.example.gudgement.exception;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class BaseErrorException extends RuntimeException {
+public class AccountException extends RuntimeException{
 
     private ErrorCode errorCode;
 
     @Builder
-    public BaseErrorException(ErrorCode errorCode) {
+    public AccountException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

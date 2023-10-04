@@ -1,10 +1,9 @@
 package com.example.gudgement.mypage.controller;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.common.jwt.JwtProvider;
-import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.mypage.dto.ChartDataDto;
 import com.example.gudgement.mypage.service.MyPageService;

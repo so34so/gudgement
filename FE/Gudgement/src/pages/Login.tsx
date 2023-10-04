@@ -1,13 +1,21 @@
-import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import axios from "axios";
+
 import Config from "react-native-config";
-import { getAsyncData, setAsyncData } from "../utils/common";
+
 import reactotron from "reactotron-react-native";
+
+import { getAsyncData, setAsyncData } from "../utils/common";
+import { CommonType } from "../types/CommonType";
 import { queryClient } from "../../queryClient";
-function Login() {
+
+interface LoginProps {
+  setIsLoginLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Login({ setIsLoginLoading }: LoginProps) {
   const [showWebView, setShowWebView] = useState(false);
 
   const handleLogin = () => {
@@ -19,29 +27,25 @@ function Login() {
       const response = await axios.post<CommonType.TkakaoLogin>(
         `${Config.SERVER_URL}/?code=${code}`,
       );
-      setShowWebView(false);
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const id = response.data.id;
-
       setAsyncData("accessToken", accessToken);
       setAsyncData("refreshToken", refreshToken);
       setAsyncData("id", id);
+
       const getAccessToken = await getAsyncData<string>("accessToken");
       const getRefreshToken = await getAsyncData<string>("refreshToken");
       const getId = await getAsyncData<number>("id");
       reactotron.log!("스토리지에 accessToken 저장 성공!", getAccessToken);
       reactotron.log!("스토리지에 refreshToken 저장 성공!", getRefreshToken);
       reactotron.log!("스토리지에 id 저장 성공!", getId);
+
       setShowWebView(false);
 
-      /**
-       * accessToken 잘 받아왔다면
-       * 로그인 여부는 asyncStorage에서,
-       * user정보는 서버로부터 다시 불러오게합니다.
-       */
       queryClient.invalidateQueries(["isLoggedIn"]);
       queryClient.invalidateQueries(["fetchUserInfo"]);
+      setIsLoginLoading(true);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }
@@ -54,7 +58,6 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
-
       reactotron.log!("code", code);
       await fetchAccessToken(code);
     }

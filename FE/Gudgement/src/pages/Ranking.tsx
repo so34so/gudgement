@@ -16,7 +16,7 @@ import Config from "react-native-config";
 import fetchApi from "../utils/tokenUtils";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 
 interface Irank {
   rankingList: [
@@ -51,17 +51,14 @@ export default function Ranking() {
     }
   };
   async function fetchRanking() {
-    const userId = await getAsyncData("id");
+    const userId: number | null = await getAsyncData("id");
     try {
       const response: AxiosResponse<Irank> = await fetchApi.get(
-        `${Config.API_URL}/ranking`,
-        {
-          params: userId,
-        },
+        `${Config.API_URL}/ranking/${userId}`,
       );
       return response.data;
     } catch (error) {
-      reactotron.log!(error);
+      reactotron.log!("error", error);
     }
   }
   const {

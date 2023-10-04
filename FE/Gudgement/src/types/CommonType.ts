@@ -72,6 +72,7 @@ export declare module CommonType {
     sold: boolean;
     unlocked: boolean;
   };
+
   export type TinvenItem = {
     invenId: number;
     itemId: number;
@@ -98,6 +99,7 @@ export declare module CommonType {
     refreshToken: string;
     refreshTokenExpiration: string;
   };
+
   export type TemailCode = string;
 
   export type TrefreshToken = {
@@ -119,6 +121,7 @@ export declare module CommonType {
     balance: number;
     selected?: boolean;
   };
+
   export type TsetItem = {
     itemId: number;
     itemName: string;
@@ -128,6 +131,7 @@ export declare module CommonType {
     type: string;
     subtype: string;
   };
+
   export type Tuser = {
     memberId: number;
     email: string;
@@ -171,6 +175,21 @@ export declare module CommonType {
     };
   };
 
+  export type TanalyzeMonth = {
+    month: number;
+    bestAmount: number;
+    bestDestination: string;
+    frequencyCount: number;
+    frequencyDestination: string;
+    frequencyAmount: number;
+    totalMember: number;
+    ranking: number;
+    lastMonthAmount: number;
+    lastMonthAmountRate: number;
+    thisMonthAmount: number;
+    thisMonthAmountRate: number;
+  };
+
   export type Tplaymap = {
     ticle: number;
     image: string | ImageSourcePropType;
@@ -180,6 +199,7 @@ export declare module CommonType {
     nickName: string;
     description: string;
   };
+
   export type TplayCard = {
     name: string;
     amount: number;
@@ -209,5 +229,12 @@ export declare module CommonType {
 
   export type TGameParams = {
     roomNumber: string;
+  };
+
+  export type TmyPageScreenName = {
+    Analyze: undefined;
+    AnalyzeGoal: undefined;
+    Pedometer: undefined;
+    ReSettingAccount: undefined;
   };
 }

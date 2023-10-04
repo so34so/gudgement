@@ -1,9 +1,7 @@
 package com.example.gudgement.member.entity;
 
-import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.shop.entity.Inventory;
-import com.example.gudgement.shop.entity.Item;
 import lombok.*;
 
 import javax.persistence.*;

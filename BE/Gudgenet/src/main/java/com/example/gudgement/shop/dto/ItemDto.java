@@ -1,13 +1,11 @@
 package com.example.gudgement.shop.dto;
 
-import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Base64;
 
 @Getter
 @Setter

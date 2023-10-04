@@ -1,4 +1,4 @@
-package com.example.gudgement.member.exception;
+package com.example.gudgement.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,14 @@ public enum ErrorCode {
 
     // account
     NOT_FOUND_ACCOUNT(HttpStatus.BAD_REQUEST, "A-001", "존재하지 않는 계좌입니다."),
-    AMOUNT_NOT_NUMBER(HttpStatus.BAD_REQUEST, "A-002", "계좌 거래금액이 숫자형이 아닙니다.");
+    AMOUNT_NOT_NUMBER(HttpStatus.BAD_REQUEST, "A-002", "계좌 거래금액이 숫자형이 아닙니다."),
+
+    // 아이템
+    NOT_FOUND_REDIS(HttpStatus.NOT_FOUND, "I-001", "Redis에 존재하지 않습니다."),
+    NOT_FOUND_MYSQL(HttpStatus.NOT_FOUND, "I-001", "MySql에 존재하지 않습니다."),
+    ALREADY_ADD_ITEM(HttpStatus.CONFLICT, "I-002", "이미 보유한 아이템입니다."),
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "P-001", "티끌이 부족합니다."),
+    NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "I-001", "존재하지 않는 아이템입니다.");
 
     private HttpStatus httpStatus;
     private String errorCode;

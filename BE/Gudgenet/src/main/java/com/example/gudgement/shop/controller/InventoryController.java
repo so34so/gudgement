@@ -1,9 +1,9 @@
 package com.example.gudgement.shop.controller;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.service.InventoryService;

@@ -1,4 +1,3 @@
-import { CommonType } from "../types/CommonType";
 import {
   View,
   Text,
@@ -6,10 +5,14 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import ShinhanLogo from "../assets/images/shinhanLogo.png";
-import Config from "react-native-config";
 import { SvgUri } from "react-native-svg";
+import Config from "react-native-config";
+
 import reactotron from "reactotron-react-native";
+
+import ShinhanLogo from "../assets/images/shinhanLogo.png";
+
+import { CommonType } from "../types/CommonType";
 
 interface AccountBoxProps {
   account: CommonType.Taccount;

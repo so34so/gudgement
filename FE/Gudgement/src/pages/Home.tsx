@@ -1,4 +1,3 @@
-import { CommonType } from "../types/CommonType";
 import {
   ImageBackground,
   View,

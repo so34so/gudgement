@@ -1,7 +1,7 @@
 package com.example.gudgement.fcm.controller;
 
-import com.example.gudgement.fcm.exception.FcmErrorException;
-import com.example.gudgement.member.exception.ErrorResponse;
+import com.example.gudgement.exception.ErrorResponse;
+import com.example.gudgement.exception.FcmErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

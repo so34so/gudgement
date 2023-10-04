@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Linking, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
 import { useQuery } from "@tanstack/react-query";
@@ -22,6 +22,7 @@ import reactotron from "reactotron-react-native";
 import ReSettingAccount from "./src/pages/ReSettingAccount";
 
 function AppInner() {
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const config: {
     initialRouteName?: keyof CommonType.RootStackParamList;
@@ -58,8 +59,9 @@ function AppInner() {
    */
   const {
     data: user,
-    isFetched,
+    isSuccess,
     isLoading,
+    isStale,
   } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
@@ -70,20 +72,25 @@ function AppInner() {
     },
   });
 
-  if (isFetched) {
+  if (isSuccess) {
     // 화면전환보다 스플래시 스크린이 너무 빨리 사라져서 user 데이터
     // 다 받아온 후에 강제로 100ms이후에 사라지게끔 구현
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
   }
-  if (isLoading) {
+  useEffect(() => {
+    setIsLoginLoading(false);
+  }, [user]);
+
+  if (isLoading || !isStale || isLoginLoading) {
     return (
-      <View>
-        <Text>로딩 중</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#21e5a9" />
       </View>
     );
   }
+
   return (
     <NavigationContainer
       linking={{
@@ -127,7 +134,20 @@ function AppInner() {
     >
       {isLoggedIn ? (
         <Stack.Navigator>
-          {!(user && user.email && user.nickname && user.rate) ? (
+          {user?.email && user?.nickname && user?.rate ? (
+            <>
+              <Stack.Screen
+                name="BottomTabNavigator"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PlayNavigator"
+                component={PlayNavigator}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
             <>
               <Stack.Screen
                 name="SettingEmail"
@@ -142,19 +162,6 @@ function AppInner() {
               <Stack.Screen
                 name="SettingAccount"
                 component={SettingAccount}
-                options={{ headerShown: false }}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen
-                name="BottomTabNavigator"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PlayNavigator"
-                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </>
@@ -189,9 +196,11 @@ function AppInner() {
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="Login"
-            component={Login}
+            // component={Login}
             options={{ headerShown: false }}
-          />
+          >
+            {() => <Login setIsLoginLoading={setIsLoginLoading} />}
+          </Stack.Screen>
         </Stack.Navigator>
       )}
     </NavigationContainer>
@@ -199,3 +208,14 @@ function AppInner() {
 }
 
 export default AppInner;
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

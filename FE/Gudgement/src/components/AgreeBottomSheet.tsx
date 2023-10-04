@@ -1,5 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -11,9 +9,14 @@ import {
   PanResponder,
   Pressable,
 } from "react-native";
-import NavigationButton from "./NavigationButton";
-import Config from "react-native-config";
 import { SvgUri } from "react-native-svg";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+
+import Config from "react-native-config";
+
+import NavigationButton from "./NavigationButton";
+
+import { CommonType } from "../types/CommonType";
 
 interface BottomSheetProps {
   bottomSheetVisible: boolean;

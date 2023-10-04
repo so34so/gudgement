@@ -8,6 +8,7 @@ import com.example.gudgement.account.repository.TransactionHistoryRepository;
 import com.example.gudgement.account.repository.VirtualAccountRepository;
 import com.example.gudgement.account.service.TransactionHistoryService;
 import com.example.gudgement.account.service.VirtualAccountService;
+import com.example.gudgement.exception.*;
 import com.example.gudgement.member.dto.Rate;
 import com.example.gudgement.member.dto.request.LoginDto;
 import com.example.gudgement.member.dto.request.MemberCreateDto;
@@ -15,26 +16,18 @@ import com.example.gudgement.member.dto.response.MemberResponseDto;
 import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.example.gudgement.member.entity.Grade;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.EmailLogicException;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.mypage.repository.ChartRepository;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
-import com.example.gudgement.shop.exception.ItemErrorCode;
-import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
-import com.example.gudgement.mypage.exception.AccountException;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -147,7 +140,7 @@ public class MemberServiceImpl implements MemberService {
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
             if (item == null) {
-                throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
+                throw new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
             }
             equippedItems.add(item);
         }
@@ -186,10 +179,10 @@ public class MemberServiceImpl implements MemberService {
 
         log.info("개인 목표 금액 유무 점검 중...");
         if (member.getMonthOverconsumption() != null) {
+
             log.info("개인 과소비 기준이 있는 유저");
             log.info("목표 대비 소비 금액 비율 산정 중...");
-            double amountRate = total / member.getMonthOverconsumption();
-            System.out.println(amountRate);
+            double amountRate = Math.round(((double) total / member.getMonthOverconsumption()) * 10) / 10.0;
 
             return Rate.builder()
                 .totalAmount(total)
@@ -230,8 +223,6 @@ public class MemberServiceImpl implements MemberService {
         Collections.shuffle(account_number);
 
         // 가상 계좌 랜덤 생성
-        System.out.println(bank_name.length);
-        System.out.println(account_name.length);
         do {
             int random_num = rd.nextInt(bank_name.length);
             virtualAccountService.create(VirtualAccountDto.builder()
@@ -359,7 +350,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Item defaultItem = itemRepository.findById(1L).orElseThrow(() ->{
-            throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM);
+            throw new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM);
         });
 
         Inventory inventory = Inventory.builder()

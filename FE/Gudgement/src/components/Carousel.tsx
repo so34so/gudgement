@@ -18,6 +18,7 @@ interface ICarousel {
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
   component: string;
+  category: string | null;
 }
 
 function Carousel({
@@ -27,6 +28,7 @@ function Carousel({
   items,
   setSelectItem,
   component,
+  category,
 }: ICarousel) {
   const [page, setPage] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -52,7 +54,7 @@ function Carousel({
     flatListRef.current!.scrollToOffset({ animated: false, offset: 0 });
     setPage(0);
     setSelectItem(0);
-  }, []);
+  }, [category]);
   return (
     <View className="flex justify-center items-center">
       <FlatList

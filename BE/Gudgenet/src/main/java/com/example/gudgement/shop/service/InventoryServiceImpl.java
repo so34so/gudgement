@@ -1,17 +1,18 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.exception.ErrorCode;
+import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.entity.Inventory;
-import com.example.gudgement.shop.exception.ItemErrorCode;
-import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -83,10 +84,24 @@ public class InventoryServiceImpl implements InventoryService{
     }
 
 
+    @Transactional
+    public void useItem(Long invenId) {
+        // Fetch the item from the database.
+        Inventory item = inventoryRepository.findById(invenId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid invenId: " + invenId));
+
+        // Decrease quantity by 1.
+        item.decreaseQuantity(1);
+
+        // Save the updated item back to the database.
+        inventoryRepository.save(item);
+    }
+
+
     public InventoryDto equipItem(Long invenId) {
         // 그런 다음에 인벤토리를 조회합니다.
         Inventory selectedInventory = inventoryRepository.findByInvenId(invenId)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // Find an already equipped item of the same type and unequip it.
         Optional<Inventory> equippedInventoryOpt =

@@ -1,5 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -10,14 +8,20 @@ import {
   Image,
   Pressable,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AxiosError, AxiosResponse } from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getAsyncData, setAsyncData } from "../utils/common";
+import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import reactotron from "reactotron-react-native";
+
 import fetchApi from "../utils/tokenUtils";
-import Config from "react-native-config";
+import { getAsyncData, setAsyncData } from "../utils/common";
+
+import { CommonType } from "../types/CommonType";
 
 function SettingEmail() {
   const navigation =

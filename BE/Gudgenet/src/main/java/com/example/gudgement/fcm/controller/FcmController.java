@@ -1,8 +1,8 @@
 package com.example.gudgement.fcm.controller;
 
+import com.example.gudgement.exception.FcmErrorException;
 import com.example.gudgement.fcm.dto.FcmNotificationResponseDto;
 import com.example.gudgement.fcm.dto.ReceiveFcmTokenDto;
-import com.example.gudgement.fcm.exception.FcmErrorException;
 import com.example.gudgement.fcm.service.FcmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

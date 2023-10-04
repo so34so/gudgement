@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { Text, View, Image, ActivityIndicator } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
-import { ANALYZE_BOX_IMAGE, checkSpendRate } from "../utils/common";
-import ProgressBar from "./ProgressBar";
-import reactotron from "reactotron-react-native";
+
 import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
+import ProgressBar from "./ProgressBar";
+import { ANALYZE_BOX_IMAGE, checkSpendRate } from "../utils/common";
+
+import { CommonType } from "../types/CommonType";
 
 function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
   const {
@@ -18,8 +22,8 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
     enabled: false,
   });
 
-  const [isStartSingle] = useState(true);
-  const [percent, setPercent] = useState(userData?.rate.rate as number);
+  const [percent, setPercent] = useState<number>(0);
+  const [isStartSingle, setIsStartSingle] = useState(false);
   const [spend, setSpend] = useState<{
     text: string;
     color: string;
@@ -32,13 +36,17 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
 
   useEffect(() => {
     refetch();
+    if (userData?.monthOverconsumption) {
+      setIsStartSingle(true);
+    }
   }, []);
 
   useEffect(() => {
     if (userData) {
+      setPercent(userData.rate.rate);
       checkSpendRate(userData, percent, setSpend);
     }
-  }, [percent]);
+  }, [userData]);
 
   if (isLoading) {
     return (
@@ -98,9 +106,14 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
               className="w-16 h-12"
               resizeMode="contain"
             />
-            <Text className="text-black font-PretendardExtraBold text-sm">
-              목표 절약 금액을 설정해주세요!
-            </Text>
+            <View className="flex flex-col space-y-2">
+              <Text className="text-black font-PretendardBold text-xs">
+                내 정보에서 목표 소비 금액을 설정하면
+              </Text>
+              <Text className="text-black font-PretendardBold text-xs">
+                {userData?.nickname}님의 소비를 분석해드려요.
+              </Text>
+            </View>
           </View>
         </View>
       )}

@@ -1,21 +1,22 @@
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import { View, Text, ImageBackground } from "react-native";
-import { AxiosResponse } from "axios";
+import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import { getAsyncData } from "../utils/common";
-import reactotron from "reactotron-react-native";
-import { queryClient } from "../../queryClient";
-import fetchApi from "../utils/tokenUtils";
-import Config from "react-native-config";
 import SettingAccountBox from "../components/SettingAccountBox";
+
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData } from "../utils/common";
+
+import { queryClient } from "../../queryClient";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [tempEmail, setTempEmail] = useState("");
-  const [accounts, setAccounts] = useState<CommonType.Taccount[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
     null,
   );
@@ -34,25 +35,7 @@ function SettingAccount() {
     };
 
     fetchData();
-
-    if (tempEmail.length > 0) {
-      handleReadAccount();
-    }
   }, [tempEmail]);
-
-  const handleReadAccount = async () => {
-    // reactotron.log!("인증된 이메일", tempEmail);
-    try {
-      const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
-        `${Config.API_URL}/account/${tempEmail}`,
-      );
-      const responseAccount = response.data;
-      setAccounts(responseAccount);
-      // reactotron.log!("계좌 불러오기 성공!", accounts);
-    } catch (error) {
-      reactotron.log!("계좌 불러오기 실패!", error);
-    }
-  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -85,10 +68,6 @@ function SettingAccount() {
           sendBE,
         );
         reactotron.log!("계좌 연동 성공!", response);
-        /**
-         * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
-         * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
-         * */
         queryClient.invalidateQueries(["fetchUserInfo"]);
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);

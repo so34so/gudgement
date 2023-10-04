@@ -1,6 +1,8 @@
 package com.example.gudgement.game.service;
 
-import com.example.gudgement.CardService;
+import com.example.gudgement.account.entity.VirtualAccount;
+import com.example.gudgement.account.repository.VirtualAccountRepository;
+import com.example.gudgement.card.service.CardService;
 import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
@@ -45,6 +47,7 @@ public class GameServiceImpl implements GameService{
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
     private final ProgressRepository progressRepository;
+    private final VirtualAccountRepository virtualAccountRepository;
 
     private final CardService cardService;
 
@@ -114,8 +117,9 @@ public class GameServiceImpl implements GameService{
             for(String member : members){
                 log.info("Processing member: " + member);
 
-                cardService.generateAndStoreCards(roomNumber, member);
-
+                VirtualAccount virtualAccount = fetchVirtualAccount(member);  // Fetch the VirtualAccount of the user
+                cardService.generateAndStoreCards(virtualAccount, roomNumber, member);
+                
                 EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);
                 log.info("장착아이템까지는 가지고 옴");
                 int level = fetchLevel(member);
@@ -260,7 +264,22 @@ public class GameServiceImpl implements GameService{
                 .items(equippedDtos)
                 .build();
     }
+    public VirtualAccount fetchVirtualAccount(String nickname) {
+        Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
+        if (!optionalMember.isPresent()) {
+            throw new RuntimeException("User not found: " + nickname);
+        }
 
+        Member member = optionalMember.get();
+
+        Optional<VirtualAccount> optionalVirtualAccount = virtualAccountRepository.findByVirtualAccountId(member.getVirtualAccountId());
+
+        if (!optionalVirtualAccount.isPresent()) {
+            throw new RuntimeException("Virtual account not found for user: " + nickname);
+        }
+
+        return optionalVirtualAccount.get();
+    }
     @Transactional
     public void endGame(GameResultDto gameResultDto) {
 

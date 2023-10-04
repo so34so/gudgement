@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -7,17 +6,16 @@ import {
   Text,
   Image,
   TextInput,
-  SafeAreaView,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
 import { API_URL, IMAGE_URL } from "@env";
-import NavigationButton from "../components/NavigationButton";
-import CustomModal from "../components/CustomModal";
-import reactotron from "reactotron-react-native";
-import TagBoxSmall from "../components/TagBoxSmall";
 import { getAsyncData } from "../utils/common";
 import axios from "axios";
+import TagBoxSmall from "../components/TagBoxSmall";
+import CustomModal from "../components/CustomModal";
+import NavigationButton from "../components/NavigationButton";
+import reactotron from "reactotron-react-native";
 
 function AnalyzeGoal() {
   const {
@@ -30,13 +28,10 @@ function AnalyzeGoal() {
     enabled: false,
   });
 
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [goal, setGoal] = useState("");
-  const [isGoal, setIsGoal] = useState(0);
+  const [isGoal, setIsGoal] = useState(userData?.monthOverconsumption);
 
   const currentDate = new Date();
 
@@ -75,6 +70,15 @@ function AnalyzeGoal() {
   };
 
   const handleFetchGoal = async (currentGoal: string) => {
+    if (isGoal !== 0) {
+      setModalText(
+        `목표 금액이 이미 ${Number(
+          isGoal,
+        ).toLocaleString()}원으로 설정되었습니다.`,
+      );
+      openModal();
+      return;
+    }
     const numValue = currentGoal.replace(/,/g, "");
     if (!numValue.trim()) {
       setModalText("목표 금액을 입력해주세요.");
@@ -103,12 +107,6 @@ function AnalyzeGoal() {
       );
       openModal();
     } catch (error) {
-      // const axiosError = error as AxiosError<CommonType.Terror>;
-      // if (axiosError.response) {
-      //   const errorMessage = axiosError.response.data.message;
-      //   setModalText(errorMessage);
-      //   openModal();
-      // }
       reactotron.log!("목표 금액 설정 실패!", error);
     }
   };
@@ -128,7 +126,7 @@ function AnalyzeGoal() {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <View className="flex flex-row justify-between items-center">
+        <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 목표 금액 설정`}
             img={`${IMAGE_URL}/asset/analysisIcon.png`}
@@ -170,41 +168,41 @@ function AnalyzeGoal() {
                 {isGoal === 0 ? "0" : "1"}/1
               </Text>
             </View>
-            <View className="h-fill w-fill">
-              <SafeAreaView className="mx-4 w-fit">
-                <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
-                  <TextInput
-                    onChangeText={handleInputChange}
-                    value={goal}
-                    placeholder="ex) 500000"
-                    placeholderTextColor="darkgray"
-                    keyboardType="numeric"
-                    className="h-[58px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
-                  />
-                  <NavigationButton
-                    handleFunction={() => handleFetchGoal(goal)}
-                    text="목표 설정"
-                    height="lg"
-                    width="sm"
-                    size="md"
-                    color="bluesky"
-                  />
-                </View>
-                <View className="w-full">
-                  {isGoal === 0 ? (
-                    <Text className="text-darkgray70 text-xs font-PretendardExtraBold px-4 pb-4">
-                      숫자만 입력해주세요.
-                    </Text>
-                  ) : (
-                    <Text className="text-sky text-xs font-PretendardExtraBold px-4 pb-4">
-                      이미 {currentDate.getFullYear()}년{" "}
-                      {currentDate.getMonth() + 1}월 목표 금액이 설정되었습니다.
-                    </Text>
-                  )}
-                </View>
-              </SafeAreaView>
+            <View className="h-fill w-fill px-4">
+              <View className="flex flex-row mt-4 mb-3 justify-center items-center">
+                <TextInput
+                  onChangeText={handleInputChange}
+                  value={goal}
+                  placeholder="ex) 500000"
+                  placeholderTextColor="darkgray"
+                  keyboardType="numeric"
+                  className="h-[58px] w-full p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
+                />
+              </View>
+              <View className="w-full px-2">
+                {isGoal === 0 ? (
+                  <Text className="text-darkgray70 text-xs font-PretendardExtraBold pb-4">
+                    숫자만 입력해주세요.
+                  </Text>
+                ) : (
+                  <Text className="text-sky text-xs font-PretendardExtraBold pb-4">
+                    이미 {currentDate.getFullYear()}년{" "}
+                    {currentDate.getMonth() + 1}월 목표 금액이 설정되었습니다.
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
+        </View>
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
+          <NavigationButton
+            handleFunction={() => handleFetchGoal(goal)}
+            text="설정 완료"
+            height="lg"
+            width="lg"
+            size="md"
+            color="bluesky"
+          />
         </View>
       </ImageBackground>
     </View>

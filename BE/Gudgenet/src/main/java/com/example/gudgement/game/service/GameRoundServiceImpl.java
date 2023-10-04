@@ -164,8 +164,10 @@ public class GameRoundServiceImpl implements GameRoundService {
             redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
             redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
 
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, myResult);
-            //messagingTemplate.convertAndSend("/topic/game/" + roomNumber, otherResult);
+            
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getNickName(), myResult);
+            
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getOtherName(), otherResult);
 
             /* Reset status for next round */
             resetStatusForNextRound(roomNumber);

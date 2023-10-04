@@ -1,9 +1,6 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
-import Snake from "../assets/images/snake.png";
-import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
 import GameUi from "../components/GameUi";
-import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
   StyleSheet,
@@ -21,47 +18,21 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-interface Game {
-  user: string;
-  message: string;
-}
+import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
-export default function PlayGameFinalResult() {
-  useEffect(() => {
-    StatusBar.setHidden(true);
-  }, []);
+export default function PlayGameFinalResult({ route }) {
+  const { roomNumber, rounds, result } = route.params;
 
-  const [serverState, setServerState] = useState("Loading...");
-  const [messageText, setMessageText] = useState("");
-  const [serverMessages, setServerMessages] = useState([]);
-  const userId = "ddd";
-  const WSUrl = "http://j9d106.p.ssafy.io:8080";
-  console.log(WSUrl);
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
-  const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
+  const myCharacter = queryClient.getQueryData(["myCharacter"]);
+  const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
 
-  const ws = new WebSocket(WSUrl);
-  ws.onopen = () => {
-    // connection opened
-    ws.send("something"); // send a message
-    console.log("새로운 클라이언트 접속");
-  };
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
 
-  ws.onmessage = e => {
-    // a message was received
-    console.log(e.data);
-  };
-
-  ws.onerror = e => {
-    // an error occurred
-    console.log(e.message);
-  };
-
-  ws.onclose = e => {
-    // connection closed
-    console.log(e.code, e.reason);
-  };
+  const [myCharacterState, setMyCharacterState] = useState(myCharacter);
+  const [enemyCharacterState, setEnemyCharacterState] =
+    useState(enemyCharacter);
 
   return (
     <View className="flex w-full h-full">
@@ -71,23 +42,18 @@ export default function PlayGameFinalResult() {
         className="flex-1"
       >
         <GameUi />
-
-        <GameBettingSyetem />
-        {/* <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
-          style={styles.loadingtext}
-        >
-          Now Loading
-        </Text>
-        <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[28px] font-Pretendard"
-          style={styles.loadingtextkr}
-        >
-          잠시후 게임이 시작됩니다
-        </Text> */}
-
-        <Image style={styles.mycharacter} source={pingping} />
-        <Image style={styles.enemy} source={snake} />
+        <Image
+          style={styles.mycharacter}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+          }}
+        />
+        <Image
+          style={styles.enemy}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+          }}
+        />
       </ImageBackground>
     </View>
   );
@@ -108,6 +74,99 @@ const styles = StyleSheet.create({
   infomessage: {
     bottom: "100%",
     zIndex: 20,
+  },
+  mycharacterbox: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "50%",
+    left: "-123%",
+    bottom: 100,
+    zIndex: 12,
+  },
+  vs: {
+    position: "absolute",
+    width: 200,
+    height: 148,
+    top: "38%",
+    left: "30%",
+    zIndex: 15,
+  },
+  mycharacterboxinname: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "60%",
+    left: "-118%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  mycharacterboxinaward: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "56%",
+    left: "-118%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  boxinmycharacter: {
+    position: "absolute",
+    width: 120,
+    height: 100,
+    top: "55%",
+    left: "-123%",
+    bottom: 100,
+    zIndex: 13,
+  },
+  enemybox: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "10%",
+    right: "-123%",
+    bottom: 100,
+    zIndex: 12,
+  },
+
+  boxinenemy: {
+    position: "absolute",
+    width: 130,
+    height: 130,
+    top: "12%",
+    right: "-123%",
+    bottom: 100,
+    zIndex: 13,
+  },
+  enemyboxinname: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "20%",
+    right: "-115%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  enemyboxinaward: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "16%",
+    right: "-115%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
   },
   mycharacter: {
     position: "absolute",
@@ -132,11 +191,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 79,
     height: 79,
-    bottom: "88%",
+    bottom: "89%",
     right: "40%",
-
     zIndex: 10,
   },
+
   bluecard: {
     flex: 1,
     top: 140,

@@ -22,7 +22,6 @@ import Animated, {
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
-import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";

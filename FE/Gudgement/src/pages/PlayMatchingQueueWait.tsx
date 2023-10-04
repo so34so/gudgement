@@ -1,9 +1,7 @@
 import BluePlayBackground from "../assets/images/blueplaybackground.png";
 import BlueFin from "../assets/images/bluefin.png";
 import BlueCard from "../assets/images/bluecard.png";
-import AcceptButton from "../assets/images/accept.png";
-import RejectButton from "../assets/images/reject.png";
-import QueueBox from "../assets/images/queuebox.png";
+
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {

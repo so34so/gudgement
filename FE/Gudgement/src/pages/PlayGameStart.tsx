@@ -37,10 +37,16 @@ export default function PlayGameStart({
   route: PlayGameStartRouteProp;
 }) {
   const { roomNumber } = route.params; // 추가
+  const myCharacter = queryClient.getQueryData(["myCharacter"]);
+  const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
   const myData = queryClient.getQueryData(["myGameinfo"]);
   const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
   const [myInfoState, setMyInfoState] = useState(myData);
   const [enemyInfoState, setEnemyInfoState] = useState(enemyData);
+  const [myCharacterState, setMyCharacterState] = useState(myCharacter);
+  const [enemyCharacterState, setEnemyCharacterState] =
+    useState(enemyCharacter);
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -50,13 +56,6 @@ export default function PlayGameStart({
   const image1PositionX = useSharedValue(0);
   const image2PositionX = useSharedValue(0);
   const vsOpacity = useSharedValue(0);
-  // const queryClient = useQueryClient();
-  useEffect(() => {
-    setMyInfoState(myData || []);
-    setEnemyInfoState(enemyData || []);
-    console.log("게임스타트 나의 초기데이터", myInfoState);
-    console.log("게임스타트 상대의 초기데이터", enemyInfoState);
-  }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -93,8 +92,6 @@ export default function PlayGameStart({
   }));
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
 
   return (
     <View className="flex w-full h-full">
@@ -115,21 +112,21 @@ export default function PlayGameStart({
         />
         <Animated.Image
           style={[styles.boxinmycharacter, animatedMyStyle]}
-          source={pingping}
+          source={{ uri: `${Config.IMAGE_URL}/character/${myCharacterState}` }}
         />
         {/* 내 칭호 */}
         <Animated.Text
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[24px] font-PretendardBold"
           style={[styles.mycharacterboxinaward, animatedMyStyle]}
         >
-          어어어어
+          첫걸음
         </Animated.Text>
         {/* 내 닉네임 */}
         <Animated.Text
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
           style={[styles.mycharacterboxinname, animatedMyStyle]}
         >
-          NICKNAME
+          {myInfoState.nickname}
         </Animated.Text>
 
         {/* 적 캐릭터 박스 */}
@@ -139,7 +136,9 @@ export default function PlayGameStart({
         />
         <Animated.Image
           style={[styles.boxinenemy, animatedEnemyStyle]}
-          source={snake}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+          }}
         />
         {/* 적 칭호 */}
         <Animated.Text
@@ -155,8 +154,18 @@ export default function PlayGameStart({
         >
           {enemyInfoState.nickname}
         </Animated.Text>
-        <Image style={styles.mycharacter} source={pingping} />
-        <Image style={styles.enemy} source={snake} />
+        <Image
+          style={styles.mycharacter}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+          }}
+        />
+        <Image
+          style={styles.enemy}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+          }}
+        />
       </ImageBackground>
     </View>
   );

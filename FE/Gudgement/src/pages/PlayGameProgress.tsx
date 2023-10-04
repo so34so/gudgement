@@ -1,6 +1,4 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
-import Snake from "../assets/images/snake.png";
-import PingPing from "../assets/images/pingping.png";
 import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -17,19 +15,8 @@ import {
 } from "react-native";
 import { CommonType } from "../types/CommonType";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  runOnJS,
-  withTiming,
-} from "react-native-reanimated";
 
-import SockJS from "sockjs-client";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import { useQuery } from "react-query";
 import Reactotron from "reactotron-react-native";
-import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
@@ -44,20 +31,14 @@ export default function PlayGameProgress({
   route: PlayGameStartRouteProp;
 }) {
   const { roomNumber, nickName, myInfoState, enemyInfoState } = route.params; // 추가
-  const myData = queryClient.getQueryData(["myGameinfo"]);
-  const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
-  console.log("게임진행내정보", myInfoState.tiggle);
-  const websocketClient = useWebSocket();
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
   const [roundInfo, setRoundInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 애니메이션 관련 변수
-  const image1PositionX = useSharedValue(0);
-  const image2PositionX = useSharedValue(0);
-  const vsOpacity = useSharedValue(0);
+  const [myCharacterState, setMyCharacterState] = useState(null);
+  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
 
   // 라운드 데이터 요청
   async function postRoundStart() {
@@ -83,42 +64,19 @@ export default function PlayGameProgress({
   // const queryClient = useQueryClient();
   useEffect(() => {
     postRoundStart();
+    const myCharacter = queryClient.getQueryData(["myCharacter"]);
+    const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
+
+    if (myCharacter) {
+      setMyCharacterState(myCharacter);
+    }
+
+    if (enemyCharacter) {
+      setEnemyCharacterState(enemyCharacter);
+    }
   }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
-  // useEffect(() => {
-  //   StatusBar.setHidden(true);
-  //   // 애니메이션 시작
-  //   setTimeout(() => {
-  //     image1PositionX.value = withTiming(-490, { duration: 3000 });
-  //     vsOpacity.value = withTiming(1, { duration: 3000 });
-  //     image2PositionX.value = withTiming(490, { duration: 3000 }, () => {
-  //       runOnJS(setIsAnimationFinished)(true);
-  //     });
-  //   }, 100);
-
-  //   // Navigate to another screen after animation finishes
-  //   if (isAnimationFinished) {
-  //     setTimeout(() => {
-  //       navigation.navigate("PlayGameProgress", {
-  //         roomNumber: roomNumber,
-  //       });
-  //     }, 50000);
-  //   }
-  // }, [isAnimationFinished]);
-
-  const animatedEnemyStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: image1PositionX.value }],
-  }));
-  const animatedMyStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: image2PositionX.value }],
-  }));
-  const animatedVsStyle = useAnimatedStyle(() => ({
-    opacity: vsOpacity.value,
-  }));
-
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -138,46 +96,18 @@ export default function PlayGameProgress({
           roundInfo={roundInfo}
           roomNumber={roomNumber}
         />
-
-        <Animated.Image
-          style={[styles.boxinmycharacter, animatedMyStyle]}
-          source={pingping}
+        <Image
+          style={styles.mycharacter}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+          }}
         />
-        {/* 내 칭호 */}
-        <Animated.Text
-          className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[24px] font-PretendardBold"
-          style={[styles.mycharacterboxinaward, animatedMyStyle]}
-        >
-          어어어어
-        </Animated.Text>
-        {/* 내 닉네임 */}
-        <Animated.Text
-          className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
-          style={[styles.mycharacterboxinname, animatedMyStyle]}
-        >
-          NICKNAME
-        </Animated.Text>
-
-        <Animated.Image
-          style={[styles.boxinenemy, animatedEnemyStyle]}
-          source={snake}
+        <Image
+          style={styles.enemy}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+          }}
         />
-        {/* 적 칭호 */}
-        <Animated.Text
-          className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[24px] font-PretendardBold"
-          style={[styles.enemyboxinaward, animatedEnemyStyle]}
-        >
-          어어어어
-        </Animated.Text>
-        {/* 적 닉네임 */}
-        <Animated.Text
-          className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
-          style={[styles.enemyboxinname, animatedEnemyStyle]}
-        >
-          {enemyInfoState.nickname}
-        </Animated.Text>
-        <Image style={styles.mycharacter} source={pingping} />
-        <Image style={styles.enemy} source={snake} />
       </ImageBackground>
     </View>
   );

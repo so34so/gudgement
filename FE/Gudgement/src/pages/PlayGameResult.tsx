@@ -1,9 +1,6 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
-import Snake from "../assets/images/snake.png";
-import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
 import GameUi from "../components/GameUi";
-import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
   StyleSheet,
@@ -22,15 +19,30 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 export default function PlayGameResult({ route }) {
   const { roomNumber, rounds, result } = route.params;
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const snake: ImageSourcePropType = Snake as ImageSourcePropType;
-  const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-  const myData = queryClient.getQueryData(["myGameinfo"]);
-  const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
+
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+
+  const [myCharacterState, setMyCharacterState] = useState(null);
+  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
+
+  useEffect(() => {
+    const myCharacter = queryClient.getQueryData(["myCharacter"]);
+    const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
+
+    if (myCharacter) {
+      setMyCharacterState(myCharacter);
+    }
+
+    if (enemyCharacter) {
+      setEnemyCharacterState(enemyCharacter);
+    }
+  }, []);
 
   return (
     <View className="flex w-full h-full">
@@ -40,9 +52,18 @@ export default function PlayGameResult({ route }) {
         className="flex-1"
       >
         <GameUi />
-
-        <Image style={styles.mycharacter} source={pingping} />
-        <Image style={styles.enemy} source={snake} />
+        <Image
+          style={styles.mycharacter}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+          }}
+        />
+        <Image
+          style={styles.enemy}
+          source={{
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+          }}
+        />
       </ImageBackground>
     </View>
   );

@@ -1,4 +1,4 @@
-package com.example.gudgement.member.exception;
+package com.example.gudgement.exception;
 
 import lombok.Getter;
 

@@ -106,9 +106,14 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
               className="w-16 h-12"
               resizeMode="contain"
             />
-            <Text className="text-black font-PretendardExtraBold text-sm">
-              내정보에서 목표 소비 금액을 설정해주세요!
-            </Text>
+            <View className="flex flex-col space-y-2">
+              <Text className="text-black font-PretendardBold text-xs">
+                내 정보에서 목표 소비 금액을 설정하면
+              </Text>
+              <Text className="text-black font-PretendardBold text-xs">
+                {userData?.nickname}님의 소비를 분석해드려요.
+              </Text>
+            </View>
           </View>
         </View>
       )}

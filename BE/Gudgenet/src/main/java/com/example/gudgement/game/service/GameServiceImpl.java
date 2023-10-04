@@ -9,8 +9,8 @@ import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
 import com.example.gudgement.game.entity.GameRoom;
 import com.example.gudgement.game.entity.GameUser;
-import com.example.gudgement.game.exception.BaseErrorException;
-import com.example.gudgement.game.exception.GameErrorCode;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
 import com.example.gudgement.match.dto.MatchDto;
@@ -23,6 +23,7 @@ import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.shop.repository.InventoryRepository;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,6 +52,7 @@ public class GameServiceImpl implements GameService{
     private final VirtualAccountRepository virtualAccountRepository;
 
     private final CardService cardService;
+    private final TimerService timerService;
 
     @Scheduled(fixedRate = 1000)
     public void checkUnresponsiveUsers() {
@@ -102,6 +104,7 @@ public class GameServiceImpl implements GameService{
         if (allUsersAccepted(roomNumber)) {
             log.info("All users accepted. Sending start message and saving game room and users.");
            // messagingTemplate.convertAndSend("/topic/game/alarm/" + roomNumber, "All users success");
+            timerService.cancelTimer(roomNumber);
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
@@ -128,7 +131,7 @@ public class GameServiceImpl implements GameService{
                 Object value = redisTemplate.opsForHash().get(roomNumber, member+":tiggle");
 
                 if (value == null) {
-                    throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+                    throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
                 }
 
                 Long tiggle = Long.parseLong((String) value);
@@ -233,13 +236,15 @@ public class GameServiceImpl implements GameService{
 
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
+
+        timerService.cancelTimer(roomNumber);
     }
 
     private int fetchLevel(String nickname) {
         Optional<Member> gameUser = memberRepository.findByNickname(nickname);
 
         if (gameUser == null) {
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
         }
 
         return gameUser.get().getLevel();
@@ -311,7 +316,7 @@ public class GameServiceImpl implements GameService{
         Progress progress = progressRepository.findByMemberAndProgressName(user,progressType);
 
         if (!user.isPresent()) {
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
         }
 
         // Redis에서 해당 유저의 배팅 tiggle 값을 가져옴
@@ -319,7 +324,7 @@ public class GameServiceImpl implements GameService{
 
         Object value = redisTemplate.opsForHash().get(roomNumber, nickname + ":betting");
 
-        if (value == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+        if (value == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
 
         Long bettingTiggle = Long.parseLong(String.valueOf(value));
 
@@ -349,7 +354,7 @@ public class GameServiceImpl implements GameService{
 
     private void deleteIfAllUsersFinished(String roomNumber) {
         GameRoom gameRoom = gameRoomRepository.findByRoomNumber(roomNumber)
-                .orElseThrow(() -> new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL));
+                .orElseThrow(() -> new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL));
 
         boolean allUsersFinished = gameRoom.getUsers().stream()
                 .allMatch(gameUser -> "finished".equals(redisTemplate.opsForHash().get(roomNumber, gameUser.getNickName() + ":status")));
@@ -371,7 +376,7 @@ public class GameServiceImpl implements GameService{
         Optional<GameUser> gameUserOptional=gameUserRepository.findByNickNameAndGameRoom_RoomNumber(username,roomnumber);
 
         if(!gameUserOptional.isPresent()){
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
         }
 
         GameUser gameUser=gameUserOptional.get();

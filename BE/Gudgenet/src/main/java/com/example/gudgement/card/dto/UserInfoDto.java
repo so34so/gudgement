@@ -1,9 +1,9 @@
 package com.example.gudgement.card.dto;
 
-import java.util.List;
-
 import com.example.gudgement.game.dto.CardInfoDto;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter

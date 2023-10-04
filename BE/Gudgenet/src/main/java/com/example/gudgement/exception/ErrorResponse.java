@@ -1,10 +1,5 @@
-package com.example.gudgement.shop.exception;
+package com.example.gudgement.exception;
 
-import com.example.gudgement.member.exception.AuthorizationException;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.EmailLogicException;
-import com.example.gudgement.member.exception.ErrorCode;
-import com.example.gudgement.mypage.exception.AccountException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +15,46 @@ public class ErrorResponse {
     private final String message;
 
     @Builder
-    public ErrorResponse(ItemErrorCode errorCode) {
+    public ErrorResponse(ErrorCode errorCode) {
         this.httpStatus = errorCode.getHttpStatus();
         this.code = errorCode.getErrorCode();
         this.message = errorCode.getMessage();
+    }
+
+    public static ResponseEntity<ErrorResponse> error(BaseErrorException e) {
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .httpStatus(e.getErrorCode().getHttpStatus())
+                        .code(e.getErrorCode().getErrorCode())
+                        .message(e.getErrorCode().getMessage())
+                        .build());
+    }
+
+    public static ResponseEntity<ErrorResponse> error(EmailLogicException e) {
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .httpStatus(e.getErrorCode().getHttpStatus())
+                        .code(e.getErrorCode().getErrorCode())
+                        .message(e.getErrorCode().getMessage())
+                        .build());
+    }
+
+    public static ResponseEntity<ErrorResponse> error(AuthorizationException e) {
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .httpStatus(e.getErrorCode().getHttpStatus())
+                        .code(e.getErrorCode().getErrorCode())
+                        .message(e.getErrorCode().getMessage())
+                        .build());
+    }
+
+    public static ResponseEntity<ErrorResponse> error(AccountException e) {
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.builder()
+                        .httpStatus(e.getErrorCode().getHttpStatus())
+                        .code(e.getErrorCode().getErrorCode())
+                        .message(e.getErrorCode().getMessage())
+                        .build());
     }
 
     public static ResponseEntity<ErrorResponse> error(AlreadyPurchasedException e) {
@@ -52,5 +83,4 @@ public class ErrorResponse {
                         .message(e.getErrorCode().getMessage())
                         .build());
     }
-
 }

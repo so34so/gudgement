@@ -1,10 +1,10 @@
 package com.example.gudgement.fcm.service;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
+import com.example.gudgement.exception.FcmErrorException;
 import com.example.gudgement.fcm.dto.FcmNotificationResponseDto;
-import com.example.gudgement.fcm.exception.FcmErrorException;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;

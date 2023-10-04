@@ -1,9 +1,9 @@
 package com.example.gudgement.shop.controller;
 
-import com.example.gudgement.shop.exception.ErrorResponse;
-import com.example.gudgement.shop.exception.InsufficientPointsException;
-import com.example.gudgement.shop.exception.NotFoundItemException;
-import com.example.gudgement.shop.exception.AlreadyPurchasedException;
+import com.example.gudgement.exception.AlreadyPurchasedException;
+import com.example.gudgement.exception.ErrorResponse;
+import com.example.gudgement.exception.InsufficientPointsException;
+import com.example.gudgement.exception.NotFoundItemException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -3,8 +3,6 @@ package com.example.gudgement.game.controller;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
-import com.example.gudgement.game.dto.MessageDto;
-import com.example.gudgement.game.dto.SendMessageDto;
 import com.example.gudgement.shop.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -62,6 +62,7 @@ public class GameController {
     @PostMapping("/gameroundinfo")
     public ResponseEntity<GameRoundDto> getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
         GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
+        gameRoundService.startRound(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
 

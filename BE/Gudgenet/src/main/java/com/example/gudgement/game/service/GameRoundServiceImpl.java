@@ -3,16 +3,16 @@ package com.example.gudgement.game.service;
 import com.example.gudgement.card.service.CardService;
 import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
-import com.example.gudgement.game.exception.BaseErrorException;
-import com.example.gudgement.game.exception.GameErrorCode;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
-import com.example.gudgement.shop.exception.ItemErrorCode;
-import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
@@ -33,6 +34,16 @@ public class GameRoundServiceImpl implements GameRoundService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
+    private final TimerService timerService;
+
+    public void startRound(GameRequestDto requestDto) {
+        String roomNumber = requestDto.getRoomNumber();
+
+        timerService.startTimer(roomNumber, () -> {
+            messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
+        }, 10);
+
+    }
 
     @Transactional
     public GameRoundDto getGameStatus(GameRequestDto requestDto) {
@@ -54,7 +65,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         if (otherUser == null) {
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
         }
 
         List<UserTiggleDto> userTiggles = new ArrayList<>();
@@ -63,7 +74,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         for (String userNickName : Arrays.asList(userName, otherUser)) {
             log.info(userNickName + "입니다.");
             Object valueObj = redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
-            if (valueObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+            if (valueObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
 
             Long tiggleValue = Long.parseLong(String.valueOf(valueObj));
 
@@ -73,7 +84,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         Object roundsObj = redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
-        if (roundsObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+        if (roundsObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
 
         int rounds = Integer.parseInt(String.valueOf(roundsObj));
 
@@ -88,7 +99,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
 
         Member member = memberRepository.findByNickname(userName)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         List<Inventory> inventories = inventoryRepository.findByMemberAndItemId_TypeAndEquipped(member, "consumable", true);
 
@@ -134,6 +145,9 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         // If both users have bet, then proceed with the comparison and result calculation
         if (allUsersBetting(roomNumber)) {
+
+            timerService.cancelTimer(roomNumber);
+
             int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":bet"));
             int otherBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":bet"));
 
@@ -232,6 +246,8 @@ public class GameRoundServiceImpl implements GameRoundService {
             
             messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getOtherName(), otherResult);
 
+            log.info(myResult.toString());
+
             /* Reset status for next round */
             resetStatusForNextRound(roomNumber);
 
@@ -253,6 +269,9 @@ public class GameRoundServiceImpl implements GameRoundService {
         int round = bettingDto.getRounds();
         RoundResultDto myResult;
         RoundResultDto otherResult;
+
+        timerService.cancelTimer(roomNumber);
+
         // Check if the user exists in Redis.
         Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
 

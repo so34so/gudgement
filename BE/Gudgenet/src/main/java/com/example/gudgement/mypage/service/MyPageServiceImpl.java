@@ -4,13 +4,13 @@ import com.example.gudgement.account.entity.TransactionHistory;
 import com.example.gudgement.account.entity.VirtualAccount;
 import com.example.gudgement.account.repository.TransactionHistoryRepository;
 import com.example.gudgement.account.repository.VirtualAccountRepository;
+import com.example.gudgement.exception.AccountException;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.mypage.dto.ChartDataDto;
 import com.example.gudgement.mypage.entity.Chart;
-import com.example.gudgement.mypage.exception.AccountException;
 import com.example.gudgement.mypage.repository.ChartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j

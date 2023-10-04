@@ -1,14 +1,14 @@
-package com.example.gudgement.shop.exception;
+package com.example.gudgement.exception;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class InsufficientPointsException extends RuntimeException {
-    private ItemErrorCode errorCode;
+    private ErrorCode errorCode;
 
     @Builder
-    public InsufficientPointsException(ItemErrorCode errorCode) {
+    public InsufficientPointsException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

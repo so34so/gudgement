@@ -1,6 +1,5 @@
-package com.example.gudgement.fcm.exception;
+package com.example.gudgement.exception;
 
-import com.example.gudgement.member.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

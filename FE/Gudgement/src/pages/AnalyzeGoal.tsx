@@ -131,7 +131,7 @@ function AnalyzeGoal() {
         <View className="absolute bg-black30 w-screen h-screen" />
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
-            text={`${userData?.nickname} 님의 소비 목표 금액 설정`}
+            text={`${userData?.nickname} 님의 소비 목표 금액`}
             img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
@@ -155,7 +155,7 @@ function AnalyzeGoal() {
                     목표 금액은 한 달에 한 번 설정하면
                   </Text>
                   <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                    내정보의 소비 분석에서
+                    내 정보의 소비 분석에서
                   </Text>
                   <View className="flex flex-row">
                     <Text className="text-darkgray text-xs font-PretendardExtraBold">

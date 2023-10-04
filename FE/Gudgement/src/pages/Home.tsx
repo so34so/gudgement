@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
 import Config from "react-native-config";
+import { CommonType } from "../types/CommonType";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -67,6 +68,17 @@ export default function Home() {
     }
   }, [percent]);
 
+  const characterImage = useCallback(() => {
+    const currentCharacter = userData?.setItems.filter(
+      (item: CommonType.TsetItem) => {
+        return item.type === "character";
+      },
+    );
+    console.log("current", currentCharacter);
+
+    return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
+  }, [userData?.setItems]);
+
   if (isLoading) {
     return (
       <View className="w-full h-full flex justify-center items-center">
@@ -112,9 +124,9 @@ export default function Home() {
         </View>
         <Image
           source={{
-            uri: `${Config.IMAGE_URL}/character/stoat.png`,
+            uri: characterImage(),
           }}
-          className="w-32 h-48 z-1"
+          className="w-48 h-44 z-1"
           style={{
             top: screenWidth / 3,
             right: screenHeight / 50,

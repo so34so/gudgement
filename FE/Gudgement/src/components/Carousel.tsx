@@ -18,7 +18,7 @@ interface ICarousel {
   pageWidth: number;
   setSelectItem: React.Dispatch<React.SetStateAction<number>>;
   component: string;
-  category: string | null;
+  category?: string | null;
 }
 
 function Carousel({

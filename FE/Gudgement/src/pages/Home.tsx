@@ -109,7 +109,7 @@ export default function Home() {
               원
             </Text>
           </View>
-          <View className="flex justify-center items-center w-[90%]">
+          <View className="flex justify-center items-center w-[92%]">
             <AnalysisBox ProgressBarVisible={true} />
           </View>
         </View>

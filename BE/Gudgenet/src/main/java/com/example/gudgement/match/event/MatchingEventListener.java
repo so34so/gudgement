@@ -2,6 +2,7 @@ package com.example.gudgement.match.event;
 
 import com.example.gudgement.game.service.GameService;
 import com.example.gudgement.match.dto.MatchDto;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,10 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +20,7 @@ public class MatchingEventListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
     private final GameService gameService;
+    private final TimerService timerService;
 
     @EventListener
     public void handleMatchRequest(MatchRequestEvent event) {
@@ -37,6 +36,8 @@ public class MatchingEventListener {
             String otherUser = selectRandomUser(members);
 
             String roomNumber = gameService.createGameRoom(); // 새로운 게임 방 생성
+
+
 
             List<String> matchedUsers = Arrays.asList(request.getNickName(), otherUser);
 
@@ -57,6 +58,11 @@ public class MatchingEventListener {
 
             messagingTemplate.convertAndSend("/queue/start/" + request.getNickName(), roomNumber);
             messagingTemplate.convertAndSend("/queue/start/" + otherUser, roomNumber);
+
+            timerService.startTimer(roomNumber, () -> {
+                messagingTemplate.convertAndSend("/topic/game/" + roomNumber, "timeout");
+                // 게임 거절 처리 로직
+            }, 10);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
         }

@@ -62,6 +62,7 @@ public class GameController {
     @PostMapping("/gameroundinfo")
     public ResponseEntity<GameRoundDto> getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
         GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
+        gameRoundService.startRound(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
 

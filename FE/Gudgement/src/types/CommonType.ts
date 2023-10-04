@@ -175,6 +175,21 @@ export declare module CommonType {
     };
   };
 
+  export type TanalyzeMonth = {
+    month: number;
+    bestAmount: number;
+    bestDestination: string;
+    frequencyCount: number;
+    frequencyDestination: string;
+    frequencyAmount: number;
+    totalMember: number;
+    ranking: number;
+    lastMonthAmount: number;
+    lastMonthAmountRate: number;
+    thisMonthAmount: number;
+    thisMonthAmountRate: number;
+  };
+
   export type Tplaymap = {
     ticle: number;
     image: string | ImageSourcePropType;

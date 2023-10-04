@@ -3,8 +3,8 @@ import { Dimensions, BackHandler } from "react-native";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { API_URL } from "@env";
 import fetchApi from "./tokenUtils";
+import Config from "react-native-config";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 
@@ -143,7 +143,7 @@ export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
   }
   try {
     const response: AxiosResponse<CommonType.Tuser> = await fetchApi.get(
-      `${API_URL}/member/loadMyInfo`,
+      `${Config.API_URL}/member/loadMyInfo`,
       {
         headers: {
           Authorization: `Bearer ${getAccessTokenFetchUser}`,

@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
 import Chingho from "../assets/icons/chingho.png";
 import Chijang from "../assets/icons/chijang.png";
 import Sobi from "../assets/icons/sobi.png";
@@ -20,6 +19,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useEffect } from "react";
+import Config from "react-native-config";
 function ShopEntrance() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -48,7 +48,7 @@ function ShopEntrance() {
     <View className="flex flex-1 w-full h-full">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/shopBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/shopBackground.png`,
         }}
         resizeMode="cover"
         className="flex-1"

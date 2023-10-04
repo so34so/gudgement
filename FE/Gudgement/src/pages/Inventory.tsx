@@ -28,10 +28,10 @@ import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { INVENTORY_CATEGORY, getAccessToken } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
-import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
 import InventoryShop from "../assets/icons/inventoryShop.png";
+import Config from "react-native-config";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -57,7 +57,7 @@ function Inventory({ route }: InventoryProps) {
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const { data: userInfo } = useQuery<CommonType.TUser>({
+  const { data: userInfo } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
   });
 
@@ -75,7 +75,7 @@ function Inventory({ route }: InventoryProps) {
     try {
       const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.TinvenItem[]> = await axios.get(
-        `${API_URL}/inventory/type`,
+        `${Config.API_URL}/inventory/type`,
         {
           params: {
             type: INVENTORY_CATEGORY[category],
@@ -123,7 +123,7 @@ function Inventory({ route }: InventoryProps) {
   const { mutate: equippedItem } = useMutation({
     mutationFn: async (params: IresponseEquipment) => {
       const accessToken = await getAccessToken();
-      return axios.put(`${API_URL}/inventory`, null, {
+      return axios.put(`${Config.API_URL}/inventory`, null, {
         params: {
           invenId: params.invenId,
         },

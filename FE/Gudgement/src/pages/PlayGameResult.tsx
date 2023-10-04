@@ -2,7 +2,6 @@ import VolcanoMap from "../assets/images/volcanomap.png";
 import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import React, { useEffect, useRef, useState } from "react";
-import { WEBSOCKET_URL } from "@env";
 import GameUi from "../components/GameUi";
 import GameBettingSyetem from "../components/GameBettingSyetem";
 import {

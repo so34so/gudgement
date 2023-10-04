@@ -16,13 +16,12 @@ import { AxiosResponse } from "axios";
 import fetchApi from "../utils/tokenUtils";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
-import { API_URL, IMAGE_URL } from "@env";
-import { getAsyncData } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import AnalysisBox from "../components/AnalysisBox";
 import reactotron from "reactotron-react-native";
+import { Config } from "react-native-config";
 
 function Analyze(this: unknown) {
   const {
@@ -144,17 +143,11 @@ function Analyze(this: unknown) {
       return;
     }
     reactotron.log!("날짜: ", selectedYear, selectedMonth, selectedDay);
-    const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
         await fetchApi.post(
-          `${API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
+          `${Config.API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
-          {
-            headers: {
-              Authorization: `Bearer ${getAccessToken}`,
-            },
-          },
         );
       reactotron.log!("fetchAnalyzeChart", response.data);
       setChartData(response.data);
@@ -227,7 +220,7 @@ function Analyze(this: unknown) {
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-full h-full"
@@ -238,10 +231,10 @@ function Analyze(this: unknown) {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <View className="flex flex-row justify-between items-center">
+        <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 추이`}
-            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
         <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-4 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
@@ -249,8 +242,8 @@ function Analyze(this: unknown) {
             <AnalysisBox ProgressBarVisible={false} />
           </View>
           <View className="w-full">
-            <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row justify-start items-center m-4 space-x-[1px] bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-white">
+            <View className="flex flex-row justify-between items-center mx-3 my-4">
+              <View className="flex flex-row justify-start items-center bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-lightsky">
                 <ModalDropdown
                   options={yearOptions}
                   onSelect={handleSelectDate("년")}
@@ -271,7 +264,7 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />
@@ -297,7 +290,7 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />
@@ -323,14 +316,14 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />
                   </View>
                 </ModalDropdown>
               </View>
-              <View className="pr-3">
+              <View className="rounded-2xl border-solid border-[3px] border-lightsky">
                 <NavigationButton
                   handleFunction={() => fetchAnalyzeChart()}
                   text="차트 보기"
@@ -341,7 +334,13 @@ function Analyze(this: unknown) {
                 />
               </View>
             </View>
-            <View className="bg-white90 rounded-3xl mx-2 py-4 border-solid border-[2px] border-darkgray70">
+            <View className="bg-white90 rounded-2xl mx-2 py-4 mb-2 border-solid border-[3px] border-sub03">
+              <View className="py-1 mx-4 flex justify-center items-center w-[50%] rounded-lg bg-white50">
+                <Text className="font-PretendardBold text-darkgray text-2xs">
+                  {chartData.year}년 {chartData.month}월 {chartData.week}주차
+                  소비 차트
+                </Text>
+              </View>
               <BarChart
                 data={{
                   labels: chartData.data.labels,
@@ -390,29 +389,23 @@ function Analyze(this: unknown) {
                 flatColor={true}
                 style={{
                   marginVertical: 10,
-                  marginHorizontal: -40,
+                  marginHorizontal: -44,
                 }}
                 yAxisLabel={""}
                 yAxisSuffix={""}
               />
-              <View className="py-1 mx-4 flex justify-center items-center w-[46%] rounded-lg bg-white50 border-solid border-[1px] border-darkgray50">
-                <Text className="font-PretendardBold text-darkgray70 text-3xs">
-                  {chartData.year}년 {chartData.month}월 {chartData.week}주차
-                  소비 차트
-                </Text>
-              </View>
-            </View>
-            <View className="px-4 py-4">
-              <NavigationButton
-                handleFunction={() => handleFetchAnalyze()}
-                text={`${selectedMonth}월 분석`}
-                height="sm"
-                width="md"
-                size="sm"
-                color="green"
-              />
             </View>
           </View>
+        </View>
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center px-3">
+          <NavigationButton
+            handleFunction={() => handleFetchAnalyze()}
+            text={`${selectedMonth}월 분석`}
+            height="lg"
+            width="lg"
+            size="md"
+            color="deepgreen"
+          />
         </View>
       </ImageBackground>
     </View>

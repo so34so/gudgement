@@ -2,7 +2,6 @@ import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-// import { KAKAO_LOGIN_REST_API_KEY, SERVER_URL } from "@env";
 import axios from "axios";
 import Config from "react-native-config";
 import { getAsyncData, setAsyncData } from "../utils/common";

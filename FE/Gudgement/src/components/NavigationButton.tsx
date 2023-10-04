@@ -1,4 +1,3 @@
-// import { CommonType } from "../types/CommonType";
 import { Text, Pressable, View } from "react-native";
 import { textShadow } from "../utils/common";
 
@@ -24,7 +23,7 @@ function NavigationButton({
 
   const buttonStyle02 = (currentHeight: string, currentWidth: string) =>
     `${currentHeight === "lg" ? "py-2" : "py-1"} ${
-      currentWidth === "lg" && "px-[162px]"
+      currentWidth === "lg" && "px-[136px]"
     } ${currentWidth === "md" && "px-[114px]"} ${
       currentWidth === "sm" && "px-2"
     } h-fill w-fill flex flex-row justify-center items-center bg-transparent border-solid border-[3px] border-white20 rounded-lg`;
@@ -34,7 +33,7 @@ function NavigationButton({
       currentSize === "sm" && "text-sm"
     } ${currentSize === "md" && "text-md "} ${
       currentWidth === "md" && "w-[100px]"
-    } font-PretendardExtraBold`;
+    } ${currentWidth === "lg" && "w-[100px]"} font-PretendardExtraBold`;
 
   return (
     <Pressable className={buttonStyle01(color)} onPress={handleFunction}>

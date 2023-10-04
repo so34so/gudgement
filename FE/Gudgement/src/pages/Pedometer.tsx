@@ -29,6 +29,9 @@ function MyPage(this: unknown) {
     enabled: false,
   });
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+
   useEffect(() => {
     refetch();
   }, []);
@@ -45,9 +48,6 @@ function MyPage(this: unknown) {
   } else {
     reactotron.log!("홈 사용자 정보", userData);
   }
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState("");
 
   const openModal = () => {
     setModalVisible(true);
@@ -78,10 +78,12 @@ function MyPage(this: unknown) {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <TagBoxSmall
-          text={"만보 걷기 챌린지"}
-          img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
-        />
+        <View className="py-2 flex flex-row justify-between items-center">
+          <TagBoxSmall
+            text={"만보 걷기 챌린지"}
+            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+          />
+        </View>
         <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">
           <View className="ml-8 mt-4">
             <Image

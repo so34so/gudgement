@@ -12,6 +12,7 @@ public class MonthAnalyze {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long analyzeId;
 
     @Column(nullable = false)
     private int year;
@@ -51,6 +52,9 @@ public class MonthAnalyze {
 
     @Column
     private Double lastMonthAmountRate;
+
+    @Column(nullable = false)
+    private Long thisMonthAmount;
 
     @Column
     private Double thisMonthAmountRate;

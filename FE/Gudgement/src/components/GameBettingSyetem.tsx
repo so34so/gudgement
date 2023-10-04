@@ -2,10 +2,8 @@ import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
 import { CommonType } from "../types/CommonType";
 import {
-  ImageBackground,
   Image,
   ImageSourcePropType,
-  Pressable,
   Text,
   View,
   StyleSheet,

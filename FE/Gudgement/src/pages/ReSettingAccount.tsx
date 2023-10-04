@@ -1,17 +1,18 @@
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
-import { View, Text, ImageBackground } from "react-native";
+import { View, ImageBackground } from "react-native";
+import { CommonType } from "../types/CommonType";
 import { AxiosResponse } from "axios";
-import CustomModal from "../components/CustomModal";
-import NavigationButton from "../components/NavigationButton";
 import { getAsyncData } from "../utils/common";
-import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
-import Config from "react-native-config";
+import CustomModal from "../components/CustomModal";
+import NavigationButton from "../components/NavigationButton";
 import SettingAccountBox from "../components/SettingAccountBox";
+import TagBoxSmall from "../components/TagBoxSmall";
+import reactotron from "reactotron-react-native";
+import Config from "react-native-config";
 
-function SettingAccount() {
+function ReSettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [tempEmail, setTempEmail] = useState("");
@@ -105,31 +106,29 @@ function SettingAccount() {
         resizeMode="cover"
         className="flex w-screen h-screen"
       >
+        <View className="absolute bg-black30 w-screen h-screen" />
         <CustomModal
           alertText={modalText}
           visible={modalVisible}
           closeModal={closeModal}
         />
         <View className="z-10 flex flex-col">
-          <View className="flex justify-between items-center px-4">
-            <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
-              <Text className="py-1 px-2 w-full text-center bg-darkgray rounded-lg text-white text-sm font-PretendardExtraBold">
-                계좌 연동
-              </Text>
-            </View>
-          </View>
-          <View className="flex w-full justify-start items-center">
-            <SettingAccountBox
-              numberVisible={true}
-              selectedAccountId={selectedAccountId}
-              onSelectId={handleSelectAccountId}
+          <View className="py-2 flex flex-row justify-between items-center">
+            <TagBoxSmall
+              text={"주계좌 설정"}
+              img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
             />
           </View>
+          <SettingAccountBox
+            numberVisible={false}
+            selectedAccountId={selectedAccountId}
+            onSelectId={handleSelectAccountId}
+          />
         </View>
-        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center px-3">
           <NavigationButton
             handleFunction={submitSelect}
-            text="다 음"
+            text="설정 완료"
             height="lg"
             width="lg"
             size="md"
@@ -141,4 +140,4 @@ function SettingAccount() {
   );
 }
 
-export default SettingAccount;
+export default ReSettingAccount;

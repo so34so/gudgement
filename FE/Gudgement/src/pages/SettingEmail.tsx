@@ -69,7 +69,7 @@ function SettingEmail() {
     };
     try {
       const response: AxiosResponse<CommonType.TemailCode> =
-        await fetchApi.post(`${API_URL}/member/email/send`, sendBE);
+        await fetchApi.post(`${Config.API_URL}/member/email/send`, sendBE);
       const mailCode = response.data.toString();
       setCheckNumber(mailCode);
       setEmail(currentEmail);
@@ -98,7 +98,7 @@ function SettingEmail() {
           email: email,
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
-          await fetchApi.post(`${API_URL}/member/update/email`, sendBE);
+          await fetchApi.post(`${Config.API_URL}/member/update/email`, sendBE);
         reactotron.log!("인증 메일 등록 성공!", response);
         setCheckNumber("");
         setNumber("");

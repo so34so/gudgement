@@ -255,6 +255,8 @@ public class GameServiceImpl implements GameService{
                     .image(item.getImage())
                     .isEquipped(inventory.isEquipped())  // Assuming that isEquip() method exists in Inventory class.
                     .quantity(inventory.getQuantity())  // Assuming that getQuantity() method exists in Inventory class.
+                    .type(item.getType())
+                    .subType(item.getSubtype())
                     .build();
 
             equippedDtos.add(equippedDto);

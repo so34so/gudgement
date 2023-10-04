@@ -24,7 +24,7 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtRefreshAuthFilter extends OncePerRequestFilter {
 
-    private final String[] whiteUriList = new String[] {""};
+    private final String[] whiteUriList = new String[] {};
     private final JwtProvider jwtProvider;
 
     @Override

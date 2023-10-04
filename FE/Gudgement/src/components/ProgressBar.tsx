@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bar: {
-    height: 20,
-    backgroundColor: "#000000",
+    height: 15,
+    backgroundColor: "darkgray",
   },
 });
 

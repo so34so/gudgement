@@ -10,7 +10,7 @@
     "format": "prettier --check ./src",
     "start": "react-native start",
     "test": "jest",
-    "codepush:android": "appcenter codepush release-react -a yms1789-naver.com/Gudgement -d Staging --sourcemap-output --output-dir ./build -m -t 0.0",
+    "codepush:android": "appcenter codepush release-react -a yms1789-naver.com/Gudgement -d Production --sourcemap-output --output-dir ./build -m -t 1.0",
     "bundle:android": "react-native bundle --assets-dest build/CodePush --bundle-output build/CodePush/index.android.bundle --dev false --entry-file index.js --platform android --sourcemap-output build/CodePush/index.android.bundle.map",
     "appcenter-android-key": "appcenter codepush deployment list -a yms1789-naver.com/Gudgement -k",
     "aab:android": "npm ci && cd android && ./gradlew bundleRelease && cd .. && open android/app/build/outputs/bundle/release",

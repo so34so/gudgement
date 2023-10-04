@@ -188,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
         if (member.getMonthOverconsumption() != null) {
             log.info("개인 과소비 기준이 있는 유저");
             log.info("목표 대비 소비 금액 비율 산정 중...");
-            double amountRate = total / member.getMonthOverconsumption();
+            double amountRate = (double)total / member.getMonthOverconsumption();
             System.out.println(amountRate);
 
             return Rate.builder()

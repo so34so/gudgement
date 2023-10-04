@@ -17,7 +17,9 @@ function CustomModal({
       transparent={true}
       visible={visible}
       onRequestClose={() => {
-        closeModal();
+        if (alertText !== "로딩 중...") {
+          closeModal();
+        }
       }}
       className="opacity-80"
     >

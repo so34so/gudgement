@@ -227,7 +227,7 @@ function Analyze(this: unknown) {
         <View className="absolute bg-black30 w-screen h-screen" />
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
-            text={`${userData?.nickname} 님의 소비 확인`}
+            text={`${userData?.nickname} 님의 소비 분석`}
             img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
@@ -320,7 +320,7 @@ function Analyze(this: unknown) {
               <View className="rounded-2xl border-solid border-[3px] border-lightsky">
                 <NavigationButton
                   handleFunction={() => fetchAnalyzeChart()}
-                  text="차트 보기"
+                  text="확인"
                   height="sm"
                   width="sm"
                   size="2xs"
@@ -335,7 +335,7 @@ function Analyze(this: unknown) {
                 </Text>
                 <View className="flex flex-row">
                   <Text className="font-PretendardBold text-darkgray50 text-2xs">
-                    총 소비 금액은{" "}
+                    계좌 잔고가{" "}
                   </Text>
                   <Text className="font-PretendardBold text-black70 text-2xs">
                     {chartData.data.dateSet.amount
@@ -344,7 +344,7 @@ function Analyze(this: unknown) {
                     원{" "}
                   </Text>
                   <Text className="font-PretendardBold text-darkgray50 text-2xs">
-                    입니다.
+                    줄어들었어요.
                   </Text>
                 </View>
               </View>
@@ -408,11 +408,11 @@ function Analyze(this: unknown) {
         <View className="z-10 w-full h-fill bottom-0 absolute pb-4 flex justify-end items-center px-3">
           <NavigationButton
             handleFunction={() => handleFetchAnalyze()}
-            text={`${selectedMonth}월 분석`}
+            text="월별 결산"
             height="lg"
             width="lg"
             size="md"
-            color="deepgreen"
+            color="bluesky"
           />
         </View>
       </ImageBackground>

@@ -5,6 +5,7 @@ import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import fetchApi from "./tokenUtils";
 import Config from "react-native-config";
+import { queryClient } from "../../queryClient";
 
 export const BOTTOM_TAB_MENU = ["홈", "상점", "플레이", "내 정보", "랭킹"];
 
@@ -110,7 +111,7 @@ export const logoutUser = async () => {
     reactotron.log!("로그아웃 시킬게요..");
     const getAccessToken = await getAsyncData<string>("accessToken");
     reactotron.log!("과연?", getAccessToken);
-    BackHandler.exitApp();
+    queryClient.invalidateQueries(["isLoggedIn"]);
   } catch (error) {
     reactotron.log!(error);
   }

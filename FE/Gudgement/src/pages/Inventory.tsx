@@ -296,6 +296,7 @@ function Inventory({ route }: InventoryProps) {
             pageWidth={screenWidth - (55 + 75) * 2}
             setSelectItem={setSelectItem}
             component="Inventory"
+            category={selectCategory}
           />
         )}
         <CompleteModal

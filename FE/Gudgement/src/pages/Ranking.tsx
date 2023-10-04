@@ -53,7 +53,7 @@ export default function Ranking() {
   async function fetchRanking() {
     const userId: number | null = await getAsyncData("id");
     try {
-      const response: AxiosResponse<Irank> = await axios.get(
+      const response: AxiosResponse<Irank> = await fetchApi.get(
         `${Config.API_URL}/ranking/${userId}`,
       );
       return response.data;

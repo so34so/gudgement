@@ -40,7 +40,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         String roomNumber = requestDto.getRoomNumber();
 
         timerService.startTimer(roomNumber, () -> {
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, "timeout");
+            messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
         }, 10);
 
     }

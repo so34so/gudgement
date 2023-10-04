@@ -7,14 +7,17 @@ import {
   ImageBackground,
   Image,
 } from "react-native";
-import Reactotron from "reactotron-react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import { getAsyncData } from "../utils/common";
-import CustomModal from "../components/CustomModal";
-import AgreeBottomSheet from "../components/AgreeBottomSheet";
-import NavigationButton from "../components/NavigationButton";
-import fetchApi from "../utils/tokenUtils";
 import Config from "react-native-config";
+
+import Reactotron from "reactotron-react-native";
+
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
+import CustomModal from "../components/CustomModal";
+import NavigationButton from "../components/NavigationButton";
+
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData } from "../utils/common";
 
 function SettingName() {
   const [name, setName] = useState("");

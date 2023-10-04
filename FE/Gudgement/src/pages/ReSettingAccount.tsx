@@ -1,22 +1,24 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import { View, ImageBackground } from "react-native";
-import { AxiosResponse } from "axios";
-import { getAsyncData } from "../utils/common";
-import fetchApi from "../utils/tokenUtils";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import SettingAccountBox from "../components/SettingAccountBox";
 import TagBoxSmall from "../components/TagBoxSmall";
-import reactotron from "reactotron-react-native";
-import Config from "react-native-config";
+
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData } from "../utils/common";
+
+import { CommonType } from "../types/CommonType";
 
 function ReSettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [tempEmail, setTempEmail] = useState("");
-  const [accounts, setAccounts] = useState<CommonType.Taccount[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
     null,
   );
@@ -38,25 +40,7 @@ function ReSettingAccount() {
     };
 
     fetchData();
-
-    if (tempEmail.length > 0) {
-      handleReadAccount();
-    }
   }, [tempEmail]);
-
-  const handleReadAccount = async () => {
-    // reactotron.log!("인증된 이메일", tempEmail);
-    try {
-      const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
-        `${Config.API_URL}/account/${tempEmail}`,
-      );
-      const responseAccount = response.data;
-      setAccounts(responseAccount);
-      // reactotron.log!("계좌 불러오기 성공!", accounts);
-    } catch (error) {
-      reactotron.log!("계좌 불러오기 실패!", error);
-    }
-  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -89,10 +73,6 @@ function ReSettingAccount() {
           sendBE,
         );
         reactotron.log!("계좌 연동 성공!", response);
-        /**
-         * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
-         * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
-         * */
         setModalText("주계좌 설정을 완료했습니다.");
         openModal();
       } catch (error) {

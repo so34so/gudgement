@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   Text,
@@ -10,30 +9,24 @@ import {
   TextStyle,
   StyleProp,
 } from "react-native";
-import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
-import { BarChart } from "react-native-chart-kit";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AxiosResponse } from "axios";
-import fetchApi from "../utils/tokenUtils";
 import { useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
+import { BarChart } from "react-native-chart-kit";
+import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
+import reactotron from "reactotron-react-native";
+
+import AnalysisBox from "../components/AnalysisBox";
+import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
-import CustomModal from "../components/CustomModal";
-import AnalysisBox from "../components/AnalysisBox";
-import reactotron from "reactotron-react-native";
+
+import fetchApi from "../utils/tokenUtils";
 import { Config } from "react-native-config";
 
-function Analyze(this: unknown) {
-  const {
-    data: userData,
-    error: fetchError,
-    isLoading,
-    refetch,
-  } = useQuery<CommonType.Tuser>({
-    queryKey: ["fetchUserInfo"],
-    enabled: false,
-  });
+import { CommonType } from "../types/CommonType";
 
+function Analyze(this: unknown) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -43,8 +36,24 @@ function Analyze(this: unknown) {
     currentDate.getMonth() + 1,
   );
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
-  const [dayOptions, setDayOptions] = useState<string[]>([]);
 
+  const {
+    data: userData,
+    isLoading,
+    refetch,
+  } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+    enabled: false,
+  });
+
+  useEffect(() => {
+    refetch();
+    if (selectedYear > 0 && selectedMonth > 0 && selectedDay > 0) {
+      fetchAnalyzeChart();
+    }
+  }, []);
+
+  const [dayOptions, setDayOptions] = useState<string[]>([]);
   const yearOptions = ["2020년", "2021년", "2022년", "2023년"];
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month, 0).getDate();
@@ -104,29 +113,6 @@ function Analyze(this: unknown) {
       },
     },
   });
-
-  useEffect(() => {
-    if (selectedYear > 0 && selectedMonth > 0 && selectedDay > 0) {
-      fetchAnalyzeChart();
-    }
-  }, []);
-
-  useEffect(() => {
-    refetch();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View className="w-full h-full flex justify-center items-center">
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    );
-  }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
-  }
 
   const fetchAnalyzeChart = async () => {
     if (
@@ -207,6 +193,14 @@ function Analyze(this: unknown) {
     );
   };
 
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+
   const getAdjustFrameFunc = (width: number, height: number) => {
     return (style: PositionStyle) => {
       style.top = style.top ? style.top + 10 : 10;
@@ -233,7 +227,7 @@ function Analyze(this: unknown) {
         <View className="absolute bg-black30 w-screen h-screen" />
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
-            text={`${userData?.nickname} 님의 소비 추이`}
+            text={`${userData?.nickname} 님의 소비 확인`}
             img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
@@ -242,7 +236,7 @@ function Analyze(this: unknown) {
             <AnalysisBox ProgressBarVisible={false} />
           </View>
           <View className="w-full">
-            <View className="flex flex-row justify-between items-center mx-3 my-4">
+            <View className="flex flex-row justify-between items-center mx-3 my-3">
               <View className="flex flex-row justify-start items-center bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-lightsky">
                 <ModalDropdown
                   options={yearOptions}
@@ -334,13 +328,27 @@ function Analyze(this: unknown) {
                 />
               </View>
             </View>
-            <View className="bg-white90 rounded-2xl mx-2 py-4 mb-2 border-solid border-[3px] border-sub03">
-              <View className="py-1 mx-4 flex justify-center items-center w-[50%] rounded-lg bg-white50">
-                <Text className="font-PretendardBold text-darkgray text-2xs">
+            <View className="bg-white90 rounded-2xl mx-2 pt-3 mb-2 border-solid border-[3px] border-sub03">
+              <View className="py-1 mx-4 flex justify-center items-start w-fit space-y-2 rounded-lg bg-white50">
+                <Text className="font-PretendardBold text-darkgray text-xs">
                   {chartData.year}년 {chartData.month}월 {chartData.week}주차
-                  소비 차트
                 </Text>
+                <View className="flex flex-row">
+                  <Text className="font-PretendardBold text-darkgray50 text-2xs">
+                    총 소비 금액은{" "}
+                  </Text>
+                  <Text className="font-PretendardBold text-black70 text-2xs">
+                    {chartData.data.dateSet.amount
+                      .reduce((a, b) => a + b, 0)
+                      .toLocaleString("ko-KR")}
+                    원{" "}
+                  </Text>
+                  <Text className="font-PretendardBold text-darkgray50 text-2xs">
+                    입니다.
+                  </Text>
+                </View>
               </View>
+              <View className="w-fill m-2 border-solid border-t-[2px] border-sub03" />
               <BarChart
                 data={{
                   labels: chartData.data.labels,
@@ -397,7 +405,7 @@ function Analyze(this: unknown) {
             </View>
           </View>
         </View>
-        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center px-3">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-4 flex justify-end items-center px-3">
           <NavigationButton
             handleFunction={() => handleFetchAnalyze()}
             text={`${selectedMonth}월 분석`}

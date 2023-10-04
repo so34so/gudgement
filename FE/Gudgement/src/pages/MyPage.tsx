@@ -1,27 +1,27 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect } from "react";
-import { View, ImageBackground, ActivityIndicator } from "react-native";
+import { View, ImageBackground, ActivityIndicator, Image } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
+import Config from "react-native-config";
 import { useQuery } from "@tanstack/react-query";
+
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
-import reactotron from "reactotron-react-native";
-import Config from "react-native-config";
+
+import { CommonType } from "../types/CommonType";
 
 function MyPage(this: unknown) {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
   const {
     data: userData,
-    error: fetchError,
     isLoading,
     refetch,
   } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
-
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   useEffect(() => {
     refetch();
@@ -34,13 +34,10 @@ function MyPage(this: unknown) {
       </View>
     );
   }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
-  }
 
-  const handleMoveScreen = async (screen: string) => {
+  const handleMoveScreen = async (
+    screen: keyof CommonType.TmyPageScreenName,
+  ) => {
     navigation.navigate(screen);
   };
 
@@ -58,49 +55,92 @@ function MyPage(this: unknown) {
           text02={userData?.nickname ? userData?.nickname : "옥계공주"}
           img={`${Config.IMAGE_URL}/asset/mypageIcon.png`}
         />
-        <View className="flex flex-col w-full h-full justify-evenly pb-10">
+        <View
+          className="flex flex-col w-full h-fill justify-evenly space-y-10
+        pt-10"
+        >
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-fit">
-              <NavigationButton
-                handleFunction={() => handleMoveScreen("Analyze")}
-                text="    소비 분석    "
-                height="sm"
-                width="sm"
-                size="sm"
-                color="bluesky"
-              />
+            <View>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleMoveScreen("Analyze")}
+                  text="    소비 분석    "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
             </View>
-            <View className="w-fit">
-              <NavigationButton
-                handleFunction={() => handleMoveScreen("AnalyzeGoal")}
-                text="소비 목표 설정"
-                height="sm"
-                width="sm"
-                size="sm"
-                color="bluesky"
-              />
+            <View>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleMoveScreen("AnalyzeGoal")}
+                  text="소비 목표 설정"
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
             </View>
           </View>
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-fit">
-              <NavigationButton
-                handleFunction={() => handleMoveScreen("Pedometer")}
-                text="  만보 챌린지  "
-                height="sm"
-                width="sm"
-                size="sm"
-                color="bluesky"
-              />
+            <View>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleMoveScreen("Pedometer")}
+                  text="  만보 챌린지  "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
             </View>
-            <View className="w-fit">
-              <NavigationButton
-                handleFunction={() => handleMoveScreen("ReSettingAccount")}
-                text="  주계좌 설정  "
-                height="sm"
-                width="sm"
-                size="sm"
-                color="bluesky"
-              />
+            <View>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleMoveScreen("ReSettingAccount")}
+                  text="  주계좌 설정  "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
             </View>
           </View>
         </View>

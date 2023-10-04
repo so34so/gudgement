@@ -19,6 +19,7 @@ import Analyze from "./src/pages/Analyze";
 import AnalyzeGoal from "./src/pages/AnalyzeGoal";
 import AnalyzeDetail from "./src/pages/AnalyzeDetail";
 import reactotron from "reactotron-react-native";
+import ReSettingAccount from "./src/pages/ReSettingAccount";
 
 function AppInner() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
@@ -177,6 +178,11 @@ function AppInner() {
           <Stack.Screen
             name="AnalyzeDetail"
             component={AnalyzeDetail}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ReSettingAccount"
+            component={ReSettingAccount}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

@@ -1,22 +1,15 @@
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  ImageBackground,
-  Image,
-  Pressable,
-} from "react-native";
+import { View, Text, ImageBackground } from "react-native";
 import { AxiosResponse } from "axios";
 import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import AccountBox from "../components/AccountBox";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
+import SettingAccountBox from "../components/SettingAccountBox";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -69,15 +62,6 @@ function SettingAccount() {
     setModalVisible(false);
   };
 
-  const handleSelect = (accountId: number) => {
-    setSelectedAccountId(accountId);
-    accounts.map(account => {
-      if (account.virtualAccountId === accountId) {
-        account.selected = !account.selected;
-      }
-    });
-  };
-
   const submitSelect = async () => {
     reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
@@ -127,73 +111,7 @@ function SettingAccount() {
               </Text>
             </View>
           </View>
-          <View className="flex w-full justify-start items-center">
-            <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
-              <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
-                <View className="gap-4 flex flex-row items-center">
-                  <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
-                    <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image
-                        source={{
-                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
-                        }}
-                        className="h-10 w-10"
-                      />
-                    </View>
-                  </View>
-                  <View className="flex felx-col">
-                    <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                      연동한 계좌정보는 저희가
-                    </Text>
-                    <View className="flex flex-row">
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        안전하게 보관
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        할게요.
-                      </Text>
-                    </View>
-                    <View className="flex flex-row">
-                      <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
-                        주계좌 1개를
-                      </Text>
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        선택
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        해주세요.
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                  3/3
-                </Text>
-              </View>
-              <ScrollView className="h-[74%] w-fill p-3">
-                <View className="mb-6">
-                  {accounts.map((account: CommonType.Taccount) => {
-                    return (
-                      <Pressable
-                        key={account.virtualAccountId}
-                        onPress={() => {
-                          handleSelect(account.virtualAccountId);
-                        }}
-                      >
-                        <AccountBox
-                          account={account}
-                          isSelected={
-                            selectedAccountId === account.virtualAccountId
-                          }
-                          onSelect={handleSelect}
-                        />
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </ScrollView>
-            </View>
-          </View>
+          <SettingAccountBox numberVisible={true} />
         </View>
         <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
           <NavigationButton

@@ -184,7 +184,7 @@ function AnalyzeGoal() {
                   placeholderTextColor="darkgray"
                   keyboardType="numeric"
                   className="h-[58px] w-full p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
-                  editable={isGoal !== userData?.monthOverconsumption}
+                  editable={userData?.monthOverconsumption === null}
                 />
               </View>
               <View className="w-full px-2">
@@ -194,8 +194,8 @@ function AnalyzeGoal() {
                   </Text>
                 ) : (
                   <Text className="text-sky text-xs font-PretendardExtraBold pb-4">
-                    {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
-                    목표 금액이 이미 설정되었습니다.
+                    이달 {currentDate.getMonth() + 1}월 목표 금액이 이미
+                    설정되었습니다.
                   </Text>
                 )}
               </View>

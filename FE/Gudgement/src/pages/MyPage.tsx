@@ -59,7 +59,7 @@ function MyPage(this: unknown) {
           className="flex flex-col w-full h-fill justify-evenly space-y-10
         pt-10"
         >
-          <View className="flex flex-row w-full justify-evenly">
+          <View className="flex flex-row w-full justify-evenly items-center">
             <View>
               <View>
                 <Image

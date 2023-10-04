@@ -65,6 +65,8 @@ export const refreshToken = async () => {
   try {
     // AsyncStorage에서 refreshToken 가져오기
     const getRefreshToken = await getAsyncData<string>("refreshToken");
+    const getId = await getAsyncData<string>("id");
+    const getEmail = await getAsyncData<string>("email");
 
     if (!getRefreshToken) {
       reactotron.log!("Refresh token이 없습니다.");
@@ -73,10 +75,15 @@ export const refreshToken = async () => {
 
     reactotron.log!("Refresh token으로 발급받는 중..", getRefreshToken);
 
+    const sendBE = {
+      id: getId,
+      email: getEmail,
+    };
+
     // 서버에 요청 보내서 새 AccessToken 받아옴
     const response: AxiosResponse<CommonType.TrefreshToken> = await axios.post(
       `${Config.API_URL}/member/token/refresh`,
-      null,
+      sendBE,
       {
         headers: {
           Authorization: `Bearer ${getRefreshToken}`,

@@ -1,22 +1,13 @@
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  ImageBackground,
-  Image,
-  Pressable,
-} from "react-native";
+import { View, Text, ImageBackground } from "react-native";
 import { AxiosResponse } from "axios";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import AccountBox from "../components/AccountBox";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
-import Config from "react-native-config";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -67,15 +58,6 @@ function SettingAccount() {
 
   const closeModal = () => {
     setModalVisible(false);
-  };
-
-  const handleSelect = (accountId: number) => {
-    setSelectedAccountId(accountId);
-    accounts.map(account => {
-      if (account.virtualAccountId === accountId) {
-        account.selected = !account.selected;
-      }
-    });
   };
 
   const submitSelect = async () => {
@@ -135,7 +117,7 @@ function SettingAccount() {
                     <View className="bg-darkgray h-fill w-fill rounded-full">
                       <Image
                         source={{
-                          uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
+                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
                         }}
                         className="h-10 w-10"
                       />

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Dimensions, BackHandler } from "react-native";
+import { Dimensions } from "react-native";
 import reactotron from "reactotron-react-native";
 import { CommonType } from "../types/CommonType";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -106,11 +106,11 @@ export const logoutUser = async () => {
     // 모든 인증 정보 삭제 (여기서는 accessToken과 refreshToken만 삭제하였음)
     await removeAsyncData("accessToken");
     await removeAsyncData("refreshToken");
+    await removeAsyncData("id");
     await AsyncStorage.removeItem("id");
     reactotron.log!("로그아웃 시킬게요..");
-    const getAccessToken = await getAsyncData<string>("accessToken");
-    reactotron.log!("과연?", getAccessToken);
-    BackHandler.exitApp();
+    const getAccessTokenForLogout = await getAsyncData<string>("accessToken");
+    reactotron.log!("과연?", getAccessTokenForLogout);
   } catch (error) {
     reactotron.log!(error);
   }

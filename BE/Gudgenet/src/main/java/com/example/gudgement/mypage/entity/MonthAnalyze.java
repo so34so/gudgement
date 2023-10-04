@@ -52,6 +52,9 @@ public class MonthAnalyze {
     @Column
     private Double lastMonthAmountRate;
 
+    @Column(nullable = false)
+    private Long thisMonthAmount;
+
     @Column
     private Double thisMonthAmountRate;
 

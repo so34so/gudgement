@@ -16,7 +16,6 @@ import { CommonType } from "../types/CommonType";
 // AxiosRequestConfig 인터페이스를 확장하여 새로운 인터페이스를 정의
 interface AdaptAxiosRequestConfig extends AxiosRequestConfig {
   headers: AxiosRequestHeaders; // 헤더에 대한 타입 명시적으로 지정
-  retryCount?: number; // 재시도 횟수 나타내는 프로퍼티 추가
 }
 // Axios 인스턴스 생성
 export const fetchApi: AxiosInstance = axios.create();

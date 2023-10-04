@@ -19,7 +19,7 @@ interface AdaptAxiosRequestConfig extends AxiosRequestConfig {
   retryCount?: number; // 재시도 횟수 나타내는 프로퍼티 추가
 }
 // Axios 인스턴스 생성
-const fetchApi: AxiosInstance = axios.create();
+export const fetchApi: AxiosInstance = axios.create();
 
 // 요청 전에 실행되는 인터셉터
 fetchApi.interceptors.request.use(
@@ -41,18 +41,12 @@ fetchApi.interceptors.request.use(
   },
 );
 
-let retryCount = 0; // 클로저를 이용한 재시도 횟수 관리
-
 fetchApi.interceptors.response.use(
   response => response, // 응답이 성공적일 경우 그대로 반환
   async (error: AxiosError<CommonType.Terror>) => {
     const originalRequest = error.config as AdaptAxiosRequestConfig;
 
-    if (
-      error.response &&
-      retryCount < 10 // 최대 두 번만 요청되게 설정
-    ) {
-      retryCount++; // 재시도 횟수 증가
+    if (error.response) {
       const errorCode = error.response.data.code;
       const errorMessage = error.response.data.message;
       let newAccessToken;

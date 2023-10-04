@@ -8,7 +8,7 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
@@ -16,6 +16,7 @@ import AccountBox from "../components/AccountBox";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
+import fetchApi from "../utils/tokenUtils";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,7 +50,7 @@ function SettingAccount() {
   const handleReadAccount = async () => {
     // reactotron.log!("인증된 이메일", tempEmail);
     try {
-      const response: AxiosResponse<CommonType.Taccount[]> = await axios.get(
+      const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
         `${API_URL}/account/${tempEmail}`,
       );
       const responseAccount = response.data;
@@ -91,7 +92,7 @@ function SettingAccount() {
         virtualAccountId: selectedAccountId,
       };
       try {
-        const response = await axios.post(`${API_URL}/account`, sendBE);
+        const response = await fetchApi.post(`${API_URL}/account`, sendBE);
         reactotron.log!("계좌 연동 성공!", response);
         /**
          * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시

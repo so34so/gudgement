@@ -1,6 +1,7 @@
 package com.example.gudgement.member.dto.response;
 
 import com.example.gudgement.member.dto.Rate;
+import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,12 +19,14 @@ public class MemberResponseDto {
     private Long exp;
     private int level;
     private int pedometer;
+    private Long monthOverconsumption;
     private Rate rate;
 
     @Builder
     public MemberResponseDto (Long memberId, String email, String nickname,
                               Long tiggle, Long exp, List<Item> setItems,
-                              int level, int pedometer, Rate rate) {
+                              int level, int pedometer, Long monthOverconsumption,
+                              Rate rate) {
 
         this.memberId = memberId;
         this.email = email;
@@ -33,8 +36,7 @@ public class MemberResponseDto {
         this.exp = exp;
         this.level = level;
         this.pedometer = pedometer;
+        this.monthOverconsumption = monthOverconsumption;
         this.rate = rate;
     }
-
-
 }

@@ -66,8 +66,9 @@ public class MemberController {
     @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
     public void updateNickname(@RequestParam(name = "id") Long id, @RequestParam(name = "nickname") String nickname,
                                @RequestHeader("Authorization") String jwt) {
+
         memberService.updateNickname(id, nickname);
-//        memberService.initializeProgressAndInventory(id);
+        memberService.initializeProgressAndInventory(id);
     }
 
     @PostMapping("update/email")

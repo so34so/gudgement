@@ -9,12 +9,12 @@ import {
 } from "react-native";
 import Reactotron from "reactotron-react-native";
 import { API_URL, IMAGE_URL } from "@env";
-import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import NavigationButton from "../components/NavigationButton";
+import fetchApi from "../utils/tokenUtils";
 
 function SettingName() {
   const [name, setName] = useState("");
@@ -49,7 +49,7 @@ function SettingName() {
       return;
     }
     try {
-      const response = await axios.post(
+      const response = await fetchApi.post(
         `${API_URL}/member/valid/nickname?nickname=${nickName}`,
       );
       Reactotron.log!("닉네임 중복 확인 성공!", response.data);
@@ -74,7 +74,7 @@ function SettingName() {
     }
     if (checkName === 2) {
       try {
-        const response = await axios.post(
+        const response = await fetchApi.post(
           `${API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
         );
         Reactotron.log!("닉네임 등록 성공!", response.data);

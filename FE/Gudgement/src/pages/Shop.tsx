@@ -41,6 +41,7 @@ import {
   textShadow,
 } from "../utils/common";
 import { API_URL } from "@env";
+import fetchApi from "../utils/tokenUtils";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -104,7 +105,7 @@ function Shop({ route }: ShopProps) {
   async function fetchShopItem() {
     try {
       const accessToken = await getAccessToken();
-      const response: AxiosResponse<CommonType.Titem[]> = await axios.get(
+      const response: AxiosResponse<CommonType.Titem[]> = await fetchApi.get(
         `${API_URL}/shop/type`,
         {
           headers: {
@@ -158,7 +159,7 @@ function Shop({ route }: ShopProps) {
 
   const { mutate: buyItem } = useMutation({
     mutationFn: async (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop`, null, {
+      fetchApi.post(`${API_URL}/shop`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
@@ -175,7 +176,7 @@ function Shop({ route }: ShopProps) {
 
   const { mutate: buyConsumable } = useMutation({
     mutationFn: async (params: IresponseParams) => {
-      return axios.post(`${API_URL}/shop/consumable`, null, {
+      return fetchApi.post(`${API_URL}/shop/consumable`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
@@ -194,7 +195,7 @@ function Shop({ route }: ShopProps) {
 
   const { mutate: unlockItem } = useMutation({
     mutationFn: async (params: IresponseParams) => {
-      return axios.post(`${API_URL}/shop/hidden`, null, {
+      return fetchApi.post(`${API_URL}/shop/hidden`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,

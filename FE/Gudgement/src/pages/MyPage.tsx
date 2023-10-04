@@ -54,7 +54,7 @@ function MyPage(this: unknown) {
         className="flex w-full h-full"
       >
         <TagBoxLarge
-          text01={userData?.email ? userData?.email : "인동파 행동대장"}
+          text01={"내 정보"}
           text02={userData?.nickname ? userData?.nickname : "옥계공주"}
           img={`${IMAGE_URL}/asset/mypageIcon.png`}
         />
@@ -63,7 +63,7 @@ function MyPage(this: unknown) {
             <View className="w-[130px]">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Analyze")}
-                text="    소비  분석    "
+                text="    소비 분석    "
                 height="sm"
                 width="sm"
                 size="sm"
@@ -85,7 +85,7 @@ function MyPage(this: unknown) {
             <View className="w-[130px]">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Pedometer")}
-                text="  만보  챌린지  "
+                text="  만보 챌린지  "
                 height="sm"
                 width="sm"
                 size="sm"
@@ -95,7 +95,7 @@ function MyPage(this: unknown) {
             <View className="w-[130px]">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("SettingAccount")}
-                text="  주계좌  설정  "
+                text="  주계좌 설정  "
                 height="sm"
                 width="sm"
                 size="sm"

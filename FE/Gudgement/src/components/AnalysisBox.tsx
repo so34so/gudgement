@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Text, View, Image, ActivityIndicator } from "react-native";
-import ProgressBar from "./ProgressBar";
-import { IMAGE_URL } from "@env";
-import { ANALYZE_BOX_IMAGE, checkSpendRate } from "../utils/common";
 import { useQuery } from "@tanstack/react-query";
+import { IMAGE_URL } from "@env";
 import { CommonType } from "../types/CommonType";
+import { ANALYZE_BOX_IMAGE, checkSpendRate } from "../utils/common";
+import ProgressBar from "./ProgressBar";
 import reactotron from "reactotron-react-native";
 
 function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
@@ -57,7 +57,7 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
     <View className="w-fill">
       {isStartSingle ? (
         <>
-          <View className="w-[380px] h-fill bg-white py-4 flex-row justify-evenly items-center border-[3px] border-darkgray rounded-2xl">
+          <View className="w-[400px] h-fill bg-white py-4 flex-row justify-evenly items-center border-[3px] border-darkgray rounded-2xl">
             <View className="flex flex-row justify-center items-center space-x-6">
               <Text
                 className={`font-PretendardExtraBold ${spend.color} text-2lg`}

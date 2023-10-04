@@ -20,7 +20,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useEffect } from "react";
-
 function ShopEntrance() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();

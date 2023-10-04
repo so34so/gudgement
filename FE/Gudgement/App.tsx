@@ -150,7 +150,7 @@ function App(): JSX.Element {
       console.log(`CodePush ${status}`);
     });
   }, []);
-  console.log(WEBSOCKET_URL);
+
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">

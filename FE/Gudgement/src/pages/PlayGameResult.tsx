@@ -64,6 +64,99 @@ const styles = StyleSheet.create({
     bottom: "100%",
     zIndex: 20,
   },
+  mycharacterbox: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "50%",
+    left: "-123%",
+    bottom: 100,
+    zIndex: 12,
+  },
+  vs: {
+    position: "absolute",
+    width: 200,
+    height: 148,
+    top: "38%",
+    left: "30%",
+    zIndex: 15,
+  },
+  mycharacterboxinname: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "60%",
+    left: "-118%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  mycharacterboxinaward: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "56%",
+    left: "-118%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  boxinmycharacter: {
+    position: "absolute",
+    width: 120,
+    height: 100,
+    top: "55%",
+    left: "-123%",
+    bottom: 100,
+    zIndex: 13,
+  },
+  enemybox: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "10%",
+    right: "-123%",
+    bottom: 100,
+    zIndex: 12,
+  },
+
+  boxinenemy: {
+    position: "absolute",
+    width: 130,
+    height: 130,
+    top: "12%",
+    right: "-123%",
+    bottom: 100,
+    zIndex: 13,
+  },
+  enemyboxinname: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "20%",
+    right: "-115%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  enemyboxinaward: {
+    position: "absolute",
+    width: 329,
+    height: 201,
+    top: "16%",
+    right: "-115%",
+    bottom: 100,
+    zIndex: 13,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
   mycharacter: {
     position: "absolute",
     width: 92,
@@ -87,11 +180,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 79,
     height: 79,
-    bottom: "88%",
+    bottom: "89%",
     right: "40%",
-
     zIndex: 10,
   },
+
   bluecard: {
     flex: 1,
     top: 140,

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class JwtRefreshAuthFilter extends OncePerRequestFilter {
 

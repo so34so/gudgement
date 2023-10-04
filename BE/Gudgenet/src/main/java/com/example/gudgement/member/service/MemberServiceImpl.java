@@ -140,7 +140,7 @@ public class MemberServiceImpl implements MemberService {
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
             if (item == null) {
-                throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
+                throw new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM); // or any other appropriate exception.
             }
             equippedItems.add(item);
         }
@@ -350,7 +350,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Item defaultItem = itemRepository.findById(1L).orElseThrow(() ->{
-            throw new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM);
+            throw new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM);
         });
 
         Inventory inventory = Inventory.builder()

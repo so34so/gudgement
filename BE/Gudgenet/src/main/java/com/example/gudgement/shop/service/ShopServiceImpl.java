@@ -157,17 +157,17 @@ public class ShopServiceImpl implements ShopService{
 
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
 
         // 이미 구매한 아이템인지 확인
         if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException(ItemErrorCode.ALREADY_ADD_ITEM);
+            throw new AlreadyPurchasedException(ErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice()> member.getTiggle()) {
-            throw new InsufficientPointsException(ItemErrorCode.INSUFFICIENT_POINTS);
+            throw new InsufficientPointsException(ErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 포인트 차감
@@ -183,11 +183,11 @@ public class ShopServiceImpl implements ShopService{
         );
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // 이미 해금한 아이템인지 확인
         if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException(ItemErrorCode.ALREADY_ADD_ITEM);
+            throw new AlreadyPurchasedException(ErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 아이템 추가
@@ -201,11 +201,11 @@ public class ShopServiceImpl implements ShopService{
 
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice() * quantity > member.getTiggle()) {
-            throw new InsufficientPointsException(ItemErrorCode.INSUFFICIENT_POINTS);
+            throw new InsufficientPointsException(ErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 티끌 차감

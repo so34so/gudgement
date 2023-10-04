@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class NotFoundItemException extends RuntimeException {
 
-    private ItemErrorCode errorCode;
+    private ErrorCode errorCode;
 
     @Builder
-    public NotFoundItemException(ItemErrorCode errorCode) {
+    public NotFoundItemException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

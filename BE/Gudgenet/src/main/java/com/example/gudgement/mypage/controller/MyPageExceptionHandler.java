@@ -1,11 +1,10 @@
 package com.example.gudgement.mypage.controller;
 
 
-import com.example.gudgement.member.exception.AuthorizationException;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.EmailLogicException;
-import com.example.gudgement.member.exception.ErrorResponse;
-import com.example.gudgement.mypage.exception.AccountException;
+import com.example.gudgement.exception.AccountException;
+import com.example.gudgement.exception.AuthorizationException;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

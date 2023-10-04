@@ -1,13 +1,10 @@
 package com.example.gudgement.shop.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Base64;
 
 @Getter
 @NoArgsConstructor

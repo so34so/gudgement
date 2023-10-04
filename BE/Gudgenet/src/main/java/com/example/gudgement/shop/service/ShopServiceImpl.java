@@ -1,20 +1,15 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.exception.*;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.progress.service.ProgressService;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
-import com.example.gudgement.shop.entity.Status;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.shop.entity.Price;
-import com.example.gudgement.shop.exception.AlreadyPurchasedException;
-import com.example.gudgement.shop.exception.InsufficientPointsException;
-import com.example.gudgement.shop.exception.ItemErrorCode;
-import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.shop.entity.Status;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import com.example.gudgement.shop.repository.StatusRepository;

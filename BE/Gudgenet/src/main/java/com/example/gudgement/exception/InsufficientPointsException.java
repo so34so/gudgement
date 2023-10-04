@@ -1,4 +1,4 @@
-package com.example.gudgement.shop.exception;
+package com.example.gudgement.exception;
 
 import lombok.Builder;
 import lombok.Getter;

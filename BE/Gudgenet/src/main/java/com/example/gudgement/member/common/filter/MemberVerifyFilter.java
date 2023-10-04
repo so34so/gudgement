@@ -1,15 +1,14 @@
 package com.example.gudgement.member.common.filter;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.dto.request.LoginDto;
 import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

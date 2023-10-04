@@ -1,12 +1,10 @@
 package com.example.gudgement.member.dto.response;
 
 import com.example.gudgement.member.dto.Rate;
-import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

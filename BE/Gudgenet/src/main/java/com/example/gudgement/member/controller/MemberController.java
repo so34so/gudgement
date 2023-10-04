@@ -1,14 +1,13 @@
 package com.example.gudgement.member.controller;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.dto.request.EmailDto;
-import com.example.gudgement.member.dto.request.LoginDto;
 import com.example.gudgement.member.dto.response.MemberResponseDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.service.MailService;
 import com.example.gudgement.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;

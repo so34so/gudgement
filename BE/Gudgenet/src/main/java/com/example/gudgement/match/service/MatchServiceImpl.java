@@ -1,14 +1,14 @@
 package com.example.gudgement.match.service;
 
-import com.example.gudgement.game.exception.BaseErrorException;
-import com.example.gudgement.game.exception.GameErrorCode;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.match.event.MatchRequestEvent;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class MatchServiceImpl implements MatchService {
     public void addUserToGroup(MatchDto matchDto) {
         Optional<Member> user = memberRepository.findByNickname(matchDto.getNickName());
         if (user.get().getTiggle() < matchDto.getTiggle()){
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
         }
         String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
         redisTemplate.opsForSet().add(key, matchDto.getNickName());

@@ -1,11 +1,11 @@
 package com.example.gudgement.shop.entity;
 
+import com.example.gudgement.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import com.example.gudgement.member.entity.Member;
 
 import javax.persistence.*;
 

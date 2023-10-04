@@ -1,4 +1,4 @@
-package com.example.gudgement.shop.exception;
+package com.example.gudgement.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

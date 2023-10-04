@@ -1,17 +1,16 @@
 package com.example.gudgement.game.service;
 
 import com.example.gudgement.card.service.CardService;
-import com.example.gudgement.card.service.CardServiceImpl;
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
+import com.example.gudgement.exception.ItemErrorCode;
+import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.game.dto.*;
-import com.example.gudgement.game.exception.BaseErrorException;
-import com.example.gudgement.game.exception.GameErrorCode;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
-import com.example.gudgement.shop.exception.ItemErrorCode;
-import com.example.gudgement.shop.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -54,7 +56,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         if (otherUser == null) {
-            throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
         }
 
         List<UserTiggleDto> userTiggles = new ArrayList<>();
@@ -63,7 +65,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         for (String userNickName : Arrays.asList(userName, otherUser)) {
             log.info(userNickName + "입니다.");
             Object valueObj = redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
-            if (valueObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+            if (valueObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
 
             Long tiggleValue = Long.parseLong(String.valueOf(valueObj));
 
@@ -73,7 +75,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         Object roundsObj = redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
-        if (roundsObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+        if (roundsObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
 
         int rounds = Integer.parseInt(String.valueOf(roundsObj));
 

@@ -1,20 +1,15 @@
 package com.example.gudgement.shop.controller;
 
-import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.service.ShopService;
-import com.example.gudgement.shop.service.ShopServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "Shop", description = "상점 기능 컨트롤러입니다.")
 @RestController

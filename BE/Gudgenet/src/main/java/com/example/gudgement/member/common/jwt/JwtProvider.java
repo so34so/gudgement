@@ -1,24 +1,24 @@
 package com.example.gudgement.member.common.jwt;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
-import com.example.gudgement.member.exception.ErrorResponse;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.service.MemberService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Component

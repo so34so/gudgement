@@ -1,8 +1,8 @@
 package com.example.gudgement.game.service;
 
-import com.example.gudgement.game.dto.*;
-
-import java.util.Map;
+import com.example.gudgement.game.dto.BettingDto;
+import com.example.gudgement.game.dto.GameRequestDto;
+import com.example.gudgement.game.dto.GameRoundDto;
 
 public interface GameRoundService {
 

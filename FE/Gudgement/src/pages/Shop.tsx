@@ -106,7 +106,7 @@ function Shop({ route }: ShopProps) {
     try {
       const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.Titem[]> = await fetchApi.get(
-        `${API_URL}/shop/type`,
+        `${Config.API_URL}/shop/type`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -4,7 +4,6 @@ import Bettingsawtooth from "../assets/images/bettingsawtooth.png";
 import GiveUpButton from "../assets/images/giveup.png";
 import BettingButton from "../assets/images/betting.png";
 import axios from "axios";
-import { API_URL } from "@env";
 import {
   View,
   StyleSheet,
@@ -22,6 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Reactotron from "reactotron-react-native";
+import Config from "react-native-config";
 
 const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
 const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
@@ -44,7 +44,7 @@ const BettingMachine = ({
   // 라운드 데이터 요청
   async function postBettingInfo() {
     try {
-      const response = await axios.post(`${API_URL}/game/playRound`, {
+      const response = await axios.post(`${Config.API_URL}/game/playRound`, {
         nickName: myInfoState.nickname,
         otherName: otherName,
         bettingAmount: bettingAmount,

@@ -2,7 +2,7 @@ import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { KAKAO_LOGIN_REST_API_KEY, SERVER_URL } from "@env";
+// import { KAKAO_LOGIN_REST_API_KEY, SERVER_URL } from "@env";
 import axios from "axios";
 import Config from "react-native-config";
 import { getAsyncData, setAsyncData } from "../utils/common";
@@ -18,7 +18,7 @@ function Login() {
   const fetchAccessToken = async (code: string) => {
     try {
       const response = await axios.post<CommonType.TkakaoLogin>(
-        `${SERVER_URL}/?code=${code}`,
+        `${Config.SERVER_URL}/?code=${code}`,
       );
       setShowWebView(false);
       const accessToken = response.data.accessToken;
@@ -74,7 +74,7 @@ function Login() {
       <WebView
         className="flex"
         source={{
-          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${Config.KAKAO_LOGIN_REDIRECT_URI}`,
+          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Config.KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${Config.KAKAO_LOGIN_REDIRECT_URI}`,
         }}
         injectedJavaScript={
           'window.ReactNativeWebView.postMessage("this is message from web");'

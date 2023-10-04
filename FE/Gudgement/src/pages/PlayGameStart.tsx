@@ -16,7 +16,6 @@ import {
   StatusBar,
 } from "react-native";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -32,6 +31,7 @@ import { useQuery } from "react-query";
 import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 type PlayGameStartRouteProp = RouteProp<
   CommonType.RootStackParamList,
@@ -141,12 +141,12 @@ export default function PlayGameStart({
         {/* vs */}
         <Animated.Image
           style={[styles.vs, animatedVsStyle]}
-          source={{ uri: `${IMAGE_URL}/game/vs.png` }}
+          source={{ uri: `${Config.IMAGE_URL}/game/vs.png` }}
         />
         {/* 내 캐릭터 박스 */}
         <Animated.Image
           style={[styles.mycharacterbox, animatedMyStyle]}
-          source={{ uri: `${IMAGE_URL}/game/mybox.png` }}
+          source={{ uri: `${Config.IMAGE_URL}/game/mybox.png` }}
         />
         <Animated.Image
           style={[styles.boxinmycharacter, animatedMyStyle]}
@@ -170,7 +170,7 @@ export default function PlayGameStart({
         {/* 적 캐릭터 박스 */}
         <Animated.Image
           style={[styles.enemybox, animatedEnemyStyle]}
-          source={{ uri: `${IMAGE_URL}/game/enemybox.png` }}
+          source={{ uri: `${Config.IMAGE_URL}/game/enemybox.png` }}
         />
         <Animated.Image
           style={[styles.boxinenemy, animatedEnemyStyle]}

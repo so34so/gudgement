@@ -9,7 +9,6 @@ import {
   Pressable,
 } from "react-native";
 import { AxiosResponse } from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import AccountBox from "../components/AccountBox";
@@ -17,6 +16,7 @@ import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
+import Config from "react-native-config";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -109,7 +109,7 @@ function SettingAccount() {
     <View className="flex w-screen h-screen">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-screen h-screen"
@@ -135,7 +135,7 @@ function SettingAccount() {
                     <View className="bg-darkgray h-fill w-fill rounded-full">
                       <Image
                         source={{
-                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                          uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
                         }}
                         className="h-10 w-10"
                       />

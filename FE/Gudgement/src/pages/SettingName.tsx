@@ -8,13 +8,13 @@ import {
   Image,
 } from "react-native";
 import Reactotron from "reactotron-react-native";
-import { API_URL, IMAGE_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import { getAsyncData } from "../utils/common";
 import CustomModal from "../components/CustomModal";
 import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import NavigationButton from "../components/NavigationButton";
 import fetchApi from "../utils/tokenUtils";
+import Config from "react-native-config";
 
 function SettingName() {
   const [name, setName] = useState("");
@@ -91,7 +91,7 @@ function SettingName() {
       <KeyboardAwareScrollView>
         <ImageBackground
           source={{
-            uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+            uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
           }}
           resizeMode="cover"
           className="flex w-screen h-screen"
@@ -117,7 +117,7 @@ function SettingName() {
                       <View className="bg-darkgray h-fill w-fill rounded-full">
                         <Image
                           source={{
-                            uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                            uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
                           }}
                           className="h-10 w-10"
                         />

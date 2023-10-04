@@ -11,9 +11,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Jilta from "../assets/images/jilta.png";
 import Svg, { Text as SvgText } from "react-native-svg";
-import { IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
+import Config from "react-native-config";
 
 interface Irank {
   rank: number;
@@ -45,7 +45,6 @@ export default function Ranking() {
         return "bg-deepgreen";
     }
   };
-  console.log(IMAGE_URL);
   const { data: user } = useQuery<CommonType.TUser>({
     queryKey: ["fetchUserInfo"],
   });
@@ -96,7 +95,7 @@ export default function Ranking() {
     <SafeAreaView>
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/rankingBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/rankingBackground.png`,
         }}
         resizeMode="cover"
         style={{ opacity: 0.9, backgroundColor: "black" }}

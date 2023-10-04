@@ -6,7 +6,6 @@ import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import {
   View,
   StyleSheet,
@@ -29,6 +28,7 @@ import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
 import Reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 export default function PlayMatchingQueue({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
@@ -92,7 +92,7 @@ export default function PlayMatchingQueue({ route }) {
   // 매칭 수락 함수
   const acceptMatch = async () => {
     try {
-      const response = await axios.post(`${API_URL}/game/accept`, {
+      const response = await axios.post(`${Config.API_URL}/game/accept`, {
         roomNumber: roomNumber,
         nickName: nickName,
       });

@@ -4,7 +4,6 @@ import PingPing from "../assets/images/pingping.png";
 import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { API_URL } from "@env";
 import GameUi from "../components/GameUi";
 import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
@@ -17,7 +16,6 @@ import {
   StatusBar,
 } from "react-native";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -33,6 +31,7 @@ import { useQuery } from "react-query";
 import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 type PlayGameStartRouteProp = RouteProp<
   CommonType.RootStackParamList,
@@ -63,10 +62,13 @@ export default function PlayGameProgress({
   // 라운드 데이터 요청
   async function postRoundStart() {
     try {
-      const response = await axios.post(`${API_URL}/game/gameroundinfo`, {
-        roomNumber: roomNumber,
-        nickName: nickName,
-      });
+      const response = await axios.post(
+        `${Config.API_URL}/game/gameroundinfo`,
+        {
+          roomNumber: roomNumber,
+          nickName: nickName,
+        },
+      );
       Reactotron.log!("라운드시작!", response.data);
       setRoundInfo(response.data);
       setIsLoading(false);

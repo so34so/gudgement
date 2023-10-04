@@ -1,6 +1,6 @@
 import { View, Text, Image } from "react-native";
 import { screenWidth } from "../utils/common";
-import { IMAGE_URL } from "@env";
+import Config from "react-native-config";
 interface PointHeaderProps {
   tiggle: number | undefined;
   level: number | undefined;
@@ -20,7 +20,7 @@ function PointHeader({ tiggle, level }: PointHeaderProps) {
       <View className="flex flex-row items-center justify-center space-x-2 w-36 bg-white border-[3px] h-[42.5px] border-black">
         <Image
           source={{
-            uri: `${IMAGE_URL}/asset/tiggleIcon.png`,
+            uri: `${Config.IMAGE_URL}/asset/tiggleIcon.png`,
           }}
           className="h-8 w-8"
         />
@@ -34,7 +34,7 @@ function PointHeader({ tiggle, level }: PointHeaderProps) {
       <View className="flex flex-row items-center justify-center w-24 bg-white border-[3px] h-[42.5px] border-black rounded-r-[6px]">
         <Image
           source={{
-            uri: `${IMAGE_URL}/asset/levelIcon.png`,
+            uri: `${Config.IMAGE_URL}/asset/levelIcon.png`,
           }}
           className="w-10 h-10 left-1"
         />

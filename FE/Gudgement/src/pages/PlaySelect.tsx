@@ -5,7 +5,6 @@ import Reactotron from "reactotron-react-native";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
 import axios from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import {
   RefObject,
   useCallback,
@@ -28,7 +27,8 @@ import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
 import { useQuery } from "@tanstack/react-query";
 import { getAccessToken } from "../utils/common";
-console.log(API_URL);
+import Config from "react-native-config";
+
 function PlaySelect() {
   // 유저 정보 가져오기
   const { data: userInfo } = useQuery<CommonType.TUser>({
@@ -56,7 +56,7 @@ function PlaySelect() {
   async function postMatchStart() {
     try {
       const accessToken = await getAccessToken();
-      const response = await axios.post(`${API_URL}/match/addUser`, {
+      const response = await axios.post(`${Config.API_URL}/match/addUser`, {
         // params: {
         memberId: MEMBER_ID,
         nickName: MEMBER_NickName,

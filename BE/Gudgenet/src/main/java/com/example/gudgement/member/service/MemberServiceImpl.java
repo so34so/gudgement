@@ -381,7 +381,6 @@ public class MemberServiceImpl implements MemberService {
         });
 
         chartRepository.deleteAllByMemberId(member);
-        log.info("memberId : {}", member.toString());
         memberRepository.deleteByMemberId(member.getMemberId());
     }
 }

@@ -26,7 +26,7 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
-    private final String[] whiteUriList = new String[] {};
+    private final String[] whiteUriList = new String[] {"/api/member/delete/**"};
     private final JwtProvider jwtProvider;
 
     @Override
@@ -34,7 +34,7 @@ public class JwtAccessAuthFilter extends OncePerRequestFilter {
         log.info("Filter : JwtAccessFilter");
         String uri = request.getRequestURI();
         if (uri.startsWith("/api")) {
-            if(whiteListCheck(request.getRequestURI())){
+            if(whiteListCheck(uri)){
                 filterChain.doFilter(request, response);
                 return;
             }

@@ -2,6 +2,7 @@ package com.example.gudgement.member.repository;
 
 import com.example.gudgement.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -17,4 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     
     String findNicknameByMemberId(Long memberId);
     void deleteByMemberId(Long memberId);
+
+    @Query(value = "SELECT COUNT(*) + 1 FROM member WHERE exp > (SELECT exp FROM member WHERE member_id = :memberId)", nativeQuery = true)
+    int findRankByMemberId(Long memberId);
 }

@@ -8,6 +8,7 @@ import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.mypage.dto.ChartDataDto;
 import com.example.gudgement.mypage.service.MyPageService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +61,14 @@ public class MyPageController {
         log.info("날아온 토큰 : " + header);
         String bearer = header.substring(7);
         log.info("Bearer 제거 : " + bearer);
-        Long memberId = (Long) jwtProvider.getClaims(bearer).get("id");
+        
+        Long memberId;
+        try {
+            memberId = (Long) jwtProvider.getClaims(bearer).get("id");
+        } catch (ExpiredJwtException e) {
+            throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+        }
+
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);

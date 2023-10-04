@@ -2,17 +2,12 @@ import { CommonType } from "../types/CommonType";
 import { useState } from "react";
 import { Image, View, Text, Pressable } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import {
-  KAKAO_LOGIN_REST_API_KEY,
-  KAKAO_LOGIN_REDIRECT_URI,
-  SERVER_URL,
-  IMAGE_URL,
-} from "@env";
+import { KAKAO_LOGIN_REST_API_KEY, SERVER_URL } from "@env";
 import axios from "axios";
+import Config from "react-native-config";
 import { getAsyncData, setAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
-
 function Login() {
   const [showWebView, setShowWebView] = useState(false);
 
@@ -79,7 +74,7 @@ function Login() {
       <WebView
         className="flex"
         source={{
-          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
+          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${Config.KAKAO_LOGIN_REDIRECT_URI}`,
         }}
         injectedJavaScript={
           'window.ReactNativeWebView.postMessage("this is message from web");'
@@ -100,7 +95,7 @@ function Login() {
         className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
       >
         <Image
-          source={{ uri: `${IMAGE_URL}/asset/kakaoLogo.png` }}
+          source={{ uri: `${Config.IMAGE_URL}/asset/kakaoLogo.png` }}
           className="h-8 w-9 mr-6"
         />
         <Text className="text-center text-darkgray text-md font-PretendardExtraBold">

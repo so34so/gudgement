@@ -3,6 +3,7 @@ import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,5 +23,6 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
 
     List<Inventory> findByMemberAndEquipped(Member member, boolean b);
 
-
+    @Query("SELECT i FROM Inventory i JOIN i.itemId item WHERE i.member = :member AND i.equipped = true AND item.type = 'character'")
+    Optional<Inventory> findEquippedCharacterItemByMember(Member member);
 }

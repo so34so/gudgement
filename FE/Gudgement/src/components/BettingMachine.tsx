@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Bettingmachine from "../assets/images/bettingmachine.png";
 import Bettingsawtooth from "../assets/images/bettingsawtooth.png";
 import GiveUpButton from "../assets/images/giveup.png";
@@ -21,6 +21,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Reactotron from "reactotron-react-native";
+import { useWebSocket } from "../components/WebSocketContext";
+import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
 const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
@@ -41,6 +43,23 @@ const BettingMachine = ({
 }) => {
   // 버튼 활성화 상태 변수 추가
   const [isButtonActive, setIsButtonActive] = useState(true);
+  const websocketClient = useWebSocket();
+
+  useEffect(() => {
+    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
+    if (websocketClient) {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
+          // navigation.navigate("PlayGameStart", {
+          //   roomNumber: roomNumber,
+          // });
+        },
+      );
+    }
+  }, [websocketClient]);
+
   // 라운드 데이터 요청
   async function postBettingInfo() {
     try {

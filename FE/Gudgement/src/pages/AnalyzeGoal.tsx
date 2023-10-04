@@ -1,5 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -9,18 +7,29 @@ import {
   Image,
   TextInput,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import TagBoxSmall from "../components/TagBoxSmall";
+import reactotron from "reactotron-react-native";
+
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import reactotron from "reactotron-react-native";
+import TagBoxSmall from "../components/TagBoxSmall";
+
 import fetchApi from "../utils/tokenUtils";
 import { Config } from "react-native-config";
 
+import { CommonType } from "../types/CommonType";
+
 function AnalyzeGoal() {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [goal, setGoal] = useState("");
+
   const {
     data: userData,
-    error: fetchError,
     isLoading,
     refetch,
   } = useQuery<CommonType.Tuser>({
@@ -28,23 +37,11 @@ function AnalyzeGoal() {
     enabled: false,
   });
 
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState("");
-  const [goal, setGoal] = useState("");
-  const [isGoal, setIsGoal] = useState(userData?.monthOverconsumption);
-
-  const currentDate = new Date();
-
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  useEffect(() => {
+    if (userData?.monthOverconsumption) {
+      setGoal(userData.monthOverconsumption.toLocaleString("ko-KR") + " 원");
+    }
+  }, [userData?.monthOverconsumption]);
 
   useEffect(() => {
     refetch();
@@ -57,11 +54,18 @@ function AnalyzeGoal() {
       </View>
     );
   }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
-  }
+
+  const isGoal = userData?.monthOverconsumption;
+
+  const currentDate = new Date();
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleInputChange = (value: string) => {
     const numValue = parseInt(value.replace(/,/g, ""), 10);
@@ -180,6 +184,7 @@ function AnalyzeGoal() {
                   placeholderTextColor="darkgray"
                   keyboardType="numeric"
                   className="h-[58px] w-full p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
+                  editable={isGoal !== userData?.monthOverconsumption}
                 />
               </View>
               <View className="w-full px-2">
@@ -189,15 +194,15 @@ function AnalyzeGoal() {
                   </Text>
                 ) : (
                   <Text className="text-sky text-xs font-PretendardExtraBold pb-4">
-                    이미 {currentDate.getFullYear()}년{" "}
-                    {currentDate.getMonth() + 1}월 목표 금액이 설정되었습니다.
+                    {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+                    목표 금액이 이미 설정되었습니다.
                   </Text>
                 )}
               </View>
             </View>
           </View>
         </View>
-        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-4 flex justify-end items-center">
           <NavigationButton
             handleFunction={() => handleFetchGoal(goal)}
             text="설정 완료"

@@ -238,7 +238,7 @@ function Analyze(this: unknown) {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <View className="flex flex-row justify-between items-center">
+        <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 추이`}
             img={`${IMAGE_URL}/asset/analysisIcon.png`}
@@ -249,8 +249,8 @@ function Analyze(this: unknown) {
             <AnalysisBox ProgressBarVisible={false} />
           </View>
           <View className="w-full">
-            <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row justify-start items-center m-4 space-x-[1px] bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-white">
+            <View className="flex flex-row justify-between items-center mx-3 my-4">
+              <View className="flex flex-row justify-start items-center bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-lightsky">
                 <ModalDropdown
                   options={yearOptions}
                   onSelect={handleSelectDate("년")}
@@ -330,7 +330,7 @@ function Analyze(this: unknown) {
                   </View>
                 </ModalDropdown>
               </View>
-              <View className="pr-3">
+              <View className="rounded-2xl border-solid border-[3px] border-lightsky">
                 <NavigationButton
                   handleFunction={() => fetchAnalyzeChart()}
                   text="차트 보기"
@@ -341,7 +341,13 @@ function Analyze(this: unknown) {
                 />
               </View>
             </View>
-            <View className="bg-white90 rounded-3xl mx-2 py-4 border-solid border-[2px] border-darkgray70">
+            <View className="bg-white90 rounded-2xl mx-2 py-4 mb-2 border-solid border-[3px] border-sub03">
+              <View className="py-1 mx-4 flex justify-center items-center w-[50%] rounded-lg bg-white50">
+                <Text className="font-PretendardBold text-darkgray text-2xs">
+                  {chartData.year}년 {chartData.month}월 {chartData.week}주차
+                  소비 차트
+                </Text>
+              </View>
               <BarChart
                 data={{
                   labels: chartData.data.labels,
@@ -390,29 +396,23 @@ function Analyze(this: unknown) {
                 flatColor={true}
                 style={{
                   marginVertical: 10,
-                  marginHorizontal: -40,
+                  marginHorizontal: -44,
                 }}
                 yAxisLabel={""}
                 yAxisSuffix={""}
               />
-              <View className="py-1 mx-4 flex justify-center items-center w-[46%] rounded-lg bg-white50 border-solid border-[1px] border-darkgray50">
-                <Text className="font-PretendardBold text-darkgray70 text-3xs">
-                  {chartData.year}년 {chartData.month}월 {chartData.week}주차
-                  소비 차트
-                </Text>
-              </View>
-            </View>
-            <View className="px-4 py-4">
-              <NavigationButton
-                handleFunction={() => handleFetchAnalyze()}
-                text={`${selectedMonth}월 분석`}
-                height="sm"
-                width="md"
-                size="sm"
-                color="green"
-              />
             </View>
           </View>
+        </View>
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center px-3">
+          <NavigationButton
+            handleFunction={() => handleFetchAnalyze()}
+            text={`${selectedMonth}월 분석`}
+            height="lg"
+            width="lg"
+            size="md"
+            color="deepgreen"
+          />
         </View>
       </ImageBackground>
     </View>

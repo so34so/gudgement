@@ -122,6 +122,7 @@ function SettingAccount() {
             <SettingAccountBox
               numberVisible={true}
               selectedAccountId={selectedAccountId}
+              setSelectedAccountId={setSelectedAccountId}
               onSelectId={handleSelectAccountId}
             />
           </View>

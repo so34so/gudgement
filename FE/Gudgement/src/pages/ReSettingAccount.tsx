@@ -1,9 +1,9 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import { View, ImageBackground } from "react-native";
-import { CommonType } from "../types/CommonType";
 import { AxiosResponse } from "axios";
 import { getAsyncData } from "../utils/common";
-import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
@@ -20,6 +20,9 @@ function ReSettingAccount() {
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
     null,
   );
+
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +93,8 @@ function ReSettingAccount() {
          * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
          * 실행시켜서 서버에서 데이터를 받아오도록 했습니다.
          * */
-        queryClient.invalidateQueries(["fetchUserInfo"]);
+        setModalText("주계좌 설정을 완료했습니다.");
+        openModal();
       } catch (error) {
         reactotron.log!("계좌 연동 실패!", error);
       }
@@ -110,7 +114,12 @@ function ReSettingAccount() {
         <CustomModal
           alertText={modalText}
           visible={modalVisible}
-          closeModal={closeModal}
+          closeModal={() => {
+            closeModal();
+            if (modalText === "주계좌 설정을 완료했습니다.") {
+              navigation.goBack();
+            }
+          }}
         />
         <View className="z-10 flex flex-col">
           <View className="py-2 flex flex-row justify-between items-center">
@@ -122,6 +131,7 @@ function ReSettingAccount() {
           <SettingAccountBox
             numberVisible={false}
             selectedAccountId={selectedAccountId}
+            setSelectedAccountId={setSelectedAccountId}
             onSelectId={handleSelectAccountId}
           />
         </View>

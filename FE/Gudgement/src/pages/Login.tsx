@@ -11,7 +11,11 @@ import { getAsyncData, setAsyncData } from "../utils/common";
 import { CommonType } from "../types/CommonType";
 import { queryClient } from "../../queryClient";
 
-function Login() {
+interface LoginProps {
+  setIsLoginLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Login({ setIsLoginLoading }: LoginProps) {
   const [showWebView, setShowWebView] = useState(false);
 
   const handleLogin = () => {
@@ -23,8 +27,6 @@ function Login() {
       const response = await axios.post<CommonType.TkakaoLogin>(
         `${Config.SERVER_URL}/?code=${code}`,
       );
-      setShowWebView(false);
-
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
       const id = response.data.id;
@@ -43,6 +45,7 @@ function Login() {
 
       queryClient.invalidateQueries(["isLoggedIn"]);
       queryClient.invalidateQueries(["fetchUserInfo"]);
+      setIsLoginLoading(true);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }

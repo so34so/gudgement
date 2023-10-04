@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
@@ -22,6 +22,7 @@ import reactotron from "reactotron-react-native";
 import ReSettingAccount from "./src/pages/ReSettingAccount";
 
 function AppInner() {
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   const config: {
     initialRouteName?: keyof CommonType.RootStackParamList;
@@ -78,13 +79,18 @@ function AppInner() {
       SplashScreen.hide();
     }, 100);
   }
-  if (isLoading || !isStale) {
+  useEffect(() => {
+    setIsLoginLoading(false);
+  }, [user]);
+
+  if (isLoading || !isStale || isLoginLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#21e5a9" />
       </View>
     );
   }
+
   return (
     <NavigationContainer
       linking={{
@@ -126,9 +132,22 @@ function AppInner() {
         },
       }}
     >
-      {isLoggedIn && user ? (
+      {isLoggedIn ? (
         <Stack.Navigator>
-          {!(user.email && user.nickname && user.rate) ? (
+          {user?.email && user?.nickname && user?.rate ? (
+            <>
+              <Stack.Screen
+                name="BottomTabNavigator"
+                component={BottomTabNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PlayNavigator"
+                component={PlayNavigator}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
             <>
               <Stack.Screen
                 name="SettingEmail"
@@ -143,19 +162,6 @@ function AppInner() {
               <Stack.Screen
                 name="SettingAccount"
                 component={SettingAccount}
-                options={{ headerShown: false }}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen
-                name="BottomTabNavigator"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PlayNavigator"
-                component={PlayNavigator}
                 options={{ headerShown: false }}
               />
             </>
@@ -190,9 +196,11 @@ function AppInner() {
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="Login"
-            component={Login}
+            // component={Login}
             options={{ headerShown: false }}
-          />
+          >
+            {() => <Login setIsLoginLoading={setIsLoginLoading} />}
+          </Stack.Screen>
         </Stack.Navigator>
       )}
     </NavigationContainer>

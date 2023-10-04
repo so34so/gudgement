@@ -50,7 +50,7 @@ function SettingName() {
     }
     try {
       const response = await fetchApi.post(
-        `${API_URL}/member/valid/nickname?nickname=${nickName}`,
+        `${Config.API_URL}/member/valid/nickname?nickname=${nickName}`,
       );
       Reactotron.log!("닉네임 중복 확인 성공!", response.data);
       if (response.data === true) {
@@ -75,7 +75,7 @@ function SettingName() {
     if (checkName === 2) {
       try {
         const response = await fetchApi.post(
-          `${API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
+          `${Config.API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
         );
         Reactotron.log!("닉네임 등록 성공!", response.data);
         setBottomSheetVisible(true);

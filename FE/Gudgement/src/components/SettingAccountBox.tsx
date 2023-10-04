@@ -2,18 +2,23 @@ import { useEffect, useState } from "react";
 import { View, ScrollView, Text, Image, Pressable } from "react-native";
 import { CommonType } from "../types/CommonType";
 import { AxiosResponse } from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import AccountBox from "../components/AccountBox";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import fetchApi from "../utils/tokenUtils";
+import { Config } from "react-native-config";
 
-function SettingAccountBox({ numberVisible }: { numberVisible: boolean }) {
+function SettingAccountBox({
+  numberVisible,
+  selectedAccountId,
+  onSelectId,
+}: {
+  numberVisible: boolean;
+  selectedAccountId: number | null;
+  onSelectId: (accountId: number) => void;
+}) {
   const [tempEmail, setTempEmail] = useState("");
   const [accounts, setAccounts] = useState<CommonType.Taccount[]>([]);
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
-    null,
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +45,7 @@ function SettingAccountBox({ numberVisible }: { numberVisible: boolean }) {
     reactotron.log!("인증된 이메일", tempEmail);
     try {
       const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
-        `${API_URL}/account/${tempEmail}`,
+        `${Config.API_URL}/account/${tempEmail}`,
       );
       const responseAccount = response.data;
       setAccounts(responseAccount);
@@ -51,7 +56,7 @@ function SettingAccountBox({ numberVisible }: { numberVisible: boolean }) {
   };
 
   const handleSelect = (accountId: number) => {
-    setSelectedAccountId(accountId);
+    onSelectId(accountId); // 부모 컴포넌트의 핸들러 호출하여 선택된 ID 업데이트
     accounts.map(account => {
       if (account.virtualAccountId === accountId) {
         account.selected = !account.selected;
@@ -68,7 +73,7 @@ function SettingAccountBox({ numberVisible }: { numberVisible: boolean }) {
               <View className="bg-darkgray h-fill w-fill rounded-full">
                 <Image
                   source={{
-                    uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                    uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
                   }}
                   className="h-10 w-10"
                 />

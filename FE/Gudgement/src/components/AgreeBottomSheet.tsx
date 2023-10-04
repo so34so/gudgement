@@ -10,12 +10,10 @@ import {
   Dimensions,
   PanResponder,
   Pressable,
-  ImageSourcePropType,
 } from "react-native";
 import NavigationButton from "./NavigationButton";
-import { WithLocalSvg } from "react-native-svg";
-import CheckBoxOn from "../assets/icons/checkBoxOn.svg";
-import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
+import Config from "react-native-config";
+import { SvgUri } from "react-native-svg";
 
 interface BottomSheetProps {
   bottomSheetVisible: boolean;
@@ -73,9 +71,6 @@ function BottomSheet({
       setBottomSheetVisible(false);
     });
   };
-
-  const checkBoxOn: ImageSourcePropType = CheckBoxOn as ImageSourcePropType;
-  const checkBoxOff: ImageSourcePropType = CheckBoxOff as ImageSourcePropType;
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -142,9 +137,17 @@ function BottomSheet({
               </View>
               <Pressable onPress={handleIsAgree}>
                 {isAgree ? (
-                  <WithLocalSvg width={40} height={40} asset={checkBoxOn} />
+                  <SvgUri
+                    uri={`${Config.IMAGE_URL}/asset/checkBoxOn.svg`}
+                    width={40}
+                    height={40}
+                  />
                 ) : (
-                  <WithLocalSvg width={40} height={40} asset={checkBoxOff} />
+                  <SvgUri
+                    uri={`${Config.IMAGE_URL}/asset/checkBoxOff.svg`}
+                    width={40}
+                    height={40}
+                  />
                 )}
               </Pressable>
             </View>

@@ -9,13 +9,12 @@ import {
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
-import { API_URL, IMAGE_URL } from "@env";
-import { getAsyncData } from "../utils/common";
-import axios from "axios";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
 import reactotron from "reactotron-react-native";
+import fetchApi from "../utils/tokenUtils";
+import { Config } from "react-native-config";
 
 function AnalyzeGoal() {
   const {
@@ -87,18 +86,18 @@ function AnalyzeGoal() {
     }
     const numGoal = Number(numValue);
     reactotron.log!(numGoal);
-    const getAccessToken = await getAsyncData<string>("accessToken");
+    // const getAccessToken = await getAsyncData<string>("accessToken");
     try {
-      const response = await axios.put(
-        `${API_URL}/mypage/update/${numGoal}`,
+      const response = await fetchApi.put(
+        `${Config.API_URL}/mypage/update/${numGoal}`,
         {
           monthOverConsumption: numGoal,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${getAccessToken}`,
-          },
-        },
+        // {
+        //   headers: {
+        //     Authorization: `Bearer ${getAccessToken}`,
+        //   },
+        // },
       );
       reactotron.log!("목표 금액 설정 성공!", response);
       setGoal("");
@@ -115,7 +114,7 @@ function AnalyzeGoal() {
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-full h-full"
@@ -129,7 +128,7 @@ function AnalyzeGoal() {
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 목표 금액 설정`}
-            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
 
@@ -141,7 +140,7 @@ function AnalyzeGoal() {
                   <View className="bg-darkgray h-fill w-fill rounded-full">
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/mypageIcon.png`,
+                        uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
                       }}
                       className="h-10 w-10"
                     />

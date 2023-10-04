@@ -164,8 +164,10 @@ public class GameRoundServiceImpl implements GameRoundService {
             redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
             redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
 
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, myResult);
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, otherResult);
+            
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getNickName(), myResult);
+            
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber + bettingDto.getOtherName(), otherResult);
 
             /* Reset status for next round */
             resetStatusForNextRound(roomNumber);
@@ -301,12 +303,12 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         for (Object keyObject : membersKeys) {
             String key = (String) keyObject;
-            if (!key.endsWith(":status")) {  // Ignore keys that are not related to status.
-                continue;
-            }
 
-            // Update the acceptance status in Redis to 'play'.
-            redisTemplate.opsForHash().put(roomNumber, key, "play");
+            if (key.endsWith(":rounds")) {  // If it's a rounds key, increment its value.
+                redisTemplate.opsForHash().increment(roomNumber, key, 1);
+            } else if (key.endsWith(":status")) {  // If it's a status key, update its value to 'play'.
+                redisTemplate.opsForHash().put(roomNumber, key, "play");
+            }
         }
     }
 }

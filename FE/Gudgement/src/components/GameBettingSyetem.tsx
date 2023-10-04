@@ -1,61 +1,59 @@
 import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
-
+import { CommonType } from "../types/CommonType";
 import {
-  ImageBackground,
   Image,
   ImageSourcePropType,
-  Pressable,
   Text,
   View,
   StyleSheet,
 } from "react-native";
-
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 const myCards: ImageSourcePropType = EnemyCard as ImageSourcePropType;
-const enemyCards: CommonType.TplayCard[] = [
-  {
-    cost: "52,350",
-    number: 3,
-    title: "이마트",
-  },
-  {
-    cost: "80000",
-    number: 3,
-    title: "이마트2",
-  },
-  {
-    cost: "20000",
-    number: 3,
-    title: "이마트3",
-  },
-];
 
-export default function GameBettingSyetem() {
+export default function GameBettingSyetem({
+  roundInfo,
+  myInfoState,
+  enemyInfoState,
+  roomNumber,
+}: {
+  roundInfo: object;
+  myInfoState: object;
+  enemyInfoState: object;
+  roomNumber: string;
+}) {
+  console.log(roundInfo.card);
+  const enemyCards: CommonType.TplayCard[] = roundInfo.card;
   return (
     <View style={styles.bettingwrapper}>
       <Text
         className="rounded-lg text-white text-[60px] font-PretendardBold"
         style={styles.enemycardnumber}
       >
-        {enemyCards[0].number}
+        {enemyCards.order}
       </Text>
       <View style={styles.enemycardtext}>
         <Text
           className="rounded-lg text-white text-[24px] font-PretendardBold"
           style={styles.enemycardtitle}
         >
-          {enemyCards[0].title}
+          {enemyCards.name}
         </Text>
         <Text
           className="rounded-lg text-white text-[24px] font-PretendardBold"
           style={styles.enemycardtitle}
         >
-          {enemyCards[0].cost}
+          {enemyCards.amount}
         </Text>
       </View>
       <Image style={styles.enemycard} source={enemyCard} />
-      <BettingMachine />
+      <BettingMachine
+        roomNumber={roomNumber}
+        otherName={enemyInfoState.nickname}
+        roundInfo={roundInfo}
+        myInfoState={myInfoState}
+        maxBettingAmount={myInfoState.tiggle / 10}
+      />
     </View>
   );
 }

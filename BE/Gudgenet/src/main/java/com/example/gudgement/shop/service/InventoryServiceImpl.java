@@ -65,7 +65,8 @@ public class InventoryServiceImpl implements InventoryService{
                             .itemName(inventory.getItemId().getItemName())
                             .itemContent(inventory.getItemId().getItemContent())
                             .itemEffect(inventory.getItemId().getItemEffect())
-                            .typeId(typeId.getAndIncrement())
+                            .type(inventory.getItemId().getType())
+                            .subType(inventory.getItemId().getSubtype())
                             .image(IMAGE_PATH + inventory.getItemId().getType() + "/" + inventory.getItemId().getImage())
                             .isEquipped(inventory.isEquipped());
 

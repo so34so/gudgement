@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Bettingmachine from "../assets/images/bettingmachine.png";
 import Bettingsawtooth from "../assets/images/bettingsawtooth.png";
 import GiveUpButton from "../assets/images/giveup.png";
 import BettingButton from "../assets/images/betting.png";
-
+import axios from "axios";
 import {
   View,
   StyleSheet,
   Image,
+  TouchableOpacity,
   ImageSourcePropType,
   Text,
 } from "react-native";
@@ -19,10 +20,68 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
+import Reactotron from "reactotron-react-native";
+import { useWebSocket } from "../components/WebSocketContext";
+import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
+
 const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
 const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
 
-const BettingMachine = () => {
+const BettingMachine = ({
+  maxBettingAmount,
+  roundInfo,
+  myInfoState,
+  otherName,
+  roomNumber,
+}: {
+  maxBettingAmount: number;
+  roundInfo: object;
+  myInfoState: object;
+  otherName: string;
+  roomNumber: string;
+}) => {
+  // 버튼 활성화 상태 변수 추가
+  const [isButtonActive, setIsButtonActive] = useState(true);
+  const websocketClient = useWebSocket();
+
+  useEffect(() => {
+    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
+    if (websocketClient) {
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
+          // navigation.navigate("PlayGameStart", {
+          //   roomNumber: roomNumber,
+          // });
+        },
+      );
+    }
+  }, [websocketClient]);
+
+  // 라운드 데이터 요청
+  async function postBettingInfo() {
+    try {
+      const response = await axios.post(`${Config.API_URL}/game/playRound`, {
+        nickName: myInfoState.nickname,
+        otherName: otherName,
+        bettingAmount: bettingAmount,
+        rounds: roundInfo.rounds,
+        cardOrder: roundInfo.card.order,
+        roomNumber: roomNumber,
+      });
+      Reactotron.log!("베팅완료!", response.data);
+      setIsButtonActive(false);
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
+  console.log("베팅머신메시지", roundInfo);
+  console.log("베팅머신메시지", myInfoState);
+
+  console.log(maxBettingAmount);
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =
@@ -40,14 +99,23 @@ const BettingMachine = () => {
       context: { startY: number },
     ) => {
       const newYCoord = context.startY + event.translationY;
-      const newBettingAmount = Math.max(0, Math.min(newYCoord / 6, 1));
+
+      // 움직일 때마다 1씩 변하도록 변경
+      let newBettingAmount = Math.floor(newYCoord / 6); // Math.round 대신 Math.floor 사용
+
+      // 베팅 가능한 최대량으로 제한합니다.
+      newBettingAmount = Math.max(
+        0,
+        Math.min(newBettingAmount, maxBettingAmount),
+      );
+
       runOnJS(setBettingAmount)(newBettingAmount);
     },
     onEnd: () => {},
   });
 
   const translateY = useSharedValue(0);
-  translateY.value = bettingAmount * 6; // translateY 값을 베팅 숫자에 연동
+  translateY.value = bettingAmount * 0.06; // translateY 값을 베팅 숫자에 연동
 
   const animatedMachineStyle = useAnimatedStyle(() => {
     return {
@@ -56,25 +124,43 @@ const BettingMachine = () => {
   });
 
   return (
-    <View className="items-center" style={styles.bettingMachine}>
-      <View style={styles.machineContainer}>
-        <Image source={bettingMachine} style={styles.machineImage} />
-        <PanGestureHandler onGestureEvent={onGestureEvent}>
-          <Animated.View style={[styles.bettingSawtooth, animatedMachineStyle]}>
-            <Image source={bettingSawtooth} style={styles.sawtoothImage} />
-          </Animated.View>
-        </PanGestureHandler>
-      </View>
-      <Text
-        className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
-        style={styles.bettingAmountText}
-      >
-        {Math.round(bettingAmount * 60)}개
-      </Text>
-      <View style={styles.buttonContainer}>
-        <Image className="w-[94] h-[41]" source={bettingButton} />
-        <Image className="w-[94] h-[41]" source={giveUpButton} />
-      </View>
+    <View>
+      {/* isButtonActive 값에 따라 전체 영역을 조건부로 렌더링 */}
+      {isButtonActive ? (
+        <View className="items-center" style={styles.bettingMachine}>
+          <View style={styles.machineContainer}>
+            <Image source={bettingMachine} style={styles.machineImage} />
+            <PanGestureHandler onGestureEvent={onGestureEvent}>
+              <Animated.View
+                style={[styles.bettingSawtooth, animatedMachineStyle]}
+              >
+                <Image source={bettingSawtooth} style={styles.sawtoothImage} />
+              </Animated.View>
+            </PanGestureHandler>
+          </View>
+          <Text
+            className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
+            style={styles.bettingAmountText}
+          >
+            {Math.round(bettingAmount)}개
+          </Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={postBettingInfo}>
+              <Image className="w-[94] h-[41]" source={bettingButton} />
+            </TouchableOpacity>
+            <Image className="w-[94] h-[41]" source={giveUpButton} />
+          </View>
+        </View>
+      ) : (
+        <View className="items-center" style={styles.bettingMachine}>
+          <Text
+            className="rounded-lg text-white text-[28px] font-PretendardExtraBold"
+            style={styles.bettingwaittext}
+          >
+            상대방의 베팅을 기다리는 중...
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -113,6 +199,15 @@ const styles = StyleSheet.create({
   bettingAmountText: {
     bottom: 52,
     right: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
+    textShadowRadius: 8, // 섀도우 반경 (두께)
+  },
+  bettingwaittext: {
+    width: 500,
+    height: 500,
+    bottom: 52,
+    right: "-70%",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
     textShadowRadius: 8, // 섀도우 반경 (두께)

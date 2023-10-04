@@ -3,7 +3,7 @@ import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { WEBSOCKET_URL } from "@env";
+import axios from "axios";
 import GameUi from "../components/GameUi";
 import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
@@ -16,7 +16,6 @@ import {
   StatusBar,
 } from "react-native";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
@@ -32,6 +31,7 @@ import { useQuery } from "react-query";
 import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 type PlayGameStartRouteProp = RouteProp<
   CommonType.RootStackParamList,
@@ -46,18 +46,44 @@ export default function PlayGameProgress({
   const { roomNumber, nickName, myInfoState, enemyInfoState } = route.params; // 추가
   const myData = queryClient.getQueryData(["myGameinfo"]);
   const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
-
+  console.log("게임진행내정보", myInfoState.tiggle);
   const websocketClient = useWebSocket();
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+  const [roundInfo, setRoundInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 애니메이션 관련 변수
   const image1PositionX = useSharedValue(0);
   const image2PositionX = useSharedValue(0);
   const vsOpacity = useSharedValue(0);
+
+  // 라운드 데이터 요청
+  async function postRoundStart() {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/game/gameroundinfo`,
+        {
+          roomNumber: roomNumber,
+          nickName: nickName,
+        },
+      );
+      Reactotron.log!("라운드시작!", response.data);
+      setRoundInfo(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
+
   // const queryClient = useQueryClient();
-  useEffect(() => {}, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
+  useEffect(() => {
+    postRoundStart();
+  }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
   // useEffect(() => {
   //   StatusBar.setHidden(true);
@@ -94,6 +120,10 @@ export default function PlayGameProgress({
   const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
   const snake: ImageSourcePropType = Snake as ImageSourcePropType;
 
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -102,19 +132,13 @@ export default function PlayGameProgress({
         className="flex-1"
       >
         <GameUi />
-
-        <GameBettingSyetem />
-
-        {/* vs */}
-        <Animated.Image
-          style={[styles.vs, animatedVsStyle]}
-          source={{ uri: `${IMAGE_URL}/game/vs.png` }}
+        <GameBettingSyetem
+          enemyInfoState={enemyInfoState}
+          myInfoState={myInfoState}
+          roundInfo={roundInfo}
+          roomNumber={roomNumber}
         />
-        {/* 내 캐릭터 박스 */}
-        <Animated.Image
-          style={[styles.mycharacterbox, animatedMyStyle]}
-          source={{ uri: `${IMAGE_URL}/game/mybox.png` }}
-        />
+
         <Animated.Image
           style={[styles.boxinmycharacter, animatedMyStyle]}
           source={pingping}
@@ -134,11 +158,6 @@ export default function PlayGameProgress({
           NICKNAME
         </Animated.Text>
 
-        {/* 적 캐릭터 박스 */}
-        <Animated.Image
-          style={[styles.enemybox, animatedEnemyStyle]}
-          source={{ uri: `${IMAGE_URL}/game/enemybox.png` }}
-        />
         <Animated.Image
           style={[styles.boxinenemy, animatedEnemyStyle]}
           source={snake}

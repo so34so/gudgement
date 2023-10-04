@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import PointHeader from "../components/PointHeader";
 import { useEffect, useState } from "react";
-import { API_URL, IMAGE_URL } from "@env";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
 import {
@@ -19,6 +18,7 @@ import {
   screenWidth,
 } from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
+import Config from "react-native-config";
 
 /**
  * percent: 유저가 설정한 소비내역 대비 얼마만큼 썼는지를 퍼센테이지로 서버한테 달라고 요청해야 함
@@ -28,8 +28,6 @@ import AnalysisBox from "../components/AnalysisBox";
  * 위험, 안정 기준: 설정한 소비내역 대비 70%(0.7)보다 더 많이 쓴 경우엔 위험,
  *  50% ~ 70%는 안정, 그 이하는 절약으로 설정해놓은 상태
  */
-console.log(API_URL);
-console.log(IMAGE_URL);
 
 export default function Home() {
   /**
@@ -88,7 +86,7 @@ export default function Home() {
       <View className="w-full h-full flex justify-start items-center">
         <ImageBackground
           source={{
-            uri: `${IMAGE_URL}/asset/homeBackground.png`,
+            uri: `${Config.IMAGE_URL}/asset/homeBackground.png`,
           }}
           resizeMode="stretch"
           style={{ opacity: 0.8, backgroundColor: "black" }}
@@ -115,7 +113,7 @@ export default function Home() {
         </View>
         <Image
           source={{
-            uri: `${IMAGE_URL}/character/stoat.png`,
+            uri: `${Config.IMAGE_URL}/character/stoat.png`,
           }}
           className="w-32 h-48 z-1"
           style={{

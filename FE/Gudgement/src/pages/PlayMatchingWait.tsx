@@ -32,10 +32,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import { API_URL } from "@env";
 import { useWebSocket } from "../components/WebSocketContext";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
+import Config from "react-native-config";
 
 export default function PlayMatchingWait({ route }) {
   const { memberId, nickName, grade, tiggle, timestamp } = route.params;
@@ -104,7 +104,7 @@ export default function PlayMatchingWait({ route }) {
   // 매칭 취소 함수
   async function postMatchClose() {
     try {
-      const response = await axios.post(`${API_URL}/match/removeUser`, {
+      const response = await axios.post(`${Config.API_URL}/match/removeUser`, {
         memberId: memberId,
         nickName: nickName,
         grade: grade,

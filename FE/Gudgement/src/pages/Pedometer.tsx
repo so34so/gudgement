@@ -10,13 +10,13 @@ import {
 import { ProgressChart } from "react-native-chart-kit";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
-import { IMAGE_URL } from "@env";
 import { textShadow } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
 import BasicBox from "../components/BasicBox";
 import CustomModal from "../components/CustomModal";
 import reactotron from "reactotron-react-native";
+import Config from "react-native-config";
 
 function MyPage(this: unknown) {
   const {
@@ -28,6 +28,9 @@ function MyPage(this: unknown) {
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
 
   useEffect(() => {
     refetch();
@@ -45,9 +48,6 @@ function MyPage(this: unknown) {
   } else {
     reactotron.log!("홈 사용자 정보", userData);
   }
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState("");
 
   const openModal = () => {
     setModalVisible(true);
@@ -67,7 +67,7 @@ function MyPage(this: unknown) {
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-full h-full"
@@ -78,15 +78,17 @@ function MyPage(this: unknown) {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <TagBoxSmall
-          text={"만보 걷기 챌린지"}
-          img={`${IMAGE_URL}/asset/analysisIcon.png`}
-        />
+        <View className="py-2 flex flex-row justify-between items-center">
+          <TagBoxSmall
+            text={"만보 걷기 챌린지"}
+            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+          />
+        </View>
         <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">
           <View className="ml-8 mt-4">
             <Image
               source={{
-                uri: `${IMAGE_URL}/asset/dogezaPenguin.png`,
+                uri: `${Config.IMAGE_URL}/asset/dogezaPenguin.png`,
               }}
               className="w-fill h-[100px] mb-4"
             />

@@ -6,7 +6,6 @@ import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import {
   View,
   StyleSheet,
@@ -26,12 +25,12 @@ import Animated, {
 } from "react-native-reanimated";
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
-import { WEBSOCKET_URL } from "@env";
 import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
 import { useQueryClient } from "react-query";
 import { useQuery } from "react-query";
 import { queryClient } from "../../queryClient";
+import Config from "react-native-config";
 
 export default function PlayMatchingQueueWait({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
@@ -42,9 +41,6 @@ export default function PlayMatchingQueueWait({ route }) {
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
-  const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
-  const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
-  const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -57,8 +53,8 @@ export default function PlayMatchingQueueWait({ route }) {
         const userInfoDtos = JSON.parse(
           messageOutput.body,
         ) as CommonType.TGameUserInfoDto;
-        const myInfo = userInfoDtos[0] as CommonType.TenemyGameinfo;
-        const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo; // Cast to the correct type
+        const myInfo = userInfoDtos[1] as CommonType.TmyGameinfo;
+        const enemyInfo = userInfoDtos[0] as CommonType.TenemyGameinfo;
         console.log("큐 웨이트 내 정보:", myInfo);
         console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
         console.log("큐 웨이트 정보", enemyInfo);
@@ -130,10 +126,6 @@ export default function PlayMatchingQueueWait({ route }) {
         <View className="flex w-full h-full bg-black opacity-70" />
 
         <Image className="opacity-70" style={styles.bluFin} source={blueFin} />
-
-        <View style={styles.queuebox}>
-          <Image style={styles.queuebox} source={queueBox} />
-        </View>
       </ImageBackground>
     </View>
   );

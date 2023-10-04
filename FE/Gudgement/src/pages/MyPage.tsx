@@ -4,10 +4,10 @@ import { useEffect } from "react";
 import { View, ImageBackground, ActivityIndicator } from "react-native";
 
 import { useQuery } from "@tanstack/react-query";
-import { IMAGE_URL } from "@env";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
 import reactotron from "reactotron-react-native";
+import Config from "react-native-config";
 
 function MyPage(this: unknown) {
   const {
@@ -48,7 +48,7 @@ function MyPage(this: unknown) {
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-full h-full"
@@ -56,11 +56,11 @@ function MyPage(this: unknown) {
         <TagBoxLarge
           text01={"내 정보"}
           text02={userData?.nickname ? userData?.nickname : "옥계공주"}
-          img={`${IMAGE_URL}/asset/mypageIcon.png`}
+          img={`${Config.IMAGE_URL}/asset/mypageIcon.png`}
         />
         <View className="flex flex-col w-full h-full justify-evenly pb-10">
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Analyze")}
                 text="    소비 분석    "
@@ -70,7 +70,7 @@ function MyPage(this: unknown) {
                 color="bluesky"
               />
             </View>
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("AnalyzeGoal")}
                 text="소비 목표 설정"
@@ -82,7 +82,7 @@ function MyPage(this: unknown) {
             </View>
           </View>
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Pedometer")}
                 text="  만보 챌린지  "
@@ -92,9 +92,9 @@ function MyPage(this: unknown) {
                 color="bluesky"
               />
             </View>
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
-                handleFunction={() => handleMoveScreen("SettingAccount")}
+                handleFunction={() => handleMoveScreen("ReSettingAccount")}
                 text="  주계좌 설정  "
                 height="sm"
                 width="sm"

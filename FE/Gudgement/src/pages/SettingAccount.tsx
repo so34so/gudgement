@@ -1,18 +1,9 @@
 import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  ImageBackground,
-  Image,
-  Pressable,
-} from "react-native";
+import { View, Text, ImageBackground } from "react-native";
 import { AxiosResponse } from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import AccountBox from "../components/AccountBox";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
@@ -69,15 +60,6 @@ function SettingAccount() {
     setModalVisible(false);
   };
 
-  const handleSelect = (accountId: number) => {
-    setSelectedAccountId(accountId);
-    accounts.map(account => {
-      if (account.virtualAccountId === accountId) {
-        account.selected = !account.selected;
-      }
-    });
-  };
-
   const submitSelect = async () => {
     reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
@@ -109,7 +91,7 @@ function SettingAccount() {
     <View className="flex w-screen h-screen">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-screen h-screen"

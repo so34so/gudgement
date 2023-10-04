@@ -18,9 +18,9 @@ import PlayNavigator from "../navigation/PlayNavigator";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import PlayBackground from "../assets/images/playBackground.png";
 import Fin from "../assets/images/finfinee.png";
-import { API_URL, IMAGE_URL } from "@env";
 import { CommonType } from "../types/CommonType";
-console.log(IMAGE_URL);
+import Config from "react-native-config";
+
 function Play() {
   const playBackground: ImageSourcePropType =
     PlayBackground as ImageSourcePropType;
@@ -53,11 +53,10 @@ function Play() {
             <Image
               className="justify-center top-[150] flex-2 h-[350] w-[450]"
               source={{
-                uri: `${IMAGE_URL}/asset/flame.gif`,
+                uri: `${Config.IMAGE_URL}/asset/flame.gif`,
               }}
             />
           </Animated.View>
-
           {/* <FastImage
                 source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
                 style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.

@@ -16,13 +16,12 @@ import { AxiosResponse } from "axios";
 import fetchApi from "../utils/tokenUtils";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
-import { API_URL, IMAGE_URL } from "@env";
-import { getAsyncData } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import AnalysisBox from "../components/AnalysisBox";
 import reactotron from "reactotron-react-native";
+import { Config } from "react-native-config";
 
 function Analyze(this: unknown) {
   const {
@@ -144,17 +143,11 @@ function Analyze(this: unknown) {
       return;
     }
     reactotron.log!("날짜: ", selectedYear, selectedMonth, selectedDay);
-    const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
         await fetchApi.post(
-          `${API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
+          `${Config.API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
-          {
-            headers: {
-              Authorization: `Bearer ${getAccessToken}`,
-            },
-          },
         );
       reactotron.log!("fetchAnalyzeChart", response.data);
       setChartData(response.data);
@@ -227,7 +220,7 @@ function Analyze(this: unknown) {
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-full h-full"
@@ -241,7 +234,7 @@ function Analyze(this: unknown) {
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 추이`}
-            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
         <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-4 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
@@ -271,7 +264,7 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />
@@ -297,7 +290,7 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />
@@ -323,7 +316,7 @@ function Analyze(this: unknown) {
                     </Text>
                     <Image
                       source={{
-                        uri: `${IMAGE_URL}/asset/dropdownArrow.png`,
+                        uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
                       className="h-[9px] w-[11px] mr-1"
                     />

@@ -81,7 +81,7 @@ function MyPage(this: unknown) {
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={"만보 걷기 챌린지"}
-            img={`${IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
         <View className="mb-10 flex flex-row justify-center items-center w-fill h-fill m-6 rounded-3xl bg-lightsky60 border-solid border-[2px] border-darkgray">

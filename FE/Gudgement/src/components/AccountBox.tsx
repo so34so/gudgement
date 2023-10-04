@@ -6,10 +6,10 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import { WithLocalSvg } from "react-native-svg";
 import ShinhanLogo from "../assets/images/shinhanLogo.png";
-import CheckBoxOn from "../assets/icons/checkBoxOn.svg";
-import CheckBoxOff from "../assets/icons/checkBoxOff.svg";
+import Config from "react-native-config";
+import { SvgUri } from "react-native-svg";
+import reactotron from "reactotron-react-native";
 
 interface AccountBoxProps {
   account: CommonType.Taccount;
@@ -18,13 +18,12 @@ interface AccountBoxProps {
 }
 
 function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
-  const checkBoxOn: ImageSourcePropType = CheckBoxOn as ImageSourcePropType;
-  const checkBoxOff: ImageSourcePropType = CheckBoxOff as ImageSourcePropType;
   const shinhanLogo: ImageSourcePropType = ShinhanLogo as ImageSourcePropType;
 
   const handleSelect = () => {
     if (account.virtualAccountId !== undefined) {
       onSelect(account.virtualAccountId);
+      reactotron.log!(account.virtualAccountId);
     }
   };
 
@@ -62,9 +61,17 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
       </View>
       <Pressable onPress={() => handleSelect()}>
         {isSelected ? (
-          <WithLocalSvg width={40} height={40} asset={checkBoxOn} />
+          <SvgUri
+            uri={`${Config.IMAGE_URL}/asset/checkBoxOn.svg`}
+            width={40}
+            height={40}
+          />
         ) : (
-          <WithLocalSvg width={40} height={40} asset={checkBoxOff} />
+          <SvgUri
+            uri={`${Config.IMAGE_URL}/asset/checkBoxOff.svg`}
+            width={40}
+            height={40}
+          />
         )}
       </Pressable>
     </View>

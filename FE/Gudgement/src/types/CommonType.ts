@@ -48,6 +48,7 @@ export declare module CommonType {
     Analyze: undefined;
     AnalyzeGoal: undefined;
     AnalyzeDetail: undefined;
+    ReSettingAccount: undefined;
 
     /**
      * Login child Type
@@ -156,8 +157,9 @@ export declare module CommonType {
     exp: number;
     level: number;
     pedometer: number;
+    monthOverconsumption: number;
     rate: {
-      payment: number;
+      totalAmount: number;
       rate: number;
       balance: number;
     };

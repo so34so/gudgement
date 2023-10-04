@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class AlreadyPurchasedException extends RuntimeException {
-    private ItemErrorCode errorCode;
+    private ErrorCode errorCode;
 
     @Builder
-    public AlreadyPurchasedException(ItemErrorCode errorCode) {
+    public AlreadyPurchasedException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

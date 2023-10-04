@@ -1,6 +1,6 @@
 package com.example.gudgement.shop.service;
 
-import com.example.gudgement.exception.ItemErrorCode;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.shop.dto.EquippedDto;
@@ -101,7 +101,7 @@ public class InventoryServiceImpl implements InventoryService{
     public InventoryDto equipItem(Long invenId) {
         // 그런 다음에 인벤토리를 조회합니다.
         Inventory selectedInventory = inventoryRepository.findByInvenId(invenId)
-                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // Find an already equipped item of the same type and unequip it.
         Optional<Inventory> equippedInventoryOpt =

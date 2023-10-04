@@ -12,6 +12,7 @@ public class MonthAnalyze {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long analyzeId;
 
     @Column(nullable = false)
     private int year;

@@ -111,6 +111,7 @@ export const logoutUser = async () => {
     reactotron.log!("로그아웃 시킬게요..");
     const getAccessTokenForLogout = await getAsyncData<string>("accessToken");
     reactotron.log!("과연?", getAccessTokenForLogout);
+    queryClient.invalidateQueries(["isLoggedIn"]);
   } catch (error) {
     reactotron.log!(error);
   }

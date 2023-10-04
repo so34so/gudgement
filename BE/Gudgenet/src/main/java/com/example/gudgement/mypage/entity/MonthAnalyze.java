@@ -21,9 +21,6 @@ public class MonthAnalyze {
     private int month;
 
     @Column(nullable = false)
-    private Long memberId;
-
-    @Column(nullable = false)
     private Long virtualAccountId;
 
     @Column(nullable = false)

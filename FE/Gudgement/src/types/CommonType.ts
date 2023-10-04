@@ -119,7 +119,15 @@ export declare module CommonType {
     balance: number;
     selected?: boolean;
   };
-
+  export type TsetItem = {
+    itemId: number;
+    itemName: string;
+    itemContent: string;
+    itemEffect: string;
+    image: string;
+    type: string;
+    subtype: string;
+  };
   export type Tuser = {
     memberId: number;
     email: string;

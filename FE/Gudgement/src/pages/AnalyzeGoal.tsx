@@ -1,3 +1,5 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -8,7 +10,6 @@ import {
   TextInput,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
@@ -26,6 +27,9 @@ function AnalyzeGoal() {
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
+
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -62,18 +66,18 @@ function AnalyzeGoal() {
   const handleInputChange = (value: string) => {
     const numValue = parseInt(value.replace(/,/g, ""), 10);
     if (!isNaN(numValue)) {
-      setGoal(numValue.toLocaleString());
+      setGoal(numValue.toLocaleString("ko-KR"));
     } else {
       setGoal("");
     }
   };
 
   const handleFetchGoal = async (currentGoal: string) => {
-    if (isGoal !== 0) {
+    if (isGoal !== null) {
       setModalText(
-        `목표 금액이 이미 ${Number(
-          isGoal,
-        ).toLocaleString()}원으로 설정되었습니다.`,
+        `목표 금액이 이미 ${Number(isGoal).toLocaleString(
+          "ko-KR",
+        )}원으로 설정되었습니다.`,
       );
       openModal();
       return;
@@ -86,27 +90,22 @@ function AnalyzeGoal() {
     }
     const numGoal = Number(numValue);
     reactotron.log!(numGoal);
-    // const getAccessToken = await getAsyncData<string>("accessToken");
     try {
       const response = await fetchApi.put(
         `${Config.API_URL}/mypage/update/${numGoal}`,
         {
           monthOverConsumption: numGoal,
         },
-        // {
-        //   headers: {
-        //     Authorization: `Bearer ${getAccessToken}`,
-        //   },
-        // },
       );
       reactotron.log!("목표 금액 설정 성공!", response);
-      setGoal("");
       setModalText(
         `목표 금액이 ${numGoal.toLocaleString("ko-KR")}원으로 설정되었습니다.`,
       );
       openModal();
     } catch (error) {
       reactotron.log!("목표 금액 설정 실패!", error);
+      setModalText("목표 금액 설정 중 오류가 발생했습니다. 다시 시도해주세요.");
+      openModal();
     }
   };
 
@@ -122,7 +121,12 @@ function AnalyzeGoal() {
         <CustomModal
           alertText={modalText}
           visible={modalVisible}
-          closeModal={closeModal}
+          closeModal={() => {
+            closeModal();
+            if (modalText === `목표 금액이 ${goal}원으로 설정되었습니다.`) {
+              navigation.goBack();
+            }
+          }}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
         <View className="py-2 flex flex-row justify-between items-center">
@@ -164,7 +168,7 @@ function AnalyzeGoal() {
                 </View>
               </View>
               <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                {isGoal === 0 ? "0" : "1"}/1
+                {isGoal === null ? "0" : "1"}/1
               </Text>
             </View>
             <View className="h-fill w-fill px-4">
@@ -179,7 +183,7 @@ function AnalyzeGoal() {
                 />
               </View>
               <View className="w-full px-2">
-                {isGoal === 0 ? (
+                {isGoal === null ? (
                   <Text className="text-darkgray70 text-xs font-PretendardExtraBold pb-4">
                     숫자만 입력해주세요.
                   </Text>

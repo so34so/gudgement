@@ -60,7 +60,7 @@ function MyPage(this: unknown) {
         />
         <View className="flex flex-col w-full h-full justify-evenly pb-10">
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Analyze")}
                 text="    소비 분석    "
@@ -70,7 +70,7 @@ function MyPage(this: unknown) {
                 color="bluesky"
               />
             </View>
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("AnalyzeGoal")}
                 text="소비 목표 설정"
@@ -82,7 +82,7 @@ function MyPage(this: unknown) {
             </View>
           </View>
           <View className="flex flex-row w-full justify-evenly">
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
                 handleFunction={() => handleMoveScreen("Pedometer")}
                 text="  만보 챌린지  "
@@ -92,9 +92,9 @@ function MyPage(this: unknown) {
                 color="bluesky"
               />
             </View>
-            <View className="w-[130px]">
+            <View className="w-fit">
               <NavigationButton
-                handleFunction={() => handleMoveScreen("SettingAccount")}
+                handleFunction={() => handleMoveScreen("ReSettingAccount")}
                 text="  주계좌 설정  "
                 height="sm"
                 width="sm"

@@ -77,8 +77,8 @@ function AnalysisBox({ ProgressBarVisible }: { ProgressBarVisible: boolean }) {
                 이번 달 소비
               </Text>
               <Text className="text-darkgray font-PretendardExtraBold text-lg">
-                {userData?.rate.payment
-                  ? userData?.rate.payment.toLocaleString("ko-KR")
+                {userData?.rate.totalAmount
+                  ? userData?.rate.totalAmount.toLocaleString("ko-KR")
                   : 0}{" "}
                 원
               </Text>

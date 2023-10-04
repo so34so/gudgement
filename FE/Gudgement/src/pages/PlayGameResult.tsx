@@ -22,47 +22,16 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-interface Game {
-  user: string;
-  message: string;
-}
+import { queryClient } from "../../queryClient";
 
-export default function PlayGameResult() {
-  useEffect(() => {
-    StatusBar.setHidden(true);
-  }, []);
+export default function PlayGameResult({ route }) {
+  const { roomNumber, rounds, result } = route.params;
 
-  const [serverState, setServerState] = useState("Loading...");
-  const [messageText, setMessageText] = useState("");
-  const [serverMessages, setServerMessages] = useState([]);
-  const userId = "ddd";
-  const WSUrl = "http://j9d106.p.ssafy.io:8080";
-  console.log(WSUrl);
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
   const snake: ImageSourcePropType = Snake as ImageSourcePropType;
   const pingping: ImageSourcePropType = PingPing as ImageSourcePropType;
-
-  const ws = new WebSocket(WSUrl);
-  ws.onopen = () => {
-    // connection opened
-    ws.send("something"); // send a message
-    console.log("새로운 클라이언트 접속");
-  };
-
-  ws.onmessage = e => {
-    // a message was received
-    console.log(e.data);
-  };
-
-  ws.onerror = e => {
-    // an error occurred
-    console.log(e.message);
-  };
-
-  ws.onclose = e => {
-    // connection closed
-    console.log(e.code, e.reason);
-  };
+  const myData = queryClient.getQueryData(["myGameinfo"]);
+  const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
 
   return (
     <View className="flex w-full h-full">
@@ -72,20 +41,6 @@ export default function PlayGameResult() {
         className="flex-1"
       >
         <GameUi />
-
-        <GameBettingSyetem />
-        {/* <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
-          style={styles.loadingtext}
-        >
-          Now Loading
-        </Text>
-        <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[28px] font-Pretendard"
-          style={styles.loadingtextkr}
-        >
-          잠시후 게임이 시작됩니다
-        </Text> */}
 
         <Image style={styles.mycharacter} source={pingping} />
         <Image style={styles.enemy} source={snake} />

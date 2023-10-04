@@ -1,4 +1,3 @@
-import { IMAGE_URL } from "@env";
 import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
 import { CommonType } from "../types/CommonType";
@@ -11,7 +10,8 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-console.log(IMAGE_URL);
+import Config from "react-native-config";
+
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 const myCards: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 
@@ -38,13 +38,13 @@ export default function GameBettingSyetem({
       </Text>
       <View style={styles.enemycardtext}>
         <Text
-          className="rounded-lg text-white text-[24px] font-PretendardBold"
+          className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
           style={styles.enemycardtitle}
         >
           {enemyCards.name}
         </Text>
         <Text
-          className="rounded-lg text-white text-[24px] font-PretendardBold"
+          className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
           style={styles.enemycardtitle}
         >
           {enemyCards.amount}

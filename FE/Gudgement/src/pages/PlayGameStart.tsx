@@ -3,9 +3,6 @@ import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { WEBSOCKET_URL } from "@env";
-import GameUi from "../components/GameUi";
-import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
   StyleSheet,
@@ -25,11 +22,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import SockJS from "sockjs-client";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import { useQuery } from "react-query";
 import Reactotron from "reactotron-react-native";
-import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
@@ -48,10 +41,7 @@ export default function PlayGameStart({
   const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
   const [myInfoState, setMyInfoState] = useState(myData);
   const [enemyInfoState, setEnemyInfoState] = useState(enemyData);
-  // setMyInfoState(myInfo);
-  // setEnemyInfoState(enemyInfo);
 
-  const websocketClient = useWebSocket();
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
@@ -113,31 +103,6 @@ export default function PlayGameStart({
         resizeMode="cover"
         className="flex-1"
       >
-        {/* <GameUi />
-
-        <GameBettingSyetem /> */}
-        {/* <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[52px] font-PretendardExtraBold"
-          style={styles.loadingtext}
-        >
-          Now Loading
-        </Text>
-        <Text
-          className="py-1 pl-3 pr-2 rounded-lg text-white text-[28px] font-Pretendard"
-          style={styles.loadingtextkr}
-        >
-          잠시후 게임이 시작됩니다
-        </Text> */}
-
-        {/* <Image
-          style={styles.mycharacter}
-          source={{ uri: `${IMAGE_URL}/character/${myImage}` }}
-        />
-        <Image
-          style={styles.enemy}
-          source={{ uri: `${IMAGE_URL}/character/${enemyImage}` }}
-        /> */}
-
         {/* vs */}
         <Animated.Image
           style={[styles.vs, animatedVsStyle]}

@@ -24,6 +24,8 @@ import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { CommonType } from "../types/CommonType";
 
 const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
 const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
@@ -44,17 +46,34 @@ const BettingMachine = ({
   // 버튼 활성화 상태 변수 추가
   const [isButtonActive, setIsButtonActive] = useState(true);
   const websocketClient = useWebSocket();
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
+  const nickName = myInfoState.nickname;
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
       websocketClient.subscribe(
-        "/topic/game/" + roomNumber,
+        "/topic/game/" + roomNumber + nickName,
         function (messageOutput) {
           console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
-          // navigation.navigate("PlayGameStart", {
-          //   roomNumber: roomNumber,
-          // });
+          const roundResults = JSON.parse(messageOutput.body);
+          console.log(roundResults);
+          console.log("라운드결과", roundResults.rounds);
+          console.log(typeof roundResults.rounds);
+          if (roundResults.rounds >= 1 && roundResults.rounds <= 9) {
+            navigation.navigate("PlayGameResult", {
+              roomNumber: roomNumber,
+              rounds: roundResults.rounds,
+              result: roundResults.result,
+            });
+          } else if (roundResults.rounds === 10) {
+            navigation.navigate("PlayGameFinalResult", {
+              roomNumber: roomNumber,
+              rounds: roundResults.rounds,
+              result: roundResults.result,
+            });
+          }
         },
       );
     }

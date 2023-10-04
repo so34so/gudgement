@@ -1,12 +1,6 @@
-import {
-  View,
-  Modal,
-  Pressable,
-  ImageSourcePropType,
-  Text,
-} from "react-native";
-import { WithLocalSvg } from "react-native-svg";
-import CloseIcon from "../assets/icons/closeModal.svg";
+import { View, Modal, Pressable, Text } from "react-native";
+import { SvgUri } from "react-native-svg";
+import Config from "react-native-config";
 
 function CustomModal({
   alertText,
@@ -17,7 +11,6 @@ function CustomModal({
   visible: boolean;
   closeModal: () => void;
 }) {
-  const closeIcon: ImageSourcePropType = CloseIcon as ImageSourcePropType;
   return (
     <Modal
       animationType="fade"
@@ -45,7 +38,11 @@ function CustomModal({
               closeModal();
             }}
           >
-            <WithLocalSvg width={40} height={40} asset={closeIcon} />
+            <SvgUri
+              uri={`${Config.IMAGE_URL}/asset/closeModal.svg`}
+              width={40}
+              height={40}
+            />
           </Pressable>
           <Text className="text-white text-xs font-PretendardExtraBold p-4 w-[240px]">
             {alertText}

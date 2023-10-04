@@ -33,15 +33,12 @@ function AnalyzeGoal() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const currentDate = new Date();
-  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(
-    currentDate.getMonth() + 1,
-  );
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   const [goal, setGoal] = useState("");
+  const [isGoal, setIsGoal] = useState(0);
+
+  const currentDate = new Date();
 
   const openModal = () => {
     setModalVisible(true);
@@ -170,7 +167,7 @@ function AnalyzeGoal() {
                 </View>
               </View>
               <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                2/1
+                {isGoal === 0 ? "0" : "1"}/1
               </Text>
             </View>
             <View className="h-fill w-fill">
@@ -179,7 +176,7 @@ function AnalyzeGoal() {
                   <TextInput
                     onChangeText={handleInputChange}
                     value={goal}
-                    placeholder="숫자를 입력하세요."
+                    placeholder="ex) 500000"
                     placeholderTextColor="darkgray"
                     keyboardType="numeric"
                     className="h-[58px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
@@ -192,6 +189,18 @@ function AnalyzeGoal() {
                     size="md"
                     color="bluesky"
                   />
+                </View>
+                <View className="w-full">
+                  {isGoal === 0 ? (
+                    <Text className="text-darkgray70 text-xs font-PretendardExtraBold px-4 pb-4">
+                      숫자만 입력해주세요.
+                    </Text>
+                  ) : (
+                    <Text className="text-sky text-xs font-PretendardExtraBold px-4 pb-4">
+                      이미 {currentDate.getFullYear()}년{" "}
+                      {currentDate.getMonth() + 1}월 목표 금액이 설정되었습니다.
+                    </Text>
+                  )}
                 </View>
               </SafeAreaView>
             </View>

@@ -25,7 +25,7 @@ function NavigationButton({
   const buttonStyle02 = (currentHeight: string, currentWidth: string) =>
     `${currentHeight === "lg" ? "py-2" : "py-1"} ${
       currentWidth === "lg" && "px-[162px]"
-    } ${currentWidth === "md" && "px-[106px]"} ${
+    } ${currentWidth === "md" && "px-[114px]"} ${
       currentWidth === "sm" && "px-2"
     } h-fill w-fill flex flex-row justify-center items-center bg-transparent border-solid border-[3px] border-white20 rounded-lg`;
 

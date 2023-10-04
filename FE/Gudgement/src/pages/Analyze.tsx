@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
 import { BarChart } from "react-native-chart-kit";
+import { AxiosResponse } from "axios";
+import fetchApi from "../utils/tokenUtils";
 import { useQuery } from "@tanstack/react-query";
 import { CommonType } from "../types/CommonType";
 import { API_URL, IMAGE_URL } from "@env";
@@ -19,10 +21,8 @@ import { getAsyncData } from "../utils/common";
 import NavigationButton from "../components/NavigationButton";
 import TagBoxSmall from "../components/TagBoxSmall";
 import CustomModal from "../components/CustomModal";
-import reactotron from "reactotron-react-native";
-import { AxiosResponse } from "axios";
 import AnalysisBox from "../components/AnalysisBox";
-import fetchApi from "../utils/tokenUtils";
+import reactotron from "reactotron-react-native";
 
 function Analyze(this: unknown) {
   const {
@@ -244,13 +244,13 @@ function Analyze(this: unknown) {
             img={`${IMAGE_URL}/asset/analysisIcon.png`}
           />
         </View>
-        <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-6 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
+        <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-4 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
           <View className="-mt-1">
             <AnalysisBox ProgressBarVisible={false} />
           </View>
           <View className="w-full">
             <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row justify-start items-center m-4 space-x-1 bg-lightsky60 p-[3px] rounded-xl">
+              <View className="flex flex-row justify-start items-center m-4 space-x-[1px] bg-lightsky60 p-[3px] rounded-xl border-solid border-[3px] border-white">
                 <ModalDropdown
                   options={yearOptions}
                   onSelect={handleSelectDate("년")}
@@ -341,65 +341,68 @@ function Analyze(this: unknown) {
                 />
               </View>
             </View>
-            <View className="py-1 mx-4 mb-4 flex justify-center items-center w-[46%] rounded-lg bg-white50">
-              <Text className="font-PretendardBold text-sub02 text-3xs">
-                {chartData.year}년 {chartData.month}월 {chartData.week}주차 소비
-                차트
-              </Text>
-            </View>
-            <BarChart
-              data={{
-                labels: chartData.data.labels,
-                datasets: [
-                  {
-                    data: chartData.data.dateSet.amount,
-                    colors: chartData.data.dateSet.color?.map(ele => {
-                      if (ele === true) {
-                        return (opacity = 1) => `rgba(52, 184, 89, ${opacity})`;
-                      }
-                      return (opacity = 1) => `rgba(243, 52, 52, ${opacity})`;
-                    }),
+            <View className="bg-white90 rounded-3xl mx-2 py-4 border-solid border-[2px] border-darkgray70">
+              <BarChart
+                data={{
+                  labels: chartData.data.labels,
+                  datasets: [
+                    {
+                      data: chartData.data.dateSet.amount,
+                      colors: chartData.data.dateSet.color?.map(ele => {
+                        if (ele === true) {
+                          return (opacity = 1) =>
+                            `rgba(52, 184, 89, ${opacity})`;
+                        }
+                        return (opacity = 1) => `rgba(243, 52, 52, ${opacity})`;
+                      }),
+                    },
+                  ],
+                }}
+                width={400}
+                height={220}
+                chartConfig={{
+                  backgroundGradientFromOpacity: 0,
+                  backgroundGradientToOpacity: 0,
+                  barPercentage: 0.4,
+                  fillShadowGradient: "rgba(52, 184, 89, 1)",
+                  fillShadowGradientFromOpacity: 1,
+                  fillShadowGradientToOpacity: 1,
+                  fillShadowGradientOpacity: 1,
+                  fillShadowGradientTo: "rgba(52, 184, 89, 1)",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`,
+                  strokeWidth: 40,
+                  barRadius: 6,
+                  propsForLabels: {
+                    fontSize: 12,
+                    fontFamily: "Pretendard-Bold",
                   },
-                ],
-              }}
-              width={400}
-              height={220}
-              chartConfig={{
-                backgroundGradientFromOpacity: 0,
-                backgroundGradientToOpacity: 0,
-                barPercentage: 0.4,
-                fillShadowGradient: "rgba(52, 184, 89, 1)",
-                fillShadowGradientFromOpacity: 1,
-                fillShadowGradientToOpacity: 1,
-                fillShadowGradientOpacity: 1,
-                fillShadowGradientTo: "rgba(52, 184, 89, 1)",
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`,
-                strokeWidth: 40,
-                barRadius: 6,
-                propsForLabels: {
-                  fontSize: 12,
-                  fontFamily: "Pretendard-Bold",
-                },
-              }}
-              showBarTops={false}
-              showValuesOnTopOfBars={true}
-              fromZero
-              fromNumber={0}
-              withInnerLines={false}
-              withHorizontalLabels={false}
-              withVerticalLabels={true}
-              withCustomBarColorFromData={true}
-              flatColor={true}
-              style={{
-                marginVertical: 0,
-                marginHorizontal: -40,
-              }}
-              yAxisLabel={""}
-              yAxisSuffix={""}
-            />
-            <View className="px-4 pb-4">
+                }}
+                showBarTops={false}
+                showValuesOnTopOfBars={true}
+                fromZero
+                fromNumber={0}
+                withInnerLines={false}
+                withHorizontalLabels={false}
+                withVerticalLabels={true}
+                withCustomBarColorFromData={true}
+                flatColor={true}
+                style={{
+                  marginVertical: 10,
+                  marginHorizontal: -40,
+                }}
+                yAxisLabel={""}
+                yAxisSuffix={""}
+              />
+              <View className="py-1 mx-4 flex justify-center items-center w-[46%] rounded-lg bg-white50 border-solid border-[1px] border-darkgray50">
+                <Text className="font-PretendardBold text-darkgray70 text-3xs">
+                  {chartData.year}년 {chartData.month}월 {chartData.week}주차
+                  소비 차트
+                </Text>
+              </View>
+            </View>
+            <View className="px-4 py-4">
               <NavigationButton
                 handleFunction={() => handleFetchAnalyze()}
                 text={`${selectedMonth}월 분석`}

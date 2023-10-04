@@ -26,12 +26,9 @@ import {
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { CommonType } from "../types/CommonType";
 import { mapInfoArray } from "../components/MapData";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { WEBSOCKET_URL } from "@env";
-import { queryClient } from "../../queryClient";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useWebSocket } from "../components/WebSocketContext";
+import { useQuery } from "@tanstack/react-query";
+import { getAccessToken } from "../utils/common";
+console.log(API_URL);
 function PlaySelect() {
   // 유저 정보 가져오기
   const { data: userInfo } = useQuery<CommonType.TUser>({
@@ -58,12 +55,18 @@ function PlaySelect() {
   // 매칭하기 함수
   async function postMatchStart() {
     try {
+      const accessToken = await getAccessToken();
       const response = await axios.post(`${API_URL}/match/addUser`, {
+        // params: {
         memberId: MEMBER_ID,
         nickName: MEMBER_NickName,
         grade: MEMBER_RoleUser,
         tiggle: selectedMap.ticle,
         timestamp: 0,
+        // },
+        // headers: {
+        //   Authorization: `Bearer ${accessToken}`,
+        // },
       });
       Reactotron.log!("흠", response.data);
       return response;

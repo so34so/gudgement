@@ -20,7 +20,6 @@ import Animated, {
 import { WithLocalSvg } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
-import Reactotron from "reactotron-react-native";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
@@ -87,11 +86,10 @@ function Inventory({ route }: InventoryProps) {
           },
         },
       );
-      Reactotron.log!("fetchInventoryItem", response.data);
       return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
-        Reactotron.log!("fetchShopItemError", errorResponse);
+        reactotron.log!("fetchShopItemError", errorResponse);
       }
     }
   }
@@ -99,8 +97,6 @@ function Inventory({ route }: InventoryProps) {
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
-  reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
-  reactotron.log!("itemStatus", itemStatus);
   const { data: fetchUser } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
   });
@@ -149,27 +145,27 @@ function Inventory({ route }: InventoryProps) {
   const disabledApply = useCallback(
     (category: string) => {
       setSelectCategory(category);
-      reactotron.log!("길이 및 패치 인벤 아이템", fetchItem, fetchItem?.length);
       if (!fetchItem?.length) {
         setItemStatus(true);
         return;
       }
       setItemStatus(false);
-      reactotron.log!("category", selectItem);
       setSelectItem(0);
     },
     [fetchItem, selectItem],
   );
 
   const decorImage = useCallback(() => {
-    const currentCharacter = fetchUser?.setItems.filter(
+    const currenetDecor = fetchUser?.setItems.filter(
       (item: CommonType.TsetItem) => {
         return item.type === "decor";
       },
     );
-    console.log("current", currentCharacter);
+    if (!currenetDecor?.length) {
+      return "";
+    }
 
-    return `${Config.IMAGE_URL}/decor/${currentCharacter?.[0].image}`;
+    return `${Config.IMAGE_URL}/decor/${currenetDecor?.[0].image}`;
   }, [fetchUser?.setItems]);
 
   const characterImage = useCallback(() => {
@@ -178,7 +174,9 @@ function Inventory({ route }: InventoryProps) {
         return item.type === "character";
       },
     );
-    console.log("current", currentCharacter);
+    if (!currentCharacter?.length) {
+      return "";
+    }
 
     return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
   }, [fetchUser?.setItems]);

@@ -184,7 +184,7 @@ function AnalyzeGoal() {
                   placeholderTextColor="darkgray"
                   keyboardType="numeric"
                   className="h-[58px] w-full p-4 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
-                  editable={isGoal !== userData?.monthOverconsumption}
+                  editable={userData?.monthOverconsumption === null}
                 />
               </View>
               <View className="w-full px-2">

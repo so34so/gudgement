@@ -83,4 +83,3 @@ def month_transaction(virtualId, year, month, month_overconsumption):
 
 if __name__ == "__main__":
     app.run(port=5000)
-

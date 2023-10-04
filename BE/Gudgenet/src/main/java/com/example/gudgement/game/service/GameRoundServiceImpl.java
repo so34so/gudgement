@@ -1,21 +1,23 @@
 package com.example.gudgement.game.service;
 
-import com.example.gudgement.CardService;
+import com.example.gudgement.card.service.CardService;
+import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.exception.BaseErrorException;
 import com.example.gudgement.game.exception.GameErrorCode;
-import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GameRoundServiceImpl implements GameRoundService {
 
     private final CardService cardService;
@@ -23,6 +25,7 @@ public class GameRoundServiceImpl implements GameRoundService {
     private final SimpMessagingTemplate messagingTemplate;
 
 
+    @Transactional
     public GameRoundDto getGameStatus(GameRequestDto requestDto) {
         String roomNumber = requestDto.getRoomNumber();
         String userName = requestDto.getNickName();
@@ -41,7 +44,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             }
         }
 
-        if(otherUser == null){
+        if (otherUser == null) {
             throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
         }
 
@@ -49,38 +52,41 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         // 각 유저의 tiggle 값을 가져옵니다.
         for (String userNickName : Arrays.asList(userName, otherUser)) {
-            log.info(userNickName+"입니다.");
-            Object valueObj= redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
-            if(valueObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+            log.info(userNickName + "입니다.");
+            Object valueObj = redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
+            if (valueObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
 
-            Long tiggleValue= Long.parseLong(String.valueOf(valueObj));
+            Long tiggleValue = Long.parseLong(String.valueOf(valueObj));
 
-            UserTiggleDto userTiggle= new UserTiggleDto(userNickName, tiggleValue);
+            UserTiggleDto userTiggle = new UserTiggleDto(userNickName, tiggleValue);
 
             userTiggles.add(userTiggle);
         }
 
-        Object roundsObj= redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
-        if(roundsObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
+        Object roundsObj = redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
+        if (roundsObj == null) throw new BaseErrorException(GameErrorCode.NOT_FOUND_REDIS);
 
-        int rounds= Integer.parseInt(String.valueOf(roundsObj));
+        int rounds = Integer.parseInt(String.valueOf(roundsObj));
 
         // 상대방의 랜덤 카드 한 장을 가져옵니다.
-        String cardString= cardService.getRandomUsedCard(roomNumber, otherUser);
+        String cardString = cardService.getRandomUsedCard(roomNumber, otherUser);
 
         redisTemplate.opsForHash().put(roomNumber, otherUser + ":currentCard", cardString);
 
-        CardInfoDto cardInfo= new CardInfoDto();
+        CardInfoDto cardInfo = new CardInfoDto();
         cardInfo.setName(cardString.split(":")[0]);
         cardInfo.setAmount(Long.parseLong(cardString.split(":")[1]));
         cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
 
-        return new GameRoundDto(userTiggles ,cardInfo,rounds);
+        return new GameRoundDto(userTiggles, cardInfo, rounds);
     }
 
-    public void  playRound(BettingDto bettingDto) {
+    @Transactional
+    public void playRound(BettingDto bettingDto) {
         String roomNumber = bettingDto.getRoomNumber();
         int round = bettingDto.getRounds();
+        RoundResultDto myResult;
+        RoundResultDto otherResult;
 
         // Check if the user exists in Redis.
         Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
@@ -98,11 +104,11 @@ public class GameRoundServiceImpl implements GameRoundService {
             int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":bet"));
             int otherBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":bet"));
 
-            String myCardString = (String)redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName()+":currentCard");
-            String otherCardString = (String)redisTemplate.opsForHash().get(roomNumber ,  bettingDto.getOtherName()+":currentCard");
+            String myCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":currentCard");
+            String otherCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":currentCard");
 
-            Long myValue= Long.parseLong(myCardString.split(":")[1]);
-            Long otherValue= Long.parseLong(otherCardString.split(":")[1]);
+            Long myValue = Long.parseLong(myCardString.split(":")[1]);
+            Long otherValue = Long.parseLong(otherCardString.split(":")[1]);
 
             boolean iWon = !(myValue > otherValue);
 
@@ -110,7 +116,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             int myTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":tiggle"));
             int otherTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":tiggle"));
 
-            if(iWon) {  // If I won...
+            if (iWon) {  // If I won...
                 myTiggle += otherBet;  // Add the amount that the opponent bet to my tiggles.
                 otherTiggle -= otherBet;  // Subtract the amount that the opponent bet from his/her own tiggles.
             } else {  // If I lost...
@@ -118,41 +124,158 @@ public class GameRoundServiceImpl implements GameRoundService {
                 otherTiggle += myBet;  // Add the amount that I bet to the opponent's tiggles.
             }
 
-            if (myTiggle <=0 || otherTiggle <=0){
-                round=10;
+            if (myTiggle <= 0 || otherTiggle <= 0) {
+                round = 10;
             }
 
-            RoundResultDto myResult = RoundResultDto.builder()
+            if (round == 10) {
+                // If it's the final round or any player's tiggle is zero or less, determine the winner based on the tiggle values.
+                boolean iWonFinal = myTiggle >= otherTiggle;  // If it's a tie, I win.
+
+                myResult = RoundResultDto.builder()
+                        .nickName(bettingDto.getNickName())
+                        .isResult(iWonFinal)
+                        .rounds(round)
+                        .roomNumber(roomNumber)
+                        .build();
+
+                otherResult = RoundResultDto.builder()
+                        .nickName(bettingDto.getOtherName())
+                        .isResult(!iWonFinal)
+                        .rounds(round)
+                        .roomNumber(roomNumber)
+                        .build();
+            } else {
+                myResult = RoundResultDto.builder()
+                        .nickName(bettingDto.getNickName())
+                        .isResult(iWon)
+                        .rounds(round)
+                        .roomNumber(roomNumber)
+                        .build();
+
+                otherResult = RoundResultDto.builder()
+                        .nickName(bettingDto.getOtherName())
+                        .isResult(!iWon)
+                        .rounds(round)
+                        .roomNumber(roomNumber)
+                        .build();
+            }
+
+            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
+            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
+
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, myResult);
+            messagingTemplate.convertAndSend("/topic/game/" + roomNumber, otherResult);
+
+            /* Reset status for next round */
+            resetStatusForNextRound(roomNumber);
+
+            /*해당 선택된 카드 내용 redis에서 삭제하는 내용 구현*/
+            for (String userNickName : Arrays.asList(bettingDto.getNickName(), bettingDto.getOtherName())) {
+                String cardToRemove = (String) redisTemplate.opsForHash().get(roomNumber, userNickName + ":currentCard");
+                Long removeResult = redisTemplate.opsForSet().remove(roomNumber + ":" + userNickName + ":cards", cardToRemove);
+
+                if (removeResult == 0) {
+                    throw new RuntimeException("Failed to remove the card: " + cardToRemove);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void giveUpRound(BettingDto bettingDto) {
+        String roomNumber = bettingDto.getRoomNumber();
+        int round = bettingDto.getRounds();
+        RoundResultDto myResult;
+        RoundResultDto otherResult;
+        // Check if the user exists in Redis.
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
+
+        if (!hasKey) {
+            throw new IllegalArgumentException("Invalid nickname: " + bettingDto.getNickName());
+        }
+
+        // If both users have bet, then proceed with the comparison and result calculation
+
+        int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":betting"));
+
+        myBet /= 10;
+
+        String myCardString = (String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":currentCard");
+
+        Long myValue = Long.parseLong(myCardString.split(":")[2]);
+
+        if (myValue == 10) {
+            myBet *= 2;
+        }
+
+        boolean iWon = false;
+
+        // Fetch the current tiggle values for each player
+        int myTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":tiggle"));
+        int otherTiggle = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getOtherName() + ":tiggle"));
+
+        myTiggle -= myBet;  // Subtract the amount that I bet from my own tiggles.
+        otherTiggle += myBet;  // Add the amount that I bet to the opponent's tiggles.
+
+        if (myTiggle <= 0) {
+            round = 10;
+        }
+
+        if (round == 10) {
+            // If it's the final round or any player's tiggle is zero or less, determine the winner based on the tiggle values.
+            boolean iWonFinal = myTiggle >= otherTiggle;  // If it's a tie, I win.
+
+            myResult = RoundResultDto.builder()
+                    .nickName(bettingDto.getNickName())
+                    .isResult(iWonFinal)
+                    .rounds(round)
+                    .roomNumber(roomNumber)
+                    .build();
+
+            otherResult = RoundResultDto.builder()
+                    .nickName(bettingDto.getOtherName())
+                    .isResult(!iWonFinal)
+                    .rounds(round)
+                    .roomNumber(roomNumber)
+                    .build();
+        } else {
+            myResult = RoundResultDto.builder()
                     .nickName(bettingDto.getNickName())
                     .isResult(iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
                     .build();
 
-            RoundResultDto otherResult = RoundResultDto.builder()
+            otherResult = RoundResultDto.builder()
                     .nickName(bettingDto.getOtherName())
                     .isResult(!iWon)
                     .rounds(round)
                     .roomNumber(roomNumber)
                     .build();
-
-            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
-            redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
-
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber , myResult);
-            messagingTemplate.convertAndSend("/topic/game/" + roomNumber , otherResult);
-
-            /* Reset status for next round */
-            resetStatusForNextRound(roomNumber);
-
-            /*해당 선택된 카드 내용 redis에서 삭제하는 내용 구현*/
-
         }
 
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":tiggle", String.valueOf(myTiggle));
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":tiggle", String.valueOf(otherTiggle));
+
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, myResult);
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, otherResult);
+
+        /* Reset status for next round */
+        resetStatusForNextRound(roomNumber);
+
+        /*해당 선택된 카드 내용 redis에서 삭제하는 내용 구현*/
+        for (String userNickName : Arrays.asList(bettingDto.getNickName(), bettingDto.getOtherName())) {
+            String cardToRemove = (String) redisTemplate.opsForHash().get(roomNumber, userNickName + ":currentCard");
+            Long removeResult = redisTemplate.opsForSet().remove(roomNumber + ":" + userNickName + ":cards", cardToRemove);
+
+            if (removeResult == 0) {
+                throw new RuntimeException("Failed to remove the card: " + cardToRemove);
+            }
+        }
     }
 
-
-    private boolean allUsersBetting(String roomNumber) {
+    private boolean allUsersBetting (String roomNumber){
         // Get all keys (user info) from the Redis hash.
         Set<Object> membersKeys = redisTemplate.opsForHash().keys(roomNumber);
 
@@ -162,9 +285,9 @@ public class GameRoundServiceImpl implements GameRoundService {
                 continue;
             }
 
-            Object acceptanceStatusObj =  redisTemplate.opsForHash().get(roomNumber, key);
+            Object acceptanceStatusObj = redisTemplate.opsForHash().get(roomNumber, key);
 
-            if(acceptanceStatusObj == null || !"betting".equals(acceptanceStatusObj.toString())) {
+            if (acceptanceStatusObj == null || !"betting".equals(acceptanceStatusObj.toString())) {
                 return false;  // If any user's status is not 'success', return false immediately.
             }
         }
@@ -172,7 +295,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         return true;  // If all users' statuses are 'success', return true.
     }
 
-    private void resetStatusForNextRound(String roomNumber){
+    private void resetStatusForNextRound (String roomNumber){
         // Get all keys (user info) from the Redis hash.
         Set<Object> membersKeys = redisTemplate.opsForHash().keys(roomNumber);
 
@@ -186,6 +309,4 @@ public class GameRoundServiceImpl implements GameRoundService {
             redisTemplate.opsForHash().put(roomNumber, key, "play");
         }
     }
-
-
 }

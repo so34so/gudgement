@@ -25,4 +25,6 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
 
     @Query("SELECT i FROM Inventory i JOIN i.itemId item WHERE i.member = :member AND i.equipped = true AND item.type = 'character'")
     Optional<Inventory> findEquippedCharacterItemByMember(Member member);
+    
+    List<Inventory> findByMemberAndItemId_TypeAndEquipped(Member member, String consumable, boolean b);
 }

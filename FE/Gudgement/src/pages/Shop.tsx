@@ -164,9 +164,6 @@ function Shop({ route }: ShopProps) {
           itemId: params.itemId,
           memberId: params.memberId,
         },
-        headers: {
-          Authorization: `Bearer ${await getAccessToken()}`,
-        },
       }),
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
@@ -182,9 +179,6 @@ function Shop({ route }: ShopProps) {
           memberId: params.memberId,
           quantity: quantity,
         },
-        headers: {
-          Authorization: `Bearer ${await getAccessToken()}`,
-        },
       });
     },
     onSuccess: () => {
@@ -199,9 +193,6 @@ function Shop({ route }: ShopProps) {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
-        },
-        headers: {
-          Authorization: `Bearer ${await getAccessToken()}`,
         },
       });
     },

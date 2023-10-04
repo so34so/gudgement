@@ -45,7 +45,6 @@ function AppInner() {
     queryKey: ["isLoggedIn"],
     queryFn: async () => {
       const loginData: number | null = await getAsyncData("id");
-
       return !!loginData;
     },
   });

@@ -57,9 +57,10 @@ function Inventory({ route }: InventoryProps) {
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const { data: userInfo } = useQuery<CommonType.Tuser>({
-    queryKey: ["fetchUserInfo"],
-  });
+  const { data: userInfo, isLoading: isFetchUserLoading } =
+    useQuery<CommonType.Tuser>({
+      queryKey: ["fetchUserInfo"],
+    });
 
   const categoryStyle = useCallback(
     (category: string) =>
@@ -135,6 +136,7 @@ function Inventory({ route }: InventoryProps) {
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
     },
   });
 
@@ -159,6 +161,27 @@ function Inventory({ route }: InventoryProps) {
     [fetchItem, selectItem],
   );
 
+  const decorImage = useCallback(() => {
+    const currentCharacter = fetchUser?.setItems.filter(
+      (item: CommonType.TsetItem) => {
+        return item.type === "decor";
+      },
+    );
+    console.log("current", currentCharacter);
+
+    return `${Config.IMAGE_URL}/decor/${currentCharacter?.[0].image}`;
+  }, [fetchUser?.setItems]);
+
+  const characterImage = useCallback(() => {
+    const currentCharacter = fetchUser?.setItems.filter(
+      (item: CommonType.TsetItem) => {
+        return item.type === "character";
+      },
+    );
+    console.log("current", currentCharacter);
+
+    return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
+  }, [fetchUser?.setItems]);
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -189,14 +212,29 @@ function Inventory({ route }: InventoryProps) {
         <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
-              {fetchUser && fetchUser.setItems ? (
-                <Image
-                  source={{
-                    uri: fetchUser.setItems[0].image,
-                  }}
-                />
+              {isFetchUserLoading ? (
+                <ActivityIndicator size="large" />
               ) : (
-                <Image source={myCharacter} />
+                <>
+                  {fetchUser && fetchUser.setItems.length ? (
+                    <>
+                      <Image
+                        source={{
+                          uri: decorImage(),
+                        }}
+                        className="absolute top-[-32px] left-[-20px] w-20 h-20 z-10"
+                      />
+                      <Image
+                        source={{
+                          uri: characterImage(),
+                        }}
+                        className="w-48 h-44"
+                      />
+                    </>
+                  ) : (
+                    <Image source={myCharacter} className="w-48 h-44" />
+                  )}
+                </>
               )}
             </Animated.View>
           </View>

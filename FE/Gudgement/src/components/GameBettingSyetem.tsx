@@ -1,5 +1,6 @@
 import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
+import { useEffect, useState } from "react";
 import { CommonType } from "../types/CommonType";
 import {
   Image,
@@ -8,21 +9,53 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-import Config from "react-native-config";
+import { queryClient } from "../../queryClient";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 
 export default function GameBettingSyetem({
   roundInfo,
-  myInfoState,
-  enemyInfoState,
   roomNumber,
 }: {
   roundInfo: object;
-  myInfoState: object;
-  enemyInfoState: object;
   roomNumber: string;
 }) {
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+  const [enemyInfoState, setEnemyInfoState] = useState(null);
+  const [myInfoState, setMyInfoState] = useState([null]);
+  const [myCharacterState, setMyCharacterState] = useState(null);
+  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
+
+  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const enemyData = await queryClient.getQueryData(["enemyGameinfo"]);
+      const myData = await queryClient.getQueryData(["myGameinfo"]);
+      const myCharacter = await queryClient.getQueryData(["myCharacter"]);
+      const enemyCharacter = await queryClient.getQueryData(["enemyCharacter"]);
+
+      if (enemyData) {
+        setEnemyInfoState(enemyData);
+      }
+
+      if (myData) {
+        setMyInfoState(myData);
+      }
+
+      if (enemyCharacter) {
+        setEnemyCharacterState(enemyCharacter);
+      }
+
+      if (myCharacter) {
+        setMyCharacterState(myCharacter);
+      }
+    };
+
+    fetchInfo();
+  }, []);
+
   console.log("흠", roundInfo.card);
   const enemyCards: CommonType.TplayCard[] = roundInfo.card;
   return (
@@ -50,7 +83,7 @@ export default function GameBettingSyetem({
       <Image style={styles.enemycard} source={enemyCard} />
       <BettingMachine
         roomNumber={roomNumber}
-        otherName={enemyInfoState.nickname}
+        otherName={enemyInfoState?.nickname}
         roundInfo={roundInfo}
         myInfoState={myInfoState}
         maxBettingAmount={myInfoState.tiggle / 10}

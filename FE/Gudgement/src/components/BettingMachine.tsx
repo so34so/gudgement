@@ -73,12 +73,14 @@ const BettingMachine = ({
               rounds: roundResults.rounds,
               result: roundResults.result,
               cardInfo: roundResults.cardInfo,
+              nickName: nickName,
             });
           } else if (roundResults.rounds === 10) {
             navigation.navigate("PlayGameFinalResult", {
               roomNumber: roomNumber,
               rounds: roundResults.rounds,
               result: roundResults.result,
+              nickName: nickName,
             });
           }
         },

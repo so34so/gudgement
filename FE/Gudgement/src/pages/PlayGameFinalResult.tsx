@@ -22,7 +22,7 @@ import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
 export default function PlayGameFinalResult({ route }) {
-  const { roomNumber, rounds, result } = route.params;
+  const { roomNumber, rounds, result, nickName } = route.params;
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
   const myCharacter = queryClient.getQueryData(["myCharacter"]);

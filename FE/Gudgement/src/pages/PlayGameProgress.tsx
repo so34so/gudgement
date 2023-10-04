@@ -63,7 +63,6 @@ export default function PlayGameProgress({
   }
 
   useEffect(() => {
-    postRoundStart();
     const myCharacter = queryClient.getQueryData(["myCharacter"]);
     const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
 
@@ -74,6 +73,7 @@ export default function PlayGameProgress({
     if (enemyCharacter) {
       setEnemyCharacterState(enemyCharacter);
     }
+    postRoundStart();
   }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
@@ -92,12 +92,7 @@ export default function PlayGameProgress({
         <GameTimerBar duration={10} />
 
         <GameUi />
-        <GameBettingSyetem
-          enemyInfoState={enemyInfoState}
-          myInfoState={myInfoState}
-          roundInfo={roundInfo}
-          roomNumber={roomNumber}
-        />
+        <GameBettingSyetem roundInfo={roundInfo} roomNumber={roomNumber} />
         <Image
           style={styles.mycharacter}
           source={{

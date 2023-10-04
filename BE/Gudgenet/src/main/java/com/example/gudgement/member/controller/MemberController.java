@@ -11,6 +11,7 @@ import com.example.gudgement.member.exception.BaseErrorException;
 import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.service.MailService;
 import com.example.gudgement.member.service.MemberService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -66,8 +67,9 @@ public class MemberController {
     @Operation(summary = "닉네임 등록", description = "닉네임을 변경합니다.")
     public void updateNickname(@RequestParam(name = "id") Long id, @RequestParam(name = "nickname") String nickname,
                                @RequestHeader("Authorization") String jwt) {
+
         memberService.updateNickname(id, nickname);
-//        memberService.initializeProgressAndInventory(id);
+        memberService.initializeProgressAndInventory(id);
     }
 
     @PostMapping("update/email")
@@ -88,7 +90,13 @@ public class MemberController {
     private Member getMember(HttpServletRequest httpServletRequest) {
         String header = httpServletRequest.getHeader("Authorization");
         String bearer = header.substring(7);
-        Long memberId = (Long) jwtProvider.getClaims(bearer).get("id");
+
+        Long memberId;
+        try {
+            memberId = (Long) jwtProvider.getClaims(bearer).get("id");
+        } catch (ExpiredJwtException e) {
+            throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+        }
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);

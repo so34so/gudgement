@@ -112,8 +112,6 @@ jwt:
   secret:
     key: javax.crypto.spec.SecretKeySpec@fa7605b8
 
-
-
 # H2 ??? ??? ?? ???
 #spring.datasource.driver-class-name=org.h2.Driver
 #spring.datasource.username=sa

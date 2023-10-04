@@ -1,6 +1,6 @@
-import EnemyCard from "../assets/images/enemycard.png";
-import BettingMachine from "../components/BettingMachine";
 import { CommonType } from "../types/CommonType";
+import myBlueCard from "../assets/images/mybluecard.png";
+
 import {
   Image,
   ImageSourcePropType,
@@ -8,53 +8,33 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-import Config from "react-native-config";
+const myblueCard: ImageSourcePropType = myBlueCard as ImageSourcePropType;
 
-const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
-
-export default function GameBettingSyetem({
-  roundInfo,
-  myInfoState,
-  enemyInfoState,
-  roomNumber,
-}: {
-  roundInfo: object;
-  myInfoState: object;
-  enemyInfoState: object;
-  roomNumber: string;
-}) {
-  console.log("흠", roundInfo.card);
-  const enemyCards: CommonType.TplayCard[] = roundInfo.card;
+export default function GameResultSystem({ cardInfo }: { cardInfo: object }) {
+  const myCard: CommonType.TplayCard[] = cardInfo;
   return (
     <View style={styles.bettingwrapper}>
       <Text
         className="rounded-lg text-white text-[60px] font-PretendardBold"
-        style={styles.enemycardnumber}
+        style={styles.mycardnumber}
       >
-        {enemyCards.order}
+        {myCard.order}
       </Text>
-      <View style={styles.enemycardtext}>
-        <Text
-          className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
-          style={styles.enemycardtitle}
-        >
-          {enemyCards.name}
-        </Text>
+      <View style={styles.mycardtext}>
         <Text
           className="rounded-lg  text-center text-white text-[20px] font-PretendardBold"
-          style={styles.enemycardtitle}
+          style={styles.mycardtitle}
         >
-          {enemyCards.amount}
+          {myCard.name}
+        </Text>
+        <Text
+          className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
+          style={styles.mycardtitle}
+        >
+          {myCard.amount}
         </Text>
       </View>
-      <Image style={styles.enemycard} source={enemyCard} />
-      <BettingMachine
-        roomNumber={roomNumber}
-        otherName={enemyInfoState.nickname}
-        roundInfo={roundInfo}
-        myInfoState={myInfoState}
-        maxBettingAmount={myInfoState.tiggle / 10}
-      />
+      <Image style={styles.mycard} source={myblueCard} />
     </View>
   );
 }
@@ -75,10 +55,12 @@ const styles = StyleSheet.create({
     bottom: "100%",
     zIndex: 20,
   },
-  enemycard: {
+  mycard: {
     right: "25%",
+    width: 140,
+    height: 180,
   },
-  enemycardnumber: {
+  mycardnumber: {
     zIndex: 6,
     position: "absolute",
     left: -40,
@@ -87,14 +69,14 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 3, height: 3 }, // 섀도우 오프셋
     textShadowRadius: 9, // 섀도우 반경 (두께)
   },
-  enemycardtext: {
+  mycardtext: {
     zIndex: 5,
     top: 120,
-    right: "25%",
+    right: "40%",
 
     alignItems: "center",
   },
-  enemycardtitle: {
+  mycardtitle: {
     textShadowColor: "rgba(0, 0, 0, 0.95)",
     textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
     textShadowRadius: 5, // 섀도우 반경 (두께)

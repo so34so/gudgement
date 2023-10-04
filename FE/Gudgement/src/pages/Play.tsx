@@ -68,6 +68,7 @@ function Play() {
             className="flex-1 absolute left-[35%] top-[30%] w-[150] h-[150]"
             onPress={() => navigation.navigate("PlayNavigator")}
           />
+
           <Image
             className=" "
             style={{

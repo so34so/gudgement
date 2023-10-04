@@ -59,13 +59,6 @@ export default function PlayMatchingWait({ route }) {
         });
       });
     }
-    // return () => {
-    //   // 언마운트 시 구독 해제 - 필요에 따라 조정
-    //   if (websocketClient.connected) {
-    //     websocketClient.disconnect();
-    //   }
-    //   websocketClient.unsubscribe("/queue/start/" + nickName);
-    // };
   }, [websocketClient]);
 
   const bluePlayBackground: ImageSourcePropType =

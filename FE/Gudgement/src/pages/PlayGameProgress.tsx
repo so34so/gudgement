@@ -3,6 +3,7 @@ import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import GameUi from "../components/GameUi";
+import GameTimerBar from "../components/GameTimerBar";
 import GameBettingSyetem from "../components/GameBettingSyetem";
 import {
   View,
@@ -61,7 +62,6 @@ export default function PlayGameProgress({
     }
   }
 
-  // const queryClient = useQueryClient();
   useEffect(() => {
     postRoundStart();
     const myCharacter = queryClient.getQueryData(["myCharacter"]);
@@ -89,6 +89,8 @@ export default function PlayGameProgress({
         resizeMode="cover"
         className="flex-1"
       >
+        <GameTimerBar duration={10} />
+
         <GameUi />
         <GameBettingSyetem
           enemyInfoState={enemyInfoState}

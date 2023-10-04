@@ -12,17 +12,13 @@ import {
 } from "react-native";
 
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
+import GameResultSystem from "../components/GameResultSystem";
+import ResultAnimation from "../components/ResultAnimation";
 
 export default function PlayGameResult({ route }) {
-  const { roomNumber, rounds, result } = route.params;
+  const { roomNumber, rounds, result, cardInfo } = route.params;
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
 
@@ -30,19 +26,33 @@ export default function PlayGameResult({ route }) {
 
   const [myCharacterState, setMyCharacterState] = useState(null);
   const [enemyCharacterState, setEnemyCharacterState] = useState(null);
+  const attackedPing = "pingpingeeeAttaked.gif";
+  const attackedBam = "bambamAttaked.gif";
 
   useEffect(() => {
     const myCharacter = queryClient.getQueryData(["myCharacter"]);
     const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
 
     if (myCharacter) {
-      setMyCharacterState(myCharacter);
+      if (!result && myCharacter === "bambam.gif") {
+        setMyCharacterState(attackedBam);
+      } else if (!result && myCharacter === "pingpingeee.gif") {
+        setMyCharacterState(attackedPing);
+      } else {
+        setMyCharacterState(myCharacter);
+      }
     }
 
     if (enemyCharacter) {
-      setEnemyCharacterState(enemyCharacter);
+      if (result && enemyCharacter === "bambam.gif") {
+        setEnemyCharacterState(attackedBam);
+      } else if (result && enemyCharacter === "pingpingeee.gif") {
+        setEnemyCharacterState(attackedPing);
+      } else {
+        setEnemyCharacterState(enemyCharacter);
+      }
     }
-  }, []);
+  }, [result]);
 
   return (
     <View className="flex w-full h-full">
@@ -52,6 +62,9 @@ export default function PlayGameResult({ route }) {
         className="flex-1"
       >
         <GameUi />
+        <GameResultSystem cardInfo={cardInfo} />
+        <ResultAnimation result={result} rounds={rounds} />
+
         <Image
           style={styles.mycharacter}
           source={{

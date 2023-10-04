@@ -2,7 +2,7 @@ import VolcanoMap from "../assets/images/volcanomap.png";
 import Snake from "../assets/images/snake.png";
 import PingPing from "../assets/images/pingping.png";
 import { RouteProp } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useLayoutEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -37,16 +37,12 @@ export default function PlayGameStart({
   route: PlayGameStartRouteProp;
 }) {
   const { roomNumber } = route.params; // 추가
-  const myCharacter = queryClient.getQueryData(["myCharacter"]);
-  const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
-  const myData = queryClient.getQueryData(["myGameinfo"]);
-  const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
+
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
-  const [myInfoState, setMyInfoState] = useState(myData);
-  const [enemyInfoState, setEnemyInfoState] = useState(enemyData);
-  const [myCharacterState, setMyCharacterState] = useState(myCharacter);
-  const [enemyCharacterState, setEnemyCharacterState] =
-    useState(enemyCharacter);
+  const [enemyInfoState, setEnemyInfoState] = useState(null);
+  const [myInfoState, setMyInfoState] = useState([null]);
+  const [myCharacterState, setMyCharacterState] = useState(null);
+  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
 
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
@@ -56,6 +52,32 @@ export default function PlayGameStart({
   const image1PositionX = useSharedValue(0);
   const image2PositionX = useSharedValue(0);
   const vsOpacity = useSharedValue(0);
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const enemyData = await queryClient.getQueryData(["enemyGameinfo"]);
+      const myData = await queryClient.getQueryData(["myGameinfo"]);
+      const myCharacter = await queryClient.getQueryData(["myCharacter"]);
+      const enemyCharacter = await queryClient.getQueryData(["enemyCharacter"]);
+
+      if (enemyData) {
+        setEnemyInfoState(enemyData);
+      }
+
+      if (myData) {
+        setMyInfoState(myData);
+      }
+
+      if (enemyCharacter) {
+        setEnemyCharacterState(enemyCharacter);
+      }
+
+      if (myCharacter) {
+        setMyCharacterState(myCharacter);
+      }
+    };
+
+    fetchInfo();
+  }, []);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -126,7 +148,7 @@ export default function PlayGameStart({
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
           style={[styles.mycharacterboxinname, animatedMyStyle]}
         >
-          {myInfoState.nickname}
+          {myInfoState?.nickname}
         </Animated.Text>
 
         {/* 적 캐릭터 박스 */}
@@ -152,7 +174,7 @@ export default function PlayGameStart({
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
           style={[styles.enemyboxinname, animatedEnemyStyle]}
         >
-          {enemyInfoState.nickname}
+          {enemyInfoState?.nickname}
         </Animated.Text>
         <Image
           style={styles.mycharacter}

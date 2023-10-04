@@ -52,19 +52,27 @@ const BettingMachine = ({
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
+      const timeoutSubscription = websocketClient.subscribe(
+        "/topic/game/timeout" + roomNumber,
+        function (messageOutput) {
+          if (messageOutput) {
+            postGiveup();
+          }
+        },
+      );
+
       websocketClient.subscribe(
         "/topic/game/" + roomNumber + nickName,
         function (messageOutput) {
+          timeoutSubscription.unsubscribe();
           console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
           const roundResults = JSON.parse(messageOutput.body);
-          console.log(roundResults);
-          console.log("라운드결과", roundResults.rounds);
-          console.log(typeof roundResults.rounds);
           if (roundResults.rounds >= 1 && roundResults.rounds <= 9) {
             navigation.navigate("PlayGameResult", {
               roomNumber: roomNumber,
               rounds: roundResults.rounds,
               result: roundResults.result,
+              cardInfo: roundResults.cardInfo,
             });
           } else if (roundResults.rounds === 10) {
             navigation.navigate("PlayGameFinalResult", {
@@ -78,7 +86,7 @@ const BettingMachine = ({
     }
   }, [websocketClient]);
 
-  // 라운드 데이터 요청
+  // 베팅 완료 요청
   async function postBettingInfo() {
     try {
       const response = await axios.post(`${Config.API_URL}/game/playRound`, {
@@ -96,10 +104,25 @@ const BettingMachine = ({
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
-  console.log("베팅머신메시지", roundInfo);
-  console.log("베팅머신메시지", myInfoState);
+  // 베팅 포기 요청
+  async function postGiveup() {
+    try {
+      const response = await axios.post(`${Config.API_URL}/game/giveUpRound`, {
+        nickName: myInfoState.nickname,
+        otherName: otherName,
+        bettingAmount: bettingAmount,
+        rounds: roundInfo.rounds,
+        cardOrder: roundInfo.card.order,
+        roomNumber: roomNumber,
+      });
+      Reactotron.log!("포기!!", response.data);
+      setIsButtonActive(false);
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
 
-  console.log(maxBettingAmount);
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =
@@ -166,7 +189,9 @@ const BettingMachine = ({
             <TouchableOpacity onPress={postBettingInfo}>
               <Image className="w-[94] h-[41]" source={bettingButton} />
             </TouchableOpacity>
-            <Image className="w-[94] h-[41]" source={giveUpButton} />
+            <TouchableOpacity onPress={postGiveup}>
+              <Image className="w-[94] h-[41]" source={giveUpButton} />
+            </TouchableOpacity>
           </View>
         </View>
       ) : (

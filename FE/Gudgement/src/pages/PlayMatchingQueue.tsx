@@ -4,29 +4,20 @@ import BlueCard from "../assets/images/bluecard.png";
 import AcceptButton from "../assets/images/accept.png";
 import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
-import React, { useEffect, useRef, useState } from "react";
+import GameTimerBar from "../components/GameTimerBar";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   View,
   StyleSheet,
   ImageBackground,
-  Pressable,
   TouchableOpacity,
   Image,
-  Text,
   ImageSourcePropType,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-
 import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
-import Reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
@@ -44,25 +35,24 @@ export default function PlayMatchingQueue({ route }) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  // useEffect(() => {
-  //   websocketClient.connect({}, function (frame) {
-  //     websocketClient.subscribe(
-  //       "/topic/game/" + roomNumber,
-  //       function (messageOutput) {
-  //         console.log("매칭큐", messageOutput);
-  //       },
-  //     );
-  //   });
-  // }, []);
   const websocketClient = useWebSocket();
 
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
+      const timeoutSubscription = websocketClient.subscribe(
+        "/topic/game/timeout" + roomNumber,
+        function (messageOutput) {
+          if (messageOutput) {
+            rejectMatch();
+          }
+        },
+      );
       websocketClient.subscribe(
         "/topic/game/" + roomNumber,
         function (messageOutput) {
           console.log("수락 모두 완료!", messageOutput.body);
+          timeoutSubscription.unsubscribe();
           setIsMessageReceived(true);
           const userInfoDtos = JSON.parse(
             messageOutput.body,
@@ -105,6 +95,7 @@ export default function PlayMatchingQueue({ route }) {
           console.log("큐 웨이트 내 정보:", myInfo);
           console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
           console.log("큐 웨이트 적정보", enemyInfo);
+
           // 리액트 쿼리에 데이터 저장
           queryClient.setQueryData(["myGameinfo"], myInfo);
           queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
@@ -115,14 +106,8 @@ export default function PlayMatchingQueue({ route }) {
       );
     }
   }, [websocketClient]);
-  // // Unmount 시점에 웹소켓 연결 종료
-  // return () => {
-  //   if (websocketClient.connected) {
-  //     websocketClient.disconnect();
-  //   }
-  // };
 
-  // 매칭 수락 함수
+  // 게임 수락 함수
   const acceptMatch = async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/game/accept`, {
@@ -142,6 +127,23 @@ export default function PlayMatchingQueue({ route }) {
     }
   };
 
+  // 수락 거절 함수
+  const rejectMatch = async () => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/game/reject`, {
+        roomNumber: roomNumber,
+        nickName: nickName,
+      });
+      if (response.status === 200) {
+        if (!isMessageReceived) {
+          navigation.navigate("PlaySelect");
+        }
+      }
+    } catch (error) {
+      console.error("Error accepting match:", error);
+    }
+  };
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -149,6 +151,8 @@ export default function PlayMatchingQueue({ route }) {
         resizeMode="cover"
         className="flex-1"
       >
+        <GameTimerBar duration={10} />
+
         <View style={styles.buttonwrapper}>
           <TouchableOpacity onPress={acceptMatch}>
             <Image style={styles.acceptbutton} source={acceptButton} />

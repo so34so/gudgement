@@ -8,6 +8,8 @@ import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
+import Config from "react-native-config";
+import SettingAccountBox from "../components/SettingAccountBox";
 
 function SettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,7 +44,7 @@ function SettingAccount() {
     // reactotron.log!("인증된 이메일", tempEmail);
     try {
       const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
-        `${API_URL}/account/${tempEmail}`,
+        `${Config.API_URL}/account/${tempEmail}`,
       );
       const responseAccount = response.data;
       setAccounts(responseAccount);
@@ -60,6 +62,10 @@ function SettingAccount() {
     setModalVisible(false);
   };
 
+  const handleSelectAccountId = (accountId: number) => {
+    setSelectedAccountId(accountId);
+  };
+
   const submitSelect = async () => {
     reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
@@ -74,7 +80,10 @@ function SettingAccount() {
         virtualAccountId: selectedAccountId,
       };
       try {
-        const response = await fetchApi.post(`${API_URL}/account`, sendBE);
+        const response = await fetchApi.post(
+          `${Config.API_URL}/account`,
+          sendBE,
+        );
         reactotron.log!("계좌 연동 성공!", response);
         /**
          * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
@@ -110,71 +119,11 @@ function SettingAccount() {
             </View>
           </View>
           <View className="flex w-full justify-start items-center">
-            <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
-              <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
-                <View className="gap-4 flex flex-row items-center">
-                  <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
-                    <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image
-                        source={{
-                          uri: `${IMAGE_URL}/asset/mypageIcon.png`,
-                        }}
-                        className="h-10 w-10"
-                      />
-                    </View>
-                  </View>
-                  <View className="flex felx-col">
-                    <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                      연동한 계좌정보는 저희가
-                    </Text>
-                    <View className="flex flex-row">
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        안전하게 보관
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        할게요.
-                      </Text>
-                    </View>
-                    <View className="flex flex-row">
-                      <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
-                        주계좌 1개를
-                      </Text>
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        선택
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        해주세요.
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                  3/3
-                </Text>
-              </View>
-              <ScrollView className="h-[74%] w-fill p-3">
-                <View className="mb-6">
-                  {accounts.map((account: CommonType.Taccount) => {
-                    return (
-                      <Pressable
-                        key={account.virtualAccountId}
-                        onPress={() => {
-                          handleSelect(account.virtualAccountId);
-                        }}
-                      >
-                        <AccountBox
-                          account={account}
-                          isSelected={
-                            selectedAccountId === account.virtualAccountId
-                          }
-                          onSelect={handleSelect}
-                        />
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </ScrollView>
-            </View>
+            <SettingAccountBox
+              numberVisible={true}
+              selectedAccountId={selectedAccountId}
+              onSelectId={handleSelectAccountId}
+            />
           </View>
         </View>
         <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">

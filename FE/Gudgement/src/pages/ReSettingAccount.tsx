@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { View, ImageBackground } from "react-native";
 import { CommonType } from "../types/CommonType";
 import { AxiosResponse } from "axios";
-import { API_URL, IMAGE_URL } from "@env";
 import { getAsyncData } from "../utils/common";
 import { queryClient } from "../../queryClient";
 import fetchApi from "../utils/tokenUtils";
@@ -11,6 +10,7 @@ import NavigationButton from "../components/NavigationButton";
 import SettingAccountBox from "../components/SettingAccountBox";
 import TagBoxSmall from "../components/TagBoxSmall";
 import reactotron from "reactotron-react-native";
+import Config from "react-native-config";
 
 function ReSettingAccount() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,7 +45,7 @@ function ReSettingAccount() {
     // reactotron.log!("인증된 이메일", tempEmail);
     try {
       const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
-        `${API_URL}/account/${tempEmail}`,
+        `${Config.API_URL}/account/${tempEmail}`,
       );
       const responseAccount = response.data;
       setAccounts(responseAccount);
@@ -63,6 +63,10 @@ function ReSettingAccount() {
     setModalVisible(false);
   };
 
+  const handleSelectAccountId = (accountId: number) => {
+    setSelectedAccountId(accountId);
+  };
+
   const submitSelect = async () => {
     reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
@@ -77,7 +81,10 @@ function ReSettingAccount() {
         virtualAccountId: selectedAccountId,
       };
       try {
-        const response = await fetchApi.post(`${API_URL}/account`, sendBE);
+        const response = await fetchApi.post(
+          `${Config.API_URL}/account`,
+          sendBE,
+        );
         reactotron.log!("계좌 연동 성공!", response);
         /**
          * 계좌 연동까지 끝났으면 fetchUserInfo가 key인 query를 다시
@@ -94,7 +101,7 @@ function ReSettingAccount() {
     <View className="flex w-screen h-screen">
       <ImageBackground
         source={{
-          uri: `${IMAGE_URL}/asset/mypageBackground.png`,
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
         }}
         resizeMode="cover"
         className="flex w-screen h-screen"
@@ -109,10 +116,14 @@ function ReSettingAccount() {
           <View className="py-2 flex flex-row justify-between items-center">
             <TagBoxSmall
               text={"주계좌 설정"}
-              img={`${IMAGE_URL}/asset/analysisIcon.png`}
+              img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
             />
           </View>
-          <SettingAccountBox numberVisible={false} />
+          <SettingAccountBox
+            numberVisible={false}
+            selectedAccountId={selectedAccountId}
+            onSelectId={handleSelectAccountId}
+          />
         </View>
         <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center px-3">
           <NavigationButton

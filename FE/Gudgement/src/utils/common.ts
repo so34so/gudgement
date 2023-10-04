@@ -74,7 +74,7 @@ export const refreshToken = async () => {
 
     // 서버에 요청 보내서 새 AccessToken 받아옴
     const response: AxiosResponse<CommonType.TrefreshToken> = await axios.post(
-      `${API_URL}/member/token/refresh`,
+      `${Config.API_URL}/member/token/refresh`,
       null,
       {
         headers: {
@@ -107,7 +107,6 @@ export const logoutUser = async () => {
     await removeAsyncData("accessToken");
     await removeAsyncData("refreshToken");
     await removeAsyncData("id");
-    await AsyncStorage.removeItem("id");
     reactotron.log!("로그아웃 시킬게요..");
     const getAccessTokenForLogout = await getAsyncData<string>("accessToken");
     reactotron.log!("과연?", getAccessTokenForLogout);
@@ -144,11 +143,6 @@ export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
   try {
     const response: AxiosResponse<CommonType.Tuser> = await fetchApi.get(
       `${Config.API_URL}/member/loadMyInfo`,
-      {
-        headers: {
-          Authorization: `Bearer ${getAccessTokenFetchUser}`,
-        },
-      },
     );
     reactotron.log!("fetchUser", response);
     return response.data;

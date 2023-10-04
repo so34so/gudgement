@@ -249,7 +249,7 @@ function Analyze(this: unknown) {
                   }
                   adjustFrame={getAdjustFrameFunc(86, 114)}
                 >
-                  <View className="bg-bluesky px-[2px] py-[2px] rounded-lg flex flex-row justify-start items-center border-solid border-lightsky border-[2px]">
+                  <View className="bg-bluesky w-[88px] px-1 py-[2px] rounded-lg flex flex-row justify-end items-center border-solid border-lightsky border-[2px]">
                     <Text
                       className="font-PretendardBold text-white px-2 py-[2px] text-2xs"
                       numberOfLines={1}
@@ -275,7 +275,7 @@ function Analyze(this: unknown) {
                   }
                   adjustFrame={getAdjustFrameFunc(64, 220)}
                 >
-                  <View className="bg-bluesky w-[64px] py-[2px] rounded-lg flex flex-row justify-start items-center border-solid border-lightsky border-[2px]">
+                  <View className="bg-bluesky w-[66px] py-[2px] px-1 rounded-lg flex flex-row justify-end items-center border-solid border-lightsky border-[2px]">
                     <Text
                       className="font-PretendardBold text-white px-2 py-[2px] text-2xs"
                       numberOfLines={1}
@@ -301,7 +301,7 @@ function Analyze(this: unknown) {
                   }
                   adjustFrame={getAdjustFrameFunc(66, 220)}
                 >
-                  <View className="bg-bluesky w-[66px] py-[2px] rounded-lg flex flex-row justify-start items-center border-solid border-lightsky border-[2px]">
+                  <View className="bg-bluesky w-[68px] px-[1px] py-[2px] rounded-lg flex flex-row justify-end items-center border-solid border-lightsky border-[2px]">
                     <Text
                       className="font-PretendardBold text-white px-2 py-[2px] text-2xs"
                       numberOfLines={1}
@@ -312,7 +312,7 @@ function Analyze(this: unknown) {
                       source={{
                         uri: `${Config.IMAGE_URL}/asset/dropdownArrow.png`,
                       }}
-                      className="h-[9px] w-[11px] mr-1"
+                      className="h-[9px] w-[11px] mr-2"
                     />
                   </View>
                 </ModalDropdown>

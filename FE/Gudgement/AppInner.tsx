@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Linking, Text, View } from "react-native";
 import { NavigationContainer, PathConfigMap } from "@react-navigation/native";
 import { CommonType } from "./src/types/CommonType";
@@ -40,7 +40,7 @@ function AppInner() {
    * 이 때, asyncStorage에 아이디가 있는지 여부를 useQuery를 통해 캐싱하고 있으면
    * 로그인 여부를 판단할 수 있을 것 같아서 아래와 같이 구현했습니다.
    */
-  const { data: isLoggedIn, isLoading: isLoggedInLoading } = useQuery<boolean>({
+  const { data: isLoggedIn } = useQuery({
     queryKey: ["isLoggedIn"],
     queryFn: async () => {
       const loginData: number | null = await getAsyncData("id");
@@ -59,7 +59,7 @@ function AppInner() {
   const {
     data: user,
     isFetched,
-    isLoading: fetchUserInfoLoading,
+    isLoading,
   } = useQuery({
     queryKey: ["fetchUserInfo"],
     queryFn: () => fetchUser(),
@@ -69,6 +69,7 @@ function AppInner() {
       }, 100);
     },
   });
+
   if (isFetched) {
     // 화면전환보다 스플래시 스크린이 너무 빨리 사라져서 user 데이터
     // 다 받아온 후에 강제로 100ms이후에 사라지게끔 구현
@@ -76,8 +77,7 @@ function AppInner() {
       SplashScreen.hide();
     }, 100);
   }
-
-  if (isLoggedInLoading || fetchUserInfoLoading) {
+  if (isLoading) {
     return (
       <View>
         <Text>로딩 중</Text>

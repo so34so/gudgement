@@ -19,7 +19,7 @@ interface AdaptAxiosRequestConfig extends AxiosRequestConfig {
   retryCount?: number; // 재시도 횟수 나타내는 프로퍼티 추가
 }
 // Axios 인스턴스 생성
-const fetchApi: AxiosInstance = axios.create();
+export const fetchApi: AxiosInstance = axios.create();
 
 // 요청 전에 실행되는 인터셉터
 fetchApi.interceptors.request.use(

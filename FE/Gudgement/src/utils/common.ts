@@ -73,12 +73,15 @@ export const refreshToken = async () => {
     reactotron.log!("Refresh token으로 발급받는 중..", getRefreshToken);
 
     // 서버에 요청 보내서 새 AccessToken 받아옴
-    const response: AxiosResponse<CommonType.TrefreshToken> =
-      await fetchApi.post(`${API_URL}/member/token/refresh`, null, {
+    const response: AxiosResponse<CommonType.TrefreshToken> = await axios.post(
+      `${API_URL}/member/token/refresh`,
+      null,
+      {
         headers: {
           Authorization: `Bearer ${getRefreshToken}`,
         },
-      });
+      },
+    );
     reactotron.log!("refreshToken으로 accessToken 발급", response.data);
     // 새 AccessToken 저장
     setAsyncData("accessToken", response.data.accessToken);
@@ -103,6 +106,7 @@ export const logoutUser = async () => {
     // 모든 인증 정보 삭제 (여기서는 accessToken과 refreshToken만 삭제하였음)
     await removeAsyncData("accessToken");
     await removeAsyncData("refreshToken");
+    await AsyncStorage.removeItem("id");
     reactotron.log!("로그아웃 시킬게요..");
     const getAccessToken = await getAsyncData<string>("accessToken");
     reactotron.log!("과연?", getAccessToken);

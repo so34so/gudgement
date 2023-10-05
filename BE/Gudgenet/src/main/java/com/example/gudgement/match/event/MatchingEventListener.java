@@ -4,6 +4,8 @@ import com.example.gudgement.game.service.GameService;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -21,11 +23,14 @@ public class MatchingEventListener {
     private final RedisTemplate<String, String> redisTemplate;
     private final GameService gameService;
     private final TimerService timerService;
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(MatchingEventListener.class);
 
     @EventListener
     public void handleMatchRequest(MatchRequestEvent event) {
         // Extract the matching request data from the event.
         MatchDto request = event.getMatchDto();
+
+        logger.info("Received MatchRequestEvent with matchDto: {}", request);
 
         String tierKey = "Room:" + request.getTiggle() + ":" + request.getGrade();
         SetOperations<String, String> setOps = redisTemplate.opsForSet();
@@ -59,6 +64,8 @@ public class MatchingEventListener {
             }, 20);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
+
+            logger.info("Removed users {} and {} from tier",request.getNickName(),otherUser);
         }
     }
 

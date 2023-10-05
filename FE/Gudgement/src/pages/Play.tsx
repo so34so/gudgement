@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import FastImage, { FastImageProps } from "react-native-fast-image";
+import { useEffect } from "react";
 import {
   ImageBackground,
   Image,
@@ -14,13 +13,14 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import PlayNavigator from "../navigation/PlayNavigator";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import PlayBackground from "../assets/images/playBackground.png";
 import Fin from "../assets/images/finfinee.png";
 import { CommonType } from "../types/CommonType";
 import Config from "react-native-config";
-
+import PlayNavigator from "../navigation/PlayNavigator";
+import Reactotron from "reactotron-react-native";
+import fetchApi from "../utils/tokenUtils";
 function Play() {
   const playBackground: ImageSourcePropType =
     PlayBackground as ImageSourcePropType;
@@ -41,6 +41,20 @@ function Play() {
     );
   }, [offset]);
 
+  // 등급 결정 함수
+  const postGrade = async () => {
+    try {
+      const response = await fetchApi.put(
+        `${Config.API_URL}/member/update/grade`,
+      );
+      if (response.status === 200) {
+        navigation.navigate("PlayNavigator");
+      }
+    } catch (error) {
+      Reactotron.log!("매칭찾기실패!", error);
+    }
+  };
+
   return (
     <View className=" flex w-full h-full">
       <ImageBackground
@@ -57,18 +71,12 @@ function Play() {
               }}
             />
           </Animated.View>
-          {/* <FastImage
-                source={require("../assets/images/flame.gif")} // FlameEntrance gif 이미지 사용
-                style={{ width: "100%", height: "100%" }} // 사이즈 조절은 필요에 따라 변경하세요.
-                resizeMode={FastImage.resizeMode.contain} // resize mode 설정
-              /> */}
 
           {/* 실제 불의 선택 영역 */}
           <Pressable
             className="flex-1 absolute left-[35%] top-[30%] w-[150] h-[150]"
-            onPress={() => navigation.navigate("PlayNavigator")}
+            onPress={() => postGrade()}
           />
-
           <Image
             className=" "
             style={{

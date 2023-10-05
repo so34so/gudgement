@@ -55,9 +55,17 @@ export default function PlayGameResult({ route }) {
     }
     // setTimeout 함수를 이용해 6초 후에 페이지 이동
     const timerId = setTimeout(() => {
-      navigation.navigate("PlayGameProgress", {
-        roomNumber: roomNumber,
-        nickName: nickName,
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "PlayGameProgress",
+            params: {
+              roomNumber: roomNumber,
+              nickName: nickName,
+            },
+          },
+        ],
       });
     }, 6000);
 
@@ -66,13 +74,13 @@ export default function PlayGameResult({ route }) {
 
   return (
     <View className="flex w-full h-full">
-      <ResultAnimation result={result} rounds={rounds} />
-
       <ImageBackground
         source={volcanoMap}
         resizeMode="cover"
         className="flex-1"
       >
+        <ResultAnimation result={result} rounds={rounds} />
+
         <GameUi />
         <GameResultSystem cardInfo={cardInfo} />
 

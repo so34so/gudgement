@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     top: 17,
+    zIndex: 4000,
     right: 17,
     backgroundColor: "#FF0000",
     borderWidth: 4,

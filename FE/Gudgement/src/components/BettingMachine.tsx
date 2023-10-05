@@ -55,7 +55,7 @@ const BettingMachine = ({
         "/topic/game/timeout" + roomNumber,
         function (messageOutput) {
           if (messageOutput) {
-            postGiveup();
+            isGiveup();
           }
         },
       );
@@ -124,6 +124,27 @@ const BettingMachine = ({
     }
   }
 
+  // 베팅 포기 여부 확인
+  async function isGiveup() {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/game/timeoutGiveUp`,
+        {
+          nickName: nickName,
+          otherName: otherName,
+          bettingAmount: bettingAmount,
+          rounds: roundInfo.rounds,
+          cardOrder: roundInfo.card.order,
+          roomNumber: roomNumber,
+        },
+      );
+      Reactotron.log!("타임 아웃 포기!!", response.data);
+      setIsButtonActive(false);
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =

@@ -8,20 +8,20 @@ const map2: ImageSourcePropType = Map2 as ImageSourcePropType;
 const map3: ImageSourcePropType = Map3 as ImageSourcePropType;
 export const mapInfoArray: CommonType.Tplaymap[] = [
   {
-    title: "Map 1",
-    description: "맵 설명이 들어갈 자리 1",
+    title: "휴화산",
+    description: "용암 활동이 멈춘 화산 지형",
     image: map1,
     ticle: 100,
   },
   {
-    title: "Map 2",
-    description: "맵 설명이 들어갈 자리 2",
+    title: "활화산",
+    description: "열기가 뜨겁게 올라오는\n 화산 지형",
     image: map2,
     ticle: 300,
   },
   {
-    title: "Map 3",
-    description: "맵 설명이 들어갈 자리 3",
+    title: "불지옥",
+    description: "둘 중 하나는 지옥을\n경험하는 지형",
     image: map3,
     ticle: 500,
   },

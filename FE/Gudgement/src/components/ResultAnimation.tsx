@@ -8,11 +8,11 @@ import Animated, {
 
 const ResultAnimation = ({ result, rounds }) => {
   const opacity = useSharedValue(-0);
-  const translateY = useSharedValue(-100);
+  const translateY = useSharedValue(-400);
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
     width: "100%",
-    height: "100%",
+    height: "150%",
     opacity: opacity.value,
     backgroundColor: result ? "#34B859" : "#FF0000",
   }));
@@ -33,7 +33,7 @@ const ResultAnimation = ({ result, rounds }) => {
   useEffect(() => {
     // Start animation
     opacity.value = withTiming(0.7, { duration: 1000 });
-    translateY.value = withTiming(0, { duration: 1000 });
+    translateY.value = withTiming(-900, { duration: 1000 });
   }, [result, rounds]);
 
   return (

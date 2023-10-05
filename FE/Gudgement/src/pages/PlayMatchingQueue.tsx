@@ -4,7 +4,7 @@ import BlueCard from "../assets/images/bluecard.png";
 import AcceptButton from "../assets/images/accept.png";
 import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
-import GameTimerBar from "../components/GameTimerBar";
+import MatchingTimerBar from "../components/MatchingTimerBar";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -20,6 +20,7 @@ import { CommonType } from "../types/CommonType";
 import { useWebSocket } from "../components/WebSocketContext";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
+import GameTimerBar from "../components/GameTimerBar";
 
 export default function PlayMatchingQueue({ route }) {
   const { roomNumber, nickName } = route.params; // 추가
@@ -151,8 +152,7 @@ export default function PlayMatchingQueue({ route }) {
         resizeMode="cover"
         className="flex-1"
       >
-        <GameTimerBar duration={10} />
-
+        <MatchingTimerBar duration={20} />
         <View style={styles.buttonwrapper}>
           <TouchableOpacity onPress={acceptMatch}>
             <Image style={styles.acceptbutton} source={acceptButton} />

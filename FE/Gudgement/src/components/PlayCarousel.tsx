@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "600",
+    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",

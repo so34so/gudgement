@@ -4,6 +4,7 @@ import BlueBlur from "../assets/images/blueblur.png";
 import FlameMatch from "../assets/images/flamematch2.gif";
 import SmallCloseButton from "../components/SmallCloseButton";
 import BlueFlame from "../assets/images/blueflame.gif";
+import MathchingTimer from "./MathchingTimer";
 import MatchingInfoBox from "../assets/images/matchingInfoBox.png";
 import React, { useEffect, useRef, useState } from "react";
 import Reactotron from "reactotron-react-native";
@@ -122,23 +123,6 @@ export default function PlayMatchingWait({ route }) {
     }
   };
 
-  // useEffect(() => {
-  //   offset.value = withRepeat(
-  //     withTiming(-offset.value, { duration: 300 }),
-  //     -1,
-  //     true,
-  //   );
-
-  //   const intervalId = setInterval(() => {
-  //     setElapsedTime(prevTime => prevTime + 1);
-  //   }, 1000);
-
-  //   // 컴포넌트가 언마운트될 때 인터벌 정리
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, [offset]);
-
   return (
     <View className="flex w-full h-full">
       <ImageBackground
@@ -163,12 +147,7 @@ export default function PlayMatchingWait({ route }) {
           </Pressable>
         </View>
         <View style={styles.matchInfobox}>
-          <Text
-            style={styles.elapsedTimeText}
-            className="rounded-lg text-white text-[44px] font-PretendardExtraBold"
-          >
-            {formatElapsedTime(elapsedTime)}
-          </Text>
+          <MathchingTimer />
           <Image style={styles.matchInfobox} source={matchInfobox} />
         </View>
       </ImageBackground>
@@ -229,15 +208,3 @@ const styles = StyleSheet.create({
     zIndex: 13,
   },
 });
-
-// 경과 시간을 MM:SS 형식으로 포맷하는 함수
-function formatElapsedTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${padWithZero(minutes)}:${padWithZero(remainingSeconds)}`;
-}
-
-// 숫자를 두 자릿수로 맞춰줍니다 (0을 추가)
-function padWithZero(number: number) {
-  return number.toString().padStart(2, "0");
-}

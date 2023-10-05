@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -58,24 +59,26 @@ public class AnalyzeServiceImpl implements AnalyzeService{
             if (chart.isEmpty()) {
                 LocalDate localDate = LocalDate.of(year, month, days[i-1]);
                 chartService.toDateWeekChartData(member.getMemberId(), String.valueOf(localDate));
-            } else {
-                charts[i-1] = chart.get();
             }
         }
+
+        List<Chart> chartList = chartRepository.findALLByAccountIdAndYearAndMonth(virtualAccountId, year, month);
 
         // 목표 금액 찾아 오기
         Long monthOverconsumption = -1L;
         if (nowDate.getMonth().getValue() == month) {
             monthOverconsumption = member.getMonthOverconsumption();
         } else if (nowDate.getMonth().getValue() > month) {
-            for (int i = 0; i < charts.length; i++) {
-                if (charts[i].getMonthOverconsumption() != null) {
-                    monthOverconsumption = charts[i].getMonthOverconsumption();
+            for (int i = 0; i < chartList.size(); i++) {
+                if (chartList.get(i).getMonthOverconsumption() != null) {
+                    monthOverconsumption = chartList.get(i).getMonthOverconsumption();
                 }
             }
         } else if (nowDate.getMonth().getValue() < month){
             throw new BaseErrorException(ErrorCode.IMPOSSIBLE_CREATE_DATA);
         }
+
+        System.out.println(monthOverconsumption);
 
         String result = flaskPostRequest(virtualAccountId, year, month, monthOverconsumption);
         if (result.equals("NOT_EXIST")) {

@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { getAsyncData, setAsyncData } from "../utils/common";
+import { setAsyncData } from "../utils/common";
 import { CommonType } from "../types/CommonType";
 import { queryClient } from "../../queryClient";
 

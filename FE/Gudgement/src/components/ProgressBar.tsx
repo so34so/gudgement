@@ -26,6 +26,10 @@ const ProgressBar = ({ percent }: { percent: number }) => {
     });
   }, [percent, progress]);
 
+  useEffect(() => {
+    setProgressColor("bg-sub02");
+  }, [percent]);
+
   return (
     <View
       style={styles.container}

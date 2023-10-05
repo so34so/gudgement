@@ -62,12 +62,6 @@ export default function Home() {
     img: 0,
   });
 
-  useEffect(() => {
-    if (userData) {
-      checkSpendRate(userData, percent, setSpend);
-    }
-  }, [percent]);
-
   const characterImage = useCallback(() => {
     const currentCharacter = userData?.setItems.filter(
       (item: CommonType.TsetItem) => {
@@ -119,7 +113,13 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[92%]">
-            <AnalysisBox ProgressBarVisible={true} />
+            <AnalysisBox
+              ProgressBarVisible={true}
+              spend={spend}
+              setSpend={setSpend}
+              percent={percent}
+              setPercent={setPercent}
+            />
           </View>
         </View>
         <Image

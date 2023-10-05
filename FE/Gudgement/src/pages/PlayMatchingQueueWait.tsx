@@ -40,69 +40,71 @@ export default function PlayMatchingQueueWait({ route }) {
 
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
-    const timeoutSubscription = websocketClient.subscribe(
-      "/topic/game/timeout" + roomNumber,
-      function (messageOutput) {
-        if (messageOutput) {
-          navigation.navigate("PlaySelect");
-        }
-      },
-    );
-    websocketClient.subscribe(
-      "/topic/game/" + roomNumber,
-      function (messageOutput) {
-        console.log("수락 모두 완료!", messageOutput.body);
-        const userInfoDtos = JSON.parse(
-          messageOutput.body,
-        ) as CommonType.TGameUserInfoDto;
-        const myInfo = userInfoDtos[0] as CommonType.TmyGameinfo;
-        const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
-        timeoutSubscription.unsubscribe();
-
-        if (
-          myInfo &&
-          myInfo.equippedItems &&
-          Array.isArray(myInfo.equippedItems.items)
-        ) {
-          const myItem = myInfo.equippedItems.items.find(
-            item => item.type === "character",
-          );
-          if (myItem) {
-            queryClient.setQueryData(["myCharacter"], myItem.image);
+    if (websocketClient) {
+      const timeoutSubscription = websocketClient.subscribe(
+        "/topic/game/timeout" + roomNumber,
+        function (messageOutput) {
+          if (messageOutput) {
+            navigation.navigate("PlaySelect");
           }
-        }
-        if (
-          enemyInfo &&
-          enemyInfo.equippedItems &&
-          Array.isArray(enemyInfo.equippedItems.items)
-        ) {
-          const enemyItem = enemyInfo.equippedItems.items.find(
-            item => item.type === "character",
-          );
-          if (enemyItem) {
-            queryClient.setQueryData(["enemyCharacter"], enemyItem.image);
-          }
-        }
-        console.log(
-          "큐 웨이트 내 캐릭터",
-          queryClient.getQueryData(["myCharacter"]),
-        );
-        console.log(
-          "큐 웨이트 적 캐릭터",
-          queryClient.getQueryData(["enemyCharacter"]),
-        );
-        console.log("큐 웨이트 내 정보:", myInfo);
-        console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
-        console.log("큐 웨이트 적정보", enemyInfo);
+        },
+      );
+      websocketClient.subscribe(
+        "/topic/game/" + roomNumber,
+        function (messageOutput) {
+          console.log("수락 모두 완료!", messageOutput.body);
+          const userInfoDtos = JSON.parse(
+            messageOutput.body,
+          ) as CommonType.TGameUserInfoDto;
+          const myInfo = userInfoDtos[0] as CommonType.TmyGameinfo;
+          const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
+          timeoutSubscription.unsubscribe();
 
-        // 리액트 쿼리에 데이터 저장
-        queryClient.setQueryData(["myGameinfo"], myInfo);
-        queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
-        navigation.navigate("PlayGameStart", {
-          roomNumber: roomNumber,
-        });
-      },
-    );
+          if (
+            myInfo &&
+            myInfo.equippedItems &&
+            Array.isArray(myInfo.equippedItems.items)
+          ) {
+            const myItem = myInfo.equippedItems.items.find(
+              item => item.type === "character",
+            );
+            if (myItem) {
+              queryClient.setQueryData(["myCharacter"], myItem.image);
+            }
+          }
+          if (
+            enemyInfo &&
+            enemyInfo.equippedItems &&
+            Array.isArray(enemyInfo.equippedItems.items)
+          ) {
+            const enemyItem = enemyInfo.equippedItems.items.find(
+              item => item.type === "character",
+            );
+            if (enemyItem) {
+              queryClient.setQueryData(["enemyCharacter"], enemyItem.image);
+            }
+          }
+          console.log(
+            "큐 웨이트 내 캐릭터",
+            queryClient.getQueryData(["myCharacter"]),
+          );
+          console.log(
+            "큐 웨이트 적 캐릭터",
+            queryClient.getQueryData(["enemyCharacter"]),
+          );
+          console.log("큐 웨이트 내 정보:", myInfo);
+          console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
+          console.log("큐 웨이트 적정보", enemyInfo);
+
+          // 리액트 쿼리에 데이터 저장
+          queryClient.setQueryData(["myGameinfo"], myInfo);
+          queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
+          navigation.navigate("PlayGameStart", {
+            roomNumber: roomNumber,
+          });
+        },
+      );
+    }
   }, []);
 
   return (

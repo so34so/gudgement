@@ -38,6 +38,13 @@ function Login({ setIsLoginLoading }: LoginProps) {
       true,
     );
   }, [offset, offset2]);
+  // 애니메이션
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+  const animatedStyles2 = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset2.value }],
+  }));
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -111,14 +118,6 @@ function Login({ setIsLoginLoading }: LoginProps) {
       />
     );
   }
-
-  // 애니메이션
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: offset.value }],
-  }));
-  const animatedStyles2 = useAnimatedStyle(() => ({
-    transform: [{ translateY: offset2.value }],
-  }));
 
   return (
     <View className="flex w-full h-full">

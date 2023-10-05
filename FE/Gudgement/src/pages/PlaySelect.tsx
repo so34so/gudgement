@@ -18,7 +18,7 @@ import {
   Image,
   Text,
   ImageSourcePropType,
-  Pressable,
+  TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
@@ -103,9 +103,9 @@ function PlaySelect() {
         resizeMode="cover"
         style={styles.background}
       >
-        <Pressable onPress={() => navigation.navigate("플레이")}>
+        <TouchableOpacity onPress={() => navigation.navigate("플레이")}>
           <CloseButton />
-        </Pressable>
+        </TouchableOpacity>
         <PlayCarousel onSelectMap={handleMapSelection} />
 
         <View style={styles.cards}>
@@ -115,15 +115,14 @@ function PlaySelect() {
             resizeMode="contain"
           />
         </View>
-        {/* <BettingMachine /> */}
 
         <View style={styles.lineGradi} className="flex items-center">
-          <Pressable onPress={handleStartMatch}>
+          <TouchableOpacity onPress={handleStartMatch}>
             <Text className="flex m-auto justify-center rounded-lg text-white text-[32px] font-PretendardExtraBold">
               대전 찾기
             </Text>
             <Image className="mt-12" source={lineGradi} />
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>

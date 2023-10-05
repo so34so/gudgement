@@ -17,6 +17,7 @@ import {
   Pressable,
   Image,
   Text,
+  TouchableOpacity,
   ImageSourcePropType,
 } from "react-native";
 import {
@@ -142,9 +143,9 @@ export default function PlayMatchingWait({ route }) {
         </View>
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
-          <Pressable onPress={handleCloseMatch}>
+          <TouchableOpacity onPress={handleCloseMatch}>
             <SmallCloseButton />
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View style={styles.matchInfobox}>
           <MathchingTimer />

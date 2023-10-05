@@ -9,5 +9,4 @@ public class AnalyzeRequestDto {
     private int year;
     private int month;
     private Long virtualAccountId;
-    private Long monthOverconsumption;
 }

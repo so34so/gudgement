@@ -35,11 +35,10 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         Long virtualAccountId = analyzeRequestDto.getVirtualAccountId();
         int year = analyzeRequestDto.getYear();
         int month = analyzeRequestDto.getMonth();
-        Long monthOverconsumption = analyzeRequestDto.getMonthOverconsumption();
-
+        LocalDate nowDate = LocalDate.now();
         Optional<MonthAnalyze> monthAnalyze = monthAnalyzeRepository.findByYearAndMonthAndVirtualAccountId(year, month, virtualAccountId);
 
-        if (monthAnalyze.isPresent() && (year != LocalDate.now().getYear() || month != LocalDate.now().getMonth().getValue())) {
+        if (monthAnalyze.isPresent() && (year != nowDate.getYear() || month != nowDate.getMonth().getValue())) {
             log.info("변화 불가능한 데이터, 이전 기록 반환합니다.");
             return;
         }
@@ -63,6 +62,21 @@ public class AnalyzeServiceImpl implements AnalyzeService{
                 charts[i-1] = chart.get();
             }
         }
+
+        // 목표 금액 찾아 오기
+        Long monthOverconsumption = -1L;
+        if (nowDate.getMonth().getValue() == month) {
+            monthOverconsumption = member.getMonthOverconsumption();
+        } else if (nowDate.getMonth().getValue() > month) {
+            for (int i = 0; i < charts.length; i++) {
+                if (charts[i].getMonthOverconsumption() != null) {
+                    monthOverconsumption = charts[i].getMonthOverconsumption();
+                }
+            }
+        } else if (nowDate.getMonth().getValue() < month){
+            throw new BaseErrorException(ErrorCode.IMPOSSIBLE_CREATE_DATA);
+        }
+
         String result = flaskPostRequest(virtualAccountId, year, month, monthOverconsumption);
         if (result.equals("NOT_EXIST")) {
             throw new BaseErrorException(ErrorCode.NOT_EXIST_TRANSACTION);
@@ -72,7 +86,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
     }
 
     @Override
-    public AnalyzeResponseDto getMonthAnalyze(Long virtualAccountId, int year, int month, Long monthOverconsumption) {
+    public AnalyzeResponseDto getMonthAnalyze(Long virtualAccountId, int year, int month) {
         MonthAnalyze createdAnalyze = monthAnalyzeRepository
                 .findByYearAndMonthAndVirtualAccountId(year, month, virtualAccountId).orElseThrow(() -> {
                     throw new BaseErrorException(ErrorCode.NOT_FOUND_ANALYZE);

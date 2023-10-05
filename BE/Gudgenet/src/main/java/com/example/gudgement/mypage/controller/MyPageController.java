@@ -63,8 +63,7 @@ public class MyPageController {
             AnalyzeResponseDto analyzeResponseDto = analyzeService
                         .getMonthAnalyze(analyzeRequestDto.getVirtualAccountId(),
                                 analyzeRequestDto.getYear(),
-                                analyzeRequestDto.getMonth(),
-                                analyzeRequestDto.getMonthOverconsumption());
+                                analyzeRequestDto.getMonth());
 
         return ResponseEntity.ok(analyzeResponseDto);
     }

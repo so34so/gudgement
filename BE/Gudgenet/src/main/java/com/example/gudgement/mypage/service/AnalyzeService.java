@@ -5,5 +5,5 @@ import com.example.gudgement.mypage.dto.response.AnalyzeResponseDto;
 
 public interface AnalyzeService {
     void createMonthAnalyze(AnalyzeRequestDto analyzeRequestDto);
-    AnalyzeResponseDto getMonthAnalyze(Long virtualAccountId, int year, int month, Long monthOverconsumption);
+    AnalyzeResponseDto getMonthAnalyze(Long virtualAccountId, int year, int month);
 }

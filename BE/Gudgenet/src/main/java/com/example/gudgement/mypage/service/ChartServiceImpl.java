@@ -294,8 +294,6 @@ public class ChartServiceImpl implements ChartService {
                 }
             } catch (AccountException e) {
                 log.error(e.getMessage());
-                log.error(String.valueOf(e.getCause()));
-                log.error(String.valueOf(e.getErrorCode()));
                 throw new AccountException(ErrorCode.AMOUNT_NOT_NUMBER);
             }
         // 차트가 이미 있다면

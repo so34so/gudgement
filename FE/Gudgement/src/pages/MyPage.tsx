@@ -15,7 +15,6 @@ import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
 
 import { CommonType } from "../types/CommonType";
-import reactotron from "reactotron-react-native";
 
 function MyPage(this: unknown) {
   const navigation =
@@ -43,7 +42,6 @@ function MyPage(this: unknown) {
   }
 
   const handleScreen = (screen: keyof CommonType.TmyPageScreenName) => {
-    reactotron.log!("dd");
     navigation.navigate(screen);
   };
 

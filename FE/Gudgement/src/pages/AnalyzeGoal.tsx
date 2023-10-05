@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import reactotron from "reactotron-react-native";
 
 import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
@@ -93,7 +92,6 @@ function AnalyzeGoal() {
       return;
     }
     const numGoal = Number(numValue);
-    reactotron.log!(numGoal);
     try {
       const response = await fetchApi.put(
         `${Config.API_URL}/mypage/update/${numGoal}`,
@@ -101,13 +99,11 @@ function AnalyzeGoal() {
           monthOverConsumption: numGoal,
         },
       );
-      reactotron.log!("목표 금액 설정 성공!", response);
       setModalText(
         `목표 금액이 ${numGoal.toLocaleString("ko-KR")}원으로 설정되었습니다.`,
       );
       openModal();
     } catch (error) {
-      reactotron.log!("목표 금액 설정 실패!", error);
       setModalText("목표 금액 설정 중 오류가 발생했습니다. 다시 시도해주세요.");
       openModal();
     }

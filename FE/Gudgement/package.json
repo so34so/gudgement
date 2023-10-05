@@ -14,7 +14,9 @@
     "bundle:android": "react-native bundle --assets-dest build/CodePush --bundle-output build/CodePush/index.android.bundle --dev false --entry-file index.js --platform android --sourcemap-output build/CodePush/index.android.bundle.map",
     "appcenter-android-key": "appcenter codepush deployment list -a yms1789-naver.com/Gudgement -k",
     "aab:android": "npm ci && cd android && ./gradlew bundleRelease && cd .. && open android/app/build/outputs/bundle/release",
-    "apk:android": "npm ci && cd android && ./gradlew assembleRelease && cd .. && open android/app/build/outputs/apk/release"
+    "apk:android": "npm ci && cd android && ./gradlew assembleRelease && cd .. && open android/app/build/outputs/apk/release",
+    "apk:window:android": "npm ci && cd android && gradlew assembleRelease && cd .. && start .\\android\\app\\build\\outputs\\apk\\release"
+    
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.19.3",
@@ -41,7 +43,6 @@
     "react-native-code-push": "^8.1.0",
     "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.12.1",
-    "react-native-google-fit": "^0.19.1",
     "react-native-modal-dropdown": "^1.0.2",
     "react-native-permissions": "^3.9.2",
     "react-native-push-notification": "^8.1.1",
@@ -80,6 +81,7 @@
     "prettier": "^2.4.1",
     "react-native-asset": "^2.1.1",
     "react-native-config": "^1.5.1",
+    "react-native-health-connect": "^1.2.1",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-svg": "^13.10.0",
     "react-test-renderer": "18.2.0",

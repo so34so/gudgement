@@ -19,8 +19,16 @@ import reactotron from "reactotron-react-native";
 
 import { CommonType } from "../types/CommonType";
 import { textShadow } from "../utils/common";
+import {
+  initialize,
+  requestPermission,
+  readRecords,
+  insertRecords,
+} from "react-native-health-connect";
+import { TimeRangeFilter } from "react-native-health-connect/lib/typescript/types/base.types";
+import fetchApi from "../utils/tokenUtils";
 
-function MyPage(this: unknown) {
+function Pedometer(this: unknown) {
   const {
     data: userData,
     isLoading,
@@ -32,10 +40,47 @@ function MyPage(this: unknown) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [steps, setSteps] = useState(0);
+  const [stepPercentage, setStepPercentage] = useState(0);
+  async function getHealthData() {
+    await initialize();
+    // request permissions
+    await requestPermission([{ accessType: "read", recordType: "Steps" }]);
+    await requestPermission([{ accessType: "write", recordType: "Steps" }]);
+    const insertSampleData = () => {
+      const today = new Date();
+      insertRecords([
+        {
+          recordType: "Steps",
+          count: 11000,
+          startTime: new Date(today.getTime() - 86400000).toISOString(),
+          endTime: today.toISOString(),
+        },
+      ]).then(ids => {
+        console.log("Records inserted ", { ids }); // Records inserted  {"ids": ["06bef46e-9383-4cc1-94b6-07a5045b764a", "a7bdea65-86ce-4eb2-a9ef-a87e6a7d9df2"]}
+      });
+    };
+    insertSampleData();
+    const getData = async () => {
+      const today = new Date();
+      const timeRangeFilter: TimeRangeFilter = {
+        operator: "between",
+        startTime: new Date(today.getTime() - 86400000).toISOString(),
+        endTime: today.toISOString(),
+      };
+      // Steps
+      const fetchSteps = await readRecords("Steps", { timeRangeFilter });
+      const totalSteps = fetchSteps.reduce((sum, cur) => sum + cur.count, 0);
+      setSteps(totalSteps);
+      setStepPercentage(totalSteps / 10000 >= 1 ? 1 : totalSteps / 10000);
+    };
 
+    getData();
+  }
   useEffect(() => {
     refetch();
-  }, []);
+    getHealthData();
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -54,9 +99,22 @@ function MyPage(this: unknown) {
   };
 
   const handleFetchMillion = async () => {
-    reactotron.log!("만보보상!");
-    setModalText("만보보상!");
-    openModal();
+    if (steps < 10000) {
+      setModalText("만보를 덜 채웠군요!!");
+      openModal();
+      return;
+    }
+    try {
+      await fetchApi.post(`${Config.API_URL}/member/pedometer`, null, {
+        params: {
+          memberId: userData?.memberId,
+        },
+      });
+      setModalText("만보 보상 받기 완료!");
+      openModal();
+    } catch (error) {
+      reactotron.log!(error);
+    }
   };
 
   return (
@@ -94,7 +152,7 @@ function MyPage(this: unknown) {
             <View className="flex justify-center items-center">
               <ProgressChart
                 data={{
-                  data: [0.6],
+                  data: [stepPercentage],
                   colors: ["#3190FF"],
                 }}
                 width={200}
@@ -112,7 +170,7 @@ function MyPage(this: unknown) {
               />
               <ProgressChart
                 data={{
-                  data: [0.6],
+                  data: [stepPercentage],
                   colors: ["#000000b2"],
                 }}
                 width={200}
@@ -129,23 +187,13 @@ function MyPage(this: unknown) {
                 hideLegend={true}
               />
             </View>
-            <View className="absolute z-10 pb-[150px]">
-              <NavigationButton
-                handleFunction={() => handleFetchMillion()}
-                text="보상 받기"
-                height="sm"
-                width="sm"
-                size="sm"
-                color="bluesky"
-              />
-            </View>
             <View className="flex flex-col bg-darkgray50 h-20 w-20 justify-center items-center absolute z-0 rounded-full">
               <Text
                 style={textShadow}
                 className="text-center text-white text-md font-PretendardExtraBold"
                 numberOfLines={1}
               >
-                10000
+                {steps}
               </Text>
               <Text
                 style={textShadow}
@@ -157,9 +205,19 @@ function MyPage(this: unknown) {
             </View>
           </View>
         </View>
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-4 flex justify-end items-center">
+          <NavigationButton
+            handleFunction={() => handleFetchMillion()}
+            text="보상 받기"
+            height="lg"
+            width="lg"
+            size="md"
+            color="bluesky"
+          />
+        </View>
       </ImageBackground>
     </View>
   );
 }
 
-export default MyPage;
+export default Pedometer;

@@ -32,7 +32,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
 
     @Override
     @Transactional
-    public void createMonthAnalyze(AnalyzeRequestDto analyzeRequestDto) {
+    public Long createMonthAnalyze(AnalyzeRequestDto analyzeRequestDto) {
         Long virtualAccountId = analyzeRequestDto.getVirtualAccountId();
         int year = analyzeRequestDto.getYear();
         int month = analyzeRequestDto.getMonth();
@@ -41,7 +41,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
 
         if (monthAnalyze.isPresent() && (year != nowDate.getYear() || month != nowDate.getMonth().getValue())) {
             log.info("변화 불가능한 데이터, 이전 기록 반환합니다.");
-            return;
+            return -2L;
         }
         log.info("새로 분석합니다...");
 
@@ -62,6 +62,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
             }
         }
 
+
         List<Chart> chartList = chartRepository.findALLByVirtualAccountIdAndYearAndMonth(virtualAccountId, year, month);
 
         // 목표 금액 찾아 오기
@@ -78,14 +79,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
             throw new BaseErrorException(ErrorCode.IMPOSSIBLE_CREATE_DATA);
         }
 
-        System.out.println(monthOverconsumption);
-
-        String result = flaskPostRequest(virtualAccountId, year, month, monthOverconsumption);
-        if (result.equals("NOT_EXIST")) {
-            throw new BaseErrorException(ErrorCode.NOT_EXIST_TRANSACTION);
-        } else if (!result.equals("Success")) {
-            throw new BaseErrorException(ErrorCode.FAIL_REQUEST);
-        }
+        return monthOverconsumption;
     }
 
     @Override
@@ -152,15 +146,29 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         return dayData;
     }
 
-    public String flaskPostRequest(Long virtualAccountId, int year, int month, Long monthOverconsumption) {
+    @Override
+    @Transactional
+    public void flaskPostRequest(AnalyzeRequestDto analyzeRequestDto, Long monthOverconsumption) {
+        if (monthOverconsumption == -2) return;
+
+        Long virtualAccountId = analyzeRequestDto.getVirtualAccountId();
+        int year = analyzeRequestDto.getYear();
+        int month = analyzeRequestDto.getMonth();
+
         WebClient webClient = WebClient.create("http://127.0.0.1:5000"); // ("http://j9d106.p.ssafy.io:5000");
 
-        return webClient.post()
+        String result = webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/{year}/{month}/{virtualAccountId}/{monthOverconsumption}")
                         .build(year, month, virtualAccountId, String.valueOf(monthOverconsumption)))
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+
+        if (result.equals("NOT_EXIST")) {
+            throw new BaseErrorException(ErrorCode.NOT_EXIST_TRANSACTION);
+        } else if (!result.equals("Success")) {
+            throw new BaseErrorException(ErrorCode.FAIL_REQUEST);
+        }
     }
 }

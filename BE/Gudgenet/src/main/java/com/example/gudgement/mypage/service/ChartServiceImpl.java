@@ -93,7 +93,7 @@ public class ChartServiceImpl implements ChartService {
 
             log.info("차트의 주차 / " + "Year : " + chartData.getYear() + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
 
-            VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
+            VirtualAccount account = virtualAccountRepository.findById(chartData.getVirtualAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
             });
 
@@ -145,7 +145,7 @@ public class ChartServiceImpl implements ChartService {
                 chartRepository.saveAndFlush(chartData);
             }
 
-            VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
+            VirtualAccount account = virtualAccountRepository.findById(chartData.getVirtualAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
             });
 
@@ -252,7 +252,7 @@ public class ChartServiceImpl implements ChartService {
 
             log.info("차트의 주차 / " + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
 
-            VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
+            VirtualAccount account = virtualAccountRepository.findById(chartData.getVirtualAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
             });
 
@@ -304,7 +304,7 @@ public class ChartServiceImpl implements ChartService {
 
             log.info("차트의 주차 / " + "Month : " + chartData.getMonth() + "/ Week : " + chartData.getWeek());
 
-            VirtualAccount account = virtualAccountRepository.findById(chartData.getAccountId()).orElseThrow(() -> {
+            VirtualAccount account = virtualAccountRepository.findById(chartData.getVirtualAccountId()).orElseThrow(() -> {
                 throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
             });
 
@@ -390,7 +390,7 @@ public class ChartServiceImpl implements ChartService {
         Chart chart = Chart.builder()
                 .memberId(member)
                 .monthOverconsumption(overconsumption)
-                .accountId(member.getVirtualAccountId())
+                .virtualAccountId(member.getVirtualAccountId())
                 .year(year)
                 .month(month)
                 .week(week)

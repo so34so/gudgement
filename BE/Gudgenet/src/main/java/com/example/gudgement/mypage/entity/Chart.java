@@ -58,10 +58,10 @@ public class Chart {
     private Long sun;
 
     @Builder
-    public Chart(Member memberId, Long monthOverconsumption, Long accountId, int year, int month, int week) {
+    public Chart(Member memberId, Long monthOverconsumption, Long virtualAccountId, int year, int month, int week) {
         this.memberId = memberId;
         this.monthOverconsumption = monthOverconsumption;
-        this.accountId = accountId;
+        this.virtualAccountId = virtualAccountId;
         this.year = year;
         this.month = month;
         this.week = week;

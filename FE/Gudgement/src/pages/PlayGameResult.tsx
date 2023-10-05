@@ -11,29 +11,44 @@ import {
   StatusBar,
 } from "react-native";
 
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 import GameResultSystem from "../components/GameResultSystem";
 import ResultAnimation from "../components/ResultAnimation";
 
-export default function PlayGameResult({ route }) {
-  const { roomNumber, rounds, result, cardInfo, nickName } = route.params;
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+export default function PlayGameResult({
+  roomNumber,
+  rounds,
+  result,
+  cardInfo,
+  nickName,
+  myCharacter,
+  setMyCharacter,
+  enemyCharacter,
+  setEnemyCharacter,
+  setNowGameComponent,
+}: {
+  roomNumber: string;
+  rounds: number;
+  result: boolean;
+  cardInfo: object;
+  nickName: string;
+  myCharacter: string;
+  setMyCharacter: any;
+  enemyCharacter: string;
+  setEnemyCharacter: any;
+  setNowGameComponent: any;
+}) {
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
 
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
 
-  const [myCharacterState, setMyCharacterState] = useState(null);
-  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
+  const [myCharacterState, setMyCharacterState] = useState(myCharacter);
+  const [enemyCharacterState, setEnemyCharacterState] = useState(myCharacter);
   const attackedPing = "pingpingeeeAttaked.gif";
   const attackedBam = "bambamAttaked.gif";
 
   useEffect(() => {
-    const myCharacter = queryClient.getQueryData(["myCharacter"]);
-    const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
-
     if (myCharacter) {
       if (!result && myCharacter === "bambam.gif") {
         setMyCharacterState(attackedBam);
@@ -55,18 +70,7 @@ export default function PlayGameResult({ route }) {
     }
     // setTimeout 함수를 이용해 6초 후에 페이지 이동
     const timerId = setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "PlayGameProgress",
-            params: {
-              roomNumber: roomNumber,
-              nickName: nickName,
-            },
-          },
-        ],
-      });
+      setNowGameComponent("PlayGameProgress");
     }, 6000);
 
     return () => clearTimeout(timerId); // 컴포넌트 unmount 시 타이머 해제
@@ -81,7 +85,6 @@ export default function PlayGameResult({ route }) {
       >
         <ResultAnimation result={result} rounds={rounds} />
 
-        <GameUi />
         <GameResultSystem cardInfo={cardInfo} />
 
         <Image

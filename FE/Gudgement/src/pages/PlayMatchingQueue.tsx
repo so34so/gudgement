@@ -6,7 +6,6 @@ import RejectButton from "../assets/images/reject.png";
 import QueueBox from "../assets/images/queuebox.png";
 import MatchingTimerBar from "../components/MatchingTimerBar";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   View,
   StyleSheet,
@@ -15,17 +14,13 @@ import {
   Image,
   ImageSourcePropType,
 } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
-import { useWebSocket } from "../components/WebSocketContext";
-import { queryClient } from "../../queryClient";
-import Config from "react-native-config";
-import GameTimerBar from "../components/GameTimerBar";
 
-export default function PlayMatchingQueue({ route }) {
-  const { roomNumber, nickName } = route.params; // 추가
-  const [isMessageReceived, setIsMessageReceived] = useState(false);
-
+export default function PlayMatchingQueue({
+  userData,
+  roomNumber,
+  sendHandler,
+  setNowGameComponent,
+}) {
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
@@ -33,116 +28,27 @@ export default function PlayMatchingQueue({ route }) {
   const acceptButton: ImageSourcePropType = AcceptButton as ImageSourcePropType;
   const rejectButton: ImageSourcePropType = RejectButton as ImageSourcePropType;
   const queueBox: ImageSourcePropType = QueueBox as ImageSourcePropType;
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-  const websocketClient = useWebSocket();
-
-  useEffect(() => {
-    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
-    if (websocketClient) {
-      const timeoutSubscription = websocketClient.subscribe(
-        "/topic/game/timeout" + roomNumber,
-        function (messageOutput) {
-          if (messageOutput) {
-            rejectMatch();
-          }
-        },
-      );
-      websocketClient.subscribe(
-        "/topic/game/" + roomNumber,
-        function (messageOutput) {
-          console.log("수락 모두 완료!", messageOutput.body);
-          timeoutSubscription.unsubscribe();
-          setIsMessageReceived(true);
-          const userInfoDtos = JSON.parse(
-            messageOutput.body,
-          ) as CommonType.TGameUserInfoDto;
-          const myInfo = userInfoDtos[0] as CommonType.TmyGameinfo;
-          const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
-
-          if (
-            myInfo &&
-            myInfo.equippedItems &&
-            Array.isArray(myInfo.equippedItems.items)
-          ) {
-            const myItem = myInfo.equippedItems.items.find(
-              item => item.type === "character",
-            );
-            if (myItem) {
-              queryClient.setQueryData(["myCharacter"], myItem.image);
-            }
-          }
-          if (
-            enemyInfo &&
-            enemyInfo.equippedItems &&
-            Array.isArray(enemyInfo.equippedItems.items)
-          ) {
-            const enemyItem = enemyInfo.equippedItems.items.find(
-              item => item.type === "character",
-            );
-            if (enemyItem) {
-              queryClient.setQueryData(["enemyCharacter"], enemyItem.image);
-            }
-          }
-          console.log(
-            "큐 웨이트 내 캐릭터",
-            queryClient.getQueryData(["myCharacter"]),
-          );
-          console.log(
-            "큐 웨이트 적 캐릭터",
-            queryClient.getQueryData(["enemyCharacter"]),
-          );
-          console.log("큐 웨이트 내 정보:", myInfo);
-          console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
-          console.log("큐 웨이트 적정보", enemyInfo);
-
-          // 리액트 쿼리에 데이터 저장
-          queryClient.setQueryData(["myGameinfo"], myInfo);
-          queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
-          navigation.navigate("PlayGameStart", {
-            roomNumber: roomNumber,
-          });
-        },
-      );
-    }
-  }, [websocketClient]);
 
   // 게임 수락 함수
-  const acceptMatch = async () => {
-    try {
-      const response = await axios.post(`${Config.API_URL}/game/accept`, {
-        roomNumber: roomNumber,
-        nickName: nickName,
-      });
-      if (response.status === 200) {
-        if (!isMessageReceived) {
-          navigation.navigate("PlayMatchingQueueWait", {
-            roomNumber: roomNumber,
-            nickName: nickName,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error accepting match:", error);
-    }
+  const acceptMatch = () => {
+    const Payload = {
+      nickName: userData.nickname,
+      roomNumber: roomNumber,
+    };
+
+    sendHandler("/app/game/accept", Payload, () => {});
+    setNowGameComponent("PlayMatchingQueueWait");
   };
 
   // 수락 거절 함수
-  const rejectMatch = async () => {
-    try {
-      const response = await axios.post(`${Config.API_URL}/game/reject`, {
-        roomNumber: roomNumber,
-        nickName: nickName,
-      });
-      if (response.status === 200) {
-        if (!isMessageReceived) {
-          navigation.navigate("PlaySelect");
-        }
-      }
-    } catch (error) {
-      console.error("Error accepting match:", error);
-    }
+  const rejectMatch = () => {
+    const Payload2 = {
+      nickName: userData.nickname,
+      roomNumber: roomNumber,
+    };
+
+    sendHandler("/app/game/reject", Payload2, () => {});
+    setNowGameComponent("PlaySelect");
   };
 
   return (
@@ -157,7 +63,7 @@ export default function PlayMatchingQueue({ route }) {
           <TouchableOpacity onPress={acceptMatch}>
             <Image style={styles.acceptbutton} source={acceptButton} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("PlaySelect")}>
+          <TouchableOpacity onPress={rejectMatch}>
             <Image style={styles.rejectbutton} source={rejectButton} />
           </TouchableOpacity>
         </View>

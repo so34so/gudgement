@@ -2,7 +2,7 @@ import BluePlayBackground from "../assets/images/blueplaybackground.png";
 import BlueFin from "../assets/images/bluefin.png";
 import BlueCard from "../assets/images/bluecard.png";
 
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -10,102 +10,12 @@ import {
   Image,
   ImageSourcePropType,
 } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import SockJS from "sockjs-client";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import { CommonType } from "../types/CommonType";
-import { useWebSocket } from "../components/WebSocketContext";
-import { useQueryClient } from "react-query";
-import { useQuery } from "react-query";
-import { queryClient } from "../../queryClient";
-import Config from "react-native-config";
 
-export default function PlayMatchingQueueWait({ route }) {
-  const { roomNumber, nickName } = route.params; // 추가
-  console.log("매칭웨이트", roomNumber);
-  const websocketClient = useWebSocket();
-
+export default function PlayMatchingQueueWait() {
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueCard: ImageSourcePropType = BlueCard as ImageSourcePropType;
   const blueFin: ImageSourcePropType = BlueFin as ImageSourcePropType;
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-  useEffect(() => {
-    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
-    if (websocketClient) {
-      const timeoutSubscription = websocketClient.subscribe(
-        "/topic/game/timeout" + roomNumber,
-        function (messageOutput) {
-          if (messageOutput) {
-            navigation.navigate("PlaySelect");
-          }
-        },
-      );
-      websocketClient.subscribe(
-        "/topic/game/" + roomNumber,
-        function (messageOutput) {
-          console.log("수락 모두 완료!", messageOutput.body);
-          const userInfoDtos = JSON.parse(
-            messageOutput.body,
-          ) as CommonType.TGameUserInfoDto;
-          const myInfo = userInfoDtos[0] as CommonType.TmyGameinfo;
-          const enemyInfo = userInfoDtos[1] as CommonType.TenemyGameinfo;
-          timeoutSubscription.unsubscribe();
-
-          if (
-            myInfo &&
-            myInfo.equippedItems &&
-            Array.isArray(myInfo.equippedItems.items)
-          ) {
-            const myItem = myInfo.equippedItems.items.find(
-              item => item.type === "character",
-            );
-            if (myItem) {
-              queryClient.setQueryData(["myCharacter"], myItem.image);
-            }
-          }
-          if (
-            enemyInfo &&
-            enemyInfo.equippedItems &&
-            Array.isArray(enemyInfo.equippedItems.items)
-          ) {
-            const enemyItem = enemyInfo.equippedItems.items.find(
-              item => item.type === "character",
-            );
-            if (enemyItem) {
-              queryClient.setQueryData(["enemyCharacter"], enemyItem.image);
-            }
-          }
-          console.log(
-            "큐 웨이트 내 캐릭터",
-            queryClient.getQueryData(["myCharacter"]),
-          );
-          console.log(
-            "큐 웨이트 적 캐릭터",
-            queryClient.getQueryData(["enemyCharacter"]),
-          );
-          console.log("큐 웨이트 내 정보:", myInfo);
-          console.log("큐 웨이트 내정보 아이템", myInfo.equippedItems);
-          console.log("큐 웨이트 적정보", enemyInfo);
-
-          // 리액트 쿼리에 데이터 저장
-          queryClient.setQueryData(["myGameinfo"], myInfo);
-          queryClient.setQueryData(["enemyGameinfo"], enemyInfo);
-          navigation.navigate("PlayGameStart", {
-            roomNumber: roomNumber,
-          });
-        },
-      );
-    }
-  }, []);
 
   return (
     <View className="flex w-full h-full">

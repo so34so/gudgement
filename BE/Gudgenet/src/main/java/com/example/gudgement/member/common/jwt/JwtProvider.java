@@ -85,7 +85,7 @@ public class JwtProvider {
 
     // AccessToken
     public Date getExpireDateAccessToken() {
-        long expireTimeMils = 1000 * 60 * 3L; // 1 hours
+        long expireTimeMils = 1000 * 60 * 60L; // 1 hours
         return new Date(System.currentTimeMillis() + expireTimeMils);
     }
 

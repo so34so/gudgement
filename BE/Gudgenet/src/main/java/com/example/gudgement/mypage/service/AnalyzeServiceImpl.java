@@ -153,7 +153,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
     }
 
     public String flaskPostRequest(Long virtualAccountId, int year, int month, Long monthOverconsumption) {
-        WebClient webClient = WebClient.create("http://j9d106.p.ssafy.io:5000");
+        WebClient webClient = WebClient.create("http://127.0.0.1:5000"); // ("http://j9d106.p.ssafy.io:5000");
 
         return webClient.post()
                 .uri(uriBuilder -> uriBuilder

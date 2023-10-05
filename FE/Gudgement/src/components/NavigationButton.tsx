@@ -9,7 +9,7 @@ function NavigationButton({
   size,
   color,
 }: {
-  handleFunction?: () => Promise<void>;
+  handleFunction?: () => void;
   text: string;
   height: string;
   width: string;

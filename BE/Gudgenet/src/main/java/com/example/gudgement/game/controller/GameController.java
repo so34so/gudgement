@@ -31,7 +31,7 @@ public class GameController {
     private final RedisTemplate<String, String> redisTemplate;
 
     @MessageMapping("/game/accept")
-    public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
+    public void acceptGame(GameRequestDto gameRequestDto) {
         String roomNumber = gameRequestDto.getRoomNumber();
         String username = gameRequestDto.getNickName();
 
@@ -39,7 +39,7 @@ public class GameController {
     }
 
     @MessageMapping("/game/reject")
-    public void rejectGame(@RequestBody GameRequestDto gameRequestDto) {
+    public void rejectGame(GameRequestDto gameRequestDto) {
         gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getNickName());
     }
 
@@ -59,7 +59,7 @@ public class GameController {
 
     @Operation(summary = "라운드시작")
     @MessageMapping("/game/gameroundinfo")
-    public void getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
+    public void getGameRoundInfo(GameRequestDto requestDto) {
        gameRoundService.getGameStatus(requestDto);
     }
 
@@ -72,7 +72,7 @@ public class GameController {
 
     @Operation(summary = "카드 게임 배팅")
     @MessageMapping("/game/playRound")
-    public void playRound(@RequestBody BettingDto bettingDto){
+    public void playRound(BettingDto bettingDto){
         gameRoundService.playRound(bettingDto);
     }
 
@@ -84,7 +84,7 @@ public class GameController {
 
     @Operation(summary = "타임아웃으로 인한 포기")
     @MessageMapping("/game/timeoutGiveUp")
-    public void timeoutGiveUp(@RequestBody BettingDto bettingDto){
+    public void timeoutGiveUp(BettingDto bettingDto){
 
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
 
@@ -126,7 +126,7 @@ public class GameController {
 
     @Operation(summary = "카드 게임 포기")
     @MessageMapping("/game/giveUpRound")
-    public void giveUpRound(@RequestBody BettingDto bettingDto){
+    public void giveUpRound(BettingDto bettingDto){
         gameRoundService.giveUpRound(bettingDto);
     }
 
@@ -145,7 +145,7 @@ public class GameController {
 
     @Operation(summary = "게임 채팅")
     @MessageMapping("/game/chat")
-    public void chatAll(@RequestBody MessageDto messageDto){
+    public void chatAll(MessageDto messageDto){
         log.info(messageDto.getNickName()+"");
 
         SendMessageDto message = SendMessageDto.builder()
@@ -180,7 +180,7 @@ public class GameController {
 
     @Operation(summary = "소비아이템 사용")
     @PostMapping("/useItem")
-    public void useItemtest(ItemUserDto request) {
+    public void useItemtest(@RequestBody ItemUserDto request) {
         // Use the item in the database.
         inventoryService.useItem(request.getInvenId());
 

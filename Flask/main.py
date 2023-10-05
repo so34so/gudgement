@@ -94,5 +94,5 @@ def month_transaction(virtualId, year, month, month_overconsumption):
     return "Success"
 
 if __name__ == "__main__":
-    app.run(host='http://j9d106.p.ssafy.io', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 

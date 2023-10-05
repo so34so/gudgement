@@ -204,8 +204,6 @@ public class GameServiceImpl implements GameService{
             throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
-        messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname+" fail");
-
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
 

@@ -30,7 +30,7 @@ public class MatchingEventListener {
         // Extract the matching request data from the event.
         MatchDto request = event.getMatchDto();
 
-        logger.info("Received MatchRequestEvent with matchDto: {}", request);
+        logger.info("Received MatchRequestEvent with matchDto: {}", request.toString());
 
         String tierKey = "Room:" + request.getTiggle() + ":" + request.getGrade();
         SetOperations<String, String> setOps = redisTemplate.opsForSet();

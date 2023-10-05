@@ -35,7 +35,7 @@ function ReSettingAccount() {
           setTempEmail(email);
         }
       } catch (error) {
-        reactotron.log!("이메일 불러오기 실패!", error);
+        reactotron.log!(error);
       }
     };
 
@@ -55,7 +55,6 @@ function ReSettingAccount() {
   };
 
   const submitSelect = async () => {
-    reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
       setModalText("계좌를 선택해주세요");
       openModal();
@@ -68,15 +67,11 @@ function ReSettingAccount() {
         virtualAccountId: selectedAccountId,
       };
       try {
-        const response = await fetchApi.post(
-          `${Config.API_URL}/account`,
-          sendBE,
-        );
-        reactotron.log!("계좌 연동 성공!", response);
+        await fetchApi.post(`${Config.API_URL}/account`, sendBE);
         setModalText("주계좌 설정을 완료했습니다.");
         openModal();
       } catch (error) {
-        reactotron.log!("계좌 연동 실패!", error);
+        reactotron.log!(error);
       }
     }
   };
@@ -105,7 +100,7 @@ function ReSettingAccount() {
           <View className="py-2 flex flex-row justify-between items-center">
             <TagBoxSmall
               text={"주계좌 설정"}
-              img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+              img={`${Config.IMAGE_URL}/asset/banknookIcon.png`}
             />
           </View>
           <SettingAccountBox

@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { View, ImageBackground, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  ImageBackground,
+  ActivityIndicator,
+  Image,
+  Pressable,
+} from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 import Config from "react-native-config";
@@ -35,9 +41,7 @@ function MyPage(this: unknown) {
     );
   }
 
-  const handleMoveScreen = async (
-    screen: keyof CommonType.TmyPageScreenName,
-  ) => {
+  const handleScreen = (screen: keyof CommonType.TmyPageScreenName) => {
     navigation.navigate(screen);
   };
 
@@ -60,18 +64,18 @@ function MyPage(this: unknown) {
         pb-40"
         >
           <View className="flex flex-row w-full justify-evenly items-center">
-            <View>
+            <Pressable onPress={() => handleScreen("Analyze")}>
               <View>
                 <Image
                   source={{
-                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                    uri: `${Config.IMAGE_URL}/asset/analysisMenuIcon.png`,
                   }}
                   className="h-32 w-32"
                 />
               </View>
               <View className="w-fit">
                 <NavigationButton
-                  handleFunction={() => handleMoveScreen("Analyze")}
+                  handleFunction={() => handleScreen("Analyze")}
                   text="    소비 분석    "
                   height="sm"
                   width="sm"
@@ -79,19 +83,19 @@ function MyPage(this: unknown) {
                   color="bluesky"
                 />
               </View>
-            </View>
-            <View>
+            </Pressable>
+            <Pressable onPress={() => handleScreen("AnalyzeGoal")}>
               <View>
                 <Image
                   source={{
-                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                    uri: `${Config.IMAGE_URL}/asset/goalMenuIcon.png`,
                   }}
                   className="h-32 w-32"
                 />
               </View>
               <View className="w-fit">
                 <NavigationButton
-                  handleFunction={() => handleMoveScreen("AnalyzeGoal")}
+                  handleFunction={() => handleScreen("AnalyzeGoal")}
                   text="소비 목표 설정"
                   height="sm"
                   width="sm"
@@ -99,21 +103,21 @@ function MyPage(this: unknown) {
                   color="bluesky"
                 />
               </View>
-            </View>
+            </Pressable>
           </View>
           <View className="flex flex-row w-full justify-evenly">
-            <View>
+            <Pressable onPress={() => handleScreen("Pedometer")}>
               <View>
                 <Image
                   source={{
-                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                    uri: `${Config.IMAGE_URL}/asset/pedometerMenuIcon.png`,
                   }}
                   className="h-32 w-32"
                 />
               </View>
               <View className="w-fit">
                 <NavigationButton
-                  handleFunction={() => handleMoveScreen("Pedometer")}
+                  handleFunction={() => handleScreen("Pedometer")}
                   text="  만보 챌린지  "
                   height="sm"
                   width="sm"
@@ -121,19 +125,19 @@ function MyPage(this: unknown) {
                   color="bluesky"
                 />
               </View>
-            </View>
-            <View>
+            </Pressable>
+            <Pressable onPress={() => handleScreen("ReSettingAccount")}>
               <View>
                 <Image
                   source={{
-                    uri: `${Config.IMAGE_URL}/asset/bluecard.png`,
+                    uri: `${Config.IMAGE_URL}/asset/banknookMenuIcon.png`,
                   }}
                   className="h-32 w-32"
                 />
               </View>
               <View className="w-fit">
                 <NavigationButton
-                  handleFunction={() => handleMoveScreen("ReSettingAccount")}
+                  handleFunction={() => handleScreen("ReSettingAccount")}
                   text="  주계좌 설정  "
                   height="sm"
                   width="sm"
@@ -141,7 +145,7 @@ function MyPage(this: unknown) {
                   color="bluesky"
                 />
               </View>
-            </View>
+            </Pressable>
           </View>
         </View>
       </ImageBackground>

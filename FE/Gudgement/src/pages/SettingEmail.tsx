@@ -66,7 +66,6 @@ function SettingEmail() {
     setModalText("로딩 중...");
     openModal();
 
-    reactotron.log!("저장된 id", tempId);
     const sendBE = {
       id: tempId,
       email: currentEmail,
@@ -103,13 +102,12 @@ function SettingEmail() {
         };
         const response: AxiosResponse<CommonType.TemailUpdate[]> =
           await fetchApi.post(`${Config.API_URL}/member/update/email`, sendBE);
-        reactotron.log!("인증 메일 등록 성공!", response);
+        reactotron.log!(response);
         setCheckNumber("");
         setNumber("");
         setEmail("");
         setAsyncData("email", email);
-        const getEmail = await getAsyncData<string>("email");
-        reactotron.log!("스토리지에 이메일 저장 성공!", getEmail);
+
         navigation.navigate("SettingName");
       } catch (error) {
         const axiosError = error as AxiosError<{
@@ -124,7 +122,6 @@ function SettingEmail() {
           setModalText(errorMessage);
           openModal();
         }
-        reactotron.log!("인증 메일 등록 실패!", error);
       }
     } else {
       setCheckNumber("");

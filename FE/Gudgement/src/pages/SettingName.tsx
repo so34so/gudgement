@@ -10,7 +10,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
 import Config from "react-native-config";
 
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
 
 import AgreeBottomSheet from "../components/AgreeBottomSheet";
 import CustomModal from "../components/CustomModal";
@@ -55,7 +55,6 @@ function SettingName() {
       const response = await fetchApi.post(
         `${Config.API_URL}/member/valid/nickname?nickname=${nickName}`,
       );
-      Reactotron.log!("닉네임 중복 확인 성공!", response.data);
       if (response.data === true) {
         setCheckName(2);
       }
@@ -64,7 +63,7 @@ function SettingName() {
       }
     } catch (error) {
       setCheckName(4);
-      Reactotron.log!("닉네임 중복 확인 실패!", error);
+      reactotron.log!(error);
     }
   };
 
@@ -77,14 +76,13 @@ function SettingName() {
     }
     if (checkName === 2) {
       try {
-        const response = await fetchApi.post(
+        await fetchApi.post(
           `${Config.API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
         );
-        Reactotron.log!("닉네임 등록 성공!", response.data);
         setBottomSheetVisible(true);
       } catch (error) {
         setCheckName(4);
-        Reactotron.log!("닉네임 등록 실패!", error);
+        reactotron.log!(error);
       }
     }
   };

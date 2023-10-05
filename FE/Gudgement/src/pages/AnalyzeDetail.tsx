@@ -15,7 +15,7 @@ import CustomModal from "../components/CustomModal";
 import { Config } from "react-native-config";
 
 import { CommonType } from "../types/CommonType";
-import { textShadow } from "../utils/common";
+import { ANALYZE_MONTH_IMAGE, textShadow } from "../utils/common";
 import TagBoxSmall from "../components/TagBoxSmall";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -42,6 +42,8 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
     if (errorMessage) {
       if (errorMessage === "Request failed with status code 500") {
         setModalText("잠시 후 시도해주세요.");
+      } else if (errorMessage === "Request failed with status code 404") {
+        setModalText("거래 내역이 없어 분석이 불가능합니다.");
       } else {
         setModalText(errorMessage);
       }
@@ -49,6 +51,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
     }
   }, [errorMessage]);
 
+  const [userSpend, setUserSpend] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
 
@@ -57,9 +60,24 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
   };
 
   const closeModal = () => {
-    // navigation.goBack();
+    navigation.goBack();
     setModalVisible(false);
   };
+
+  if (userAnalyzeMonth && userAnalyzeMonth.ranking !== null) {
+    const calculate = userAnalyzeMonth.ranking / userAnalyzeMonth.totalMember;
+    if (calculate < 0.2) {
+      setUserSpend(1);
+    }
+    if (calculate < 0.6 && calculate >= 0.2) {
+      setUserSpend(2);
+    }
+    if (calculate <= 1 && calculate >= 0.6) {
+      setUserSpend(3);
+    }
+  }
+
+  const userGudge = ["초보 거지", "찐 거지", "무난한 거지", "분발해야 할 거지"];
 
   return (
     <View className="w-full h-full flex justify-center items-center">
@@ -83,7 +101,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                 <View className="-mt-4 -mb-2 -ml-6">
                   <TagBoxSmall
                     text="월별 결산"
-                    img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+                    img={`${Config.IMAGE_URL}/asset/analysisMoreIcon.png`}
                   />
                 </View>
                 <View className="flex justify-start items-start">
@@ -192,7 +210,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
               <View className="w-[100px] h-[100px] flex justify-center items-center rounded-full bg-lightsky border-solid border-[3px] border-white20">
                 <Image
                   source={{
-                    uri: `${Config.IMAGE_URL}/asset/monthAngry.png`,
+                    uri: `${Config.IMAGE_URL}${ANALYZE_MONTH_IMAGE[userSpend]}`,
                   }}
                   className="h-[70px] w-[70px]"
                 />
@@ -203,7 +221,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                     className="font-PretendardExtraBold text-white text-3xl mr-1"
                     style={textShadow}
                   >
-                    찐 거지
+                    {userGudge[userSpend]}
                   </Text>
                   <Text
                     className="font-PretendardBold text-white text-3xl"
@@ -273,10 +291,6 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   <Text className="font-PretendardExtraBold text-black text-2lg px-1 border-solid border-b-[3px] border-buy">
                     {userAnalyzeMonth?.bestDestination}
                   </Text>
-                  <Text className="font-PretendardBold text-black50 text-sm pb-1">
-                    {" "}
-                    예요.
-                  </Text>
                 </View>
                 <View className="pt-20 w-full px-2 border-solid border-b-[2px] border-sub03" />
                 <View className="mt-3 flex justify-start items-end w-full">
@@ -325,16 +339,19 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   <Text className="font-PretendardBold text-black50 text-sm pb-1">
                     에서
                   </Text>
+                </View>
+                <View className="flex flex-row mt-2 justify-start items-end">
                   <View className="flex justify-center items-center mx-1 bg-buy rounded-lg border-solid border-[3px] border-white">
                     <Text className="font-PretendardBold text-black text-2lg">
                       {" "}
                       {userAnalyzeMonth?.frequencyCount}번{" "}
                     </Text>
                   </View>
+                  <Text className="font-PretendardBold text-black50 text-sm m-1">
+                    지출했어요.
+                  </Text>
                 </View>
-                <Text className="font-PretendardBold text-black50 text-sm m-1">
-                  지출했어요.
-                </Text>
+
                 <View className="pt-20 w-full px-2 border-solid border-b-[2px] border-sub03" />
                 <View className="mt-3 flex justify-start items-end w-full">
                   <View className="flex flex-row justify-start items-end">
@@ -415,7 +432,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                 </Text>
               </View>
               {userAnalyzeMonth?.lastMonthAmountRate !== null ? (
-                <View>
+                <>
                   <View className="overflow-hidden flex flex-row h-[30px] w-[100%] rounded-full">
                     <View
                       style={{
@@ -429,13 +446,15 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                     className="font-PretendardBold text-white90 text-2xs mt-2"
                     style={{
                       paddingLeft: `${
-                        userAnalyzeMonth?.lastMonthAmountRate || 0 - 6
+                        userAnalyzeMonth?.lastMonthAmountRate || 0 > 100
+                          ? 76
+                          : userAnalyzeMonth?.lastMonthAmountRate || 0 - 6
                       }%`,
                     }}
                   >
                     {userAnalyzeMonth?.lastMonthAmountRate} %
                   </Text>
-                </View>
+                </>
               ) : (
                 <View className="mb-3 mx-3 flex flex-row justify-start items-end bg-bluesky px-4 py-2 rounded-xl border-solid border-[3px] border-lightsky">
                   <Text className="font-PretendardBold text-white90 text-2xs">

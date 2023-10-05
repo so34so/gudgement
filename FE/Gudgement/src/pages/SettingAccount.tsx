@@ -30,7 +30,7 @@ function SettingAccount() {
           setTempEmail(email);
         }
       } catch (error) {
-        reactotron.log!("이메일 불러오기 실패!", error);
+        reactotron.log!(error);
       }
     };
 
@@ -50,7 +50,6 @@ function SettingAccount() {
   };
 
   const submitSelect = async () => {
-    reactotron.log!("선택된 계좌 아이디", selectedAccountId);
     if (!selectedAccountId) {
       setModalText("계좌를 선택해주세요");
       openModal();
@@ -63,14 +62,10 @@ function SettingAccount() {
         virtualAccountId: selectedAccountId,
       };
       try {
-        const response = await fetchApi.post(
-          `${Config.API_URL}/account`,
-          sendBE,
-        );
-        reactotron.log!("계좌 연동 성공!", response);
+        await fetchApi.post(`${Config.API_URL}/account`, sendBE);
         queryClient.invalidateQueries(["fetchUserInfo"]);
       } catch (error) {
-        reactotron.log!("계좌 연동 실패!", error);
+        reactotron.log!(error);
       }
     }
   };

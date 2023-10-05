@@ -25,7 +25,7 @@ public class Chart {
     private Long monthOverconsumption;
 
     @Column(nullable = false)
-    private long accountId;
+    private long virtualAccountId;
 
     @Column(nullable = false)
     private int year;

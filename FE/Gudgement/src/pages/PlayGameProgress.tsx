@@ -1,6 +1,6 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
 import { RouteProp } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useFocusEffect, useRef, useState } from "react";
 import axios from "axios";
 import GameUi from "../components/GameUi";
 import GameTimerBar from "../components/GameTimerBar";
@@ -31,15 +31,15 @@ export default function PlayGameProgress({
 }: {
   route: PlayGameStartRouteProp;
 }) {
-  const { roomNumber, nickName, myInfoState, enemyInfoState } = route.params; // 추가
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  const { roomNumber, nickName } = route.params; // 추가
   const [roundInfo, setRoundInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [myCharacterState, setMyCharacterState] = useState(null);
   const [enemyCharacterState, setEnemyCharacterState] = useState(null);
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+  const [enemyInfoState, setEnemyInfoState] = useState(null);
+  const [myInfoState, setMyInfoState] = useState(null);
 
   // 라운드 데이터 요청
   async function postRoundStart() {
@@ -61,12 +61,40 @@ export default function PlayGameProgress({
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     let isActive = true; // flag for component mount status
+
+  //     const fetchInfo = async () => {
+  //       const response = await postRoundStart();
+  //       if (isActive) {
+  //         // only update state if component is still mounted
+  //         setRoundInfo(response);
+  //         setIsLoading(false);
+  //       }
+  //     };
+
+  //     fetchInfo();
+
+  //     return () => {
+  //       isActive = false; // component is unmounted
+  //     };
+  //   }, []),
+  // );
 
   useEffect(() => {
-    postRoundStart();
     const myCharacter = queryClient.getQueryData(["myCharacter"]);
     const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
+    const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
+    const myData = queryClient.getQueryData(["myGameinfo"]);
 
+    if (enemyData) {
+      setEnemyInfoState(enemyData);
+    }
+
+    if (myData) {
+      setMyInfoState(myData);
+    }
     if (myCharacter) {
       setMyCharacterState(myCharacter);
     }
@@ -74,6 +102,7 @@ export default function PlayGameProgress({
     if (enemyCharacter) {
       setEnemyCharacterState(enemyCharacter);
     }
+    postRoundStart();
   }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
@@ -91,12 +120,17 @@ export default function PlayGameProgress({
       >
         <GameTimerBar duration={10} />
 
-        <GameUi />
-        <GameBettingSyetem
-          enemyInfoState={enemyInfoState}
+        <GameUi
           myInfoState={myInfoState}
           roundInfo={roundInfo}
+          enemyInfoState={enemyInfoState}
+        />
+        <GameBettingSyetem
+          roundInfo={roundInfo}
           roomNumber={roomNumber}
+          nickName={nickName}
+          myInfoState={myInfoState}
+          enemyInfoState={enemyInfoState}
         />
         <Image
           style={styles.mycharacter}

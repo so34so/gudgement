@@ -37,6 +37,10 @@ export default function PlayGameStart({
   route: PlayGameStartRouteProp;
 }) {
   const { roomNumber } = route.params; // 추가
+  // 애니메이션 관련 변수
+  const image1PositionX = useSharedValue(0);
+  const image2PositionX = useSharedValue(0);
+  const vsOpacity = useSharedValue(0);
 
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
   const [enemyInfoState, setEnemyInfoState] = useState(null);
@@ -48,10 +52,6 @@ export default function PlayGameStart({
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
 
-  // 애니메이션 관련 변수
-  const image1PositionX = useSharedValue(0);
-  const image2PositionX = useSharedValue(0);
-  const vsOpacity = useSharedValue(0);
   useEffect(() => {
     const fetchInfo = async () => {
       const enemyData = await queryClient.getQueryData(["enemyGameinfo"]);

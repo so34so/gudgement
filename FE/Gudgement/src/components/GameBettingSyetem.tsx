@@ -1,5 +1,6 @@
 import EnemyCard from "../assets/images/enemycard.png";
 import BettingMachine from "../components/BettingMachine";
+import { useEffect, useState } from "react";
 import { CommonType } from "../types/CommonType";
 import {
   Image,
@@ -8,22 +9,28 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-import Config from "react-native-config";
+import { queryClient } from "../../queryClient";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 const enemyCard: ImageSourcePropType = EnemyCard as ImageSourcePropType;
 
 export default function GameBettingSyetem({
   roundInfo,
-  myInfoState,
-  enemyInfoState,
   roomNumber,
+  nickName,
+  enemyInfoState,
+  myInfoState,
 }: {
   roundInfo: object;
-  myInfoState: object;
-  enemyInfoState: object;
   roomNumber: string;
+  nickName: string;
+  enemyInfoState: object;
+  myInfoState: object;
 }) {
+  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+
   console.log("흠", roundInfo.card);
+  console.log("베팅시스템", myInfoState);
   const enemyCards: CommonType.TplayCard[] = roundInfo.card;
   return (
     <View style={styles.bettingwrapper}>
@@ -33,28 +40,32 @@ export default function GameBettingSyetem({
       >
         {enemyCards.order}
       </Text>
-      <View style={styles.enemycardtext}>
-        <Text
-          className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
-          style={styles.enemycardtitle}
-        >
-          {enemyCards.name}
-        </Text>
-        <Text
-          className="rounded-lg  text-center text-white text-[20px] font-PretendardBold"
-          style={styles.enemycardtitle}
-        >
-          {enemyCards.amount}
-        </Text>
+      <View style={styles.bettingcardwrapper}>
+        <View style={styles.enemycardtext}>
+          <Text
+            className="rounded-lg  text-center text-white text-[24px] font-PretendardBold"
+            style={styles.enemycardtitle}
+          >
+            {enemyCards.name}
+          </Text>
+          <Text
+            className="rounded-lg  text-center text-white text-[20px] font-PretendardBold"
+            style={styles.enemycardtitle}
+          >
+            {enemyCards.amount}
+          </Text>
+        </View>
       </View>
-      <Image style={styles.enemycard} source={enemyCard} />
-      <BettingMachine
-        roomNumber={roomNumber}
-        otherName={enemyInfoState.nickname}
-        roundInfo={roundInfo}
-        myInfoState={myInfoState}
-        maxBettingAmount={myInfoState.tiggle / 10}
-      />
+      <View style={styles.cardwrapper}>
+        <Image style={styles.enemycard} source={enemyCard} />
+        <BettingMachine
+          roomNumber={roomNumber}
+          otherName={enemyInfoState?.nickname}
+          roundInfo={roundInfo}
+          nickName={myInfoState?.nickname}
+          maxBettingAmount={myInfoState?.tiggle / 10}
+        />
+      </View>
     </View>
   );
 }
@@ -71,6 +82,17 @@ const styles = StyleSheet.create({
     top: "60%",
     left: "50.5%",
   },
+  cardwrapper: {
+    flex: 1,
+    top: "30%",
+  },
+  bettingcardwrapper: {
+    position: "absolute",
+    width: 500,
+    left: -30,
+    top: 10,
+    height: 200,
+  },
   infomessage: {
     bottom: "100%",
     zIndex: 20,
@@ -81,8 +103,8 @@ const styles = StyleSheet.create({
   enemycardnumber: {
     zIndex: 6,
     position: "absolute",
-    left: -40,
-    top: 40,
+    left: -55,
+    top: 60,
     textShadowColor: "rgba(255, 255, 255, 0.5)",
     textShadowOffset: { width: 3, height: 3 }, // 섀도우 오프셋
     textShadowRadius: 9, // 섀도우 반경 (두께)
@@ -90,8 +112,9 @@ const styles = StyleSheet.create({
   enemycardtext: {
     zIndex: 5,
     top: 120,
-    right: "25%",
-
+    right: "13%",
+    width: "50%",
+    height: "30%",
     alignItems: "center",
   },
   enemycardtitle: {

@@ -18,8 +18,9 @@ import GameResultSystem from "../components/GameResultSystem";
 import ResultAnimation from "../components/ResultAnimation";
 
 export default function PlayGameResult({ route }) {
-  const { roomNumber, rounds, result, cardInfo } = route.params;
-
+  const { roomNumber, rounds, result, cardInfo, nickName } = route.params;
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
 
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
@@ -52,6 +53,23 @@ export default function PlayGameResult({ route }) {
         setEnemyCharacterState(enemyCharacter);
       }
     }
+    // setTimeout 함수를 이용해 6초 후에 페이지 이동
+    const timerId = setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "PlayGameProgress",
+            params: {
+              roomNumber: roomNumber,
+              nickName: nickName,
+            },
+          },
+        ],
+      });
+    }, 6000);
+
+    return () => clearTimeout(timerId); // 컴포넌트 unmount 시 타이머 해제
   }, [result]);
 
   return (
@@ -61,9 +79,10 @@ export default function PlayGameResult({ route }) {
         resizeMode="cover"
         className="flex-1"
       >
+        <ResultAnimation result={result} rounds={rounds} />
+
         <GameUi />
         <GameResultSystem cardInfo={cardInfo} />
-        <ResultAnimation result={result} rounds={rounds} />
 
         <Image
           style={styles.mycharacter}

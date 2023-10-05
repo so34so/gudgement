@@ -27,4 +27,5 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
     Optional<Inventory> findEquippedCharacterItemByMember(Member member);
     
     List<Inventory> findByMemberAndItemId_TypeAndEquipped(Member member, String consumable, boolean b);
+    void deleteAllByMember(Member member);
 }

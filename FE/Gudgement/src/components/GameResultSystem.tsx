@@ -72,8 +72,9 @@ const styles = StyleSheet.create({
   mycardtext: {
     zIndex: 5,
     top: 120,
-    right: "40%",
-
+    right: "0%",
+    width: "50%",
+    height: "30%",
     alignItems: "center",
   },
   mycardtitle: {

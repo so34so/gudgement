@@ -1,4 +1,4 @@
-package com.example.gudgement.mypage.dto;
+package com.example.gudgement.mypage.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ChartDataDto {
+public class ChartResponseDto {
     private int year;
     private int month;
     private int week;
@@ -39,7 +39,7 @@ public class ChartDataDto {
     }
 
     @Builder
-    public ChartDataDto(Data data, int year, int month, int week) {
+    public ChartResponseDto(Data data, int year, int month, int week) {
         this.year = year;
         this.data = data;
         this.month = month;

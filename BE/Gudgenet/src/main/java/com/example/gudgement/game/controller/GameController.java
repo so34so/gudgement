@@ -35,7 +35,6 @@ public class GameController {
         String roomNumber = gameRequestDto.getRoomNumber();
         String username = gameRequestDto.getNickName();
 
-        // Update the game acceptance status for the user.
         gameService.acceptGame(roomNumber, username);
     }
 
@@ -74,26 +73,20 @@ public class GameController {
     @Operation(summary = "타임아웃으로 인한 포기")
     @PostMapping("/timeoutGiveUp")
     public void timeoutGiveUp(@RequestBody BettingDto bettingDto){
-        // Update the acceptance status in Redis.
+
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
 
-        // Check the status of the other user.
         String otherUserStatus = (String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":status");
         int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":betting"));
         myBet /= 10;
 
-        // Update the bet amount in Redis and BettingDto.
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":bet", String.valueOf(myBet));
 
         bettingDto.setBettingAmount((long)myBet);
 
         if ("giveup".equals(otherUserStatus)) {
-            // If both users have given up,
-            // execute playRound method.
             gameRoundService.processBets(bettingDto);
         } else if ("betting".equals(otherUserStatus)) {
-            // If only this user has given up and the other user is still in 'betting' status,
-            // execute giveUpRound method.
             gameRoundService.giveUpRound(bettingDto);
         }
     }

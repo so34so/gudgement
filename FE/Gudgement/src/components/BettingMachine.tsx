@@ -32,13 +32,13 @@ const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
 const BettingMachine = ({
   maxBettingAmount,
   roundInfo,
-  myInfoState,
+  nickName,
   otherName,
   roomNumber,
 }: {
   maxBettingAmount: number;
   roundInfo: object;
-  myInfoState: object;
+  nickName: string;
   otherName: string;
   roomNumber: string;
 }) => {
@@ -48,7 +48,6 @@ const BettingMachine = ({
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const nickName = myInfoState.nickname;
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
@@ -56,7 +55,7 @@ const BettingMachine = ({
         "/topic/game/timeout" + roomNumber,
         function (messageOutput) {
           if (messageOutput) {
-            postGiveup();
+            isGiveup();
           }
         },
       );
@@ -73,12 +72,14 @@ const BettingMachine = ({
               rounds: roundResults.rounds,
               result: roundResults.result,
               cardInfo: roundResults.cardInfo,
+              nickName: nickName,
             });
           } else if (roundResults.rounds === 10) {
             navigation.navigate("PlayGameFinalResult", {
               roomNumber: roomNumber,
               rounds: roundResults.rounds,
               result: roundResults.result,
+              nickName: nickName,
             });
           }
         },
@@ -90,7 +91,7 @@ const BettingMachine = ({
   async function postBettingInfo() {
     try {
       const response = await axios.post(`${Config.API_URL}/game/playRound`, {
-        nickName: myInfoState.nickname,
+        nickName: nickName,
         otherName: otherName,
         bettingAmount: bettingAmount,
         rounds: roundInfo.rounds,
@@ -108,7 +109,7 @@ const BettingMachine = ({
   async function postGiveup() {
     try {
       const response = await axios.post(`${Config.API_URL}/game/giveUpRound`, {
-        nickName: myInfoState.nickname,
+        nickName: nickName,
         otherName: otherName,
         bettingAmount: bettingAmount,
         rounds: roundInfo.rounds,
@@ -123,6 +124,27 @@ const BettingMachine = ({
     }
   }
 
+  // 베팅 포기 여부 확인
+  async function isGiveup() {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/game/timeoutGiveUp`,
+        {
+          nickName: nickName,
+          otherName: otherName,
+          bettingAmount: bettingAmount,
+          rounds: roundInfo.rounds,
+          cardOrder: roundInfo.card.order,
+          roomNumber: roomNumber,
+        },
+      );
+      Reactotron.log!("타임 아웃 포기!!", response.data);
+      setIsButtonActive(false);
+    } catch (error) {
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =

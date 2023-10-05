@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, View, StyleSheet } from "react-native";
 
-export default function GameTimerBar({ duration }) {
+export default function MatchingTimerBar({ duration }) {
   const widthAnim = useRef(new Animated.Value(100)).current; // 초기 게이지 너비를 100%로 설정
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
-    top: "30%",
+    top: "55%",
   },
   container: {
     height: 20,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   innerBar: {
     height: "100%",
-    backgroundColor: "#1e8932",
+    backgroundColor: "#1635b7",
     borderRadius: 5,
   },
 });

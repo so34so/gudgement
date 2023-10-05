@@ -1,59 +1,109 @@
-import VolcanoMap from "../assets/images/volcanomap.png";
-import React, { useEffect, useRef, useState } from "react";
-import GameUi from "../components/GameUi";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   ImageBackground,
   Image,
   Text,
-  ImageSourcePropType,
-  StatusBar,
+  TouchableOpacity,
 } from "react-native";
-
+import axios from "axios";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
 import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
+import { CommonType } from "../types/CommonType";
 
 export default function PlayGameFinalResult({ route }) {
-  const { roomNumber, rounds, result } = route.params;
-
-  const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
-  const myCharacter = queryClient.getQueryData(["myCharacter"]);
-  const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
+  const { roomNumber, rounds, result, nickName } = route.params;
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
+  const [myInfoState, setMyInfoState] = useState([null]);
+  const [myCharacterState, setMyCharacterState] = useState(null);
+  const [resultViewState, setResultViewState] = useState(null);
 
-  const [myCharacterState, setMyCharacterState] = useState(myCharacter);
-  const [enemyCharacterState, setEnemyCharacterState] =
-    useState(enemyCharacter);
+  const victoryPing = "pingpingeeewin.png";
+  const victorydBam = "bambamwin.png";
+  const losePing = "pingpingeeelose.png";
+  const loseBam = "bambamlose.png";
+  const victoryView = "victoryview.png";
+  const loseView = "loseview.png";
 
+  useEffect(() => {
+    const myCharacter = queryClient.getQueryData(["myCharacter"]);
+    const fetchInfo = async () => {
+      const myData = await queryClient.getQueryData(["myGameinfo"]);
+      if (myData) {
+        setMyInfoState(myData);
+      }
+      console.log(myInfoState);
+    };
+    // 승패 여부에 따른 출력 이미지 변경
+    if (myCharacter) {
+      if (!result && myCharacter === "bambam.gif") {
+        setMyCharacterState(loseBam);
+        setResultViewState(loseView);
+      } else if (!result && myCharacter === "pingpingeee.gif") {
+        setMyCharacterState(losePing);
+        setResultViewState(loseView);
+      } else if (result && myCharacter === "bambam.gif") {
+        setMyCharacterState(victorydBam);
+        setResultViewState(victoryView);
+      } else if (result && myCharacter === "pingpingeee.gif") {
+        setMyCharacterState(victoryPing);
+        setResultViewState(victoryView);
+      }
+    }
+    fetchInfo();
+  }, [result]);
+
+  // 베팅 완료 요청
+  async function postBettingInfo() {
+    try {
+      const response = await axios.post(`${Config.API_URL}/game/end`, {
+        roomNumber: roomNumber,
+        nickName: nickName,
+        result: result,
+      });
+      console.log("최종 게임 저장완료!", response.data);
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "PlaySelect",
+          },
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
   return (
     <View className="flex w-full h-full">
       <ImageBackground
-        source={volcanoMap}
+        source={{
+          uri: `${Config.IMAGE_URL}/game/${resultViewState}`,
+        }}
         resizeMode="cover"
         className="flex-1"
       >
-        <GameUi />
+        <Text>+300</Text>
         <Image
           style={styles.mycharacter}
           source={{
             uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
           }}
         />
-        <Image
-          style={styles.enemy}
-          source={{
-            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
-          }}
-        />
+        <TouchableOpacity className="t-[30]" onPress={postBettingInfo}>
+          <Image
+            style={styles.exitbutton}
+            source={{
+              uri: `${Config.IMAGE_URL}/game/gameexit.png`,
+            }}
+          />
+        </TouchableOpacity>
       </ImageBackground>
     </View>
   );
@@ -66,121 +116,26 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  buttonwrapper: {
-    flex: 1,
-    top: "60%",
-    left: "50.5%",
-  },
-  infomessage: {
-    bottom: "100%",
-    zIndex: 20,
-  },
-  mycharacterbox: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "50%",
-    left: "-123%",
-    bottom: 100,
-    zIndex: 12,
-  },
-  vs: {
-    position: "absolute",
-    width: 200,
-    height: 148,
-    top: "38%",
-    left: "30%",
-    zIndex: 15,
-  },
-  mycharacterboxinname: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "60%",
-    left: "-118%",
-    bottom: 100,
-    zIndex: 13,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
-    textShadowRadius: 8, // 섀도우 반경 (두께)
-  },
-  mycharacterboxinaward: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "56%",
-    left: "-118%",
-    bottom: 100,
-    zIndex: 13,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
-    textShadowRadius: 8, // 섀도우 반경 (두께)
-  },
-  boxinmycharacter: {
-    position: "absolute",
-    width: 120,
-    height: 100,
-    top: "55%",
-    left: "-123%",
-    bottom: 100,
-    zIndex: 13,
-  },
-  enemybox: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "10%",
-    right: "-123%",
-    bottom: 100,
-    zIndex: 12,
-  },
-
-  boxinenemy: {
-    position: "absolute",
-    width: 130,
-    height: 130,
-    top: "12%",
-    right: "-123%",
-    bottom: 100,
-    zIndex: 13,
-  },
-  enemyboxinname: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "20%",
-    right: "-115%",
-    bottom: 100,
-    zIndex: 13,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
-    textShadowRadius: 8, // 섀도우 반경 (두께)
-  },
-  enemyboxinaward: {
-    position: "absolute",
-    width: 329,
-    height: 201,
-    top: "16%",
-    right: "-115%",
-    bottom: 100,
-    zIndex: 13,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 }, // 섀도우 오프셋
-    textShadowRadius: 8, // 섀도우 반경 (두께)
-  },
   mycharacter: {
     position: "absolute",
-    width: 92,
-    height: 67,
-    top: "80%",
-    right: "30%",
-    bottom: 100,
+    width: 240,
+    height: 200,
+    top: "50%",
+    right: "25%",
     zIndex: 10,
   },
   loadingtext: {
     position: "absolute",
     top: "40%",
     right: "10%",
+  },
+  exitbutton: {
+    position: "absolute",
+    width: 194,
+    height: 69,
+    top: 700,
+    right: "26.5%",
+    zIndex: 10,
   },
   loadingtextkr: {
     position: "absolute",

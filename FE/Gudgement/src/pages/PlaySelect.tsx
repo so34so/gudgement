@@ -35,9 +35,10 @@ function PlaySelect() {
     queryKey: ["fetchUserInfo"],
   });
 
+  console.log(userInfo);
   const MEMBER_ID = userInfo?.memberId;
   const MEMBER_NickName = userInfo?.nickname;
-  const MEMBER_RoleUser = "silver";
+  const MEMBER_RoleUser = userInfo?.grade;
   console.log(typeof MEMBER_NickName);
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;

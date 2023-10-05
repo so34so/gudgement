@@ -41,7 +41,7 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         timerService.startTimer(roomNumber, () -> {
             messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
-        }, 10);
+        }, 15);
 
     }
 

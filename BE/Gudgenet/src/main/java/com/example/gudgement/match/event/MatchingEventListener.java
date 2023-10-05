@@ -62,7 +62,7 @@ public class MatchingEventListener {
             timerService.startTimer(roomNumber, () -> {
                 messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
                 // 게임 거절 처리 로직
-            }, 10);
+            }, 15);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
         }

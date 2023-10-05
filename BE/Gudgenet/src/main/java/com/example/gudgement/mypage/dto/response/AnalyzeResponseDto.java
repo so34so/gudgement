@@ -13,6 +13,7 @@ public class AnalyzeResponseDto {
     private String bestDestination;
     private int frequencyCount;
     private Long frequencyAmount;
+    private String frequencyDestination;
     private Integer totalMember;
     private Integer ranking;
     private long lastMonthAmount;
@@ -22,8 +23,8 @@ public class AnalyzeResponseDto {
 
     @Builder
     public AnalyzeResponseDto(int year, int month, Long bestAmount, String bestDestination,
-                              int frequencyCount, Long frequencyAmount, Integer totalMember,
-                              Integer ranking, long lastMonthAmount, Double lastMonthAmountRate,
+                              int frequencyCount, Long frequencyAmount, String frequencyDestination,
+                              Integer totalMember, Integer ranking, long lastMonthAmount, Double lastMonthAmountRate,
                               long thisMonthAmount, Double thisMonthAmountRate) {
 
         this.year = year;
@@ -32,6 +33,7 @@ public class AnalyzeResponseDto {
         this.bestDestination = bestDestination;
         this.frequencyCount = frequencyCount;
         this.frequencyAmount = frequencyAmount;
+        this.frequencyDestination = frequencyDestination;
         this.totalMember = totalMember;
         this.ranking = ranking;
         this.lastMonthAmount = lastMonthAmount;

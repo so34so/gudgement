@@ -19,6 +19,7 @@ public class MemberResponseDto {
     private int level;
     private int pedometer;
     private Long monthOverconsumption;
+    private Long virtualAccountId;
     private Rate rate;
     private Grade grade;
 
@@ -26,7 +27,7 @@ public class MemberResponseDto {
     public MemberResponseDto (Long memberId, String email, String nickname,
                               Long tiggle, Long exp, List<Item> setItems,
                               int level, int pedometer, Long monthOverconsumption,
-                              Rate rate, Grade grade) {
+                              Long virtualAccountId, Rate rate, Grade grade) {
 
         this.memberId = memberId;
         this.email = email;
@@ -37,6 +38,7 @@ public class MemberResponseDto {
         this.level = level;
         this.pedometer = pedometer;
         this.monthOverconsumption = monthOverconsumption;
+        this.virtualAccountId = virtualAccountId;
         this.rate = rate;
         this.grade = grade;
     }

@@ -85,6 +85,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
                 .bestDestination(createdAnalyze.getBestDestination())
                 .frequencyCount(createdAnalyze.getFrequencyCount())
                 .frequencyAmount(createdAnalyze.getFrequencyAmount())
+                .frequencyDestination(createdAnalyze.getFrequencyDestination())
                 .totalMember(createdAnalyze.getCount())
                 .ranking(createdAnalyze.getRanking())
                 .lastMonthAmount(createdAnalyze.getLastMonthAmount())

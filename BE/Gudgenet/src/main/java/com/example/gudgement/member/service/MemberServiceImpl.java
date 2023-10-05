@@ -156,6 +156,7 @@ public class MemberServiceImpl implements MemberService {
                 .level(member.getLevel())
                 .exp(member.getExp())
                 .monthOverconsumption(member.getMonthOverconsumption())
+                .virtualAccountId(member.getVirtualAccountId())
                 .pedometer(member.getPedometer())
                 .rate(memberRate)
                 .grade(member.getGrade())

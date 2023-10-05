@@ -1,4 +1,4 @@
-package com.example.gudgement.mypage.dto;
+package com.example.gudgement.mypage.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

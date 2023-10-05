@@ -9,7 +9,7 @@ import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.mypage.dto.ChartDataDto;
+import com.example.gudgement.mypage.dto.response.ChartResponseDto;
 import com.example.gudgement.mypage.entity.Chart;
 import com.example.gudgement.mypage.repository.ChartRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MyPageServiceImpl implements MyPageService{
+public class ChartServiceImpl implements ChartService {
 
     private final ChartRepository chartRepository;
     private final MemberRepository memberRepository;
@@ -37,7 +37,6 @@ public class MyPageServiceImpl implements MyPageService{
     private final TransactionHistoryRepository transactionHistoryRepository;
 
     // 현재 년도, 월, 일, 주차
-    @Override
     public int[] getWeekOfMonth() {
         LocalDate loc = LocalDate.now();
         int year = loc.getYear();
@@ -55,7 +54,6 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     // 특정 날짜 년도, 월, 일, 주차, 일요일 까지 남은 일 수
-    @Override
     public int[] getWeekOfMonth(String date) {
         String[] dates = date.split("-");
         int year = Integer.parseInt(dates[0]);
@@ -76,7 +74,8 @@ public class MyPageServiceImpl implements MyPageService{
 
     // 오늘 기준 이번주 차트
     @Override
-    public ChartDataDto todayWeekChartData(Long id) {
+    @Transactional
+    public ChartResponseDto todayWeekChartData(Long id) {
         int[] dayData = getWeekOfMonth();
         LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2],23,59,59);
         LocalDateTime startDate = endDate.minusDays(endDate.getDayOfWeek().getValue()).plusSeconds(1);
@@ -197,8 +196,8 @@ public class MyPageServiceImpl implements MyPageService{
             overAmountRate = Long.MAX_VALUE;
         }
 
-        return ChartDataDto.builder()
-                .data(ChartDataDto.Data.builder()
+        return ChartResponseDto.builder()
+                .data(ChartResponseDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
                                 startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
@@ -206,7 +205,7 @@ public class MyPageServiceImpl implements MyPageService{
                                 startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
                                 startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
-                        .dateSet(ChartDataDto.Data.DataSet.builder()
+                        .dateSet(ChartResponseDto.Data.DataSet.builder()
                                 .amount(new Long[] {
                                         chartData.getMon(), chartData.getTue(), chartData.getWen(),
                                         chartData.getThu(), chartData.getFri(), chartData.getSat(), chartData.getSun()})
@@ -225,7 +224,9 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     // 특정일 기준 주차 차트 가져오기
-    public ChartDataDto toDateWeekChartData(Long id, String date) {
+    @Override
+    @Transactional
+    public ChartResponseDto toDateWeekChartData(Long id, String date) {
         int[] dayData = getWeekOfMonth(date);
         int nowMonth = LocalDate.now().getMonthValue();
         LocalDateTime endDate = LocalDateTime.of(dayData[0], dayData[1], dayData[2],23,59,59).plusDays(7 - dayData[4]);
@@ -293,6 +294,8 @@ public class MyPageServiceImpl implements MyPageService{
                 }
             } catch (AccountException e) {
                 log.error(e.getMessage());
+                log.error(String.valueOf(e.getCause()));
+                log.error(String.valueOf(e.getErrorCode()));
                 throw new AccountException(ErrorCode.AMOUNT_NOT_NUMBER);
             }
         // 차트가 이미 있다면
@@ -354,8 +357,8 @@ public class MyPageServiceImpl implements MyPageService{
             overAmountRate = Long.MAX_VALUE;
         }
 
-        return ChartDataDto.builder()
-                .data(ChartDataDto.Data.builder()
+        return ChartResponseDto.builder()
+                .data(ChartResponseDto.Data.builder()
                         .type("bar")
                         .labels(new String[] {
                                 startDate.getDayOfMonth() + " 월", startDate.plusDays(1).getDayOfMonth() + " 화",
@@ -363,7 +366,7 @@ public class MyPageServiceImpl implements MyPageService{
                                 startDate.plusDays(4).getDayOfMonth() + " 금", startDate.plusDays(5).getDayOfMonth() + " 토",
                                 startDate.plusDays(6).getDayOfMonth() + " 일"
                         })
-                        .dateSet(ChartDataDto.Data.DataSet.builder()
+                        .dateSet(ChartResponseDto.Data.DataSet.builder()
                                 .amount(new Long[] {
                                         chartData.getMon(), chartData.getTue(), chartData.getWen(),
                                         chartData.getThu(), chartData.getFri(), chartData.getSat(), chartData.getSun()})
@@ -382,6 +385,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
+    @Transactional
     public Chart createChart(Member member, Long overconsumption,int year, int month, int week) {
         Chart chart = Chart.builder()
                 .memberId(member)
@@ -397,7 +401,6 @@ public class MyPageServiceImpl implements MyPageService{
         return chart;
     }
 
-    @Override
     public boolean Overconsumption(long overAmountRate, long amount) {
         if (amount <= overAmountRate) return true;
         return false;

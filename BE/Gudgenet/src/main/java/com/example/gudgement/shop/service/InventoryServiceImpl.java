@@ -121,4 +121,21 @@ public class InventoryServiceImpl implements InventoryService{
         return InventoryDto.invenDto(inventoryRepository.save(selectedInventory));
     }
 
+    public InventoryDto unequipItem(Long invenId) {
+        // 인벤토리를 조회합니다.
+        Inventory selectedInventory = inventoryRepository.findByInvenId(invenId)
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
+
+        // 이미 장착된 아이템인지 확인합니다.
+        if (!selectedInventory.isEquipped()) {
+            throw new IllegalStateException("This item is not equipped.");
+        }
+
+        // 아이템을 해제합니다.
+        selectedInventory.unequip();
+
+        // 변경 사항을 저장하고 반환합니다.
+        return InventoryDto.invenDto(inventoryRepository.save(selectedInventory));
+    }
+
 }

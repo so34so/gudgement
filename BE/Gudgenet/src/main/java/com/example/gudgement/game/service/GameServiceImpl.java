@@ -51,31 +51,6 @@ public class GameServiceImpl implements GameService{
     private final CardService cardService;
     private final TimerService timerService;
 
-    @Scheduled(fixedRate = 1000)
-    public void checkUnresponsiveUsers() {
-        LocalDateTime now = LocalDateTime.now();
-
-        List<String> roomNumbers = new ArrayList<>(redisTemplate.keys("*"));
-
-        for (String roomNumber : roomNumbers) {
-            Set<Object> memberKeys = redisTemplate.opsForHash().keys(roomNumber);
-
-            for (Object keyObject : memberKeys) {
-                String key = (String) keyObject;
-                String[] parts = key.split(":");
-
-                if (parts[1].equals("invitedAt")) {
-                    LocalDateTime invitedAt = LocalDateTime.parse((String) redisTemplate.opsForHash().get(roomNumber, key));
-
-                    if (!redisTemplate.opsForHash().hasKey(roomNumber, parts[0] + ":status") && invitedAt.isBefore(now.minusSeconds(15))) {
-                        rejectGame(roomNumber, parts[0]);
-                        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/timeout", parts[0] + " did not respond.");
-                    }
-                }
-            }
-        }
-    }
-
     public String createGameRoom() {
 
         String roomNumber = UUID.randomUUID().toString().replaceAll("-", "").substring(0,6);

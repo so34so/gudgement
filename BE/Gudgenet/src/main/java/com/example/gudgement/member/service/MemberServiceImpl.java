@@ -374,4 +374,24 @@ public class MemberServiceImpl implements MemberService {
         chartRepository.deleteAllByMemberId(member);
         memberRepository.deleteByMemberId(member.getMemberId());
     }
+
+    @Override
+    @Transactional
+    public void addProgress(Long id) {
+        Optional<Member> memberOptional = memberRepository.findByMemberId(id);
+
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+
+            // Find the progress with progress_name 'pedometerValue'.
+            Progress progress = progressRepository.findByMemberAndProgressName(member, "pedometerValue");
+
+            if (progress != null) {
+                // If such a progress exists, increment its value.
+                progress.incrementProgressValue();
+            }
+        }
+    }
+
+
 }

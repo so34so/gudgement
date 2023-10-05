@@ -20,4 +20,6 @@ public interface MemberService {
     void addTiggle(Long id);
     void initializeProgressAndInventory(Long id);
     void deleteMember(String email);
+
+    void addProgress(Long id);
 }

@@ -1,5 +1,6 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.member.entity.Member;
@@ -26,7 +27,6 @@ public class InventoryServiceImpl implements InventoryService{
     private final String IMAGE_PATH = "https://d15h0ofj6la3lc.cloudfront.net/";
 
     private final InventoryRepository inventoryRepository;
-    private final ItemRepository itemRepository;
 
     public List<EquippedDto> findMemberitems(Member member) {
         List<Inventory> inventoryList = inventoryRepository.findAllByMember(member);
@@ -88,7 +88,7 @@ public class InventoryServiceImpl implements InventoryService{
     public void useItem(Long invenId) {
         // Fetch the item from the database.
         Inventory item = inventoryRepository.findById(invenId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid invenId: " + invenId));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // Decrease quantity by 1.
         item.decreaseQuantity(1);

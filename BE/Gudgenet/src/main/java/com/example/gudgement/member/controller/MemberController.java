@@ -116,6 +116,7 @@ public class MemberController {
     public ResponseEntity<String> pedometerClear(@RequestParam(name = "memberId") Long id,
                                                  @RequestHeader("Authorization") String jwt) {
         memberService.addTiggle(id);
+        memberService.addProgress(id);
         return ResponseEntity.ok("만보걷기 완료");
     }
 

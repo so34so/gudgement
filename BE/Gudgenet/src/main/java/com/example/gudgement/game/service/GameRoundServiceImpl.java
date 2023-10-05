@@ -419,7 +419,9 @@ public class GameRoundServiceImpl implements GameRoundService {
             String key = (String) keyObject;
 
             if (key.endsWith(":rounds")) {  // If it's a rounds key, increment its value.
-                redisTemplate.opsForHash().increment(roomNumber, key, 1);
+                String roundValue = (String) redisTemplate.opsForHash().get(roomNumber, key);
+                int incrementedRoundValue = Integer.parseInt(roundValue) + 1;
+                redisTemplate.opsForHash().put(roomNumber, key, String.valueOf(incrementedRoundValue));
             } else if (key.endsWith(":status")) {  // If it's a status key, update its value to 'play'.
                 redisTemplate.opsForHash().put(roomNumber, key, "play");
             }

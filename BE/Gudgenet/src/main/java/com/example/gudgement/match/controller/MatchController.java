@@ -19,13 +19,13 @@ public class MatchController {
 
     @Operation(summary = "게임 매칭 시작")
     @MessageMapping("/addUser")
-    public void addUserToGroup(@RequestBody MatchDto matchDto) {
+    public void addUserToGroup(MatchDto matchDto) {
         matchService.addUserToGroup(matchDto);
     }
 
     @Operation(summary = "게임 매칭 나가기")
     @MessageMapping("/removeUser")
-    public void removeUserFromGroup(@RequestBody MatchDto matchDto) {
+    public void removeUserFromGroup(MatchDto matchDto) {
         matchService.removeUserFromGroup(matchDto);
     }
 

@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Image, View, Text, Pressable } from "react-native";
+import { useState, useEffect } from "react";
+import { Image, View, Text, Pressable, ImageBackground } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import axios from "axios";
 
 import Config from "react-native-config";
 
 import reactotron from "reactotron-react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
 import { getAsyncData, setAsyncData } from "../utils/common";
 import { CommonType } from "../types/CommonType";
@@ -17,6 +23,21 @@ interface LoginProps {
 
 function Login({ setIsLoginLoading }: LoginProps) {
   const [showWebView, setShowWebView] = useState(false);
+  const offset = useSharedValue(4);
+  const offset2 = useSharedValue(6);
+
+  useEffect(() => {
+    offset.value = withRepeat(
+      withTiming(-offset.value, { duration: 300 }),
+      -1,
+      true,
+    );
+    offset2.value = withRepeat(
+      withTiming(-offset2.value, { duration: 320 }),
+      -1,
+      true,
+    );
+  }, [offset, offset2]);
 
   const handleLogin = () => {
     setShowWebView(true);
@@ -90,20 +111,53 @@ function Login({ setIsLoginLoading }: LoginProps) {
       />
     );
   }
+
+  // 애니메이션
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+  const animatedStyles2 = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset2.value }],
+  }));
+
   return (
-    <View className="flex flex-row justify-center items-end h-full pb-20">
-      <Pressable
-        onPress={handleLogin}
-        className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
+    <View className="flex w-full h-full">
+      <ImageBackground
+        source={{ uri: `${Config.IMAGE_URL}/asset/mainscreen.png` }}
+        resizeMode="cover"
+        className="flex-1"
       >
-        <Image
-          source={{ uri: `${Config.IMAGE_URL}/asset/kakaoLogo.png` }}
-          className="h-8 w-9 mr-6"
-        />
-        <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
-          카카오로 시작하기
-        </Text>
-      </Pressable>
+        <Animated.View style={[animatedStyles]}>
+          <Image
+            className="absolute justify-center left-[150] top-[400] flex-2 h-[250] w-[250]"
+            source={{
+              uri: `${Config.IMAGE_URL}/asset/mainscreenbam.png`,
+            }}
+          />
+        </Animated.View>
+        <Animated.View style={[animatedStyles2]}>
+          <Image
+            className="absolute justify-center top-[400] flex-2 h-[250] w-[250]"
+            source={{
+              uri: `${Config.IMAGE_URL}/asset/mainscreenpingpingeee.png`,
+            }}
+          />
+        </Animated.View>
+        <View className="flex flex-row justify-center items-end h-full pb-20">
+          <Pressable
+            onPress={handleLogin}
+            className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
+          >
+            <Image
+              source={{ uri: `${Config.IMAGE_URL}/asset/kakaoLogo.png` }}
+              className="h-8 w-9 mr-6"
+            />
+            <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
+              카카오로 시작하기
+            </Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
     </View>
   );
 }

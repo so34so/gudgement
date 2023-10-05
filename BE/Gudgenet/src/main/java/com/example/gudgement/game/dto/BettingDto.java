@@ -14,6 +14,8 @@ public class BettingDto {
     private int cardOrder;
     private String roomNumber;
 
+
+
     @Builder
     public BettingDto(String nickName,String otherName, Long bettingAmount, int rounds, int cardOrder, String roomNomber){
         this.nickName = nickName;

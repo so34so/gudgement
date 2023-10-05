@@ -55,14 +55,14 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         Chart[] charts = new Chart[weekInMonth];
         int[] days = dayData(dayInMonth, weekInMonth, year, month);
         for (int i = 1; i < weekInMonth+1; i++) {
-            Optional<Chart> chart = chartRepository.findByAccountIdAndYearAndMonthAndWeek(virtualAccountId, year, month, i);
+            Optional<Chart> chart = chartRepository.findByVirtualAccountIdAndYearAndMonthAndWeek(virtualAccountId, year, month, i);
             if (chart.isEmpty()) {
                 LocalDate localDate = LocalDate.of(year, month, days[i-1]);
                 chartService.toDateWeekChartData(member.getMemberId(), String.valueOf(localDate));
             }
         }
 
-        List<Chart> chartList = chartRepository.findALLByAccountIdAndYearAndMonth(virtualAccountId, year, month);
+        List<Chart> chartList = chartRepository.findALLByVirtualAccountIdAndYearAndMonth(virtualAccountId, year, month);
 
         // 목표 금액 찾아 오기
         Long monthOverconsumption = -1L;

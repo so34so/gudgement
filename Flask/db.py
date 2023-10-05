@@ -13,17 +13,14 @@ def get_connect1():
 
     return conn
 
-# 로컬 데이터 베이스 접속 함수
-def get_connect2():
-    conn = pymysql.connect(
-        host="localhost",
-        user = "root",
-        password = "1234",
-        db = "security",
-        charset= "utf8"
-    )
+# # 로컬 데이터 베이스 접속 함수
+# def get_connect2():
+#     conn = pymysql.connect(
+#         host="localhost",
+#         charset= "utf8"
+#     )
 
-    return conn
+#     return conn
 
 # 해당 일의 주차를 계산하는 함수
 def week_of_month(year, month, day):
@@ -111,7 +108,7 @@ def insert_month_analyze(virtualId, year, month, best_amount, best_destination,
                          frequency_count, frequency_destination, frequency_amount, count, ranking,
                         last_month_amount, last_month_amount_rate, this_month_amount, this_month_amount_rate):
     
-    conn = get_connect2()
+    conn = get_connect1()
     cursor = conn.cursor()
 
     sql = """INSERT INTO month_analyze 
@@ -125,7 +122,7 @@ def insert_month_analyze(virtualId, year, month, best_amount, best_destination,
     values = (year, month, virtualId, best_amount, best_destination,
     frequency_count, frequency_destination, frequency_amount, count, ranking,
     last_month_amount, last_month_amount_rate, this_month_amount, this_month_amount_rate)
-
+    
     cursor.execute(sql, values)
     conn.commit()
     conn.close()
@@ -160,35 +157,20 @@ def last_month_analyze(virtualId, year, month):
 
     return analyze_data
 
-virtualId, year, month = 4, 2023, 9
-data_frame = get_Member_Month_Transaction_History(virtualId, year, month)
-month_overconsumption = 1000000
+# 지난 달 분석 리스트 있으면 삭제하기
+def delete_last_month_analyze(virtualId, year, month):
+    if (month == 0):
+        month = 12
+        year -= 1
 
-# 거래내역이 없으면 TypeError 발생, try-except로 처리. 이후 삽입 지역 None처리 필요
-try:
-    month_best_transaction = data_frame.loc[data_frame['amount'].idxmax()]
-    frequency_transaction = data_frame['deposit_source'].value_counts()
-    
-except TypeError as e:
-    print(e)
+    conn = get_connect1()
+    cursor = conn.cursor()
 
-if month_overconsumption != None:
-    data_frame2 = compare_to_member(month_overconsumption)
-    member_dict = data_frame2.set_index('member_id')['virtual_account_id'].to_dict()
-    month_overconsumption_member = dict()
+    sql = 'DELETE FROM month_analyze WHERE virtual_account_id = %s AND year = %s AND month = %s'
 
-    for key, value in member_dict.items():
-        try:
-            member_month_transaction = get_Member_Month_Transaction_History(value, year, month)["amount"].sum()
-            month_over = month_overconsumption_rate(year, month, key)
-            month_overconsumption_member[key] = round((member_month_transaction / month_overconsumption) * 100, 1)
-        
-        except Exception as e:
-            print(e.with_traceback)
+    cursor.execute(sql, (virtualId, year, month))
 
-        if value == virtualId:
-            now_member = key
-            total_amount = member_month_transaction
+    conn.commit()
+    conn.close()
 
-month_overconsumption_member = sorted(month_overconsumption_member.items(), key=lambda item: item[1])
-
+    return "delete_ok"

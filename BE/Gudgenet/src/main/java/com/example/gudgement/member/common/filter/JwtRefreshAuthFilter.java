@@ -4,7 +4,9 @@ import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.exception.ErrorResponse;
 import com.example.gudgement.member.common.jwt.JwtProvider;
+import com.example.gudgement.member.dto.response.MemberVerifyResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.PatternMatchUtils;
@@ -35,7 +37,7 @@ public class JwtRefreshAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-//        MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
+            MemberVerifyResponseDto attribute = (MemberVerifyResponseDto) request.getAttribute(MemberVerifyFilter.AUTHENTICATE_USER);
             String refreshToken = jwtProvider.getHeaderToken(request, "Authorization");
 
             if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
@@ -50,13 +52,18 @@ public class JwtRefreshAuthFilter extends OncePerRequestFilter {
                 if (jwtProvider.validationToken(refreshToken)) {
                     log.info("RefreshToken 유효함. : {}", refreshToken);
 
-//                Claims claims = jwtProvider.getClaims(refreshToken);
-//                if (attribute.getId().equals(claims.get("id"))) {
-//                    throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
-//                }
-//                log.info("요청 ID 일치함. : {}", claims.get("id"));
+                    Claims claims = jwtProvider.getClaims(refreshToken);
+                    if (attribute.getId().equals(claims.get("id"))) {
+                        throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
+                    }
 
-                    // refreshToken 만료
+                    if (attribute.getEmail().equals(claims.get("email"))) {
+                        throw new BaseErrorException(ErrorCode.NOT_SAME_TOKEN_AND_MEMBER);
+                    }
+
+                    log.info("요청 ID 일치함. : {}", claims.get("id"));
+
+                // refreshToken 만료
                 } else {
                     log.info("RefreshToken 만료. : {}", refreshToken);
                     jwtExceptionHandler(response, "Refresh");

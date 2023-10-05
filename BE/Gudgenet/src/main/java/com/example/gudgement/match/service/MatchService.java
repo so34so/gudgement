@@ -7,12 +7,5 @@ public interface MatchService {
 
     void removeUserFromGroup(MatchDto matchDto);
 
-/*    void addUserToRoomAndTier(MatchDto matchDto);
-
-    Set<String> getUsersInRoomAndTier(MatchDto matchDto);
-
-    void removeUserFromRoomAndTier(MatchDto matchDto);
-
-    long getUsersCountInRoomAndTier(String room, String tier);*/
 }
 

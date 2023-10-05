@@ -6,7 +6,8 @@ import com.example.gudgement.game.dto.GameRoundDto;
 
 public interface GameRoundService {
 
-    GameRoundDto getGameStatus(GameRequestDto gameRequestDto);
+    GameRoundDto getGameStatustest(GameRequestDto gameRequestDto);
+    void getGameStatus(GameRequestDto gameRequestDto);
 
     void playRound(BettingDto bettingDto);
 

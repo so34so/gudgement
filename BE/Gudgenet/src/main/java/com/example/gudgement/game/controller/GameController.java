@@ -58,20 +58,32 @@ public class GameController {
     }
 
     @Operation(summary = "라운드시작")
+    @MessageMapping("/game/gameroundinfo")
+    public void getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
+       gameRoundService.getGameStatus(requestDto);
+    }
+
+    @Operation(summary = "라운드시작")
     @PostMapping("/gameroundinfo")
-    public ResponseEntity<GameRoundDto> getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
-        GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
+    public ResponseEntity<GameRoundDto> getGameRoundInfoTest(@RequestBody GameRequestDto requestDto) {
+        GameRoundDto gameRoundInfo = gameRoundService.getGameStatustest(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
 
     @Operation(summary = "카드 게임 배팅")
-    @PostMapping("/playRound")
+    @MessageMapping("/game/playRound")
     public void playRound(@RequestBody BettingDto bettingDto){
         gameRoundService.playRound(bettingDto);
     }
 
+    @Operation(summary = "카드 게임 배팅")
+    @PostMapping("/playRound")
+    public void playRoundtest(@RequestBody BettingDto bettingDto){
+        gameRoundService.playRound(bettingDto);
+    }
+
     @Operation(summary = "타임아웃으로 인한 포기")
-    @PostMapping("/timeoutGiveUp")
+    @MessageMapping("/game/timeoutGiveUp")
     public void timeoutGiveUp(@RequestBody BettingDto bettingDto){
 
         redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
@@ -91,9 +103,36 @@ public class GameController {
         }
     }
 
+    @Operation(summary = "타임아웃으로 인한 포기")
+    @PostMapping("/timeoutGiveUp")
+    public void timeoutGiveUptest(@RequestBody BettingDto bettingDto){
+
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
+
+        String otherUserStatus = (String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":status");
+        int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":betting"));
+        myBet /= 10;
+
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":bet", String.valueOf(myBet));
+
+        bettingDto.setBettingAmount((long)myBet);
+
+        if ("giveup".equals(otherUserStatus)) {
+            gameRoundService.processBets(bettingDto);
+        } else if ("betting".equals(otherUserStatus)) {
+            gameRoundService.giveUpRound(bettingDto);
+        }
+    }
+
+    @Operation(summary = "카드 게임 포기")
+    @MessageMapping("/game/giveUpRound")
+    public void giveUpRound(@RequestBody BettingDto bettingDto){
+        gameRoundService.giveUpRound(bettingDto);
+    }
+
     @Operation(summary = "카드 게임 포기")
     @PostMapping("/giveUpRound")
-    public void giveUpRound(@RequestBody BettingDto bettingDto){
+    public void giveUpRoundtest(@RequestBody BettingDto bettingDto){
         gameRoundService.giveUpRound(bettingDto);
     }
 
@@ -105,7 +144,7 @@ public class GameController {
     }
 
     @Operation(summary = "게임 채팅")
-    @MessageMapping("/chat")
+    @MessageMapping("/game/chat")
     public void chatAll(@RequestBody MessageDto messageDto){
         log.info(messageDto.getNickName()+"");
 
@@ -129,8 +168,19 @@ public class GameController {
     }
 
     @Operation(summary = "소비아이템 사용")
-    @PostMapping("/useItem")
+    @MessageMapping("/game/useItem")
     public void useItem(ItemUserDto request) {
+        // Use the item in the database.
+        inventoryService.useItem(request.getInvenId());
+
+        redisTemplate.opsForHash().put(request.getRoomNumber(), request.getNickname() + ":item", "use");
+
+//        messagingTemplate.convertAndSend("/topic/game/" + ItemUserDto.getRoomNumber() , "사용 완료");
+    }
+
+    @Operation(summary = "소비아이템 사용")
+    @PostMapping("/useItem")
+    public void useItemtest(ItemUserDto request) {
         // Use the item in the database.
         inventoryService.useItem(request.getInvenId());
 

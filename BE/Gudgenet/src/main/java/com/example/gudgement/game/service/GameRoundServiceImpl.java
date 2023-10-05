@@ -43,7 +43,7 @@ public class GameRoundServiceImpl implements GameRoundService {
     }
 
     @Transactional
-    public GameRoundDto getGameStatus(GameRequestDto requestDto) {
+    public GameRoundDto getGameStatustest(GameRequestDto requestDto) {
         String roomNumber = requestDto.getRoomNumber();
         String userName = requestDto.getNickName();
 
@@ -127,7 +127,94 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         return new GameRoundDto(userTiggles, cardInfo, rounds,equippedItems);
     }
+    @Transactional
+    public void getGameStatus(GameRequestDto requestDto) {
+        String roomNumber = requestDto.getRoomNumber();
+        String userName = requestDto.getNickName();
 
+        redisTemplate.opsForHash().put(roomNumber, userName + ":status", "round");
+
+        // 모든 키를 가져옵니다.
+        Set<String> keys = redisTemplate.keys(roomNumber + "*:cards");
+
+        String otherUser = null;
+
+        // 'userName'을 제외한 다른 유저의 이름을 찾습니다.
+        for (String key : keys) {
+            String potentialOtherUser = key.split(":")[1];
+            if (!potentialOtherUser.equals(userName)) {
+                otherUser = potentialOtherUser;
+                break;
+            }
+        }
+
+        if (otherUser == null) {
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
+        }
+
+        List<UserTiggleDto> userTiggles = new ArrayList<>();
+
+        // 각 유저의 tiggle 값을 가져옵니다.
+        for (String userNickName : Arrays.asList(userName, otherUser)) {
+            log.info(userNickName + "입니다.");
+            Object valueObj = redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
+            if (valueObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
+
+            Long tiggleValue = Long.parseLong(String.valueOf(valueObj));
+
+            UserTiggleDto userTiggle = new UserTiggleDto(userNickName, tiggleValue);
+
+            userTiggles.add(userTiggle);
+        }
+
+        Object roundsObj = redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
+        if (roundsObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
+
+        int rounds = Integer.parseInt(String.valueOf(roundsObj));
+
+        // 상대방의 랜덤 카드 한 장을 가져옵니다.
+        String cardString = cardService.getRandomUsedCard(roomNumber, otherUser);
+
+        redisTemplate.opsForHash().put(roomNumber, otherUser + ":currentCard", cardString);
+
+        CardInfoDto cardInfo = new CardInfoDto();
+        cardInfo.setName(cardString.split(":")[0]);
+        cardInfo.setAmount(Long.parseLong(cardString.split(":")[1]));
+        cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
+
+        Member member = memberRepository.findByNickname(userName)
+                .orElseThrow(() -> new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER));
+
+        List<Inventory> inventories = inventoryRepository.findByMemberAndItemId_TypeAndEquipped(member, "consumable", true);
+
+        List<EquippedDto> equippedItems = new ArrayList<>();
+
+        for (Inventory inventory : inventories) {
+            Item item = inventory.getItemId();
+            EquippedDto equippedItem = EquippedDto.builder()
+                    .invenId(inventory.getInvenId())
+                    .itemId(item.getItemId())
+                    .itemName(item.getItemName())
+                    .itemContent(item.getItemContent())
+                    .itemEffect(item.getItemEffect())
+                    .image(item.getImage())
+                    .isEquipped(inventory.isEquipped())
+                    .type(item.getType())
+                    .quantity(inventory.getQuantity())  // This field may be null if the item is not consumable.
+                    .build();
+
+            equippedItems.add(equippedItem);
+        }
+
+        GameRoundDto myResult = new GameRoundDto(userTiggles, cardInfo, rounds,equippedItems);
+
+        if (allUsersInStatus(roomNumber,"round")){
+            startRound(requestDto);
+        }
+
+        messagingTemplate.convertAndSend("/topic/game/" + roomNumber + "/" + userName, myResult);
+
+    }
     @Transactional
     public void playRound(BettingDto bettingDto) {
         String roomNumber = bettingDto.getRoomNumber();

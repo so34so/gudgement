@@ -105,7 +105,7 @@ function ReSettingAccount() {
           <View className="py-2 flex flex-row justify-between items-center">
             <TagBoxSmall
               text={"주계좌 설정"}
-              img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+              img={`${Config.IMAGE_URL}/asset/banknookIcon.png`}
             />
           </View>
           <SettingAccountBox

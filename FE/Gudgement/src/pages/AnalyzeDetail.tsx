@@ -83,7 +83,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                 <View className="-mt-4 -mb-2 -ml-6">
                   <TagBoxSmall
                     text="월별 결산"
-                    img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+                    img={`${Config.IMAGE_URL}/asset/analysisMoreIcon.png`}
                   />
                 </View>
                 <View className="flex justify-start items-start">

@@ -136,7 +136,7 @@ function AnalyzeGoal() {
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 목표 금액`}
-            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/goalIcon.png`}
           />
         </View>
 

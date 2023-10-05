@@ -26,7 +26,7 @@ import { Config } from "react-native-config";
 
 import { CommonType } from "../types/CommonType";
 
-function Analyze(this: unknown) {
+function Analyze() {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -40,14 +40,19 @@ function Analyze(this: unknown) {
   const {
     data: userData,
     isLoading,
-    refetch,
+    refetch: refetchUser,
   } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
 
+  const { data: userAnalyzeMonth } = useQuery({
+    queryKey: ["userAnalyzeMonth", selectedYear, selectedMonth],
+    queryFn: () => fetchAnalyzeMonth(selectedYear, selectedMonth),
+  });
+
   useEffect(() => {
-    refetch();
+    refetchUser();
     if (selectedYear > 0 && selectedMonth > 0 && selectedDay > 0) {
       fetchAnalyzeChart();
     }
@@ -154,8 +159,39 @@ function Analyze(this: unknown) {
     setModalVisible(false);
   };
 
+  const fetchAnalyzeMonth = async (year: number, month: number) => {
+    if (
+      (selectedYear === currentDate.getFullYear() &&
+        selectedMonth > currentDate.getMonth() + 1) ||
+      (selectedYear === currentDate.getFullYear() &&
+        selectedMonth >= currentDate.getMonth() + 1 &&
+        selectedDay > currentDate.getDate())
+    ) {
+      return;
+    }
+    try {
+      const sendBE = {
+        year: year,
+        month: month,
+        virtualAccountId: userData?.virtualAccountId,
+        monthOverconsumption: userData?.monthOverconsumption,
+      };
+      const response: AxiosResponse<CommonType.TanalyzeMonth> =
+        await fetchApi.post(`${Config.API_URL}/mypage/month/analyze`, sendBE);
+      reactotron.log!("fetchAnalyzeMonth", response.data);
+      return response.data;
+    } catch (error) {
+      setModalText("월별결산 불러오기에 실패하였습니다. 다시 시도해주세요.");
+      openModal();
+      reactotron.log!("fetchAnalyzeMonth", error);
+    }
+  };
+
   const handleFetchAnalyze = async () => {
-    navigation.navigate("AnalyzeDetail");
+    navigation.navigate("AnalyzeDetail", {
+      year: selectedYear,
+      month: selectedMonth,
+    });
   };
 
   const getDropdownStyle = (): ViewStyle => ({

@@ -47,7 +47,7 @@ export declare module CommonType {
     Pedometer: undefined;
     Analyze: undefined;
     AnalyzeGoal: undefined;
-    AnalyzeDetail: undefined;
+    AnalyzeDetail: { year: number; month: number };
     ReSettingAccount: undefined;
 
     /**
@@ -154,6 +154,7 @@ export declare module CommonType {
     level: number;
     pedometer: number;
     monthOverconsumption: number;
+    virtualAccountId: number;
     rate: {
       totalAmount: number;
       rate: number;
@@ -176,6 +177,7 @@ export declare module CommonType {
   };
 
   export type TanalyzeMonth = {
+    year: number;
     month: number;
     bestAmount: number;
     bestDestination: string;

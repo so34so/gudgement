@@ -85,7 +85,6 @@ function AnalysisBox({
   } else {
     reactotron.log!("홈 사용자 정보", userData);
   }
-
   return (
     <View className="w-fill">
       <>

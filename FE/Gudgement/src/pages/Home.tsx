@@ -68,7 +68,6 @@ export default function Home() {
         return item.type === "character";
       },
     );
-    console.log("current", currentCharacter);
 
     return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
   }, [userData?.setItems]);

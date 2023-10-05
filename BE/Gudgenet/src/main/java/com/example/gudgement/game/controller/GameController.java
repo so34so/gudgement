@@ -62,7 +62,6 @@ public class GameController {
     @PostMapping("/gameroundinfo")
     public ResponseEntity<GameRoundDto> getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
         GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
-        gameRoundService.startRound(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
 
@@ -70,6 +69,26 @@ public class GameController {
     @PostMapping("/playRound")
     public void playRound(@RequestBody BettingDto bettingDto){
         gameRoundService.playRound(bettingDto);
+    }
+
+    @Operation(summary = "타임아웃으로 인한 포기")
+    @PostMapping("/timeoutGiveUp")
+    public void timeoutGiveUp(@RequestBody BettingDto bettingDto){
+        // Update the acceptance status in Redis.
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
+
+        // Check the status of the other user.
+        String otherUserStatus = (String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":status");
+
+        if ("giveup".equals(otherUserStatus)) {
+            // If both users have given up,
+            // execute playRound method.
+            gameRoundService.processBets(bettingDto);
+        } else if ("betting".equals(otherUserStatus)) {
+            // If only this user has given up and the other user is still in 'betting' status,
+            // execute giveUpRound method.
+            gameRoundService.giveUpRound(bettingDto);
+        }
     }
 
     @Operation(summary = "카드 게임 포기")

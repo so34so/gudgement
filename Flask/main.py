@@ -33,10 +33,9 @@ def month_transaction(virtualId, year, month, month_overconsumption):
     now_member = None
     if month_overconsumption != -1:
         this_month_rate = 0
-        data_frame2 = db.compare_to_member(month_overconsumption)
+        data_frame2 = db.compare_to_member(month_overconsumption, year, month)
         member_dict = data_frame2.set_index('member_id')['virtual_account_id'].to_dict()
         month_overconsumption_member = dict()
-        
 
         # 멤버 별 개인 목표에 따른 소비율 계산
         for key, value in member_dict.items():
@@ -61,6 +60,12 @@ def month_transaction(virtualId, year, month, month_overconsumption):
                 rank = i+1
                 break
     
+    else:
+        member_data = db.get_member_by_virtual_id(virtualId, year, month)
+        print(member_data)
+        now_member = member_data.drop_duplicates(subset='member_id', keep='last')['member_id'].tolist()[0]
+        total_amount = db.get_Member_Month_Transaction_History(virtualId, year, month)['amount'].sum()
+
     # 이전 달 소비 내역과 비율 구하기
     last_month_rate = None
     last_month_transaction = db.get_Member_Month_Transaction_History(virtualId, year, month-1)["amount"].sum()
@@ -68,8 +73,9 @@ def month_transaction(virtualId, year, month, month_overconsumption):
     last_month_overcomsumption = None
     if (now_member != None):
         last_month_overcomsumption = db.month_overconsumption_rate(now_member, year, month-1)
-        
+
     if (last_month_overcomsumption != None):
+        print(last_month_overcomsumption)
         last_month_rate = round((last_month_transaction / last_month_overcomsumption) * 100, 2)
 
     try:

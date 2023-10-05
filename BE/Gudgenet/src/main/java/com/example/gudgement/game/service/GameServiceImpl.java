@@ -59,11 +59,11 @@ public class GameServiceImpl implements GameService{
 
     @Transactional
     public void acceptGame(String roomNumber, String nickname) {
-        log.info("test");
-        // Check if the user exists in Redis.
-        Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname + ":status");
+                log.info("test");
         log.info(roomNumber +" + "+nickname);
         log.info(roomNumber+":"+nickname+":status");
+        // Check if the user exists in Redis.
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname + ":status");
         log.info(String.valueOf(hasKey));
         
         if (!hasKey) {

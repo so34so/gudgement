@@ -155,7 +155,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         int year = analyzeRequestDto.getYear();
         int month = analyzeRequestDto.getMonth();
 
-        WebClient webClient = WebClient.create("http://127.0.0.1:5000"); // ("http://j9d106.p.ssafy.io:5000");
+        WebClient webClient = WebClient.create("http://j9d106.p.ssafy.io:5000");
 
         String result = webClient.post()
                 .uri(uriBuilder -> uriBuilder

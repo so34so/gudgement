@@ -59,7 +59,7 @@ public class MatchingEventListener {
             messagingTemplate.convertAndSend("/queue/start/" + otherUser, roomNumber);
 
             timerService.startTimer(roomNumber, () -> {
-                messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
+                messagingTemplate.convertAndSend("/topic/game/match/timeout" + roomNumber, "timeout");
                 // 게임 거절 처리 로직
             }, 20);
 

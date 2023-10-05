@@ -35,7 +35,6 @@ public class GameController {
         String roomNumber = gameRequestDto.getRoomNumber();
         String username = gameRequestDto.getNickName();
 
-        // Update the game acceptance status for the user.
         gameService.acceptGame(roomNumber, username);
     }
 
@@ -62,7 +61,6 @@ public class GameController {
     @PostMapping("/gameroundinfo")
     public ResponseEntity<GameRoundDto> getGameRoundInfo(@RequestBody GameRequestDto requestDto) {
         GameRoundDto gameRoundInfo = gameRoundService.getGameStatus(requestDto);
-        gameRoundService.startRound(requestDto);
         return ResponseEntity.ok(gameRoundInfo);
     }
 
@@ -70,6 +68,27 @@ public class GameController {
     @PostMapping("/playRound")
     public void playRound(@RequestBody BettingDto bettingDto){
         gameRoundService.playRound(bettingDto);
+    }
+
+    @Operation(summary = "타임아웃으로 인한 포기")
+    @PostMapping("/timeoutGiveUp")
+    public void timeoutGiveUp(@RequestBody BettingDto bettingDto){
+
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status", "giveup");
+
+        String otherUserStatus = (String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getOtherName() + ":status");
+        int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":betting"));
+        myBet /= 10;
+
+        redisTemplate.opsForHash().put(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":bet", String.valueOf(myBet));
+
+        bettingDto.setBettingAmount((long)myBet);
+
+        if ("giveup".equals(otherUserStatus)) {
+            gameRoundService.processBets(bettingDto);
+        } else if ("betting".equals(otherUserStatus)) {
+            gameRoundService.giveUpRound(bettingDto);
+        }
     }
 
     @Operation(summary = "카드 게임 포기")

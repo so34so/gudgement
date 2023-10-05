@@ -26,6 +26,7 @@ import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,7 +110,8 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
         return MemberVerifyResponseDto.builder()
-                .id(member.getMemberId())
+                .id(loginDto.getId())
+                .email(loginDto.getEmail())
                 .isValid(true)
                 .build();
     }
@@ -156,6 +158,7 @@ public class MemberServiceImpl implements MemberService {
                 .monthOverconsumption(member.getMonthOverconsumption())
                 .pedometer(member.getPedometer())
                 .rate(memberRate)
+                .grade(member.getGrade())
                 .build();
     }
 
@@ -295,6 +298,45 @@ public class MemberServiceImpl implements MemberService {
 
         return LocalDateTime.ofEpochSecond(randomEpochSecond, 0, ZoneOffset.UTC);
     }
+    @Override
+    @Scheduled(cron = "0 0 0 1 * ?")
+    public void updateGradeauto() {
+        List<Member> members = memberRepository.findAll();
+
+        for (Member member : members) {
+            if (!member.getGrade().equals(Grade.ROLE_USER)) { continue; }
+
+            Long total = 0L;
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime lastMonthFirst = LocalDateTime.of(now.getYear(), now.getMonth().minus(1), 1, 0, 0, 0);
+            LocalDateTime lastMonthEnd = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+
+            VirtualAccount account = virtualAccountRepository.findByVirtualAccountId(member.getVirtualAccountId()).orElseThrow(() -> {
+                throw new AccountException(ErrorCode.NOT_FOUND_ACCOUNT);
+            });
+
+            // 이번 달 총 소비 금액
+            total = transactionHistoryRepository.findByVirtualAccountIdAndTransactionDateBetweenAndType(account, lastMonthFirst, lastMonthEnd, 1)
+                    .stream()
+                    .mapToLong(TransactionHistory::getAmount)
+                    .sum();
+
+            if (total < 1000000) {
+                member.updateGrade(Grade.ROLE_GOLD);
+                memberRepository.save(member);
+                continue;
+            }
+
+            if (total < 2000000) {
+                member.updateGrade(Grade.ROLE_SILVER);
+                memberRepository.save(member);
+                continue;
+            }
+
+            member.updateGrade(Grade.ROLE_BRONZE);
+            memberRepository.save(member);
+        }
+    }
 
     // 이전 달 소비내역 기준 grade 산정
     @Override
@@ -372,6 +414,28 @@ public class MemberServiceImpl implements MemberService {
         });
 
         chartRepository.deleteAllByMemberId(member);
+        inventoryRepository.deleteAllByMember(member);
+        progressRepository.deleteAllByMember(member);
         memberRepository.deleteByMemberId(member.getMemberId());
     }
+
+    @Override
+    @Transactional
+    public void addProgress(Long id) {
+        Optional<Member> memberOptional = memberRepository.findByMemberId(id);
+
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+
+            // Find the progress with progress_name 'pedometerValue'.
+            Progress progress = progressRepository.findByMemberAndProgressName(member, "pedometerValue");
+
+            if (progress != null) {
+                // If such a progress exists, increment its value.
+                progress.incrementProgressValue();
+            }
+        }
+    }
+
+
 }

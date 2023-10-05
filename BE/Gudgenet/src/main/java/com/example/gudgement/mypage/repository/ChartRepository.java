@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ChartRepository extends JpaRepository<Chart, Long> {
     Optional<Chart> findByMemberIdAndYearAndMonthAndWeek(Member member,int year, int month, int week);
     void deleteAllByMemberId(Member member);
+    Optional<Chart> findByAccountIdAndYearAndMonthAndWeek(Long accountId, int year, int month, int week);
 }

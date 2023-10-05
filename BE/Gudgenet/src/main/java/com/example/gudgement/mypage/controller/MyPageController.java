@@ -5,8 +5,11 @@ import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.common.jwt.JwtProvider;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.mypage.dto.ChartDataDto;
-import com.example.gudgement.mypage.service.MyPageService;
+import com.example.gudgement.mypage.dto.request.AnalyzeRequestDto;
+import com.example.gudgement.mypage.dto.response.AnalyzeResponseDto;
+import com.example.gudgement.mypage.dto.response.ChartResponseDto;
+import com.example.gudgement.mypage.service.AnalyzeService;
+import com.example.gudgement.mypage.service.ChartService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,36 +26,47 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 @RequestMapping("/api/mypage")
 public class MyPageController {
-    private final MyPageService myPageService;
+    private final ChartService chartService;
+    private final AnalyzeService analyzeService;
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
 
     @PostMapping("")
     @Operation(summary = "오늘 일자 이번주 소비내역 차트", description = "오늘이 포함되어있는 이번 주 차트")
-    public ResponseEntity<ChartDataDto> todayChartData(HttpServletRequest httpServletRequest,
-                                                       @RequestHeader("Authorization") String jwt) {
+    public ResponseEntity<ChartResponseDto> todayChartData(HttpServletRequest httpServletRequest) {
         Member member = getMember(httpServletRequest);
-        return ResponseEntity.ok(myPageService.todayWeekChartData(member.getMemberId()));
+        return ResponseEntity.ok(chartService.todayWeekChartData(member.getMemberId()));
     }
 
     @PostMapping("/{date}")
     @Operation(summary = "특정 일자 주간 소비내역 차트", description = "형식 : 2023-09-22 으로 넣어주세요")
-    public ResponseEntity<ChartDataDto> toDateChartData(@PathVariable(name = "date") String date,
-                                                        HttpServletRequest httpServletRequest,
-                                                        @RequestHeader("Authorization") String jwt) {
+    public ResponseEntity<ChartResponseDto> toDateChartData(@PathVariable(name = "date") String date,
+                                                            HttpServletRequest httpServletRequest) {
         Member member = getMember(httpServletRequest);
 
-        return ResponseEntity.ok(myPageService.toDateWeekChartData(member.getMemberId(), date));
+        return ResponseEntity.ok(chartService.toDateWeekChartData(member.getMemberId(), date));
     }
 
     @PutMapping("/update/{monthOverConsumption}")
     @Operation(summary = "월 과소비 기준 설정", description = "Path에 추가해서 post하시면 됩니다.")
     public void updateMonthOverConsumption(@PathVariable("monthOverConsumption") Long monthOverConsumption,
-                                           HttpServletRequest httpServletRequest,
-                                           @RequestHeader("Authorization") String jwt) {
+                                           HttpServletRequest httpServletRequest) {
 
         Member member = getMember(httpServletRequest);
-        myPageService.updateOverConsumption(member, monthOverConsumption);
+        chartService.updateOverConsumption(member, monthOverConsumption);
+    }
+
+    @PostMapping("/month/analyze")
+    @Operation(summary = "월 별 분석", description = "이번 달 소비 정보와 이전 달과 비교한 소비율, 순위는 +-10만원")
+    public ResponseEntity<AnalyzeResponseDto> monthAnalyze(@RequestBody AnalyzeRequestDto analyzeRequestDto) {
+            analyzeService.createMonthAnalyze(analyzeRequestDto);
+            AnalyzeResponseDto analyzeResponseDto = analyzeService
+                        .getMonthAnalyze(analyzeRequestDto.getVirtualAccountId(),
+                                analyzeRequestDto.getYear(),
+                                analyzeRequestDto.getMonth(),
+                                analyzeRequestDto.getMonthOverconsumption());
+
+        return ResponseEntity.ok(analyzeResponseDto);
     }
 
     private Member getMember(HttpServletRequest httpServletRequest) {

@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class MemberVerifyResponseDto {
     private Long id;
+    private String email;
     private boolean isValid;
 }

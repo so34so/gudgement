@@ -37,12 +37,6 @@ public class MatchingEventListener {
 
             String roomNumber = gameService.createGameRoom(); // 새로운 게임 방 생성
 
-
-
-            List<String> matchedUsers = Arrays.asList(request.getNickName(), otherUser);
-
-            String currentTime = LocalDateTime.now().toString();
-
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":tiggle", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":betting", String.valueOf(request.getTiggle()));
             redisTemplate.opsForHash().put(roomNumber, request.getNickName() + ":rounds", "1");
@@ -62,7 +56,7 @@ public class MatchingEventListener {
             timerService.startTimer(roomNumber, () -> {
                 messagingTemplate.convertAndSend("/topic/game/timeout" + roomNumber, "timeout");
                 // 게임 거절 처리 로직
-            }, 10);
+            }, 20);
 
             setOps.remove(tierKey, request.getNickName(), otherUser);
         }

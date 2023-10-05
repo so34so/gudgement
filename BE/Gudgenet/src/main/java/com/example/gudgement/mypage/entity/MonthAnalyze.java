@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Getter
 @Entity
@@ -23,26 +24,26 @@ public class MonthAnalyze {
     @Column(nullable = false)
     private Long virtualAccountId;
 
-    @Column(nullable = false)
+    @Column
     private long bestAmount;
 
-    @Column(nullable = false)
+    @Column
     private String bestDestination;
 
-    @Column(nullable = false)
+    @Column
     private int frequencyCount;
 
-    @Column(nullable = false)
+    @Column
     private String frequencyDestination;
 
-    @Column(nullable = false)
-    private long frequencyAmount;
+    @Column
+    private Long frequencyAmount;
 
     @Column
     private Integer count;
 
     @Column
-    private Double ranking;
+    private Integer ranking;
 
     @Column(nullable = false)
     private Long lastMonthAmount;

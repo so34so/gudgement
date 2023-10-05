@@ -164,6 +164,15 @@ public class Member implements Serializable {
 
     public void addExp(long exp) {
         this.exp += exp;
+        
+        // Calculate the total experience required for the next level.
+        long requiredExpForNextLevel = (long) Math.pow(2, this.level);
+
+        // Check if the user has enough experience to level up.
+        while (this.exp >= requiredExpForNextLevel) {
+            this.level++;
+            requiredExpForNextLevel = (long) Math.pow(2, this.level);  // Update the requirement for the next level.
+        }
     }
 
 

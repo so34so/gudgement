@@ -71,7 +71,17 @@ public class RankingServiceImpl implements RankingService{
     @Override
     public TotalRankingDto getRanks(Long memberId) {
         List<RankingDto> top100Ranks = getTop100Ranks();
-        RankingDto memberRank = getMemberRank(memberId);
+
+        // Find the member's rank from the ranking list.
+        RankingDto memberRank = top100Ranks.stream()
+                .filter(rankingDto -> rankingDto.getNickname().equals(memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid memberId: " + memberId)).getNickname()))
+                .findFirst()
+                .orElse(null);
+
+        // If the member is not in the top 100, get their rank separately.
+        if (memberRank == null) {
+            memberRank = getMemberRank(memberId);
+        }
 
         TotalRankingDto total = new TotalRankingDto();
         total.setMyRanking(memberRank);
@@ -79,4 +89,15 @@ public class RankingServiceImpl implements RankingService{
 
         return total;
     }
+//    @Override
+//    public TotalRankingDto getRanks(Long memberId) {
+//        List<RankingDto> top100Ranks = getTop100Ranks();
+//        RankingDto memberRank = getMemberRank(memberId);
+//
+//        TotalRankingDto total = new TotalRankingDto();
+//        total.setMyRanking(memberRank);
+//        total.setRankingList(top100Ranks);
+//
+//        return total;
+//    }
 }

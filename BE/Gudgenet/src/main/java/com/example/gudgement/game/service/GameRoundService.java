@@ -13,4 +13,6 @@ public interface GameRoundService {
     void giveUpRound(BettingDto bettingDto);
     
     void startRound(GameRequestDto requestDto);
+
+    void processBets(BettingDto bettingDto);
 }

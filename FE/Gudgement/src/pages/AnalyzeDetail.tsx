@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 
 import CustomModal from "../components/CustomModal";
@@ -16,7 +17,6 @@ import { Config } from "react-native-config";
 import { CommonType } from "../types/CommonType";
 import { textShadow } from "../utils/common";
 import TagBoxSmall from "../components/TagBoxSmall";
-import reactotron from "reactotron-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type AnalyzeDetailProps = NativeStackScreenProps<
@@ -25,6 +25,11 @@ type AnalyzeDetailProps = NativeStackScreenProps<
 >;
 
 function AnalyzeDetail({ route }: AnalyzeDetailProps) {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const { errorMessage } = route.params;
+
   const { data: userData } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
   });
@@ -33,7 +38,16 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
     queryKey: ["userAnalyzeMonth", route.params.year, route.params.month],
   });
 
-  reactotron.log!("여기라고!!!!", userAnalyzeMonth);
+  useEffect(() => {
+    if (errorMessage) {
+      if (errorMessage === "Request failed with status code 500") {
+        setModalText("잠시 후 시도해주세요.");
+      } else {
+        setModalText(errorMessage);
+      }
+      openModal();
+    }
+  }, [errorMessage]);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -43,6 +57,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
   };
 
   const closeModal = () => {
+    // navigation.goBack();
     setModalVisible(false);
   };
 
@@ -61,8 +76,8 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
           closeModal={closeModal}
         />
         <View className="absolute bg-black30 w-screen h-screen" />
-        <ScrollView className="m-4 space-y-2">
-          <SafeAreaView className="space-y-2 py-4 flex flex-col overflow-hidden justify-start items-center w-fill h-fill rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
+        <ScrollView className="mx-4 space-y-2">
+          <SafeAreaView className="mt-4 space-y-2 py-4 flex flex-col overflow-hidden justify-start items-center w-fill h-fill rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
             <View className="flex flex-row justify-center items-center space-x-10">
               <View className="flex flex-col space-y-2">
                 <View className="-mt-4 -mb-2 -ml-6">
@@ -96,7 +111,9 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                       나의{" "}
                     </Text>
                     <Text className="font-PretendardBold text-black70 text-sm">
-                      {userAnalyzeMonth?.year}년 {userAnalyzeMonth?.month}월을
+                      {userAnalyzeMonth?.year ? userAnalyzeMonth?.year : "0"}년{" "}
+                      {userAnalyzeMonth?.month ? userAnalyzeMonth?.month : "0"}
+                      월을
                     </Text>
                   </View>
                   <View className="flex flex-row">
@@ -133,25 +150,41 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                 </Text>
               </View>
               <View className="flex flex-row justify-start items-end bg-bluesky px-4 py-2 rounded-xl border-solid border-[3px] border-lightsky">
-                <Text
-                  className="font-PretendardExtraBold text-white text-sm"
-                  style={textShadow}
-                >
-                  {userAnalyzeMonth?.totalMember}명{" "}
-                </Text>
-                <Text className="font-PretendardBold text-white90 text-sm">
-                  중
-                </Text>
-                <Text
-                  className="font-PretendardBold text-white text-2lg"
-                  style={textShadow}
-                >
-                  {" "}
-                  {userAnalyzeMonth?.ranking}위{" "}
-                </Text>
-                <Text className="font-PretendardBold text-white90 text-sm">
-                  예요.
-                </Text>
+                {userAnalyzeMonth?.ranking !== null ? (
+                  <View className="flex flex-row justify-start items-end">
+                    <Text
+                      className="font-PretendardExtraBold text-white text-sm"
+                      style={textShadow}
+                    >
+                      {userAnalyzeMonth?.totalMember
+                        ? userAnalyzeMonth?.totalMember
+                        : "0"}
+                      명{" "}
+                    </Text>
+                    <Text className="font-PretendardBold text-white90 text-sm">
+                      중
+                    </Text>
+                    <Text
+                      className="font-PretendardBold text-white text-2lg"
+                      style={textShadow}
+                    >
+                      {" "}
+                      {userAnalyzeMonth?.ranking
+                        ? userAnalyzeMonth?.ranking
+                        : "0"}
+                      위{" "}
+                    </Text>
+                    <Text className="font-PretendardBold text-white90 text-sm">
+                      예요.
+                    </Text>
+                  </View>
+                ) : (
+                  <View>
+                    <Text className="font-PretendardBold text-white90 text-2xs">
+                      해당 월에 설정된 목표 금액이 없습니다.
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
             <View className="w-full px-2 border-solid border-t-[2px] border-lightsky60" />
@@ -249,7 +282,10 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                 <View className="mt-3 flex justify-start items-end w-full">
                   <View className="flex flex-row">
                     <Text className="font-PretendardExtraBold text-red text-3xl mr-1">
-                      - {userAnalyzeMonth?.bestAmount.toLocaleString("ko-KR")}
+                      -{" "}
+                      {userAnalyzeMonth?.bestAmount
+                        ? userAnalyzeMonth?.bestAmount.toLocaleString("ko-KR")
+                        : 0}
                     </Text>
                     <Text className="font-PretendardBold text-red text-3xl">
                       원
@@ -308,9 +344,11 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                     <Text className="font-PretendardExtraBold text-red text-3xl mr-1">
                       {" "}
                       -{" "}
-                      {(userAnalyzeMonth?.frequencyAmount || 0).toLocaleString(
-                        "ko-KR",
-                      )}
+                      {userAnalyzeMonth?.frequencyAmount
+                        ? userAnalyzeMonth?.frequencyAmount.toLocaleString(
+                          "ko-KR",
+                        )
+                        : "0"}
                     </Text>
                     <Text className="font-PretendardExtraBold text-red text-3xl">
                       원
@@ -321,7 +359,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
             </View>
           </SafeAreaView>
 
-          <SafeAreaView className="space-y-6 p-4 flex flex-col overflow-hidden justify-center items-start w-fill h-fill rounded-3xl bg-bluesky border-solid border-[3px] border-darkgray">
+          <SafeAreaView className="mb-4 space-y-6 p-4 flex flex-col overflow-hidden justify-center items-start w-fill h-fill rounded-3xl bg-bluesky border-solid border-[3px] border-darkgray">
             <View className="flex justify-start items-start space-y-1">
               <View className="flex flex-row mx-2">
                 <Text
@@ -360,7 +398,7 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                     style={textShadow}
                   >
                     {userAnalyzeMonth?.year}년{" "}
-                    {userAnalyzeMonth?.month || 1 - 1}월
+                    {userAnalyzeMonth?.month && userAnalyzeMonth?.month - 1}월
                   </Text>
                   <Text className="font-PretendardBold text-white90 text-xs">
                     총 소비 금액
@@ -370,28 +408,42 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   className="font-PretendardBold text-white text-2lg"
                   style={textShadow}
                 >
-                  {userAnalyzeMonth?.lastMonthAmount.toLocaleString("ko-KR")} 원
+                  {userAnalyzeMonth?.lastMonthAmount
+                    ? userAnalyzeMonth?.lastMonthAmount.toLocaleString("ko-KR")
+                    : "0"}{" "}
+                  원
                 </Text>
               </View>
-              <View className="overflow-hidden flex flex-row h-[30px] w-[100%] rounded-full">
-                <View
-                  style={{
-                    width: `${userAnalyzeMonth?.lastMonthAmountRate || 0}%`,
-                  }}
-                  className="absolute z-20 flex flex-row h-[30px] w-[100%] bg-white50 bg-mainColor"
-                />
-                <View className="absolute z-1 flex flex-row h-[30px] w-[100%] bg-black50" />
-              </View>
-              <Text
-                className="font-PretendardBold text-white90 text-2xs mt-2"
-                style={{
-                  paddingLeft: `${
-                    userAnalyzeMonth?.lastMonthAmountRate || 0 - 6
-                  }%`,
-                }}
-              >
-                {userAnalyzeMonth?.lastMonthAmountRate} %
-              </Text>
+              {userAnalyzeMonth?.lastMonthAmountRate !== null ? (
+                <View>
+                  <View className="overflow-hidden flex flex-row h-[30px] w-[100%] rounded-full">
+                    <View
+                      style={{
+                        width: `${userAnalyzeMonth?.lastMonthAmountRate || 0}%`,
+                      }}
+                      className="absolute z-20 flex flex-row h-[30px] w-[100%] bg-white50 bg-mainColor"
+                    />
+                    <View className="absolute z-1 flex flex-row h-[30px] w-[100%] bg-black50" />
+                  </View>
+                  <Text
+                    className="font-PretendardBold text-white90 text-2xs mt-2"
+                    style={{
+                      paddingLeft: `${
+                        userAnalyzeMonth?.lastMonthAmountRate || 0 - 6
+                      }%`,
+                    }}
+                  >
+                    {userAnalyzeMonth?.lastMonthAmountRate} %
+                  </Text>
+                </View>
+              ) : (
+                <View className="mb-3 mx-3 flex flex-row justify-start items-end bg-bluesky px-4 py-2 rounded-xl border-solid border-[3px] border-lightsky">
+                  <Text className="font-PretendardBold text-white90 text-2xs">
+                    {userAnalyzeMonth?.month - 1}월에 설정된 목표 금액이
+                    없습니다.
+                  </Text>
+                </View>
+              )}
 
               <View className="flex flex-col justify-start items-start p-4">
                 <View className="flex flex-row">
@@ -409,28 +461,43 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   className="font-PretendardBold text-white text-2lg"
                   style={textShadow}
                 >
-                  {userAnalyzeMonth?.thisMonthAmount.toLocaleString("ko-KR")} 원
+                  {userAnalyzeMonth?.thisMonthAmount
+                    ? userAnalyzeMonth?.thisMonthAmount.toLocaleString("ko-KR")
+                    : "0"}{" "}
+                  원
                 </Text>
               </View>
-              <View className="overflow-hidden flex flex-row h-[30px] w-[100%] rounded-full">
-                <View
-                  style={{
-                    width: `${userAnalyzeMonth?.thisMonthAmountRate || 0}%`,
-                  }}
-                  className="absolute z-20 flex flex-row h-[30px] w-[100%] bg-white50 bg-mainColor"
-                />
-                <View className="absolute z-1 flex flex-row h-[30px] w-[100%] bg-black50" />
-              </View>
-              <Text
-                className="font-PretendardBold text-white90 text-2xs mt-2"
-                style={{
-                  paddingLeft: `${
-                    userAnalyzeMonth?.thisMonthAmountRate || 0 - 6
-                  }%`,
-                }}
-              >
-                {userAnalyzeMonth?.thisMonthAmountRate} %
-              </Text>
+              {userAnalyzeMonth?.thisMonthAmountRate !== null ? (
+                <>
+                  <View className="overflow-hidden flex flex-row h-[30px] w-[100%] rounded-full">
+                    <View
+                      style={{
+                        width: `${userAnalyzeMonth?.thisMonthAmountRate || 0}%`,
+                      }}
+                      className="absolute z-20 flex flex-row h-[30px] w-[100%] bg-white50 bg-mainColor"
+                    />
+                    <View className="absolute z-1 flex flex-row h-[30px] w-[100%] bg-black50" />
+                  </View>
+                  <Text
+                    className="font-PretendardBold text-white90 text-2xs mt-2"
+                    style={{
+                      paddingLeft: `${
+                        userAnalyzeMonth?.thisMonthAmountRate || 0 > 100
+                          ? 76
+                          : userAnalyzeMonth?.thisMonthAmountRate || 0 - 6
+                      }%`,
+                    }}
+                  >
+                    {userAnalyzeMonth?.thisMonthAmountRate} %
+                  </Text>
+                </>
+              ) : (
+                <View className="mb-3 mx-3 flex flex-row justify-start items-end bg-bluesky px-4 py-2 rounded-xl border-solid border-[3px] border-lightsky">
+                  <Text className="font-PretendardBold text-white90 text-2xs">
+                    {userAnalyzeMonth?.month}월에 설정된 목표 금액이 없습니다.
+                  </Text>
+                </View>
+              )}
             </View>
             <View className="w-full px-2 border-solid border-t-[2px] border-lightsky60" />
             <View className="flex justify-start items-start">

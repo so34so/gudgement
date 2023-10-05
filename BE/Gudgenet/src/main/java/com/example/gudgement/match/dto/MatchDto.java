@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Getter
+@ToString
 @NoArgsConstructor
 public class MatchDto implements Serializable {
 

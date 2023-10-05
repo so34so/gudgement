@@ -50,16 +50,35 @@ export default function PlayGameProgress({
     postRoundStart();
   }, []);
   // 라운드 데이터 요청
-  const postRoundStart = () => {
-    
-    // const Payload = {
-    //   roomNumber: roomNumber,
-    //   nickName: userData.nickname,
-    // };
-    // sendHandler("/app/game/gameroundinfo", Payload, () => {});
-    // setIsLoading(false);
-  };
+  // const postRoundStart = () => {
 
+  //   // const Payload = {
+  //   //   roomNumber: roomNumber,
+  //   //   nickName: userData.nickname,
+  //   // };
+  //   // sendHandler("/app/game/gameroundinfo", Payload, () => {});
+  //   // setIsLoading(false);
+  // };
+  // 라운드 데이터 요청
+  async function postRoundStart() {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/game/gameroundinfo`,
+        {
+          roomNumber: roomNumber,
+          nickName: userData.nickname,
+        },
+      );
+      Reactotron.log!("라운드시작!", response.data);
+      setRoundInfo(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+
+      Reactotron.log!(error);
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
 

@@ -132,19 +132,19 @@ function PlayGameLogic() {
         });
 
         break;
-      case "PlayGameProgress":
-        const timeoutSubscription = client?.subscribe(
-          "/topic/game/round/timeout" + roomNumber,
-          function (messageOutput) {},
-        );
+      //   case "PlayGameProgress":
+      //     const timeoutSubscription = client?.subscribe(
+      //       "/topic/game/round/timeout" + roomNumber,
+      //       function (messageOutput) {},
+      //     );
 
-        client?.subscribe(
-          "/topic/game/" + roomNumber + userData.nickname,
-          function (messageOutput) {
-            timeoutSubscription.unsubscribe();
-            console.log("round", messageOutput.body);
-          },
-        );
+      //     client?.subscribe(
+      //       "/topic/game/" + roomNumber + userData.nickname,
+      //       function (messageOutput) {
+      //         timeoutSubscription.unsubscribe();
+      //         console.log("round", messageOutput.body);
+      //       },
+      //     );
     }
   };
   useEffect(() => {

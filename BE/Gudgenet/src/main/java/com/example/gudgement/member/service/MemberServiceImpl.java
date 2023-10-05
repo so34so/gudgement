@@ -110,7 +110,8 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
         return MemberVerifyResponseDto.builder()
-                .id(member.getMemberId())
+                .id(loginDto.getId())
+                .email(loginDto.getEmail())
                 .isValid(true)
                 .build();
     }
@@ -413,6 +414,8 @@ public class MemberServiceImpl implements MemberService {
         });
 
         chartRepository.deleteAllByMemberId(member);
+        inventoryRepository.deleteAllByMember(member);
+        progressRepository.deleteAllByMember(member);
         memberRepository.deleteByMemberId(member.getMemberId());
     }
 

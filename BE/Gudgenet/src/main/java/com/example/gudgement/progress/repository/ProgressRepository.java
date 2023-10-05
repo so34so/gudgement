@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ProgressRepository extends JpaRepository<Progress,Long> {
     Progress findByMemberAndProgressName(Member memberId, String progressName);
+    void deleteAllByMember(Member member);
 }

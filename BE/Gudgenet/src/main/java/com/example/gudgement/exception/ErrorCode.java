@@ -1,5 +1,6 @@
 package com.example.gudgement.exception;
 
+import com.google.api.Http;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -41,13 +42,17 @@ public enum ErrorCode {
 
 
 
+    NOT_CONNECT_ACCOUNT(HttpStatus.BAD_REQUEST, "A-003", "주 계좌로 설정된 회원이 존재하지 않습니다."),
 
     // 아이템
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "I-001", "존재하지 않는 아이템입니다."),
     ALREADY_ADD_ITEM(HttpStatus.CONFLICT, "I-002", "이미 보유한 아이템입니다."),
-    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "P-001", "티끌이 부족합니다.");
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "P-001", "티끌이 부족합니다."),
 
-
+    //분석
+    FAIL_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "분석 요청 실패"),
+    NOT_FOUND_ANALYZE(HttpStatus.BAD_GATEWAY, "F-002", "분석은 성공했으나 데이터를 불러오지 못하고 있습니다."),
+    NOT_EXIST_TRANSACTION(HttpStatus.OK,"F-003", "거래 내역이 없어 분석이 불가능합니다.");
 
 
     private HttpStatus httpStatus;

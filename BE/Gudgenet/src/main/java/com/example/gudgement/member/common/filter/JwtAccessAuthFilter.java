@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtAccessAuthFilter extends OncePerRequestFilter {
 
-    private final String[] whiteUriList = new String[] {"/api/member/delete/**"};
+    private final String[] whiteUriList = new String[] {"/api/member/delete/**", "/api/member/token/refresh"};
     private final JwtProvider jwtProvider;
 
     @Override

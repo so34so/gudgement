@@ -53,32 +53,38 @@ const BettingMachine = ({
   const websocketClient = useWebSocket();
 
   useEffect(() => {
-    // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
-    if (websocketClient) {
-      const timeoutSubscription = websocketClient.subscribe(
-        "/topic/game/round/timeout" + roomNumber,
-        function (messageOutput) {
-          if (messageOutput) {
-            isGiveup();
-          }
-        },
-      );
+    const subscription = websocketClient?.subscribe(
+      "/topic/game/" + roomNumber + nickName,
+      function (messageOutput) {
+        const newRoundResult = JSON.parse(messageOutput.body);
+        setRoundResult(newRoundResult);
 
-      websocketClient.subscribe(
-        "/topic/game/" + roomNumber + nickName,
-        function (messageOutput) {
-          timeoutSubscription.unsubscribe();
-          console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
-          setRoundResult(JSON.parse(messageOutput.body));
-          if (roundResult.rounds >= 1 && roundResult.rounds <= 9) {
-            setNowGameComponent("PlayGameResult");
-          } else if (roundResult.rounds === 10) {
-            setNowGameComponent("PlayGameFinalResult");
-          }
-        },
-      );
-    }
+        if (newRoundResult.rounds >= 1 && newRoundResult.rounds <= 9) {
+          setNowGameComponent("PlayGameResult");
+        } else if (newRoundResult.rounds === 10) {
+          setNowGameComponent("PlayGameFinalResult");
+        }
+
+        console.log("라운드 결과", newRoundResult);
+      },
+    );
+
+    const timeoutSubscription = websocketClient?.subscribe(
+      "/topic/game/round/timeout" + roomNumber,
+      function (messageOutput) {
+        if (messageOutput) {
+          isGiveup();
+        }
+      },
+    );
+
+    return () => {
+      subscription.unsubscribe();
+      timeoutSubscription.unsubscribe();
+    };
   }, [websocketClient]);
+
+  // 베팅 정보 전송
 
   const postBettingInfo = () => {
     const bettingPayload = {

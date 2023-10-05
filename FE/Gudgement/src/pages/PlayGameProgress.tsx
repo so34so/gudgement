@@ -49,17 +49,7 @@ export default function PlayGameProgress({
     StatusBar.setHidden(true);
     postRoundStart();
   }, []);
-  // 라운드 데이터 요청
-  // const postRoundStart = () => {
 
-  //   // const Payload = {
-  //   //   roomNumber: roomNumber,
-  //   //   nickName: userData.nickname,
-  //   // };
-  //   // sendHandler("/app/game/gameroundinfo", Payload, () => {});
-  //   // setIsLoading(false);
-  // };
-  // 라운드 데이터 요청
   async function postRoundStart() {
     try {
       const response = await axios.post(
@@ -69,13 +59,11 @@ export default function PlayGameProgress({
           nickName: userData.nickname,
         },
       );
-      Reactotron.log!("라운드시작!", response.data);
       setRoundInfo(response.data);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
 
-      Reactotron.log!(error);
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
@@ -95,7 +83,7 @@ export default function PlayGameProgress({
         resizeMode="cover"
         className="flex-1"
       >
-        <GameTimerBar duration={10} />
+        <GameTimerBar duration={40} />
 
         <GameUi
           myInfoState={myInfo}

@@ -63,31 +63,24 @@ function PlayGameLogic() {
     switch (nowGameComponent) {
       case "PlaySelect":
         client?.subscribe("/queue/start/" + userData.nickname, message => {
-          console.log("Room number: " + message.body);
-          Reactotron.log!("Room number: " + message.body);
           setRoomNumber(message.body.replace(/"/g, ""));
           setNowGameComponent("PlayMatchingQueue");
         });
         break;
       case "PlayMatchingWait":
         client?.subscribe("/queue/start/" + userData.nickname, message => {
-          console.log("Room number: " + message.body);
-          Reactotron.log!("Room number: " + message.body);
           setRoomNumber(message.body.replace(/"/g, ""));
           setNowGameComponent("PlayMatchingQueue");
         });
         break;
       case "PlayMatchingQueue":
         client?.subscribe("/topic/game/match/timeout" + roomNumber, message => {
-          console.log("시간초과" + message.body);
-          Reactotron.log!("시간초과: " + message.body);
           setNowGameComponent("PlaySelect");
         });
         break;
       case "PlayMatchingQueueWait":
         client?.subscribe("/topic/game/" + roomNumber, message => {
           const userInfoDtos = JSON.parse(message.body);
-          console.log("디티오", userInfoDtos[0]);
           const mymy = userInfoDtos[0];
           const enemyenemy = userInfoDtos[1];
           if (
@@ -119,8 +112,6 @@ function PlayGameLogic() {
 
           setMyInfo(mymy);
           setEnemyInfo(enemyenemy);
-          console.log("마이인포", myInfo);
-          console.log("엔미인포", enemyInfo);
           if (myInfo && enemyInfo) {
             setNowGameComponent("PlayGameStart");
           }
@@ -156,7 +147,6 @@ function PlayGameLogic() {
   useEffect(() => {
     subStomp();
   }, [nowGameComponent]);
-  console.log("지금 컴포넌트는 어디?", nowGameComponent);
 
   if (isLoading) {
     return (
@@ -167,6 +157,21 @@ function PlayGameLogic() {
   }
 
   switch (nowGameComponent) {
+    case "PlayGameResult":
+      return (
+        <PlayGameResult
+          roomNumber={roomNumber}
+          rounds={roundResult.rounds}
+          result={roundResult.result}
+          cardInfo={roundResult.cardInfo}
+          nickName={userData.nickname}
+          myCharacter={myCharacter}
+          setMyCharacter={setMyCharacter}
+          enemyCharacter={enemyCharacter}
+          setEnemyCharacter={setEnemyCharacter}
+          setNowGameComponent={setNowGameComponent}
+        />
+      );
     case "PlaySelect":
       return (
         <PlaySelect
@@ -231,21 +236,7 @@ function PlayGameLogic() {
           roundResult={roundResult}
         />
       );
-    case "PlayGameResult":
-      return (
-        <PlayGameResult
-          roomNumber={roomNumber}
-          rounds={roundResult.rounds}
-          result={roundResult.result}
-          cardInfo={roundResult.cardInfo}
-          nickName={userData.nickname}
-          myCharacter={myCharacter}
-          setMyCharacter={setMyCharacter}
-          enemyCharacter={enemyCharacter}
-          setEnemyCharacter={setEnemyCharacter}
-          setNowGameComponent={setNowGameComponent}
-        />
-      );
+
     case "PlayGameFinalResult":
       return (
         <PlayGameFinalResult

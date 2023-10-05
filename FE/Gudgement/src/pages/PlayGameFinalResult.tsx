@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 import { CommonType } from "../types/CommonType";
 
@@ -23,9 +21,6 @@ export default function PlayGameFinalResult({
   sendHandler,
   setNowGameComponent,
 }) {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
   const [myInfoState, setMyInfoState] = useState([null]);
   const [myCharacterState, setMyCharacterState] = useState(null);
@@ -57,18 +52,22 @@ export default function PlayGameFinalResult({
     }
   }, [result]);
 
-  // 최종 결과 저장
-  const postBettingInfo = () => {
-    const bettingPayload = {
-      roomNumber: roomNumber,
-      nickName: nickName,
-      result: result,
-    };
-    sendHandler("/app//game/end", bettingPayload, () => {});
-    console.log("최종 게임 저장완료!", response.data);
-    setNowGameComponent("PlaySelect");
-  };
+  // 라운드 데이터 요청
+  async function postBettingInfo() {
+    try {
+      const response = await axios.post(`${Config.API_URL}/game/end`, {
+        roomNumber: roomNumber,
+        nickName: nickName,
+        result: result,
+      });
+      console.log("최종 게임 저장완료!", response.data);
+      setNowGameComponent("PlaySelect");
+    } catch (error) {
+      setNowGameComponent("PlaySelect");
 
+      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
+    }
+  }
   return (
     <View className="flex w-full h-full">
       <ImageBackground

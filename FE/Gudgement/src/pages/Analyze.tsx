@@ -4,13 +4,12 @@ import {
   View,
   ImageBackground,
   Image,
-  ActivityIndicator,
   ViewStyle,
   TextStyle,
   StyleProp,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart } from "react-native-chart-kit";
 import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
@@ -37,16 +36,12 @@ function Analyze() {
   );
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
 
-  const {
-    data: userData,
-    isLoading,
-    refetch: refetchUser,
-  } = useQuery<CommonType.Tuser>({
+  const { data: userData, refetch: refetchUser } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
     enabled: false,
   });
 
-  const { data: userAnalyzeMonth } = useQuery({
+  const { data: userAnalyzeMonth, isError } = useQuery({
     queryKey: ["userAnalyzeMonth", selectedYear, selectedMonth],
     queryFn: () => fetchAnalyzeMonth(selectedYear, selectedMonth),
   });
@@ -116,6 +111,7 @@ function Analyze() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [errorMonth, setErrorMonth] = useState("");
   const [chartData, setChartData] = useState<CommonType.TanalyzeChart>({
     year: 0,
     month: 0,
@@ -192,17 +188,22 @@ function Analyze() {
       reactotron.log!("fetchAnalyzeMonth", response.data);
       return response.data;
     } catch (error) {
-      setModalText("월별결산 불러오기에 실패하였습니다. 다시 시도해주세요.");
-      openModal();
-      reactotron.log!("fetchAnalyzeMonth", error);
+      const axiosError = error as AxiosError<CommonType.Terror>;
+      if (axiosError.response) {
+        setErrorMonth(axiosError.message);
+      }
     }
   };
 
   const handleFetchAnalyze = async () => {
-    navigation.navigate("AnalyzeDetail", {
-      year: selectedYear,
-      month: selectedMonth,
-    });
+    if (isError) {
+      navigation.navigate("AnalyzeDetail", { errorMessage: errorMonth });
+    } else {
+      navigation.navigate("AnalyzeDetail", {
+        year: selectedYear,
+        month: selectedMonth,
+      });
+    }
   };
 
   const getDropdownStyle = (): ViewStyle => ({
@@ -239,14 +240,6 @@ function Analyze() {
       </View>
     );
   };
-
-  if (isLoading) {
-    return (
-      <View className="w-full h-full flex justify-center items-center">
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    );
-  }
 
   const getAdjustFrameFunc = (width: number, height: number) => {
     return (style: PositionStyle) => {

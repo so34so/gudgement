@@ -47,7 +47,6 @@ fetchApi.interceptors.response.use(
   response => response, // 응답이 성공적일 경우 그대로 반환
   async (error: AxiosError<CommonType.Terror>) => {
     const originalRequest = error.config as AdaptAxiosRequestConfig;
-
     if (error.response) {
       const errorCode = error.response.data.code;
       const errorMessage = error.response.data.message;
@@ -69,9 +68,13 @@ fetchApi.interceptors.response.use(
           break;
         case "T-004":
           reactotron.log!(errorMessage); // 토큰 없음
+          logoutUser();
           break;
         case "T-005":
           reactotron.log!(errorMessage); // 토큰에 담긴 유저와 토큰 보낸 유저 다름
+          break;
+        case "E-003":
+          reactotron.log!(errorMessage);
           break;
       }
     }

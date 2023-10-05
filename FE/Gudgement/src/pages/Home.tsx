@@ -7,15 +7,10 @@ import {
   Image,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import {
-  checkSpendRate,
-  fetchUser,
-  screenHeight,
-  screenWidth,
-} from "../utils/common";
+import { fetchUser, screenHeight, screenWidth } from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
 import Config from "react-native-config";
 import { CommonType } from "../types/CommonType";
@@ -62,19 +57,12 @@ export default function Home() {
     img: 0,
   });
 
-  useEffect(() => {
-    if (userData) {
-      checkSpendRate(userData, percent, setSpend);
-    }
-  }, [percent]);
-
   const characterImage = useCallback(() => {
     const currentCharacter = userData?.setItems.filter(
       (item: CommonType.TsetItem) => {
         return item.type === "character";
       },
     );
-    console.log("current", currentCharacter);
 
     return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
   }, [userData?.setItems]);
@@ -119,7 +107,13 @@ export default function Home() {
             </Text>
           </View>
           <View className="flex justify-center items-center w-[92%]">
-            <AnalysisBox ProgressBarVisible={true} />
+            <AnalysisBox
+              ProgressBarVisible={true}
+              spend={spend}
+              setSpend={setSpend}
+              percent={percent}
+              setPercent={setPercent}
+            />
           </View>
         </View>
         <Image

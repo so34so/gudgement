@@ -1,7 +1,6 @@
 import {
   View,
   ImageBackground,
-  ImageSourcePropType,
   Text,
   Image,
   FlatList,
@@ -9,14 +8,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Jilta from "../assets/images/jilta.png";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { useQuery } from "@tanstack/react-query";
 import Config from "react-native-config";
 import fetchApi from "../utils/tokenUtils";
 import { getAsyncData } from "../utils/common";
 import reactotron from "reactotron-react-native";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 
 interface Irank {
   rankingList: [
@@ -36,7 +34,6 @@ interface Irank {
 }
 
 export default function Ranking() {
-  const jilta: ImageSourcePropType = Jilta as ImageSourcePropType;
   const styleLevel = (rank: number) => {
     return `${rank >= 10 ? "right-[-30px]" : "right-[-40px]"}`;
   };
@@ -69,6 +66,7 @@ export default function Ranking() {
     queryKey: ["fetchRankingList"],
     queryFn: () => fetchRanking(),
   });
+
   const flatListProps: FlatListProps<{
     ranking: number;
     nickname: string;
@@ -84,7 +82,14 @@ export default function Ranking() {
               <Text className="font-PretendardExtraBold text-[30px] text-black">
                 {item.ranking}
               </Text>
-              <Image source={jilta} />
+              <Image
+                source={{
+                  uri: item.character
+                    ? `${Config.IMAGE_URL}/character/${item.character}`
+                    : `${Config.IMAGE_URL}/character/stoat.png`,
+                }}
+                className={`${item.character ? "w-14 h-10" : "w-10 h-14"}`}
+              />
               <Svg className="w-24 h-10">
                 <SvgText
                   fill="white"
@@ -99,15 +104,15 @@ export default function Ranking() {
                 </SvgText>
               </Svg>
               <View
-                className={`relative ${styleLevel(
+                className={`absolute ${styleLevel(
                   item.ranking,
-                )} flex flex-row justify-center items-center rounded-[20px] w-fit bg-white
-      box-border h-8 text-center text-black border-[2px] border-solid border-black`}
+                )} flex flex-row justify-stretch items-center rounded-[20px] w-20 bg-white
+      box-border h-8 text-center left-60 text-black border-[2px] border-solid border-black`}
               >
                 <Text className="text-white w-10 rounded-l-[20px] h-full bg-black text-center text-[18px] font-PretendardMedium">
                   Lv
                 </Text>
-                <Text className="text-black text-[18px] font-PretendardBold px-2">
+                <Text className="text-black text-[18px] font-PretendardBold px-2 text-center">
                   {item.level}
                 </Text>
               </View>
@@ -154,7 +159,12 @@ export default function Ranking() {
                         </Text>
                       </View>
                     </View>
-                    <Image source={jilta} />
+                    <Image
+                      source={{
+                        uri: `${Config.IMAGE_URL}/character/${ele.character}`,
+                      }}
+                      className="w-14 h-10"
+                    />
                   </View>
                   <View className="top-[-10px] left-[-7px] flex justify-center items-center w-24 h-fit rounded-[6px] bg-white border-solid border-2 border-black">
                     <View className="w-full h-fit bg-black border-2 flex justify-center items-center border-white rounded-[6px]">
@@ -176,7 +186,14 @@ export default function Ranking() {
               <Text className="font-PretendardExtraBold text-[30px] text-white">
                 {rankingList?.myRanking?.ranking}
               </Text>
-              <Image source={jilta} />
+              <Image
+                source={{
+                  uri: rankingList?.myRanking?.character
+                    ? `${Config.IMAGE_URL}/character/${rankingList?.myRanking?.character}`
+                    : `${Config.IMAGE_URL}/character/stoat.png`,
+                }}
+                className="w-14 h-10"
+              />
               <Svg className="w-20 h-10">
                 <SvgText
                   fill="white"
@@ -190,7 +207,7 @@ export default function Ranking() {
                   {rankingList?.myRanking?.nickname}
                 </SvgText>
               </Svg>
-              <View className="relative right-[-40px] flex flex-row justify-center items-center rounded-[20px] w-fit bg-white box-border h-8 text-center text-black border-[2px] border-solid border-black">
+              <View className="absolute left-60 flex flex-row justify-center items-center rounded-[20px] w-fit bg-white box-border h-8 text-center text-black border-[2px] border-solid border-black">
                 <Text className="text-white w-10 rounded-l-[20px] h-full bg-black text-center text-[18px] font-PretendardMedium">
                   Lv
                 </Text>

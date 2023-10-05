@@ -20,6 +20,8 @@ import AnalyzeGoal from "./src/pages/AnalyzeGoal";
 import AnalyzeDetail from "./src/pages/AnalyzeDetail";
 import reactotron from "reactotron-react-native";
 import ReSettingAccount from "./src/pages/ReSettingAccount";
+import axios from "axios";
+import Config from "react-native-config";
 
 function AppInner() {
   const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -79,6 +81,27 @@ function AppInner() {
       SplashScreen.hide();
     }, 100);
   }
+  useEffect(() => {
+    async function getToken() {
+      const loginData: number | null = await getAsyncData("id");
+      try {
+        if (!messaging().isDeviceRegisteredForRemoteMessages) {
+          await messaging().registerDeviceForRemoteMessages();
+        }
+        const token = await messaging().getToken();
+        return axios.put(`${Config.SERVER_URL}fcm/token`, {
+          id: loginData,
+          firebaseToken: token,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (isLoggedIn) {
+      getToken();
+    }
+  }, [isLoggedIn]);
+
   useEffect(() => {
     setIsLoginLoading(false);
   }, [user]);

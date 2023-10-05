@@ -58,6 +58,17 @@ function Analyze() {
     }
   }, []);
 
+  const [percent, setPercent] = useState(userData?.rate.rate as number);
+  const [spend, setSpend] = useState<{
+    text: string;
+    color: string;
+    img: number;
+  }>({
+    text: "",
+    color: "",
+    img: 0,
+  });
+
   const [dayOptions, setDayOptions] = useState<string[]>([]);
   const yearOptions = ["2020년", "2021년", "2022년", "2023년"];
   const getDaysInMonth = (year: number, month: number) => {
@@ -269,7 +280,13 @@ function Analyze() {
         </View>
         <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-4 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
           <View className="-mt-1">
-            <AnalysisBox ProgressBarVisible={false} />
+            <AnalysisBox
+              ProgressBarVisible={false}
+              spend={spend}
+              setSpend={setSpend}
+              percent={percent}
+              setPercent={setPercent}
+            />
           </View>
           <View className="w-full">
             <View className="flex flex-row justify-between items-center mx-3 my-3">

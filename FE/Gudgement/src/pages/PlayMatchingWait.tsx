@@ -7,62 +7,29 @@ import BlueFlame from "../assets/images/blueflame.gif";
 import MathchingTimer from "./MathchingTimer";
 import MatchingInfoBox from "../assets/images/matchingInfoBox.png";
 import React, { useEffect, useRef, useState } from "react";
-import Reactotron from "reactotron-react-native";
 import "../../globals.js";
-import axios from "axios";
 import {
   View,
   StyleSheet,
   ImageBackground,
-  Pressable,
   Image,
-  Text,
   TouchableOpacity,
   ImageSourcePropType,
 } from "react-native";
-import {
-  NavigationProp,
-  useNavigation,
-  useRoute,
-  useFocusEffect,
-} from "@react-navigation/native";
+
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withRepeat,
-  withTiming,
 } from "react-native-reanimated";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { useWebSocket } from "../components/WebSocketContext";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { CommonType } from "../types/CommonType";
-import Config from "react-native-config";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-export default function PlayMatchingWait({ route }) {
-  const { memberId, nickName, grade, tiggle, timestamp } = route.params;
-  const websocketClient = useWebSocket();
-  const { data: userInfo } = useQuery<CommonType.TUser>({
-    queryKey: ["fetchUserInfo"],
-  });
-  const MEMBER_ID = userInfo?.memberId;
-  const MEMBER_NickName = userInfo?.nickname;
-  const MEMBER_RoleUser = "silver";
-  useEffect(() => {
-    if (websocketClient) {
-      // 이미 연결된 웹소켓 클라이언트에 대한 메시지 구독 설정
-      websocketClient.subscribe("/queue/start/" + nickName, message => {
-        console.log("Room number: " + message.body);
-        Reactotron.log!("Room number: " + message.body);
-        const roomNumber = message.body.replace(/"/g, "");
-        navigation.navigate("PlayMatchingQueue", {
-          roomNumber: roomNumber,
-          nickName: nickName,
-        });
-      });
-    }
-  }, [websocketClient]);
-
+export default function PlayMatchingWait({
+  userData,
+  selectedTiggle,
+  sendHandler,
+}) {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const bluePlayBackground: ImageSourcePropType =
     BluePlayBackground as ImageSourcePropType;
   const blueBlur: ImageSourcePropType = BlueBlur as ImageSourcePropType;
@@ -71,58 +38,26 @@ export default function PlayMatchingWait({ route }) {
   const flameMatch: ImageSourcePropType = FlameMatch as ImageSourcePropType;
   const matchInfobox: ImageSourcePropType =
     MatchingInfoBox as ImageSourcePropType;
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
 
-  const [elapsedTime, setElapsedTime] = useState(0);
-  // // 매칭 수락 함수
-  // async function postMatchStart() {
-  //   try {
-  //     const response = await axios.post(`${API_URL}/match/addUser`, {
-  //       memberId: MEMBER_ID,
-  //       nickName: MEMBER_NickName,
-  //       grade: MEMBER_RoleUser,
-  //       tiggle: tiggle,
-  //       timestamp: 0,
-  //     });
-  //     Reactotron.log!("흠", response.data);
-  //     return response;
-  //   } catch (error) {
-  //     Reactotron.log!(error);
-  //     return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-  //   }
-  // }
-  // 매칭 취소 함수
-  async function postMatchClose() {
-    try {
-      const response = await axios.post(`${Config.API_URL}/match/removeUser`, {
-        memberId: memberId,
-        nickName: nickName,
-        grade: grade,
-        tiggle: tiggle,
-        timestamp: timestamp,
-      });
-      console.log("응답:", response.data);
-      return response;
-    } catch (error) {
-      console.error("에러:", error);
-      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-    }
-  }
-
-  const handleCloseMatch = async () => {
-    try {
-      await postMatchClose();
-      navigation.navigate("PlaySelect");
-    } catch (error) {
-      console.error("매칭 취소 중 오류 발생", error);
-      // 오류가 발생했을 때의 처리를 수행
-    }
+  const handleSend = () => {
+    const matchPayload = {
+      nickName: userData.nickname,
+      grade: userData.grade,
+      tiggle: selectedTiggle,
+    };
+    sendHandler("/app/match/removeUser", matchPayload, () =>
+      setNowGameComponent("PlaySelect"),
+    );
   };
+  // memberId: memberId,
+  // nickName: nickName,
+  // grade: grade,
+  // tiggle: tiggle,
+  // timestamp: timestamp,
 
   return (
     <View className="flex w-full h-full">
@@ -143,7 +78,12 @@ export default function PlayMatchingWait({ route }) {
         </View>
         <Image className=" " style={styles.bluFin} source={blueFin} />
         <View style={styles.closebutton}>
-          <TouchableOpacity onPress={handleCloseMatch}>
+          <TouchableOpacity
+            style={{ padding: 10 }}
+            onPress={() => {
+              navigation.navigate("플레이");
+            }}
+          >
             <SmallCloseButton />
           </TouchableOpacity>
         </View>

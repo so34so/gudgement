@@ -3,7 +3,6 @@ import Bettingmachine from "../assets/images/bettingmachine.png";
 import Bettingsawtooth from "../assets/images/bettingsawtooth.png";
 import GiveUpButton from "../assets/images/giveup.png";
 import BettingButton from "../assets/images/betting.png";
-import axios from "axios";
 import {
   View,
   StyleSheet,
@@ -20,7 +19,6 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
-import Reactotron from "reactotron-react-native";
 import { useWebSocket } from "../components/WebSocketContext";
 import Config from "react-native-config";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -30,29 +28,35 @@ const giveUpButton: ImageSourcePropType = GiveUpButton as ImageSourcePropType;
 const bettingButton: ImageSourcePropType = BettingButton as ImageSourcePropType;
 
 const BettingMachine = ({
+  sendHandler,
   maxBettingAmount,
   roundInfo,
   nickName,
   otherName,
   roomNumber,
+  setNowGameComponent,
+  setRoundResult,
+  roundResult,
 }: {
+  sendHandler: any;
   maxBettingAmount: number;
   roundInfo: object;
   nickName: string;
   otherName: string;
   roomNumber: string;
+  setNowGameComponent: any;
+  setRoundResult: any;
+  roundResult: object;
 }) => {
   // 버튼 활성화 상태 변수 추가
   const [isButtonActive, setIsButtonActive] = useState(true);
   const websocketClient = useWebSocket();
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
   useEffect(() => {
     // 웹 소켓 연결 및 구독을 이펙트 내부로 이동
     if (websocketClient) {
       const timeoutSubscription = websocketClient.subscribe(
-        "/topic/game/timeout" + roomNumber,
+        "/topic/game/round/timeout" + roomNumber,
         function (messageOutput) {
           if (messageOutput) {
             isGiveup();
@@ -65,86 +69,57 @@ const BettingMachine = ({
         function (messageOutput) {
           timeoutSubscription.unsubscribe();
           console.log("베팅시스템 : 베팅 모두 완료!", messageOutput.body);
-          const roundResults = JSON.parse(messageOutput.body);
-          if (roundResults.rounds >= 1 && roundResults.rounds <= 9) {
-            navigation.navigate("PlayGameResult", {
-              roomNumber: roomNumber,
-              rounds: roundResults.rounds,
-              result: roundResults.result,
-              cardInfo: roundResults.cardInfo,
-              nickName: nickName,
-            });
-          } else if (roundResults.rounds === 10) {
-            navigation.navigate("PlayGameFinalResult", {
-              roomNumber: roomNumber,
-              rounds: roundResults.rounds,
-              result: roundResults.result,
-              nickName: nickName,
-            });
+          setRoundResult(JSON.parse(messageOutput.body));
+          if (roundResult.rounds >= 1 && roundResult.rounds <= 9) {
+            setNowGameComponent("PlayGameResult");
+          } else if (roundResult.rounds === 10) {
+            setNowGameComponent("PlayGameFinalResult");
           }
         },
       );
     }
   }, [websocketClient]);
 
-  // 베팅 완료 요청
-  async function postBettingInfo() {
-    try {
-      const response = await axios.post(`${Config.API_URL}/game/playRound`, {
-        nickName: nickName,
-        otherName: otherName,
-        bettingAmount: bettingAmount,
-        rounds: roundInfo.rounds,
-        cardOrder: roundInfo.card.order,
-        roomNumber: roomNumber,
-      });
-      Reactotron.log!("베팅완료!", response.data);
-      setIsButtonActive(false);
-    } catch (error) {
-      Reactotron.log!(error);
-      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-    }
-  }
-  // 베팅 포기 요청
-  async function postGiveup() {
-    try {
-      const response = await axios.post(`${Config.API_URL}/game/giveUpRound`, {
-        nickName: nickName,
-        otherName: otherName,
-        bettingAmount: bettingAmount,
-        rounds: roundInfo.rounds,
-        cardOrder: roundInfo.card.order,
-        roomNumber: roomNumber,
-      });
-      Reactotron.log!("포기!!", response.data);
-      setIsButtonActive(false);
-    } catch (error) {
-      Reactotron.log!(error);
-      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-    }
-  }
+  const postBettingInfo = () => {
+    const bettingPayload = {
+      nickName: nickName,
+      otherName: otherName,
+      bettingAmount: bettingAmount,
+      rounds: roundInfo.rounds,
+      cardOrder: roundInfo.card.order,
+      roomNumber: roomNumber,
+    };
+    sendHandler("/app/game/playRound", bettingPayload, () => {});
+    setIsButtonActive(false);
+  };
 
+  const postGiveup = () => {
+    const giveUpPayload = {
+      nickName: nickName,
+      otherName: otherName,
+      bettingAmount: bettingAmount,
+      rounds: roundInfo.rounds,
+      cardOrder: roundInfo.card.order,
+      roomNumber: roomNumber,
+    };
+    sendHandler("/app/game/giveUpRound", giveUpPayload, () => {});
+    setIsButtonActive(false);
+  };
   // 베팅 포기 여부 확인
-  async function isGiveup() {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/game/timeoutGiveUp`,
-        {
-          nickName: nickName,
-          otherName: otherName,
-          bettingAmount: bettingAmount,
-          rounds: roundInfo.rounds,
-          cardOrder: roundInfo.card.order,
-          roomNumber: roomNumber,
-        },
-      );
-      Reactotron.log!("타임 아웃 포기!!", response.data);
-      setIsButtonActive(false);
-    } catch (error) {
-      Reactotron.log!(error);
-      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-    }
-  }
+
+  const isGiveup = () => {
+    const isGiveUpPayload = {
+      nickName: nickName,
+      otherName: otherName,
+      bettingAmount: bettingAmount,
+      rounds: roundInfo.rounds,
+      cardOrder: roundInfo.card.order,
+      roomNumber: roomNumber,
+    };
+    sendHandler("/app/game/timeoutGiveUp", isGiveUpPayload, () => {});
+    setIsButtonActive(false);
+  };
+
   const bettingMachine: ImageSourcePropType =
     Bettingmachine as ImageSourcePropType;
   const bettingSawtooth: ImageSourcePropType =

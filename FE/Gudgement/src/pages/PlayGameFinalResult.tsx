@@ -13,8 +13,16 @@ import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 import { CommonType } from "../types/CommonType";
 
-export default function PlayGameFinalResult({ route }) {
-  const { roomNumber, rounds, result, nickName } = route.params;
+export default function PlayGameFinalResult({
+  roomNumber,
+  rounds,
+  result,
+  cardInfo,
+  nickName,
+  myCharacter,
+  sendHandler,
+  setNowGameComponent,
+}) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
@@ -31,14 +39,6 @@ export default function PlayGameFinalResult({ route }) {
   const loseView = "loseview.png";
 
   useEffect(() => {
-    const myCharacter = queryClient.getQueryData(["myCharacter"]);
-    const fetchInfo = async () => {
-      const myData = await queryClient.getQueryData(["myGameinfo"]);
-      if (myData) {
-        setMyInfoState(myData);
-      }
-      console.log(myInfoState);
-    };
     // 승패 여부에 따른 출력 이미지 변경
     if (myCharacter) {
       if (!result && myCharacter === "bambam.gif") {
@@ -55,31 +55,20 @@ export default function PlayGameFinalResult({ route }) {
         setResultViewState(victoryView);
       }
     }
-    fetchInfo();
   }, [result]);
 
-  // 베팅 완료 요청
-  async function postBettingInfo() {
-    try {
-      const response = await axios.post(`${Config.API_URL}/game/end`, {
-        roomNumber: roomNumber,
-        nickName: nickName,
-        result: result,
-      });
-      console.log("최종 게임 저장완료!", response.data);
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "PlaySelect",
-          },
-        ],
-      });
-    } catch (error) {
-      console.log(error);
-      return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
-    }
-  }
+  // 최종 결과 저장
+  const postBettingInfo = () => {
+    const bettingPayload = {
+      roomNumber: roomNumber,
+      nickName: nickName,
+      result: result,
+    };
+    sendHandler("/app//game/end", bettingPayload, () => {});
+    console.log("최종 게임 저장완료!", response.data);
+    setNowGameComponent("PlaySelect");
+  };
+
   return (
     <View className="flex w-full h-full">
       <ImageBackground

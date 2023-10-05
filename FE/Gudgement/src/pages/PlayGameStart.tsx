@@ -1,83 +1,39 @@
 import VolcanoMap from "../assets/images/volcanomap.png";
-import Snake from "../assets/images/snake.png";
-import PingPing from "../assets/images/pingping.png";
-import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useRef, useLayoutEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   ImageBackground,
   Image,
-  Text,
   ImageSourcePropType,
   StatusBar,
 } from "react-native";
-import { CommonType } from "../types/CommonType";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withRepeat,
   runOnJS,
   withTiming,
 } from "react-native-reanimated";
 
-import Reactotron from "reactotron-react-native";
-import { queryClient } from "../../queryClient";
 import Config from "react-native-config";
 
-type PlayGameStartRouteProp = RouteProp<
-  CommonType.RootStackParamList,
-  "PlayGameStart"
->;
-
 export default function PlayGameStart({
-  route,
-}: {
-  route: PlayGameStartRouteProp;
+  myInfo,
+  setMyInfo,
+  enemyInfo,
+  setEnemyInfo,
+  myCharacter,
+  setMyCharacter,
+  enemyCharacter,
+  setEnemyCharacter,
+  setNowGameComponent,
 }) {
-  const { roomNumber } = route.params; // 추가
   // 애니메이션 관련 변수
   const image1PositionX = useSharedValue(0);
   const image2PositionX = useSharedValue(0);
   const vsOpacity = useSharedValue(0);
 
-  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
-  const [enemyInfoState, setEnemyInfoState] = useState(null);
-  const [myInfoState, setMyInfoState] = useState([null]);
-  const [myCharacterState, setMyCharacterState] = useState(null);
-  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
-
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
-
-  useEffect(() => {
-    const fetchInfo = async () => {
-      const enemyData = await queryClient.getQueryData(["enemyGameinfo"]);
-      const myData = await queryClient.getQueryData(["myGameinfo"]);
-      const myCharacter = await queryClient.getQueryData(["myCharacter"]);
-      const enemyCharacter = await queryClient.getQueryData(["enemyCharacter"]);
-
-      if (enemyData) {
-        setEnemyInfoState(enemyData);
-      }
-
-      if (myData) {
-        setMyInfoState(myData);
-      }
-
-      if (enemyCharacter) {
-        setEnemyCharacterState(enemyCharacter);
-      }
-
-      if (myCharacter) {
-        setMyCharacterState(myCharacter);
-      }
-    };
-
-    fetchInfo();
-  }, []);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -93,12 +49,7 @@ export default function PlayGameStart({
     // Navigate to another screen after animation finishes
     if (isAnimationFinished) {
       setTimeout(() => {
-        navigation.navigate("PlayGameProgress", {
-          roomNumber: roomNumber,
-          nickName: myInfoState.nickname,
-          myInfoState: myInfoState,
-          enemyInfoState: enemyInfoState,
-        });
+        setNowGameComponent("PlayGameProgress");
       }, 5000);
     }
   }, [isAnimationFinished]);
@@ -134,7 +85,7 @@ export default function PlayGameStart({
         />
         <Animated.Image
           style={[styles.boxinmycharacter, animatedMyStyle]}
-          source={{ uri: `${Config.IMAGE_URL}/character/${myCharacterState}` }}
+          source={{ uri: `${Config.IMAGE_URL}/character/${myCharacter}` }}
         />
         {/* 내 칭호 */}
         <Animated.Text
@@ -148,7 +99,7 @@ export default function PlayGameStart({
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
           style={[styles.mycharacterboxinname, animatedMyStyle]}
         >
-          {myInfoState?.nickname}
+          {myInfo?.nickname}
         </Animated.Text>
 
         {/* 적 캐릭터 박스 */}
@@ -159,7 +110,7 @@ export default function PlayGameStart({
         <Animated.Image
           style={[styles.boxinenemy, animatedEnemyStyle]}
           source={{
-            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacter}`,
           }}
         />
         {/* 적 칭호 */}
@@ -174,18 +125,18 @@ export default function PlayGameStart({
           className="py-1 pl-3 pr-2 rounded-lg text-center text-white text-[36px] font-PretendardBold"
           style={[styles.enemyboxinname, animatedEnemyStyle]}
         >
-          {enemyInfoState?.nickname}
+          {enemyInfo?.nickname}
         </Animated.Text>
         <Image
           style={styles.mycharacter}
           source={{
-            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+            uri: `${Config.IMAGE_URL}/character/${myCharacter}`,
           }}
         />
         <Image
           style={styles.enemy}
           source={{
-            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacter}`,
           }}
         />
       </ImageBackground>

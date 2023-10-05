@@ -59,13 +59,13 @@ public class MyPageController {
     @PostMapping("/month/analyze")
     @Operation(summary = "월 별 분석", description = "이번 달 소비 정보와 이전 달과 비교한 소비율, 순위는 +-10만원")
     public ResponseEntity<AnalyzeResponseDto> monthAnalyze(@RequestBody AnalyzeRequestDto analyzeRequestDto) {
-            analyzeService.createMonthAnalyze(analyzeRequestDto);
-            AnalyzeResponseDto analyzeResponseDto = analyzeService
-                        .getMonthAnalyze(analyzeRequestDto.getVirtualAccountId(),
-                                analyzeRequestDto.getYear(),
-                                analyzeRequestDto.getMonth());
+            Long result = analyzeService.createMonthAnalyze(analyzeRequestDto);
+            analyzeService.flaskPostRequest(analyzeRequestDto, result);
 
-        return ResponseEntity.ok(analyzeResponseDto);
+        return ResponseEntity.ok(analyzeService
+                .getMonthAnalyze(analyzeRequestDto.getVirtualAccountId(),
+                        analyzeRequestDto.getYear(),
+                        analyzeRequestDto.getMonth()));
     }
 
     private Member getMember(HttpServletRequest httpServletRequest) {

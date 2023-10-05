@@ -61,26 +61,6 @@ export default function PlayGameProgress({
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     let isActive = true; // flag for component mount status
-
-  //     const fetchInfo = async () => {
-  //       const response = await postRoundStart();
-  //       if (isActive) {
-  //         // only update state if component is still mounted
-  //         setRoundInfo(response);
-  //         setIsLoading(false);
-  //       }
-  //     };
-
-  //     fetchInfo();
-
-  //     return () => {
-  //       isActive = false; // component is unmounted
-  //     };
-  //   }, []),
-  // );
 
   useEffect(() => {
     const myCharacter = queryClient.getQueryData(["myCharacter"]);

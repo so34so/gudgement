@@ -26,7 +26,7 @@ function GameCardCollection({
   isVisible: boolean;
   onClose: () => void;
 }) {
-  const cards = myInfoState.cards;
+  const cards = myInfoState?.cards;
   const myblueCard: ImageSourcePropType = myBlueCard as ImageSourcePropType;
 
   return isVisible ? (

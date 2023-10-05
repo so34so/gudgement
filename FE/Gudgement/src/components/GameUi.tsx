@@ -23,8 +23,8 @@ function GameUi({
   enemyInfoState: object;
 }) {
   const gameUi: ImageSourcePropType = GameUI as ImageSourcePropType;
-  const mytiggles = roundInfo.userTiggles[0].tiggle;
-  const enemytiggles = roundInfo.userTiggles[1].tiggle;
+  const mytiggles = roundInfo?.userTiggles[0].tiggle;
+  const enemytiggles = roundInfo?.userTiggles[1].tiggle;
   const [isModalVisible, setModalVisible] = useState(false);
 
   return (

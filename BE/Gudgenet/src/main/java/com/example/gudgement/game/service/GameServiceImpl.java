@@ -13,12 +13,10 @@ import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
-import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
-import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.member.repository.MemberRepository;
@@ -34,7 +32,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -95,7 +92,7 @@ public class GameServiceImpl implements GameService{
         log.info(String.valueOf(hasKey));
         
         if (!hasKey) {
-            throw new IllegalArgumentException("Invalid nickname: " + nickname);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         // Update the acceptance status in Redis.
@@ -131,7 +128,7 @@ public class GameServiceImpl implements GameService{
                 Object value = redisTemplate.opsForHash().get(roomNumber, member+":tiggle");
 
                 if (value == null) {
-                    throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
+                    throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
                 }
 
                 Long tiggle = Long.parseLong((String) value);
@@ -229,7 +226,7 @@ public class GameServiceImpl implements GameService{
         Boolean hasKey = redisTemplate.opsForHash().hasKey(roomNumber, nickname+":status");
 
         if (!hasKey) {
-            throw new IllegalArgumentException("Invalid nickname: " + nickname);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         messagingTemplate.convertAndSend("/topic/game/" + roomNumber, nickname+" fail");
@@ -244,7 +241,7 @@ public class GameServiceImpl implements GameService{
         Optional<Member> gameUser = memberRepository.findByNickname(nickname);
 
         if (gameUser == null) {
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         return gameUser.get().getLevel();
@@ -253,7 +250,7 @@ public class GameServiceImpl implements GameService{
     private EquippedItemsDto fetchEquippedItems(String nickname) {
         // Find the user by nickname.
         Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> {
-            throw new IllegalArgumentException("Invalid nickname: " + nickname);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
         log.info(String.valueOf(member.getMemberId()));
 
@@ -291,7 +288,7 @@ public class GameServiceImpl implements GameService{
     public VirtualAccount fetchVirtualAccount(String nickname) {
         Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
         if (!optionalMember.isPresent()) {
-            throw new RuntimeException("User not found: " + nickname);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         }
 
         Member member = optionalMember.get();
@@ -299,7 +296,7 @@ public class GameServiceImpl implements GameService{
         Optional<VirtualAccount> optionalVirtualAccount = virtualAccountRepository.findByVirtualAccountId(member.getVirtualAccountId());
 
         if (!optionalVirtualAccount.isPresent()) {
-            throw new RuntimeException("Virtual account not found for user: " + nickname);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_ACCOUNT);
         }
 
         return optionalVirtualAccount.get();
@@ -312,25 +309,27 @@ public class GameServiceImpl implements GameService{
 
         String progressType = isWinner ? "win" : "lose";
 
-        Optional<Member> user = memberRepository.findByNickname(nickname);
-        Progress progress = progressRepository.findByMemberAndProgressName(user,progressType);
+        Optional<Member> userOptional = memberRepository.findByNickname(nickname);
 
-        if (!user.isPresent()) {
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
+        if (!userOptional.isPresent()) {
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         }
+
+        Member user = userOptional.get();
+        Progress progress = progressRepository.findByMemberAndProgressName(user,progressType);
 
         // Redis에서 해당 유저의 배팅 tiggle 값을 가져옴
         String roomNumber = gameResultDto.getRoomNumber();
 
         Object value = redisTemplate.opsForHash().get(roomNumber, nickname + ":betting");
 
-        if (value == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
+        if (value == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
 
         Long bettingTiggle = Long.parseLong(String.valueOf(value));
 
         if(isWinner){
-            user.get().addTiggle(bettingTiggle);
-            user.get().addExp(2);
+            user.addTiggle(bettingTiggle);
+            user.addExp(2);
             progress.incrementProgressValue();
 
             redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
@@ -339,8 +338,8 @@ public class GameServiceImpl implements GameService{
 
             setUserGameResult(nickname, roomNumber, isWinner);
         }else{
-            user.get().subtractTiggle(bettingTiggle);
-            user.get().addExp(2);
+            user.subtractTiggle(bettingTiggle);
+            user.addExp(2);
             progress.incrementProgressValue();
 
             redisTemplate.opsForHash().put(roomNumber, nickname + ":status", "finished");
@@ -354,7 +353,7 @@ public class GameServiceImpl implements GameService{
 
     private void deleteIfAllUsersFinished(String roomNumber) {
         GameRoom gameRoom = gameRoomRepository.findByRoomNumber(roomNumber)
-                .orElseThrow(() -> new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL));
+                .orElseThrow(() -> new BaseErrorException(ErrorCode.NOT_FOUND_GAMEROOM));
 
         boolean allUsersFinished = gameRoom.getUsers().stream()
                 .allMatch(gameUser -> "finished".equals(redisTemplate.opsForHash().get(roomNumber, gameUser.getNickName() + ":status")));
@@ -376,7 +375,7 @@ public class GameServiceImpl implements GameService{
         Optional<GameUser> gameUserOptional=gameUserRepository.findByNickNameAndGameRoom_RoomNumber(username,roomnumber);
 
         if(!gameUserOptional.isPresent()){
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         GameUser gameUser=gameUserOptional.get();

@@ -34,12 +34,21 @@ public enum ErrorCode {
     NOT_FOUND_ACCOUNT(HttpStatus.BAD_REQUEST, "A-001", "존재하지 않는 계좌입니다."),
     AMOUNT_NOT_NUMBER(HttpStatus.BAD_REQUEST, "A-002", "계좌 거래금액이 숫자형이 아닙니다."),
 
+    //게임
+    NOT_FOUND_GAMEUSER(HttpStatus.NOT_FOUND, "G-001", "게임에 참가하지 않았습니다."),
+    FAIL_TO_REMOVECARD(HttpStatus.BAD_REQUEST, "G-002", "카드가 삭제되지 않았습니다."),
+    NOT_FOUND_GAMEROOM(HttpStatus.NOT_FOUND, "G-003", "게임룸이 없습니다."),
+
+
+
+
     // 아이템
-    NOT_FOUND_REDIS(HttpStatus.NOT_FOUND, "I-001", "Redis에 존재하지 않습니다."),
-    NOT_FOUND_MYSQL(HttpStatus.NOT_FOUND, "I-001", "MySql에 존재하지 않습니다."),
+    NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "I-001", "존재하지 않는 아이템입니다."),
     ALREADY_ADD_ITEM(HttpStatus.CONFLICT, "I-002", "이미 보유한 아이템입니다."),
-    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "P-001", "티끌이 부족합니다."),
-    NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "I-001", "존재하지 않는 아이템입니다.");
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "P-001", "티끌이 부족합니다.");
+
+
+
 
     private HttpStatus httpStatus;
     private String errorCode;

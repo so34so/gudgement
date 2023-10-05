@@ -1,7 +1,6 @@
 package com.example.gudgement.game.service;
 
 import com.example.gudgement.card.service.CardService;
-import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
@@ -10,7 +9,6 @@ import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
-import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.concurrent.*;
 
 @Slf4j
 @Service
@@ -67,7 +64,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         if (otherUser == null) {
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         List<UserTiggleDto> userTiggles = new ArrayList<>();
@@ -76,7 +73,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         for (String userNickName : Arrays.asList(userName, otherUser)) {
             log.info(userNickName + "입니다.");
             Object valueObj = redisTemplate.opsForHash().get(roomNumber, userNickName + ":tiggle");
-            if (valueObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
+            if (valueObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
 
             Long tiggleValue = Long.parseLong(String.valueOf(valueObj));
 
@@ -86,7 +83,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         Object roundsObj = redisTemplate.opsForHash().get(roomNumber, userName + ":rounds");
-        if (roundsObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_REDIS);
+        if (roundsObj == null) throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
 
         int rounds = Integer.parseInt(String.valueOf(roundsObj));
 
@@ -101,7 +98,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
 
         Member member = memberRepository.findByNickname(userName)
-                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
+                .orElseThrow(() -> new BaseErrorException(ErrorCode.NOT_EXISTS_MEMBER));
 
         List<Inventory> inventories = inventoryRepository.findByMemberAndItemId_TypeAndEquipped(member, "consumable", true);
 
@@ -139,7 +136,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
 
         if (!hasKey) {
-            throw new IllegalArgumentException("Invalid nickname: " + bettingDto.getNickName());
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
 
         // Update the acceptance status in Redis.
@@ -160,7 +157,7 @@ public class GameRoundServiceImpl implements GameRoundService {
                 Long removeResult = redisTemplate.opsForSet().remove(roomNumber + ":" + userNickName + ":cards", cardToRemove);
 
                 if (removeResult == 0) {
-                    throw new RuntimeException("Failed to remove the card: " + cardToRemove);
+                    throw new BaseErrorException(ErrorCode.FAIL_TO_REMOVECARD);
                 }
             }
         }
@@ -228,7 +225,7 @@ public class GameRoundServiceImpl implements GameRoundService {
         }
 
         if (round == 10) {
-            // If it's the final round or any player's tiggle is zero or less, determine the winner based on the tiggle values.
+
             boolean iWonFinal = myTiggle >= otherTiggle;  // If it's a tie, I win.
 
             myResult = RoundResultDto.builder()
@@ -287,10 +284,8 @@ public class GameRoundServiceImpl implements GameRoundService {
         Boolean hasKey = redisTemplate.opsForHash().hasKey(bettingDto.getRoomNumber(), bettingDto.getNickName() + ":status");
 
         if (!hasKey) {
-            throw new IllegalArgumentException("Invalid nickname: " + bettingDto.getNickName());
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_GAMEUSER);
         }
-
-        // If both users have bet, then proceed with the comparison and result calculation
 
         int myBet = Integer.parseInt((String) redisTemplate.opsForHash().get(roomNumber, bettingDto.getNickName() + ":betting"));
 
@@ -387,7 +382,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             Long removeResult = redisTemplate.opsForSet().remove(roomNumber + ":" + userNickName + ":cards", cardToRemove);
 
             if (removeResult == 0) {
-                throw new RuntimeException("Failed to remove the card: " + cardToRemove);
+                throw new BaseErrorException(ErrorCode.FAIL_TO_REMOVECARD);
             }
         }
     }
@@ -408,7 +403,7 @@ public class GameRoundServiceImpl implements GameRoundService {
             }
         }
 
-        return true;  // If all users' statuses are 'status', return true.
+        return true;
     }
 
     private void resetStatusForNextRound (String roomNumber){

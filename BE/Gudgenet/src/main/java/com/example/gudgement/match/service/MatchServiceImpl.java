@@ -25,7 +25,7 @@ public class MatchServiceImpl implements MatchService {
     public void addUserToGroup(MatchDto matchDto) {
         Optional<Member> user = memberRepository.findByNickname(matchDto.getNickName());
         if (user.get().getTiggle() < matchDto.getTiggle()){
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_MYSQL);
+            throw new BaseErrorException(ErrorCode.INSUFFICIENT_POINTS);
         }
         String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
         redisTemplate.opsForSet().add(key, matchDto.getNickName());

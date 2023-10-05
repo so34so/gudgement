@@ -22,7 +22,7 @@ export const WebSocketProvider: React.FC<{
     let newClient: CompatClient;
 
     const connectAndSetupListeners = () => {
-      newClient = Stomp.over(new SockJS(url));
+      newClient = Stomp.over(() => new SockJS(url));
 
       newClient.onConnect = frame => {
         console.log("Connected: " + frame);

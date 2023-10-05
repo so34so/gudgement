@@ -94,5 +94,5 @@ def month_transaction(virtualId, year, month, month_overconsumption):
     return "Success"
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5000)
 

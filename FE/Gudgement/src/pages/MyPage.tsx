@@ -56,8 +56,8 @@ function MyPage(this: unknown) {
           img={`${Config.IMAGE_URL}/asset/mypageIcon.png`}
         />
         <View
-          className="flex flex-col w-full h-fill justify-evenly space-y-10
-        pt-10"
+          className="flex flex-col w-full h-full justify-evenly items-start space-y-10
+        pb-40"
         >
           <View className="flex flex-row w-full justify-evenly items-center">
             <View>

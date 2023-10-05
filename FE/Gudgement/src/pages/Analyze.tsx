@@ -330,20 +330,20 @@ function Analyze(this: unknown) {
             </View>
             <View className="bg-white90 rounded-2xl mx-2 pt-3 mb-2 border-solid border-[3px] border-sub03">
               <View className="py-1 mx-4 flex justify-center items-start w-fit space-y-2 rounded-lg bg-white50">
-                <Text className="font-PretendardBold text-darkgray text-xs">
+                <Text className="font-PretendardBold text-darkgray text-sm">
                   {chartData.year}년 {chartData.month}월 {chartData.week}주차
                 </Text>
                 <View className="flex flex-row">
-                  <Text className="font-PretendardBold text-darkgray50 text-2xs">
+                  <Text className="font-PretendardBold text-darkgray50 text-xs">
                     계좌 잔고가{" "}
                   </Text>
-                  <Text className="font-PretendardBold text-black70 text-2xs">
+                  <Text className="font-PretendardBold text-black70 text-xs">
                     {chartData.data.dateSet.amount
                       .reduce((a, b) => a + b, 0)
                       .toLocaleString("ko-KR")}
                     원{" "}
                   </Text>
-                  <Text className="font-PretendardBold text-darkgray50 text-2xs">
+                  <Text className="font-PretendardBold text-darkgray50 text-xs">
                     줄어들었어요.
                   </Text>
                 </View>

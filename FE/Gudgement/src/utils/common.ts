@@ -154,6 +154,7 @@ export const fetchUser = async (): Promise<CommonType.Tuser | null> => {
       `${Config.API_URL}/member/loadMyInfo`,
     );
     reactotron.log!("fetchUser", response);
+    response.data.email && setAsyncData("email", response.data.email);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<CommonType.Terror>;

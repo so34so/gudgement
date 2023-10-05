@@ -30,7 +30,6 @@ PushNotification.configure({
 
   // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
   onNotification: function (notification: any) {
-    console.log("NOTIFICATION:", notification);
     if (notification.userInteraction) {
       if (notification.channelId === "만보기") {
         // console.log("url open");

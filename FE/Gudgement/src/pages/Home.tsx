@@ -7,15 +7,10 @@ import {
   Image,
 } from "react-native";
 import PointHeader from "../components/PointHeader";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import reactotron from "reactotron-react-native";
-import {
-  checkSpendRate,
-  fetchUser,
-  screenHeight,
-  screenWidth,
-} from "../utils/common";
+import { fetchUser, screenHeight, screenWidth } from "../utils/common";
 import AnalysisBox from "../components/AnalysisBox";
 import Config from "react-native-config";
 import { CommonType } from "../types/CommonType";

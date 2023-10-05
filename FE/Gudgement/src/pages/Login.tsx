@@ -46,6 +46,10 @@ function Login({ setIsLoginLoading }: LoginProps) {
       queryClient.invalidateQueries(["isLoggedIn"]);
       queryClient.invalidateQueries(["fetchUserInfo"]);
       setIsLoginLoading(true);
+
+      setTimeout(() => {
+        setIsLoginLoading(false);
+      }, 1000);
     } catch (error) {
       reactotron.log!("인가 코드 전달 실패!", error);
     }

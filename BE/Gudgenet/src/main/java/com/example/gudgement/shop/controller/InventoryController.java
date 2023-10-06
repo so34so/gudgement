@@ -60,12 +60,5 @@ public class InventoryController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "아이템 해제")
-    @PutMapping("/unequip")
-    public ResponseEntity<InventoryDto> unequip(@RequestParam Long invenId) {
-        inventoryService.unequipItem(invenId);
-        return ResponseEntity.ok().build();
-    }
-
 
 }

@@ -4,11 +4,11 @@ import { AxiosResponse } from "axios";
 import { Config } from "react-native-config";
 
 import AccountBox from "../components/AccountBox";
-import reactotron from "reactotron-react-native";
 
 import fetchApi from "../utils/tokenUtils";
 import { getAsyncData, screenHeight } from "../utils/common";
 import { CommonType } from "../types/CommonType";
+import reactotron from "reactotron-react-native";
 
 function SettingAccountBox({
   numberVisible,
@@ -32,9 +32,8 @@ function SettingAccountBox({
         if (email) {
           setTempEmail(email);
         }
-        reactotron.log!("이메일 불러오기 성공!", tempEmail);
       } catch (error) {
-        reactotron.log!("이메일 불러오기 실패!", error);
+        reactotron.log!(error);
       }
     };
 
@@ -46,27 +45,24 @@ function SettingAccountBox({
   }, [tempEmail]);
 
   const handleReadAccount = async () => {
-    reactotron.log!("인증된 이메일", tempEmail);
     try {
       const response: AxiosResponse<CommonType.Taccount[]> = await fetchApi.get(
         `${Config.API_URL}/account/${tempEmail}`,
       );
       const responseAccount = response.data;
 
-      // 서버에서 받아온 데이터 중 selected가 true인 아이템의 virtualAccountId를 가져와서 selectedAccountId로 설정
       const selectedAccount = responseAccount.find(account => account.selected);
       if (selectedAccount && selectedAccount.virtualAccountId) {
         setSelectedAccountId(selectedAccount.virtualAccountId);
       }
       setAccounts(responseAccount);
-      reactotron.log!("계좌 불러오기 성공!", accounts);
     } catch (error) {
-      reactotron.log!("계좌 불러오기 실패!", error);
+      reactotron.log!(error);
     }
   };
 
   const handleSelect = (accountId: number) => {
-    onSelectId(accountId); // 부모 컴포넌트의 핸들러 호출하여 선택된 ID 업데이트
+    onSelectId(accountId);
     accounts.map(account => {
       if (account.virtualAccountId === accountId) {
         account.selected = !account.selected;

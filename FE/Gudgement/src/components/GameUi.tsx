@@ -31,7 +31,7 @@ function GameUi({
     <View className=" flex w-full h-full">
       <ImageBackground source={gameUi} resizeMode="cover" className="flex-1">
         <View className="flex-1" />
-        <View className="flex flex-row right-[-288] top-[-620] items-center justify-center space-x-1  w-32 h-[55px] border-black">
+        <View className="flex flex-row right-[-288] top-[-580] items-center justify-center space-x-1  w-32 h-[55px] border-black">
           <Image
             source={{
               uri: `${Config.IMAGE_URL}/asset/tiggleIcon.png`,
@@ -43,18 +43,16 @@ function GameUi({
           </Text>
         </View>
 
-        <View className="flex flex-row right-[-10] top-[120] items-center justify-center space-x-3  w-32 h-[55px] border-black">
+        <View className="flex flex-row right-[-10] top-[140] items-center justify-center space-x-3  w-32 h-[55px] border-black">
           <Text className="text-white text-[24px]  p-1 font-PretendardExtraBold ">
             {myInfoState?.nickname}
           </Text>
         </View>
 
         <View className="flex flex-row right-[-300] top-[40] items-center justify-center space-x-3  w-32 h-[55px] border-black">
-          <Text className="text-white text-[24px]  p-1 font-PretendardExtraBold ">
-            아이템
-          </Text>
+          <Text className="text-white text-[24px]  p-1 font-PretendardExtraBold " />
         </View>
-        <View className="flex flex-row top-[50] items-center justify-center space-x-2  w-32 h-[55px] border-black">
+        <View className="flex flex-row top-[60] items-center justify-center space-x-2  w-32 h-[55px] border-black">
           <Image
             source={{
               uri: `${Config.IMAGE_URL}/asset/tiggleIcon.png`,

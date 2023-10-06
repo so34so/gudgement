@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { getAsyncData, setAsyncData } from "../utils/common";
+import { setAsyncData } from "../utils/common";
 import { CommonType } from "../types/CommonType";
 import { queryClient } from "../../queryClient";
 
@@ -62,13 +62,6 @@ function Login({ setIsLoginLoading }: LoginProps) {
       setAsyncData("refreshToken", refreshToken);
       setAsyncData("id", id);
 
-      const getAccessToken = await getAsyncData<string>("accessToken");
-      const getRefreshToken = await getAsyncData<string>("refreshToken");
-      const getId = await getAsyncData<number>("id");
-      reactotron.log!("스토리지에 accessToken 저장 성공!", getAccessToken);
-      reactotron.log!("스토리지에 refreshToken 저장 성공!", getRefreshToken);
-      reactotron.log!("스토리지에 id 저장 성공!", getId);
-
       setShowWebView(false);
 
       queryClient.invalidateQueries(["isLoggedIn"]);
@@ -79,7 +72,7 @@ function Login({ setIsLoginLoading }: LoginProps) {
         setIsLoginLoading(false);
       }, 1000);
     } catch (error) {
-      reactotron.log!("인가 코드 전달 실패!", error);
+      reactotron.log!(error);
     }
   };
 
@@ -90,7 +83,6 @@ function Login({ setIsLoginLoading }: LoginProps) {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
-      reactotron.log!("code", code);
       await fetchAccessToken(code);
     }
   };
@@ -99,7 +91,7 @@ function Login({ setIsLoginLoading }: LoginProps) {
     try {
       await getAuthorizationCode(event);
     } catch (error) {
-      reactotron.log!("에러 발생!", error);
+      reactotron.log!(error);
     }
   };
 

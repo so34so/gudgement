@@ -52,7 +52,7 @@ public enum ErrorCode {
     //분석
     FAIL_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "분석 요청 실패"),
     NOT_FOUND_ANALYZE(HttpStatus.BAD_GATEWAY, "F-002", "분석은 성공했으나 데이터를 불러오지 못하고 있습니다."),
-    NOT_EXIST_TRANSACTION(HttpStatus.OK,"F-003", "거래 내역이 없어 분석이 불가능합니다."),
+    NOT_EXIST_TRANSACTION(HttpStatus.NOT_FOUND,"F-003", "거래 내역이 없어 분석이 불가능합니다."),
     IMPOSSIBLE_CREATE_DATA(HttpStatus.BAD_REQUEST, "F-004", "오늘 보다 이후입니다. 거래 내역이 있을 수 없습니다.");
 
     private HttpStatus httpStatus;

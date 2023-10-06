@@ -38,7 +38,7 @@ function GameCardCollection({
           zIndex: 1000,
           width: "100%",
           height: 280,
-          top: -900,
+          top: -800,
           backgroundColor: "rgba(0,0,0,0.8)",
         }}
       >

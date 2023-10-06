@@ -17,5 +17,4 @@ public interface InventoryService {
     
     void useItem(Long invenId);
 
-    Object unequipItem(Long invenId);
 }

@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Text, View, Image, ActivityIndicator } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 
 import Config from "react-native-config";
-
-import reactotron from "reactotron-react-native";
 
 import ProgressBar from "./ProgressBar";
 import { ANALYZE_BOX_IMAGE, checkSpendRate } from "../utils/common";
@@ -36,7 +34,6 @@ function AnalysisBox({
 }) {
   const {
     data: userData,
-    error: fetchError,
     isLoading,
     refetch,
   } = useQuery<CommonType.Tuser>({
@@ -80,11 +77,7 @@ function AnalysisBox({
       </View>
     );
   }
-  if (fetchError) {
-    reactotron.log!(fetchError);
-  } else {
-    reactotron.log!("홈 사용자 정보", userData);
-  }
+
   return (
     <View className="w-fill">
       <>

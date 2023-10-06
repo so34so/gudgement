@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService {
+public class    MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
     private final ProgressRepository progressRepository;
@@ -239,7 +239,6 @@ public class MemberServiceImpl implements MemberService {
                     .build());
             cnt++;
         } while(cnt <= rd.nextInt(6));
-
         
         // 거래 내역 생성
         List<VirtualAccount> accounts = virtualAccountRepository.findAllByEmail(email);

@@ -9,4 +9,9 @@ public class ViewController {
 
         return "loading";
     }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "privacyPolicy";
+    }
 }

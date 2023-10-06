@@ -395,7 +395,7 @@ public class GameRoundServiceImpl implements GameRoundService {
 
         Long myValue = Long.parseLong(myCardString.split(":")[2]);
 
-        if (myValue == 10) {
+        if (myValue == 1) {
             myBet *= 2;
         }
 

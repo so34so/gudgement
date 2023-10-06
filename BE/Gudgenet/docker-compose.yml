@@ -1,7 +1,0 @@
-version: "3"
-services:
-  spring:
-    build:
-      context: .
-    ports:
-      - 8080:9999 #로컬포트:컨테이너포트

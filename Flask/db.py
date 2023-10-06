@@ -2,21 +2,6 @@ import pymysql, pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 
-# SQLAlchemy 엔진 생성
-engine = create_engine('mysql+pymysql://gudgement:d106gudgement@database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com/gudgement?charset=utf8')
-
-# 서버 데이터 베이스 접속 함수
-def get_connect1():    
-    conn = pymysql.connect(
-        host="database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com",
-        user = "gudgement",
-        password = "d106gudgement",
-        db = "gudgement",
-        charset= "utf8"
-    )
-
-    return conn
-
 # 해당 일의 주차를 계산하는 함수
 def week_of_month(year, month, day):
     now = datetime(year, month, day)

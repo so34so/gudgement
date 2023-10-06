@@ -19,19 +19,25 @@ export default function GameBettingSyetem({
   roomNumber,
   nickName,
   enemyInfoState,
+  setNowGameComponent,
   myInfoState,
+  setRoundResult,
+  roundResult,
+  sendHandler,
 }: {
   roundInfo: object;
   roomNumber: string;
   nickName: string;
   enemyInfoState: object;
+  setNowGameComponent: any;
   myInfoState: object;
+  setRoundResult: any;
+  roundResult: object;
+  sendHandler: any;
 }) {
   // 가비지 컬렉션 방지를 위한 스테이트 변환처리
 
-  console.log("흠", roundInfo.card);
-  console.log("베팅시스템", myInfoState);
-  const enemyCards: CommonType.TplayCard[] = roundInfo.card;
+  const enemyCards = roundInfo?.card;
   return (
     <View style={styles.bettingwrapper}>
       <Text
@@ -59,11 +65,15 @@ export default function GameBettingSyetem({
       <View style={styles.cardwrapper}>
         <Image style={styles.enemycard} source={enemyCard} />
         <BettingMachine
+          sendHandler={sendHandler}
           roomNumber={roomNumber}
           otherName={enemyInfoState?.nickname}
+          setNowGameComponent={setNowGameComponent}
           roundInfo={roundInfo}
           nickName={myInfoState?.nickname}
           maxBettingAmount={myInfoState?.tiggle / 10}
+          setRoundResult={setRoundResult}
+          roundResult={roundResult}
         />
       </View>
     </View>

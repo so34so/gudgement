@@ -2,8 +2,6 @@ import { View, Text, Image, Pressable } from "react-native";
 import { SvgUri } from "react-native-svg";
 import Config from "react-native-config";
 
-import reactotron from "reactotron-react-native";
-
 import { CommonType } from "../types/CommonType";
 
 interface AccountBoxProps {
@@ -42,7 +40,6 @@ function AccountBox({ account, isSelected, onSelect }: AccountBoxProps) {
   const handleSelect = () => {
     if (account.virtualAccountId !== undefined) {
       onSelect(account.virtualAccountId);
-      reactotron.log!(account.virtualAccountId);
     }
   };
 

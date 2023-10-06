@@ -15,7 +15,6 @@ import {
   StatusBar,
 } from "react-native";
 import { CommonType } from "../types/CommonType";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 import Reactotron from "reactotron-react-native";
 import { queryClient } from "../../queryClient";
@@ -27,69 +26,55 @@ type PlayGameStartRouteProp = RouteProp<
 >;
 
 export default function PlayGameProgress({
-  route,
-}: {
-  route: PlayGameStartRouteProp;
+  roomNumber,
+  userData,
+  setRoundInfo,
+  roundInfo,
+  myCharacter,
+  setMyCharacter,
+  enemyCharacter,
+  setEnemyCharacter,
+  myInfo,
+  enemyInfo,
+  setMyInfo,
+  setEnemyInfo,
+  sendHandler,
+  setNowGameComponent,
+  setRoundResult,
+  roundResult,
 }) {
-  const { roomNumber, nickName } = route.params; // 추가
-  const [roundInfo, setRoundInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [myCharacterState, setMyCharacterState] = useState(null);
-  const [enemyCharacterState, setEnemyCharacterState] = useState(null);
-  // 가비지 컬렉션 방지를 위한 스테이트 변환처리
-  const [enemyInfoState, setEnemyInfoState] = useState(null);
-  const [myInfoState, setMyInfoState] = useState(null);
+  useEffect(() => {
+    StatusBar.setHidden(true);
+    postRoundStart();
+  }, []);
 
-  // 라운드 데이터 요청
   async function postRoundStart() {
     try {
       const response = await axios.post(
         `${Config.API_URL}/game/gameroundinfo`,
         {
           roomNumber: roomNumber,
-          nickName: nickName,
+          nickName: userData.nickname,
         },
       );
-      Reactotron.log!("라운드시작!", response.data);
       setRoundInfo(response.data);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
 
-      Reactotron.log!(error);
       return undefined; // 에러 시 undefined를 반환하거나 다른 오류 처리 방식을 선택하세요.
     }
   }
-
-  useEffect(() => {
-    const myCharacter = queryClient.getQueryData(["myCharacter"]);
-    const enemyCharacter = queryClient.getQueryData(["enemyCharacter"]);
-    const enemyData = queryClient.getQueryData(["enemyGameinfo"]);
-    const myData = queryClient.getQueryData(["myGameinfo"]);
-
-    if (enemyData) {
-      setEnemyInfoState(enemyData);
-    }
-
-    if (myData) {
-      setMyInfoState(myData);
-    }
-    if (myCharacter) {
-      setMyCharacterState(myCharacter);
-    }
-
-    if (enemyCharacter) {
-      setEnemyCharacterState(enemyCharacter);
-    }
-    postRoundStart();
-  }, []); // 의존성 배열은 필요에 따라 적절하게 설정하세요.
 
   const volcanoMap: ImageSourcePropType = VolcanoMap as ImageSourcePropType;
 
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
+  console.log("프로그래스", myInfo);
+  console.log("프로그래스 에너미", enemyInfo);
 
   return (
     <View className="flex w-full h-full">
@@ -98,30 +83,34 @@ export default function PlayGameProgress({
         resizeMode="cover"
         className="flex-1"
       >
-        <GameTimerBar duration={10} />
+        <GameTimerBar duration={40} />
 
         <GameUi
-          myInfoState={myInfoState}
+          myInfoState={myInfo}
           roundInfo={roundInfo}
-          enemyInfoState={enemyInfoState}
+          enemyInfoState={enemyInfo}
         />
         <GameBettingSyetem
           roundInfo={roundInfo}
           roomNumber={roomNumber}
-          nickName={nickName}
-          myInfoState={myInfoState}
-          enemyInfoState={enemyInfoState}
+          nickName={userData.nickname}
+          myInfoState={myInfo}
+          enemyInfoState={enemyInfo}
+          setNowGameComponent={setNowGameComponent}
+          setRoundResult={setRoundResult}
+          roundResult={roundResult}
+          sendHandler={sendHandler}
         />
         <Image
           style={styles.mycharacter}
           source={{
-            uri: `${Config.IMAGE_URL}/character/${myCharacterState}`,
+            uri: `${Config.IMAGE_URL}/character/${myCharacter}`,
           }}
         />
         <Image
           style={styles.enemy}
           source={{
-            uri: `${Config.IMAGE_URL}/character/${enemyCharacterState}`,
+            uri: `${Config.IMAGE_URL}/character/${enemyCharacter}`,
           }}
         />
       </ImageBackground>

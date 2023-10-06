@@ -13,7 +13,6 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart } from "react-native-chart-kit";
 import ModalDropdown, { PositionStyle } from "react-native-modal-dropdown";
-import reactotron from "reactotron-react-native";
 
 import AnalysisBox from "../components/AnalysisBox";
 import CustomModal from "../components/CustomModal";
@@ -84,7 +83,6 @@ function Analyze() {
           (_, index) => (index + 1).toString() + "일",
         ),
       );
-      reactotron.log!("날짜", dayOptions);
     }
   }, [selectedYear, selectedMonth, selectedDay]);
 
@@ -104,7 +102,6 @@ function Analyze() {
         default:
           break;
       }
-      reactotron.log!(type + " 선택", value);
     },
     [],
   );
@@ -140,21 +137,18 @@ function Analyze() {
       setSelectedDay(currentDate.getDate());
       return;
     }
-    reactotron.log!("날짜: ", selectedYear, selectedMonth, selectedDay);
     try {
       const response: AxiosResponse<CommonType.TanalyzeChart> =
         await fetchApi.post(
           `${Config.API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
         );
-      reactotron.log!("fetchAnalyzeChart", response.data);
       setChartData(response.data);
     } catch (error) {
       setModalText(
         `${selectedYear}-${selectedMonth}-${selectedDay} 날짜 그래프 불러오기에 실패하였습니다. 다시 시도해주세요.`,
       );
       openModal();
-      reactotron.log!("fetchAnalyzeChart", error);
     }
   };
 
@@ -185,7 +179,6 @@ function Analyze() {
       };
       const response: AxiosResponse<CommonType.TanalyzeMonth> =
         await fetchApi.post(`${Config.API_URL}/mypage/month/analyze`, sendBE);
-      reactotron.log!("fetchAnalyzeMonth", response.data);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<CommonType.Terror>;
@@ -268,7 +261,7 @@ function Analyze() {
         <View className="py-2 flex flex-row justify-between items-center">
           <TagBoxSmall
             text={`${userData?.nickname} 님의 소비 분석`}
-            img={`${Config.IMAGE_URL}/asset/analysisIcon.png`}
+            img={`${Config.IMAGE_URL}/asset/analysisChartIcon.png`}
           />
         </View>
         <View className="flex flex-col overflow-hidden justify-center items-center w-fill h-fill mx-4 rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">

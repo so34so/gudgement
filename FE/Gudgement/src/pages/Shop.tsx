@@ -446,6 +446,7 @@ function Shop({ route }: ShopProps) {
           quantity={quantity}
           setQuantity={setQuantity}
           buyConsumable={buyConsumable}
+          memberId={userInfo?.memberId}
         />
         <CompleteModal
           completeModalVisible={modalVisible}

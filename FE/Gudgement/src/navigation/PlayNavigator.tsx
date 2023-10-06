@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { CommonType } from "../types/CommonType";
-import PlaySelect from "../pages/PlaySelect";
+import PlayGameLogic from "../pages/PlayGameLogic";
 import PlayGameStart from "../pages/PlayGameStart";
 import PlayGameProgress from "../pages/PlayGameProgress";
 import PlayGameResult from "../pages/PlayGameResult";
@@ -13,12 +13,12 @@ function PlayNavigator() {
   const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
   return (
     <Stack.Navigator
-      initialRouteName="PlaySelect"
+      initialRouteName="PlayGameLogic"
       screenOptions={{ headerShown: false, animation: "none" }} // 전환 효과 사용 안 함
     >
       <Stack.Screen
-        name="PlaySelect"
-        component={PlaySelect}
+        name="PlayGameLogic"
+        component={PlayGameLogic}
         options={{ headerShown: false }}
       />
       <Stack.Screen

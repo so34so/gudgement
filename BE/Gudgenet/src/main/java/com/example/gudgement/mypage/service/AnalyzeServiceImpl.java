@@ -67,7 +67,9 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         // 목표 금액 찾아 오기
         Long monthOverconsumption = -1L;
         if (nowDate.getMonth().getValue() == month) {
-            monthOverconsumption = member.getMonthOverconsumption();
+            if (member.getMonthOverconsumption() != null) {
+                monthOverconsumption = member.getMonthOverconsumption();
+            }
         } else if (nowDate.getMonth().getValue() > month) {
             for (int i = 0; i < chartList.size(); i++) {
                 if (chartList.get(i).getMonthOverconsumption() != null) {

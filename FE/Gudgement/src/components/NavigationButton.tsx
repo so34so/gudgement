@@ -1,5 +1,5 @@
-import { CommonType } from "../types/CommonType";
 import { Text, Pressable, View } from "react-native";
+import { textShadow } from "../utils/common";
 
 function NavigationButton({
   handleFunction,
@@ -9,7 +9,6 @@ function NavigationButton({
   size,
   color,
 }: {
-  screenName?: keyof CommonType.RootStackParamList;
   handleFunction?: () => Promise<void>;
   text: string;
   height: string;
@@ -17,39 +16,37 @@ function NavigationButton({
   size: string;
   color: string;
 }) {
-  const buttonStyle01 = (color: string) =>
+  const buttonStyle01 = (currentColor: string) =>
     `h-fill w-fill py-[1px] flex flex-row justify-center items-center ${
-      color === "lightsky" ? "bg-lightsky" : "bg-deepgreen"
+      currentColor === "bluesky" ? "bg-bluesky" : "bg-deepgreen"
     } border-solid border-[3px] border-white70 rounded-xl`;
 
-  const buttonStyle02 = (height: string, width: string) =>
-    `${height === "lg" ? "py-2" : "py-1"} ${
-      width === "lg" ? "px-[162px]" : "px-2"
+  const buttonStyle02 = (currentHeight: string, currentWidth: string) =>
+    `${currentHeight === "lg" ? "py-2" : "py-1"} ${
+      currentWidth === "lg" && "px-[136px]"
+    } ${currentWidth === "md" && "px-[114px]"} ${
+      currentWidth === "sm" && "px-2"
     } h-fill w-fill flex flex-row justify-center items-center bg-transparent border-solid border-[3px] border-white20 rounded-lg`;
 
-  const buttonStyle03 = (size: string) =>
-    `text-center text-white ${
-      size === "md" ? "text-md" : "text-sm"
-    } font-PretendardExtraBold`;
+  const buttonStyle03 = (currentWidth: string, currentSize: string) =>
+    `text-center text-white ${currentSize === "2xs" && "text-2xs"} ${
+      currentSize === "sm" && "text-sm"
+    } ${currentSize === "md" && "text-md "} ${
+      currentWidth === "md" && "w-[100px]"
+    } ${currentWidth === "lg" && "w-[100px]"} font-PretendardExtraBold`;
 
   return (
-    <View>
-      <Pressable className={buttonStyle01(color)} onPress={handleFunction}>
-        <View className={buttonStyle02(height, width)}>
-          <Text
-            style={{
-              textShadowColor: "rgba(0, 0, 0, 0.5)", // 그림자의 색상과 투명도
-              textShadowOffset: { width: 2, height: 2 }, // 그림자의 위치 조정
-              textShadowRadius: 5, // 그림자의 블러 정도
-            }}
-            className={buttonStyle03(size)}
-            numberOfLines={1}
-          >
-            {text}
-          </Text>
-        </View>
-      </Pressable>
-    </View>
+    <Pressable className={buttonStyle01(color)} onPress={handleFunction}>
+      <View className={buttonStyle02(height, width)}>
+        <Text
+          style={textShadow}
+          className={buttonStyle03(width, size)}
+          numberOfLines={1}
+        >
+          {text}
+        </Text>
+      </View>
+    </Pressable>
   );
 }
 

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -16,7 +18,7 @@ public class ProgressServiceImpl implements ProgressService{
     private final ProgressRepository progressRepository;
 
     public boolean checkUnlockStatus(Member memberId, String progressName, int progressValue) {
-       Progress progress =  progressRepository.findByMemberIdAndProgressName(memberId, progressName);
+       Progress progress =  progressRepository.findByMemberAndProgressName(memberId, progressName);
 
        if(progress != null && progress.getProgressValue()>=progressValue) {
            return true;

@@ -1,12 +1,15 @@
 package com.example.gudgement.member.common.jwt;
 
+import com.example.gudgement.exception.BaseErrorException;
+import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.entity.Member;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.member.service.MemberService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
@@ -43,8 +45,8 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .setSubject(email)
-                .setExpiration(expireDate)
                 .setClaims(claim)
+                .setExpiration(expireDate)
                 .setIssuedAt(new Date())
                 .signWith(key, signatureAlgorithm)
                 .compact();
@@ -62,7 +64,8 @@ public class JwtProvider {
     // 토큰 유효성 검증
     public boolean validationToken(String token) {
         try {
-            return getClaims(token).getExpiration().before(new Date());
+            log.info("token 만료 시간 : {}", getClaims(token).getExpiration());
+            return !getClaims(token).getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
             return false;
@@ -109,24 +112,25 @@ public class JwtProvider {
     refreshToken을 유저에게
     */
     public AccessTokenDto tokenRefresh(String token) {
-        try {
-            validationToken(token);
-            Claims claims = getClaims(token);
-            Member member = memberRepository.findByMemberId((Long)claims.get("id")).orElseThrow(() ->
-                    new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER)
-                    );
-
-            JwtToken jwt = createToken(member.getMemberId(), member.getEmail());
-            memberService.updateRefreshToken(member.getEmail(), jwt.getRefreshToken());
-
-            AccessTokenDto accessTokenDto = new AccessTokenDto(jwt.getAccessToken());
-
-            return accessTokenDto;
-
-        } catch (IllegalArgumentException | NoSuchElementException | JwtException e) {
-                log.error(e.getMessage());
-                return null;
+        log.info("token valid 확인 중...");
+        if (!validationToken(token)) {
+            throw new BaseErrorException(ErrorCode.REFRESH_TOKEN_EXPIRATION);
         }
+        log.info("token valid!");
+
+        Claims claims = getClaims(token);
+        Member member = memberRepository.findByMemberId((Long)claims.get("id")).orElseThrow(() -> {
+                throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+            });
+
+        JwtToken jwt = createToken(member.getMemberId(), member.getEmail());
+//        memberService.updateRefreshToken(member.getEmail(), jwt.getRefreshToken());
+
+        AccessTokenDto accessTokenDto = new AccessTokenDto(jwt.getAccessToken());
+
+        log.info(accessTokenDto.getAccessToken());
+        log.info("정상 리턴");
+        return accessTokenDto;
     }
 
     public Member extractMember (HttpServletRequest httpServletRequest) {

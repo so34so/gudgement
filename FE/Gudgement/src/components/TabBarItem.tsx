@@ -5,8 +5,9 @@ import {
   ImageBackground,
 } from "react-native";
 import { BOTTOM_TAB_IMAGE } from "../utils/common";
-import { IMAGE_URL } from "@env";
 import NavBlur from "../assets/images/navBlur.png";
+import Config from "react-native-config";
+
 interface ITabBarProps {
   item: string;
   index: number;
@@ -24,7 +25,7 @@ function TabBarItem({ item, index }: ITabBarProps) {
           <View className="w-full h-[100%] top-4">
             <Image
               source={{
-                uri: `${IMAGE_URL}${BOTTOM_TAB_IMAGE[index]}`,
+                uri: `${Config.IMAGE_URL}${BOTTOM_TAB_IMAGE[index]}`,
               }}
               className="absolute h-[120%] w-[120%] bottom-4"
             />
@@ -33,7 +34,7 @@ function TabBarItem({ item, index }: ITabBarProps) {
           <View className="w-full h-full top-4 [filter:blur(40px)]">
             <Image
               source={{
-                uri: `${IMAGE_URL}${BOTTOM_TAB_IMAGE[index]}`,
+                uri: `${Config.IMAGE_URL}${BOTTOM_TAB_IMAGE[index]}`,
               }}
               className="absolute h-full w-full bottom-4"
             />

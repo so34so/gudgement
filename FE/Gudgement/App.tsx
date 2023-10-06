@@ -1,22 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /// <reference types="nativewind/types" />
-import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { CommonType } from "./src/types/CommonType";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { queryClient } from "./queryClient";
-import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
-import PlayNavigator from "./src/navigation/PlayNavigator";
-import SettingEmail from "./src/pages/SettingEmail";
-import SettingName from "./src/pages/SettingName";
-import SettingAccount from "./src/pages/SettingAccount";
-
+import { WebSocketProvider } from "./src/components/WebSocketContext";
+import { useEffect } from "react";
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
-import { useEffect, useState } from "react";
 
-import Login from "./src/pages/Login";
+import CodePush, { CodePushOptions } from "react-native-code-push";
+import AppInner from "./AppInner";
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions";
+import { Linking } from "react-native";
+import Config from "react-native-config";
 
 if (__DEV__) {
   import("./reactotron");
@@ -27,32 +24,33 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 PushNotification.configure({
   // (optional) 토큰이 생성될 때 실행됨(토큰을 서버에 등록할 때 쓸 수 있음)
-  onRegister: function (token: { os: string; token: string }) {
-    console.log("TOKEN:", token);
-  },
+  // onRegister: function (token: { os: string; token: string }) {
+  //   console.log("TOKEN:", token);
+  // },
 
   // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
   onNotification: function (notification: any) {
-    console.log("NOTIFICATION:", notification);
-    if (notification.channelId === "riders") {
-      // if (notification.message || notification.data.message) {
-      //   store.dispatch(
-      //     userSlice.actions.showPushPopup(
-      //       notification.message || notification.data.message,
-      //     ),
-      //   );
-      // }
+    if (notification.userInteraction) {
+      if (notification.channelId === "만보기") {
+        // console.log("url open");
+      }
+      if (notification.channelId === "분석") {
+        if (notification.message || notification.data.message) {
+          Linking.openURL("gudgement://mypage");
+        }
+      }
+      if (notification.channelId === "fcm_fallback_notification_channel") {
+        // Linking.openURL("gudgement://mypage");
+      }
+      // process the notification
+      Linking.openURL("gudgement://mypage");
     }
-    // process the notification
-
-    // (required) 리모트 노티를 수신하거나, 열었거나 로컬 노티를 열었을 때 실행
-    // notification.finish(PushNotificationIOS.FetchResult.NoData);
   },
 
-  // (optional) 등록한 액션을 누렀고 invokeApp이 false 상태일 때 실행됨, true면 onNotification이 실행됨 (Android)
+  // (optional) 등록한 액션을 눌렀고 invokeApp이 false 상태일 때 실행됨, true면 onNotification이 실행됨 (Android)
   onAction: function (notification: any) {
     // console.log("ACTION:", notification.action);
-    console.log("NOTIFICATION:", notification);
+    console.log("NOTIFICATION ACTION:", notification);
 
     // process the action
   },
@@ -61,13 +59,6 @@ PushNotification.configure({
   onRegistrationError: function (err: Error) {
     console.error(err.message, err);
   },
-
-  // IOS ONLY (optional): default: all - Permissions to register.
-  // permissions: {
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // },
 
   // Should the initial notification be popped automatically
   // default: true
@@ -86,7 +77,7 @@ PushNotification.configure({
 // 채널은 여러개 만들어 둘 수 있음
 PushNotification.createChannel(
   {
-    channelId: "riders", // (required)
+    channelId: "만보기", // (required)
     channelName: "앱 전반", // (required)
     channelDescription: "앱 실행하는 알림", // (optional) default: undefined.
     soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
@@ -94,7 +85,19 @@ PushNotification.createChannel(
     vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
   },
   (created: boolean) =>
-    console.log(`createChannel riders returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    console.log(`createChannel 만보기 returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+);
+
+PushNotification.createChannel(
+  {
+    channelId: "분석", // (required)
+    channelName: "앱 전반", // (required)
+    channelDescription: "앱 실행하는 알림", // (optional) default: undefined.
+    soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+    importance: 4, // (optional) default: 4. Int value of the Android notification importance
+    vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+  },
+  (created: boolean) => console.log(`createChannel 분석 returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
 );
 
 // const codePushOptions: CodePushOptions = {
@@ -107,80 +110,66 @@ PushNotification.createChannel(
 //   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
 //   // 업데이트를 어떻게 설치할 것인지 (IMMEDIATE는 강제설치를 의미)
 // };
-const Stack = createNativeStackNavigator<CommonType.RootStackParamList>();
+
+// 푸시 알림 권한 꺼져있으면 켜달라고 요청함
+check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(async result => {
+  console.log("result", result);
+  if (
+    result === RESULTS.DENIED ||
+    result === RESULTS.BLOCKED ||
+    result === RESULTS.UNAVAILABLE
+  ) {
+    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+  }
+});
 function App(): JSX.Element {
   useEffect(() => {
-    async function getToken() {
-      try {
-        if (!messaging().isDeviceRegisteredForRemoteMessages) {
-          await messaging().registerDeviceForRemoteMessages();
-        }
-        const token = await messaging().getToken();
-        console.log("phone token", token);
-        // dispatch(userSlice.actions.setPhoneToken(token));
-        // return axios.post(`${Config.API_URL}/phonetoken`, { token });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    getToken();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("[Remote Message] ", JSON.stringify(remoteMessage));
+    CodePush.sync(
+      {
+        installMode: CodePush.InstallMode.IMMEDIATE,
+        mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+        updateDialog: {
+          mandatoryUpdateMessage:
+            "필수 업데이트가 있어 설치 후 앱을 재시작합니다.",
+          mandatoryContinueButtonLabel: "재시작",
+          optionalIgnoreButtonLabel: "나중에",
+          optionalInstallButtonLabel: "재시작",
+          optionalUpdateMessage: "업데이트가 있습니다. 설치하시겠습니까?",
+          title: "업데이트 안내",
+        },
+      },
+      status => {
+        console.log(`Changed ${status}`);
+      },
+      downloadProgress => {
+        // 여기서 몇 % 다운로드되었는지 체크 가능
+      },
+    ).then(status => {
+      console.log(`CodePush ${status}`);
     });
-    return unsubscribe;
   }, []);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }} className="bg-transparent">
-        <NavigationContainer>
-          {isLoggedIn ? (
-            <Stack.Navigator>
-              <Stack.Screen
-                name="홈"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PlayNavigator"
-                component={PlayNavigator}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          ) : (
-            <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingEmail"
-                component={SettingEmail}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingName"
-                component={SettingName}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SettingAccount"
-                component={SettingAccount}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="BottomTabNavigator"
-                component={BottomTabNavigator}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          )}
-        </NavigationContainer>
+        <WebSocketProvider url={Config.WEBSOCKET_URL as string}>
+          <AppInner />
+        </WebSocketProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }
 
-export default App;
+const codePushOptions: CodePushOptions = {
+  checkFrequency: CodePush.CheckFrequency.MANUAL,
+  // 언제 업데이트를 체크하고 반영할지를 정한다.
+  // ON_APP_RESUME은 Background에서 Foreground로 오는 것을 의미
+  // ON_APP_START는 앱이 실행되는 순간을 의미
+  // MANUAL은 수동으로 지정 가능
+
+  installMode: CodePush.InstallMode.IMMEDIATE,
+  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+  // 업데이트를 어떻게 설치할 것인지(IMMEDIATE는 강제설치를 의미)
+};
+
+export default CodePush(codePushOptions)(App);

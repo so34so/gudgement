@@ -18,13 +18,17 @@ const ProgressBar = ({ percent }: { percent: number }) => {
       useNativeDriver: false,
     }).start(() => {
       if (percent <= 0.5) {
-        setProgressColor("bg-main");
+        setProgressColor("bg-mainColor");
       }
       if (percent > 0.7) {
         setProgressColor("bg-red");
       }
     });
   }, [percent, progress]);
+
+  useEffect(() => {
+    setProgressColor("bg-sub02");
+  }, [percent]);
 
   return (
     <View
@@ -42,16 +46,16 @@ const ProgressBar = ({ percent }: { percent: number }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 370,
-    height: 24,
+    width: 380,
+    height: 18,
     borderRadius: 10,
     margin: 10,
     elevation: 5,
     zIndex: 1,
   },
   bar: {
-    height: 20,
-    backgroundColor: "#000000",
+    height: 15,
+    backgroundColor: "darkgray",
   },
 });
 

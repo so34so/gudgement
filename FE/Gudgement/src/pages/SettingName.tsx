@@ -1,5 +1,3 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -7,34 +5,45 @@ import {
   TextInput,
   SafeAreaView,
   ImageBackground,
-  ImageSourcePropType,
   Image,
 } from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
+import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
+import AgreeBottomSheet from "../components/AgreeBottomSheet";
+import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import Reactotron from "reactotron-react-native";
-import { API_URL } from "@env";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData } from "../utils/common";
 
 function SettingName() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
-
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
   const [name, setName] = useState("");
   const [checkName, setCheckName] = useState(0);
-  const [showAgreement, setShowAgreement] = useState(false);
-  const [agree, setAgree] = useState(false);
+  const [tempId, setTempId] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
-  const { data: fetchUserId, refetch } = useQuery({
-    queryKey: ["fetchId"],
-    enabled: false,
-  });
+  useEffect(() => {
+    const getLoginData = async () => {
+      const getId = await getAsyncData<number>("id");
+      if (getId) {
+        setTempId(getId);
+      }
+    };
+    getLoginData();
+  }, []);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleFetchCheckName = async (currentName: string) => {
     const nickName = currentName.trim();
@@ -43,163 +52,179 @@ function SettingName() {
       return;
     }
     try {
-      const response = await axios.post(
-        `${API_URL}/member/valid/nickname?nickname=${nickName}`,
+      const response = await fetchApi.post(
+        `${Config.API_URL}/member/valid/nickname?nickname=${nickName}`,
       );
-      Reactotron.log!("닉네임 중복 확인 성공!", response.data);
       if (response.data === true) {
-        setCheckName(2); // 멋진 닉네임이네요!
+        setCheckName(2);
       }
       if (response.data === false) {
-        setCheckName(3); // 중복된 닉네임이예요.
+        setCheckName(3);
       }
     } catch (error) {
-      setCheckName(4); // 중복 확인 실패
-      Reactotron.log!("닉네임 중복 확인 실패!", error);
+      setCheckName(4);
+      reactotron.log!(error);
     }
   };
 
   const handleFetchName = async (currentName: string) => {
+    setBottomSheetVisible(false);
     if (checkName !== 2) {
-      // 다음 버튼 비활성화
+      setModalText("닉네임 설정을 다시 확인해주세요.");
+      openModal();
+      return;
     }
-    if (checkName === 2 && typeof fetchUserId === "number") {
+    if (checkName === 2) {
       try {
-        const response = await axios.post(
-          `${API_URL}/member/valid/nickname?id=${fetchUserId}&nickname=${currentName}`,
+        await fetchApi.post(
+          `${Config.API_URL}/member/update/nickname?id=${tempId}&nickname=${currentName}`,
         );
-        Reactotron.log!("인증 메일 등록 성공!", response.data);
-        setShowAgreement(true);
-        setAgree(true);
-        navigation.navigate("SettingAccount");
+        setBottomSheetVisible(true);
       } catch (error) {
-        // 인증 메일 등록 실패! 알림 모달창
-        Reactotron.log!("인증 메일 등록 실패!", error);
+        setCheckName(4);
+        reactotron.log!(error);
       }
     }
   };
-  useEffect(() => {
-    refetch();
-  }, []);
 
   return (
-    <View className="flex">
-      <ImageBackground
-        source={mypageBackground}
-        resizeMode="cover"
-        className="flex w-screen h-screen"
-      >
-        <View className="z-10 flex flex-col">
-          <View className="flex justify-between items-center px-4">
-            <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
-              <Text className="py-1 px-2 w-full text-center bg-darkgray rounded-lg text-white text-sm font-PretendardExtraBold">
-                닉네임 설정
-              </Text>
-            </View>
-          </View>
-          <View className="flex w-full justify-center items-center">
-            <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
-              <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
-                <View className="gap-4 flex flex-row items-center">
-                  <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
-                    <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
-                    </View>
-                  </View>
-                  <View className="flex felx-col">
-                    <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
-                      닉네임은 다른 사용자에게 공개되며
-                    </Text>
-                    <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                      한글, 영문, 숫자를 포함하여
-                    </Text>
-                    <View className="flex flex-row">
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        6글자 이하
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        로 설정해주세요.
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                  2/3
+    <View className="flex w-screen h-screen">
+      <KeyboardAwareScrollView>
+        <ImageBackground
+          source={{
+            uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
+          }}
+          resizeMode="cover"
+          className="flex w-screen h-screen"
+        >
+          <CustomModal
+            alertText={modalText}
+            visible={modalVisible}
+            closeModal={closeModal}
+          />
+          <View className="z-10 flex flex-col">
+            <View className="flex justify-between items-center px-4">
+              <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
+                <Text className="py-1 px-2 w-full text-center bg-darkgray rounded-lg text-white text-sm font-PretendardExtraBold">
+                  닉네임 설정
                 </Text>
               </View>
-              <View className="h-fill w-fill">
-                <SafeAreaView className="mx-4 w-fit">
-                  <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
-                    <TextInput
-                      onChangeText={newName => {
-                        const nickName = newName.trim();
-                        setName(nickName);
-                        if (nickName.length > 6 || nickName.length < 1) {
-                          setCheckName(1);
-                        } else {
-                          setCheckName(5);
-                        }
-                      }}
-                      value={name}
-                      placeholder="닉네임"
-                      placeholderTextColor="darkgray"
-                      className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
-                    />
-                    <NavigationButton
-                      handleFunction={() => handleFetchCheckName(name.trim())}
-                      text="중복 확인"
-                      height="lg"
-                      width="sm"
-                      size="md"
-                      color="lightsky"
-                    />
+            </View>
+            <View className="flex w-full justify-center items-center">
+              <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
+                <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
+                  <View className="gap-4 flex flex-row items-center">
+                    <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
+                      <View className="bg-darkgray h-fill w-fill rounded-full">
+                        <Image
+                          source={{
+                            uri: `${Config.IMAGE_URL}/asset/mypageIcon.png`,
+                          }}
+                          className="h-10 w-10"
+                        />
+                      </View>
+                    </View>
+                    <View className="flex felx-col">
+                      <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
+                        닉네임은 다른 사용자에게 공개되며
+                      </Text>
+                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
+                        한글, 영문, 숫자를 포함하여
+                      </Text>
+                      <View className="flex flex-row">
+                        <Text className="text-darkgray text-xs font-PretendardExtraBold">
+                          6글자 이하
+                        </Text>
+                        <Text className="text-sub01 text-xs font-PretendardExtraBold">
+                          로 설정해주세요.
+                        </Text>
+                      </View>
+                    </View>
                   </View>
-                  {checkName === 0 ? (
-                    <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
-                      닉네임을 입력해주세요.
-                    </Text>
-                  ) : null}
-                  {checkName === 1 ? (
-                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
-                      1글자 이상 6글자 이하로 입력해주세요.
-                    </Text>
-                  ) : null}
-                  {checkName === 2 ? (
-                    <Text className="text-sky text-xs font-PretendardExtraBold px-4 pb-4">
-                      멋진 닉네임이네요!
-                    </Text>
-                  ) : null}
-                  {checkName === 3 ? (
-                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
-                      중복된 닉네임이예요.
-                    </Text>
-                  ) : null}
-                  {checkName === 4 ? (
-                    <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
-                      다시 시도해주세요.
-                    </Text>
-                  ) : null}
-                  {checkName === 5 ? (
-                    <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
-                      닉네임 중복 확인해주세요.
-                    </Text>
-                  ) : null}
-                </SafeAreaView>
+                  <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
+                    2/3
+                  </Text>
+                </View>
+                <View className="h-fill w-fill">
+                  <SafeAreaView className="mx-4 w-fit">
+                    <View className="flex flex-row mt-4 mb-3 w-full justify-around items-center">
+                      <TextInput
+                        onChangeText={newName => {
+                          const nickName = newName.trim();
+                          setName(nickName);
+                          if (nickName.length > 6) {
+                            setCheckName(1);
+                          } else if (nickName.length < 1) {
+                            setCheckName(0);
+                          } else {
+                            setCheckName(5);
+                          }
+                        }}
+                        value={name}
+                        placeholder="닉네임"
+                        placeholderTextColor="darkgray"
+                        className="h-[60px] w-[230px] p-4 mr-2 bg-white rounded-xl border-solid border-[3px] border-darkgray text-darkgray text-sm font-PretendardExtraBold"
+                      />
+                      <NavigationButton
+                        handleFunction={() => handleFetchCheckName(name.trim())}
+                        text="중복 확인"
+                        height="lg"
+                        width="sm"
+                        size="md"
+                        color="bluesky"
+                      />
+                    </View>
+                    {checkName === 0 ? (
+                      <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
+                        닉네임을 입력해주세요.
+                      </Text>
+                    ) : null}
+                    {checkName === 1 ? (
+                      <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                        1글자 이상 6글자 이하로 입력해주세요.
+                      </Text>
+                    ) : null}
+                    {checkName === 2 ? (
+                      <Text className="text-sky text-xs font-PretendardExtraBold px-4 pb-4">
+                        멋진 닉네임이네요!
+                      </Text>
+                    ) : null}
+                    {checkName === 3 ? (
+                      <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                        중복된 닉네임이예요.
+                      </Text>
+                    ) : null}
+                    {checkName === 4 ? (
+                      <Text className="text-red text-xs font-PretendardExtraBold px-4 pb-4">
+                        다시 시도해주세요.
+                      </Text>
+                    ) : null}
+                    {checkName === 5 ? (
+                      <Text className="text-darkgray50 text-xs font-PretendardExtraBold px-4 pb-4">
+                        닉네임 중복 확인해주세요.
+                      </Text>
+                    ) : null}
+                  </SafeAreaView>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-        <View className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
-          <NavigationButton
-            handleFunction={() => handleFetchName(name)}
-            text="다 음"
-            height="lg"
-            width="lg"
-            size="md"
-            color="deepgreen"
-          />
-        </View>
-      </ImageBackground>
+          <View className="z-10 w-full h-fill absolute bottom-0 pb-10 flex justify-end items-center">
+            <NavigationButton
+              handleFunction={() => handleFetchName(name)}
+              text="다 음"
+              height="lg"
+              width="lg"
+              size="md"
+              color="deepgreen"
+            />
+          </View>
+        </ImageBackground>
+        <AgreeBottomSheet
+          bottomSheetVisible={bottomSheetVisible}
+          setBottomSheetVisible={setBottomSheetVisible}
+        />
+      </KeyboardAwareScrollView>
     </View>
   );
 }

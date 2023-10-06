@@ -3,27 +3,29 @@ import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 
 public interface InventoryRepository extends JpaRepository<Inventory,Long> {
-    int countByMemberIdAndItemId(Member memberId, Item itemId);
+    int countByMemberAndItemId(Member memberId, Item itemId);
 
-    List<Inventory> findAllByMemberId(Member memberId);
+    List<Inventory> findAllByMember(Member member);
 
-    List<Inventory> findAllByMemberIdAndEquipped(Member memberId, boolean b);
+    Optional<Inventory> findByMember_MemberIdAndItemId_TypeAndEquipped(Long memberId, String type, boolean b);
 
-    Optional<Inventory> findByItemId_TypeAndEquipped(String type, boolean b);
 
-/*    Optional<Inventory> findByItemId(Item inventoryId);*/
-
-    Optional<Inventory> findByMemberIdAndItemId(Member member, Item item);
+    Optional<Inventory> findByMemberAndItemId(Member member, Item item);
 
     Optional<Inventory> findByInvenId(Long invenId);
 
-/*    Inventory findByMemberIdAndShopTypeAndEquipped(Long memberId, String type, boolean equipped);
+    List<Inventory> findByMemberAndEquipped(Member member, boolean b);
 
-    List<InventoryDto> findItemsByMemberId(Long memberId);*/
+    @Query("SELECT i FROM Inventory i JOIN i.itemId item WHERE i.member = :member AND i.equipped = true AND item.type = 'character'")
+    Optional<Inventory> findEquippedCharacterItemByMember(Member member);
+    
+    List<Inventory> findByMemberAndItemId_TypeAndEquipped(Member member, String consumable, boolean b);
+    void deleteAllByMember(Member member);
 }

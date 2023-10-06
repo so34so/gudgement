@@ -25,22 +25,26 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
-import MyCharacter from "../assets/images/character.png";
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
 import CompleteModal from "../components/CompleteModal";
 import PointHeader from "../components/PointHeader";
 import Carousel from "../components/Carousel";
 import BuyConsumptionModal from "../components/BuyConsumptionModal";
+import InventoryShop from "../assets/icons/inventoryShop.png";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../queryClient";
-import { INVENTORY_CATEGORY, textShadow } from "../utils/common";
-import { API_URL } from "@env";
+import {
+  INVENTORY_CATEGORY,
+  getAccessToken,
+  textShadow,
+} from "../utils/common";
+import fetchApi from "../utils/tokenUtils";
+import Config from "react-native-config";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
-export const MEMBER_ID = 3025827319;
 export interface IresponseParams {
   itemId: number;
   memberId: number;
@@ -50,11 +54,11 @@ type ShopProps = NativeStackScreenProps<CommonType.RootStackParamList, "Shop">;
 function Shop({ route }: ShopProps) {
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-  const myCharacter: ImageSourcePropType = MyCharacter as ImageSourcePropType;
   const offset = useSharedValue(5);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
+
   const [modalVisible, setModalVisible] = useState<{
     buy?: boolean;
     complete: boolean;
@@ -80,6 +84,10 @@ function Shop({ route }: ShopProps) {
     queryFn: () => fetchShopItem(),
   });
 
+  const { data: userInfo } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+  });
+
   const [itemStatus, setItemStatus] = useState(true);
   const [quantity, setQuantity] = useState(0);
 
@@ -88,28 +96,31 @@ function Shop({ route }: ShopProps) {
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-red";
   };
-  const selectText = () => {
+  const selectText = useCallback(() => {
     return fetchItem?.length && fetchItem[selectItem].price
       ? +fetchItem[selectItem].price + " 티끌"
       : "해금 필요";
-  };
+  }, [fetchItem, selectItem]);
 
   async function fetchShopItem() {
     try {
-      const response: AxiosResponse<CommonType.Titem[]> = await axios.get(
-        `${API_URL}/shop/type`,
+      const accessToken = await getAccessToken();
+      const response: AxiosResponse<CommonType.Titem[]> = await fetchApi.get(
+        `${Config.API_URL}/shop/type`,
         {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
           params: {
             type: INVENTORY_CATEGORY[selectCategory],
-            memberId: MEMBER_ID,
+            memberId: userInfo?.memberId,
           },
         },
       );
-      Reactotron.log!("fetchShopItem", response.data);
       return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
-        Reactotron.log!("fetchShopItemError", errorResponse);
+        reactotron.log!("fetchShopItemError", errorResponse);
       }
     }
   }
@@ -146,8 +157,8 @@ function Shop({ route }: ShopProps) {
   }, [offset, refetch]);
 
   const { mutate: buyItem } = useMutation({
-    mutationFn: (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop`, null, {
+    mutationFn: async (params: IresponseParams) =>
+      fetchApi.post(`${Config.API_URL}/shop`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
@@ -160,14 +171,15 @@ function Shop({ route }: ShopProps) {
   });
 
   const { mutate: buyConsumable } = useMutation({
-    mutationFn: (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop/consumable`, null, {
+    mutationFn: async (params: IresponseParams) => {
+      return fetchApi.post(`${Config.API_URL}/shop/consumable`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
           quantity: quantity,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);
@@ -175,13 +187,14 @@ function Shop({ route }: ShopProps) {
   });
 
   const { mutate: unlockItem } = useMutation({
-    mutationFn: (params: IresponseParams) =>
-      axios.post(`${API_URL}/shop/hidden`, null, {
+    mutationFn: async (params: IresponseParams) => {
+      return fetchApi.post(`${Config.API_URL}/shop/hidden`, null, {
         params: {
           itemId: params.itemId,
           memberId: params.memberId,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.buy });
       queryClient.invalidateQueries(["fetchShopItem"]);
@@ -191,7 +204,10 @@ function Shop({ route }: ShopProps) {
   const handleItem = useCallback(() => {
     if (fetchItem?.length) {
       if (selectText() === "해금 필요") {
-        unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+        unlockItem({
+          itemId: fetchItem[selectItem].id,
+          memberId: userInfo!.memberId,
+        });
       } else {
         if (selectCategory === "소모품") {
           setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
@@ -201,7 +217,10 @@ function Shop({ route }: ShopProps) {
             ...modalVisible,
             complete: !modalVisible.complete,
           });
-          buyItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+          buyItem({
+            itemId: fetchItem[selectItem].id,
+            memberId: userInfo!.memberId,
+          });
         }
       }
     }
@@ -210,6 +229,7 @@ function Shop({ route }: ShopProps) {
     selectText,
     unlockItem,
     selectItem,
+    userInfo,
     selectCategory,
     modalVisible,
     buyItem,
@@ -217,10 +237,12 @@ function Shop({ route }: ShopProps) {
 
   const handleGetTitle = useCallback(() => {
     if (fetchItem?.length) {
-      unlockItem({ itemId: fetchItem[selectItem].id, memberId: MEMBER_ID });
+      unlockItem({
+        itemId: fetchItem[selectItem].id,
+        memberId: userInfo!.memberId,
+      });
     }
-    Reactotron.log!("획득 완료");
-  }, [fetchItem, selectItem, unlockItem]);
+  }, [fetchItem, selectItem, unlockItem, userInfo]);
 
   if (error) {
     <View>
@@ -238,7 +260,9 @@ function Shop({ route }: ShopProps) {
   return (
     <SafeAreaView className="bg-sky w-full h-full">
       <View className="w-full h-fit bg-deepgreen">
-        <PointHeader />
+        <View className="w-full flex items-center">
+          <PointHeader tiggle={userInfo?.tiggle} level={userInfo?.level} />
+        </View>
         <View className="w-full h-12 justify-around space-x-36 flex flex-row top-2">
           <View className="bg-white border-2 border-black w-28 h-8 flex justify-center items-center rounded-[4px]">
             <View className="bg-black w-[96%] h-[88%] rounded-[4px]">
@@ -248,7 +272,7 @@ function Shop({ route }: ShopProps) {
             </View>
           </View>
           <TouchableOpacity
-            className="bg-green h-8 rounded-[4px] border-2 border-darkgray50"
+            className="bg-green h-9 rounded-[4px] border-2 border-darkgray50"
             onPress={() =>
               navigation.navigate("Inventory", { category: selectCategory })
             }
@@ -259,16 +283,29 @@ function Shop({ route }: ShopProps) {
           </TouchableOpacity>
         </View>
         <View
-          className="absolute top-[70px] w-12 h-12
+          className="absolute top-[68px] w-12 h-12
        left-2 rounded-full bg-white border-2 border-black justify-center items-center"
         >
-          <View className="absolute top-[70px] rounded-full h-10 z-10 flex bg-darkgray" />
+          <View className="absolute z-10">
+            <Image
+              source={InventoryShop as ImageSourcePropType}
+              className="w-10 h-10 bg-black rounded-full"
+            />
+          </View>
         </View>
         {selectCategory !== "칭호" ? (
-          <View className="w-full h-60 flex flex-row justify-center space-x-24 mt-8">
+          <View className="w-full h-52 flex flex-row justify-center space-x-24 mt-8">
             <View className="w-1/4 h-fit items-center ">
               <Animated.View style={[animatedStyles]}>
-                <Image source={myCharacter} ref={imageRef} />
+                {fetchItem?.[selectItem] && (
+                  <Image
+                    source={{
+                      uri: fetchItem?.[selectItem].image,
+                    }}
+                    ref={imageRef}
+                    className="w-44 h-40 left-4"
+                  />
+                )}
                 <View
                   className="z-10"
                   style={{
@@ -276,9 +313,7 @@ function Shop({ route }: ShopProps) {
                     top: imageDirection.dx,
                     left: imageDirection.dy,
                   }}
-                >
-                  <Image source={myCharacter} className="w-10 h-10 z-10" />
-                </View>
+                />
               </Animated.View>
             </View>
             <View className="flex items-center">
@@ -309,9 +344,9 @@ function Shop({ route }: ShopProps) {
                     </SvgText>
                   </Svg>
                   <Text
-                    numberOfLines={4}
+                    numberOfLines={1}
                     ellipsizeMode="tail"
-                    className="text-white font-PretendardMedium text-[16px] w-24"
+                    className="text-white font-PretendardMedium text-[16px] w-28"
                   >
                     {fetchItem && fetchItem[selectItem].itemContent}
                   </Text>
@@ -334,7 +369,7 @@ function Shop({ route }: ShopProps) {
                 </>
               ) : (
                 <View>
-                  <Text className="top-10 font-PretendardBlack text-white text-[16px]">
+                  <Text className="right-24 top-10 font-PretendardBlack text-white text-[20px]">
                     선택한 아이템이 없습니다.
                   </Text>
                 </View>
@@ -342,10 +377,10 @@ function Shop({ route }: ShopProps) {
             </View>
           </View>
         ) : (
-          <View className="w-full h-60 flex flex-col top-6 items-center space-y-12 mt-8">
+          <View className="w-full h-60 flex flex-col top-2 items-center space-y-12 mt-4">
             <Animated.View style={[animatedStyles]}>
               <View
-                className="w-fit h-[37px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
+                className="w-fit h-[38px] items-center flex-row justify-center space-x-1 bg-white border-2 border-black rounded-[6px] px-[2px] pr-1"
                 style={{
                   elevation: 10,
                 }}
@@ -358,17 +393,15 @@ function Shop({ route }: ShopProps) {
                 </Text>
               </View>
             </Animated.View>
-            <View>
-              <Text className=" font-PretendardBlack text-white text-[20px]">
-                {fetchItem?.[selectItem] && fetchItem[selectItem].itemContent}
-              </Text>
-            </View>
+            <Text className="font-PretendardBlack text-white text-[20px]">
+              {fetchItem?.[selectItem] && fetchItem[selectItem].itemContent}
+            </Text>
             <TouchableOpacity
               activeOpacity={0.5}
               style={{
                 elevation: 8,
               }}
-              className={`w-fit ${buttonColor()} rounded-[10px] mt-5 border-2 border-[#6f530d]`}
+              className={`w-fit ${buttonColor()} h-fit rounded-[10px] border-2 border-[#6f530d]`}
               onPress={handleGetTitle}
               disabled={itemStatus}
             >
@@ -381,7 +414,6 @@ function Shop({ route }: ShopProps) {
             </TouchableOpacity>
           </View>
         )}
-        <View className="w-full h-4" />
       </View>
       <View className="mt-10">
         <View className="ml-5 w-full h-fit flex-row space-x-2">
@@ -414,6 +446,7 @@ function Shop({ route }: ShopProps) {
           quantity={quantity}
           setQuantity={setQuantity}
           buyConsumable={buyConsumable}
+          memberId={userInfo?.memberId}
         />
         <CompleteModal
           completeModalVisible={modalVisible}

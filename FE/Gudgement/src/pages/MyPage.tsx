@@ -1,87 +1,153 @@
+import { useEffect } from "react";
 import {
   View,
   ImageBackground,
+  ActivityIndicator,
   Image,
-  ImageSourcePropType,
+  Pressable,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import { ProgressChart } from "react-native-chart-kit";
+import Config from "react-native-config";
+import { useQuery } from "@tanstack/react-query";
 
 import NavigationButton from "../components/NavigationButton";
 import TagBoxLarge from "../components/TagBoxLarge";
-import TagBoxSmall from "../components/TagBoxSmall";
-import BasicBox from "../components/BasicBox";
 
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MypageIcon from "../assets/images/mypageIcon.png";
-import AnalysisIcon from "../assets/images/analysisIcon.png";
-import Character from "../assets/images/character.png";
+import { CommonType } from "../types/CommonType";
 
-function MyPage() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const mypageIcon: ImageSourcePropType = MypageIcon as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = AnalysisIcon as ImageSourcePropType;
-  const character: ImageSourcePropType = Character as ImageSourcePropType;
+function MyPage(this: unknown) {
+  const navigation =
+    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
 
-  const data = {
-    labels: ["Swim", "Bike", "Run"], // optional
-    data: [0.4, 0.6, 0.8],
+  const {
+    data: userData,
+    isLoading,
+    refetch,
+  } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+    enabled: false,
+  });
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View className="w-full h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+
+  const handleScreen = (screen: keyof CommonType.TmyPageScreenName) => {
+    navigation.navigate(screen);
   };
 
   return (
     <View className="w-full h-full flex justify-center items-center">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-full h-full"
       >
         <TagBoxLarge
-          text01={"인동파 행동대장"}
-          text02={"옥계공주"}
-          img={mypageIcon}
+          text01={"내 정보"}
+          text02={userData?.nickname ? userData?.nickname : "옥계공주"}
+          img={`${Config.IMAGE_URL}/asset/mypageIcon.png`}
         />
-        <View className="mb-10 flex flex-row justify-center items-center">
-          <View>
-            <Image source={character} />
-            <BasicBox text={"뚜벅뚜벅뚜벅뚜벅..."} />
+        <View
+          className="flex flex-col w-full h-full justify-evenly items-start space-y-10
+        pb-40"
+        >
+          <View className="flex flex-row w-full justify-evenly items-center">
+            <Pressable onPress={() => handleScreen("Analyze")}>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/analysisMenuIcon.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleScreen("Analyze")}
+                  text="    소비 분석    "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
+            </Pressable>
+            <Pressable onPress={() => handleScreen("AnalyzeGoal")}>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/goalMenuIcon.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleScreen("AnalyzeGoal")}
+                  text="소비 목표 설정"
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
+            </Pressable>
           </View>
-          <View>
-            <ProgressChart
-              data={data}
-              width={200}
-              height={220}
-              strokeWidth={16}
-              radius={32}
-              chartConfig={{
-                backgroundColor: "#fff",
-                // backgroundGradientFrom: "#fff",
-                // backgroundGradientTo: "rgba(0,0,0,0)",
-                decimalPlaces: 2, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-                propsForDots: {
-                  r: "6",
-                  strokeWidth: "2",
-                  stroke: "#ffa726",
-                },
-              }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-              hideLegend={false}
-            />
+          <View className="flex flex-row w-full justify-evenly">
+            <Pressable onPress={() => handleScreen("Pedometer")}>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/pedometerMenuIcon.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleScreen("Pedometer")}
+                  text="  만보 챌린지  "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
+            </Pressable>
+            <Pressable onPress={() => handleScreen("ReSettingAccount")}>
+              <View>
+                <Image
+                  source={{
+                    uri: `${Config.IMAGE_URL}/asset/banknookMenuIcon.png`,
+                  }}
+                  className="h-32 w-32"
+                />
+              </View>
+              <View className="w-fit">
+                <NavigationButton
+                  handleFunction={() => handleScreen("ReSettingAccount")}
+                  text="  주계좌 설정  "
+                  height="sm"
+                  width="sm"
+                  size="sm"
+                  color="bluesky"
+                />
+              </View>
+            </Pressable>
           </View>
         </View>
-        <TagBoxSmall text={"이번달 소비 추이"} img={analysisIcon} />
-        <NavigationButton screenName="Pedometer" text="만보 걷기" />
-        <NavigationButton screenName="Analyze" text="분석" />
-        <NavigationButton screenName="SingleRecords" text="싱글플레이 상세" />
-        <NavigationButton screenName="MultiRecords" text="멀티플레이 상세" />
       </ImageBackground>
     </View>
   );

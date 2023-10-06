@@ -1,0 +1,7 @@
+version: "3"
+services:
+  flask:
+    build:
+      context: .
+    ports:
+      - 5000:5000 #로컬포트:컨테이너포트

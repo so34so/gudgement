@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class Status extends Item{
+public class Status extends Item {
 
 
     private String statusName;

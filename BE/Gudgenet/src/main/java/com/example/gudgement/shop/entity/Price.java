@@ -1,6 +1,5 @@
 package com.example.gudgement.shop.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -11,7 +10,7 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class Price extends Item{
+public class Price extends Item  {
 
     private Long price;
 

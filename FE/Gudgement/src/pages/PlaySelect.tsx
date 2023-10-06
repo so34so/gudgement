@@ -3,28 +3,48 @@ import LineGradi from "../assets/images/linegradi.png";
 import Cards from "../assets/images/cards.png";
 import CloseButton from "../components/CloseButton";
 import PlayCarousel from "../components/PlayCarousel";
-import BettingMachine from "../components/BettingMachine";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   ImageBackground,
   Image,
   Text,
   ImageSourcePropType,
-  Pressable,
+  TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
+import { mapInfoArray } from "../components/MapData";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
 
-function PlaySelect() {
+function PlaySelect({
+  setNowGameComponent,
+  userData,
+  sendHandler,
+  setSelectedTiggle,
+}) {
   const playBackground2: ImageSourcePropType =
     PlayBackground2 as ImageSourcePropType;
   const lineGradi: ImageSourcePropType = LineGradi as ImageSourcePropType;
-
   const cards: ImageSourcePropType = Cards as ImageSourcePropType;
+  const [selectedMap, setSelectedMap] = useState(mapInfoArray[0]);
   const navigation =
     useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+
+  const handleMapSelection = map => {
+    setSelectedMap(map);
+  };
+
+  const handleSend = () => {
+    const matchPayload = {
+      nickName: userData.nickname,
+      grade: userData.grade,
+      tiggle: selectedMap.ticle,
+    };
+
+    setSelectedTiggle(selectedMap.ticle);
+    sendHandler("/app/match/addUser", matchPayload, () => {});
+    setNowGameComponent("PlayMatchingWait");
+  };
 
   return (
     <View style={styles.container}>
@@ -33,10 +53,14 @@ function PlaySelect() {
         resizeMode="cover"
         style={styles.background}
       >
-        <Pressable onPress={() => navigation.navigate("플레이")}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("플레이");
+          }}
+        >
           <CloseButton />
-        </Pressable>
-        <PlayCarousel />
+        </TouchableOpacity>
+        <PlayCarousel onSelectMap={handleMapSelection} />
 
         <View style={styles.cards}>
           <Image
@@ -45,13 +69,14 @@ function PlaySelect() {
             resizeMode="contain"
           />
         </View>
-        {/* <BettingMachine /> */}
 
-        <View style={styles.lineGradi}>
-          <Text className="py-1 pl-3 pr-2 rounded-lg text-white text-[32px] font-PretendardExtraBold">
-            대전 찾기
-          </Text>
-          <Image source={lineGradi} />
+        <View style={styles.lineGradi} className="flex items-center">
+          <TouchableOpacity onPress={handleSend}>
+            <Text className="flex m-auto justify-center rounded-lg text-white text-[32px] font-PretendardExtraBold">
+              대전 찾기
+            </Text>
+            <Image className="mt-12" source={lineGradi} />
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>

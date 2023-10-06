@@ -1,35 +1,45 @@
 package com.example.gudgement.member.dto.response;
 
+import com.example.gudgement.member.dto.Rate;
+import com.example.gudgement.member.entity.Grade;
+import com.example.gudgement.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class MemberResponseDto {
     private Long memberId;
     private String email;
     private String nickname;
-    private boolean emailApprove;
-    private boolean nicknameApprove;
-//    private List<Item> setItems;
+    private List<Item> setItems;
     private Long tiggle;
     private Long exp;
     private int level;
     private int pedometer;
+    private Long monthOverconsumption;
+    private Long virtualAccountId;
+    private Rate rate;
+    private Grade grade;
 
     @Builder
-    public MemberResponseDto (Long memberId, String email, String nickname, boolean emailApprove,
-                              boolean nicknameApprove, Long tiggle, Long exp, int level, int pedometer) {
+    public MemberResponseDto (Long memberId, String email, String nickname,
+                              Long tiggle, Long exp, List<Item> setItems,
+                              int level, int pedometer, Long monthOverconsumption,
+                              Long virtualAccountId, Rate rate, Grade grade) {
+
         this.memberId = memberId;
         this.email = email;
         this.nickname = nickname;
-        this.emailApprove = emailApprove;
-        this.nicknameApprove = nicknameApprove;
-//        this.setItems = setItems;
+        this.setItems = setItems;
         this.tiggle = tiggle;
         this.exp = exp;
         this.level = level;
         this.pedometer = pedometer;
+        this.monthOverconsumption = monthOverconsumption;
+        this.virtualAccountId = virtualAccountId;
+        this.rate = rate;
+        this.grade = grade;
     }
-
-
 }

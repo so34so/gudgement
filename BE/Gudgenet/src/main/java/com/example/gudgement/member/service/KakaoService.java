@@ -1,16 +1,16 @@
 package com.example.gudgement.member.service;
 
-import com.example.gudgement.member.common.jwt.JwtProvider;
-import com.example.gudgement.member.common.jwt.JwtToken;
 import com.example.gudgement.member.auth.KakaoProfile;
 import com.example.gudgement.member.auth.OAuthToken;
+import com.example.gudgement.member.common.jwt.JwtProvider;
+import com.example.gudgement.member.common.jwt.JwtToken;
 import com.example.gudgement.member.dto.response.OAuthSignInResponse;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -76,6 +76,8 @@ public class KakaoService implements OauthService{
                 .refreshTokenExpiration(jwtToken.getRefreshTokenExpirationTime())
                 .build();
 
+        log.info("expration : {}", jwtProvider.getClaims(jwtToken.getAccessToken()).getExpiration());
+
         // 회원 존재 여부에 따라 다르게 저장
         Member saveMember;
         if (!memberRepository.existsByMemberId(kakaoProfile.getId())) {
@@ -103,11 +105,6 @@ public class KakaoService implements OauthService{
                 .bodyToMono(KakaoProfile.class)
                 .block();
 
-        System.out.println(profile.getConnected_at());
-        System.out.println(profile.getKakao_account().getEmail());
-        System.out.println(profile.getId());
-        System.out.println(profile.getProperties().getNickname());
-//
         return profile;
     }
 
@@ -151,8 +148,6 @@ public class KakaoService implements OauthService{
                 .retrieve()
                 .bodyToMono(OAuthToken.class).block();
 
-        System.out.println(oauthTokenRes.getTokenType());
-        System.out.println(oauthTokenRes.getAccessToken());
         log.info("토큰 발급 완료!");
 
         return oauthTokenRes;

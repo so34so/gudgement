@@ -1,12 +1,10 @@
 package com.example.gudgement.shop.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.util.Base64;
 
 @Getter
 @NoArgsConstructor
@@ -35,7 +33,7 @@ public class Item {
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = true)
+    @Column
     private String subtype;
 
 

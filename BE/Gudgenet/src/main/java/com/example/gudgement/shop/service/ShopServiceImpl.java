@@ -1,19 +1,15 @@
 package com.example.gudgement.shop.service;
 
+import com.example.gudgement.exception.*;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.exception.BaseErrorException;
-import com.example.gudgement.member.exception.ErrorCode;
 import com.example.gudgement.progress.service.ProgressService;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.dto.ItemDto;
-import com.example.gudgement.shop.entity.Status;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.shop.entity.Price;
-import com.example.gudgement.shop.exception.AlreadyPurchasedException;
-import com.example.gudgement.shop.exception.InsufficientPointsException;
-import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.shop.entity.Status;
 import com.example.gudgement.shop.repository.InventoryRepository;
 import com.example.gudgement.shop.repository.ItemRepository;
 import com.example.gudgement.shop.repository.StatusRepository;
@@ -51,22 +47,14 @@ public class ShopServiceImpl implements ShopService{
 
     private List<ItemDto> itemsAllItemLists(List<Item> items, Member memberId) {
         List<ItemDto> itemDTOS = new ArrayList<>();
-        List<Inventory> userItems = inventoryRepository.findAllByMemberId(memberId);
+        List<Inventory> userItems = inventoryRepository.findAllByMember(memberId);
 
         List<InventoryDto> userItemDtos = userItems.stream()
                 .map(InventoryDto::invenDto)
                 .collect(Collectors.toList());
 
         for (Item item : items) {
-/*            try {*/
-                // 이미지를 byte[]로 변환
-/*                Path imageFilePath = Paths.get(IMAGE_PATH, item.getType(), item.getImage());
-                Resource resource = new ClassPathResource(imageFilePath.toString());
 
-                byte[] imageData = null;
-                if (resource != null) {
-                    imageData = resource.getInputStream().readAllBytes();
-                }*/
                 String imageData = IMAGE_PATH + item.getType() +"/"+ item.getImage();
 
                 boolean isSold = userItemDtos.stream().anyMatch(inventory -> inventory.getItemId().equals(item.getItemId()));
@@ -94,9 +82,6 @@ public class ShopServiceImpl implements ShopService{
                 }
 
                 itemDTOS.add(builder.build());
-/*            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
         }
         return itemDTOS;
     }
@@ -111,7 +96,7 @@ public class ShopServiceImpl implements ShopService{
 
     private List<ItemDto> itemsTypeLists(List<Item> items, String type, Member memberId) {
         List<ItemDto> itemDTOS = new ArrayList<>();
-        List<Inventory> userItems = inventoryRepository.findAllByMemberId(memberId);
+        List<Inventory> userItems = inventoryRepository.findAllByMember(memberId);
         List<InventoryDto> userItemDtos = userItems.stream()
                 .map(InventoryDto::invenDto)
                 .collect(Collectors.toList());
@@ -157,6 +142,7 @@ public class ShopServiceImpl implements ShopService{
                 boolean isUnlocked = progressService.checkUnlockStatus(memberId, statusName, statusValue);
 
                 builder.isUnlocked(isUnlocked);
+                builder.statusContent(((Status) item).getStatusContent());
             }
 
             itemDTOS.add(builder.build());
@@ -171,24 +157,24 @@ public class ShopServiceImpl implements ShopService{
 
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
 
         // 이미 구매한 아이템인지 확인
-        if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException("이미 구매한 아이템입니다.");
+        if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
+            throw new AlreadyPurchasedException(ErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice()> member.getTiggle()) {
-            throw new InsufficientPointsException("티끌이 부족합니다.");
+            throw new InsufficientPointsException(ErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 포인트 차감
         member.useTiggle(((Price) item).getPrice());
 
         // 아이템 추가
-        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).quantity(1).build());
+        inventoryRepository.save(Inventory.builder().itemId(item).member(member).quantity(1).build());
     }
 
     public void unlockItem(Long itemId, Long memberId) {
@@ -197,15 +183,15 @@ public class ShopServiceImpl implements ShopService{
         );
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // 이미 해금한 아이템인지 확인
-        if (inventoryRepository.countByMemberIdAndItemId(member, item) != 0) {
-            throw new AlreadyPurchasedException("이미 해금한 아이템입니다.");
+        if (inventoryRepository.countByMemberAndItemId(member, item) != 0) {
+            throw new AlreadyPurchasedException(ErrorCode.ALREADY_ADD_ITEM);
         }
 
         // 아이템 추가
-        inventoryRepository.save(Inventory.builder().itemId(item).memberId(member).build());
+        inventoryRepository.save(Inventory.builder().itemId(item).member(member).build());
     }
 
     public void buyConsumableItem(Long itemId, Long memberId, int quantity) {
@@ -215,23 +201,23 @@ public class ShopServiceImpl implements ShopService{
 
 
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new NotFoundItemException("해당 아이템이 없습니다."));
+                .orElseThrow(() -> new NotFoundItemException(ErrorCode.NOT_FOUND_ITEM));
 
         // 포인트가 부족한지 확인
         if (((Price) item).getPrice() * quantity > member.getTiggle()) {
-            throw new InsufficientPointsException("티끌이 부족합니다.");
+            throw new InsufficientPointsException(ErrorCode.INSUFFICIENT_POINTS);
         }
 
         // 티끌 차감
         member.useTiggle(((Price) item).getPrice() * quantity);
 
         // Find the inventory item for this user and this consumable.
-        Inventory inventory = inventoryRepository.findByMemberIdAndItemId(member, item)
+        Inventory inventory = inventoryRepository.findByMemberAndItemId(member, item)
                 .orElseGet(() -> {
                     // If the inventory does not exist yet, create a new one.
                     Inventory newInventory = Inventory.builder()
                             .itemId(item)
-                            .memberId(member)
+                            .member(member)
                             .quantity(quantity)
                             .build();
 

@@ -1,6 +1,5 @@
 package com.example.gudgement.member.dto.response;
 
-import com.example.gudgement.member.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class MemberVerifyResponseDto {
     private Long id;
+    private String email;
     private boolean isValid;
 }

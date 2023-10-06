@@ -1,96 +1,78 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
-import { useState } from "react";
-import {
-  Image,
-  View,
-  Text,
-  Pressable,
-  ImageSourcePropType,
-} from "react-native";
+import { useState, useEffect } from "react";
+import { Image, View, Text, Pressable, ImageBackground } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import {
-  KAKAO_LOGIN_REST_API_KEY,
-  KAKAO_LOGIN_REDIRECT_URI,
-  SERVER_URL,
-} from "@env";
-import KakaoLogoImg from "../assets/images/kakaoLogo.png";
 import axios from "axios";
-import Reactotron from "reactotron-react-native";
-import { getAsyncData, setAsyncData } from "../utils/common";
+
+import Config from "react-native-config";
+
 import reactotron from "reactotron-react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
-// interface LoginProps {
-//   onLogin: () => void; // onLogin의 타입을 명시
-// }
-//{ onLogin }: LoginProps
+import { setAsyncData } from "../utils/common";
+import { CommonType } from "../types/CommonType";
+import { queryClient } from "../../queryClient";
 
-function Login() {
-  const kakaoLogoImg: ImageSourcePropType = KakaoLogoImg as ImageSourcePropType;
+interface LoginProps {
+  setIsLoginLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Login({ setIsLoginLoading }: LoginProps) {
   const [showWebView, setShowWebView] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  const offset = useSharedValue(4);
+  const offset2 = useSharedValue(6);
+
+  useEffect(() => {
+    offset.value = withRepeat(
+      withTiming(-offset.value, { duration: 300 }),
+      -1,
+      true,
+    );
+    offset2.value = withRepeat(
+      withTiming(-offset2.value, { duration: 320 }),
+      -1,
+      true,
+    );
+  }, [offset, offset2]);
+  // 애니메이션
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+  const animatedStyles2 = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset2.value }],
+  }));
 
   const handleLogin = () => {
     setShowWebView(true);
   };
 
-  interface kakaoLoginResponse {
-    id: number;
-    nickname: string;
-    email: string;
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpiration: string;
-  }
-
   const fetchAccessToken = async (code: string) => {
     try {
-      const response = await axios.post<kakaoLoginResponse>(
-        `${SERVER_URL}/oauth/kakao/callback?code=${code}`,
+      const response = await axios.post<CommonType.TkakaoLogin>(
+        `${Config.SERVER_URL}/?code=${code}`,
       );
-
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
-      const tempUserId = response.data.id;
-      // Reactotron.log!("사용자 정보 미리보기!", response.data);
-      // Reactotron.log!("Access Token!", accessToken);
-      // Reactotron.log!("Refresh Token!", refreshToken);
-      // Reactotron.log!("TempID!", tempUserId);
+      const id = response.data.id;
+      setAsyncData("accessToken", accessToken);
+      setAsyncData("refreshToken", refreshToken);
+      setAsyncData("id", id);
 
-      try {
-        const responseAccess = await setAsyncData("accessToken", accessToken);
-        const responseRefresh = await setAsyncData(
-          "refreshToken",
-          refreshToken,
-        );
-        const responseId = await setAsyncData("id", tempUserId);
-        Reactotron.log!(
-          "스토리지에 저장 성공!",
-          responseAccess,
-          responseRefresh,
-          responseId,
-        );
-      } catch (error) {
-        Reactotron.log!("스토리지 초기화 실패!", error);
-      }
+      setShowWebView(false);
 
-      try {
-        const responseGetAccess = await getAsyncData("accessToken");
-        const responseGetRefresh = await getAsyncData("refreshToken");
-        const responseGetId = await getAsyncData("id");
-        Reactotron.log!("액세스 토큰 확인 성공!", responseGetAccess);
-        Reactotron.log!("리프레시 토큰 확인 성공!", responseGetRefresh);
-        Reactotron.log!("아이디 확인 성공!", responseGetId);
-        setShowWebView(false);
-      } catch (error) {
-        Reactotron.log!("액세스 토큰 확인 실패!", error);
-      }
+      queryClient.invalidateQueries(["isLoggedIn"]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
+      setIsLoginLoading(true);
 
-      navigation.navigate("SettingEmail");
+      setTimeout(() => {
+        setIsLoginLoading(false);
+      }, 1000);
     } catch (error) {
-      Reactotron.log!("인가 코드 전달 실패!", error);
+      reactotron.log!(error);
     }
   };
 
@@ -101,7 +83,6 @@ function Login() {
 
     if (searchIdx !== -1) {
       const code = url.substring(searchIdx + exp.length);
-      reactotron.log!("code", code);
       await fetchAccessToken(code);
     }
   };
@@ -110,7 +91,7 @@ function Login() {
     try {
       await getAuthorizationCode(event);
     } catch (error) {
-      Reactotron.log!("에러 발생!", error);
+      reactotron.log!(error);
     }
   };
 
@@ -118,9 +99,8 @@ function Login() {
     return (
       <WebView
         className="flex"
-        // 웹뷰 보여줄 페이지 주소
         source={{
-          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${KAKAO_LOGIN_REDIRECT_URI}`,
+          uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${Config.KAKAO_LOGIN_REST_API_KEY}&redirect_uri=${Config.KAKAO_LOGIN_REDIRECT_URI}`,
         }}
         injectedJavaScript={
           'window.ReactNativeWebView.postMessage("this is message from web");'
@@ -134,17 +114,45 @@ function Login() {
       />
     );
   }
+
   return (
-    <View className="flex flex-row justify-center items-end h-full pb-20">
-      <Pressable
-        onPress={handleLogin}
-        className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
+    <View className="flex w-full h-full">
+      <ImageBackground
+        source={{ uri: `${Config.IMAGE_URL}/asset/mainscreen.png` }}
+        resizeMode="cover"
+        className="flex-1"
       >
-        <Image source={kakaoLogoImg} className="h-8 w-9 mr-6" />
-        <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
-          카카오로 시작하기
-        </Text>
-      </Pressable>
+        <Animated.View style={[animatedStyles]}>
+          <Image
+            className="absolute justify-center left-[150] top-[400] flex-2 h-[250] w-[250]"
+            source={{
+              uri: `${Config.IMAGE_URL}/asset/mainscreenbam.png`,
+            }}
+          />
+        </Animated.View>
+        <Animated.View style={[animatedStyles2]}>
+          <Image
+            className="absolute justify-center top-[400] flex-2 h-[250] w-[250]"
+            source={{
+              uri: `${Config.IMAGE_URL}/asset/mainscreenpingpingeee.png`,
+            }}
+          />
+        </Animated.View>
+        <View className="flex flex-row justify-center items-end h-full pb-20">
+          <Pressable
+            onPress={handleLogin}
+            className="flex flex-row justify-center items-center w-[300px] py-4 bg-buy rounded-lg border-solid border-[3px] border-darkgray"
+          >
+            <Image
+              source={{ uri: `${Config.IMAGE_URL}/asset/kakaoLogo.png` }}
+              className="h-8 w-9 mr-6"
+            />
+            <Text className="text-center text-darkgray text-md font-PretendardExtraBold">
+              카카오로 시작하기
+            </Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
     </View>
   );
 }

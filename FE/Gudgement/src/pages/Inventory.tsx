@@ -20,18 +20,17 @@ import Animated, {
 import { WithLocalSvg } from "react-native-svg";
 import { CommonType } from "../types/CommonType";
 import MyCharacter from "../assets/images/character.png";
-import Reactotron from "reactotron-react-native";
 import Carousel from "../components/Carousel";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CloseIcon from "../assets/icons/closeModal.svg";
 import axios, { AxiosResponse } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { INVENTORY_CATEGORY } from "../utils/common";
+import { INVENTORY_CATEGORY, getAccessToken } from "../utils/common";
 import CompleteModal from "../components/CompleteModal";
-import { API_URL } from "@env";
 import { queryClient } from "../../queryClient";
 import reactotron from "reactotron-react-native";
-import { MEMBER_ID } from "./Shop";
+import InventoryShop from "../assets/icons/inventoryShop.png";
+import Config from "react-native-config";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -57,41 +56,50 @@ function Inventory({ route }: InventoryProps) {
   const [selectCategory, setSelectCategory] = useState(route.params.category);
   const [modalVisible, setModalVisible] = useState({ complete: false });
 
-  const categoryStyle = (category: string) =>
-    `rounded-[8px] py-[1px] border-2 bg-darkgray50 
-    ${category === selectCategory ? "border-main" : "border-darkgray50"}`;
+  const { data: userInfo, isLoading: isFetchUserLoading } =
+    useQuery<CommonType.Tuser>({
+      queryKey: ["fetchUserInfo"],
+    });
+
+  const categoryStyle = useCallback(
+    (category: string) =>
+      `rounded-[8px] py-[1px] border-2 bg-darkgray50 
+    ${category === selectCategory ? "border-mainColor" : "border-darkgray50"}`,
+    [selectCategory],
+  );
   const buttonColor = () => {
     return itemStatus ? "bg-sub02" : "bg-buy";
   };
 
   async function fetchInventoryItem(category: string) {
     try {
+      const accessToken = await getAccessToken();
       const response: AxiosResponse<CommonType.TinvenItem[]> = await axios.get(
-        `${API_URL}/inventory/type`,
+        `${Config.API_URL}/inventory/type`,
         {
           params: {
             type: INVENTORY_CATEGORY[category],
-            memberId: MEMBER_ID,
+            memberId: userInfo!.memberId,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
-      Reactotron.log!("fetchInventoryItem", response.data);
       return response.data;
     } catch (errorResponse) {
       if (axios.isAxiosError(errorResponse)) {
-        Reactotron.log!("fetchShopItemError", errorResponse);
+        reactotron.log!("fetchShopItemError", errorResponse);
       }
     }
   }
-  const {
-    data: fetchItem,
-    refetch,
-    isLoading,
-  } = useQuery({
+  const { data: fetchItem, isLoading: isInventoryLoading } = useQuery({
     queryKey: ["fetchInventoryItem", selectCategory],
     queryFn: () => fetchInventoryItem(selectCategory),
   });
-  reactotron.log!("fetchItem[selectItem]", fetchItem?.[selectItem]);
+  const { data: fetchUser } = useQuery<CommonType.Tuser>({
+    queryKey: ["fetchUserInfo"],
+  });
   useLayoutEffect(() => {
     if (
       fetchItem?.length &&
@@ -109,20 +117,22 @@ function Inventory({ route }: InventoryProps) {
     );
   }, [offset]);
 
-  useEffect(() => {
-    refetch();
-  }, [refetch, selectCategory]);
-
   const { mutate: equippedItem } = useMutation({
-    mutationFn: (params: IresponseEquipment) =>
-      axios.put(`${API_URL}/inventory`, null, {
+    mutationFn: async (params: IresponseEquipment) => {
+      const accessToken = await getAccessToken();
+      return axios.put(`${Config.API_URL}/inventory`, null, {
         params: {
           invenId: params.invenId,
         },
-      }),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
     onSuccess: () => {
       setModalVisible({ ...modalVisible, complete: !modalVisible.complete });
       queryClient.invalidateQueries(["fetchInventoryItem", selectCategory]);
+      queryClient.invalidateQueries(["fetchUserInfo"]);
     },
   });
 
@@ -132,6 +142,44 @@ function Inventory({ route }: InventoryProps) {
     }
   }, [equippedItem, fetchItem, selectItem]);
 
+  const disabledApply = useCallback(
+    (category: string) => {
+      setSelectCategory(category);
+      if (!fetchItem?.length) {
+        setItemStatus(true);
+        return;
+      }
+      setItemStatus(false);
+      setSelectItem(0);
+    },
+    [fetchItem, selectItem],
+  );
+
+  const decorImage = useCallback(() => {
+    const currenetDecor = fetchUser?.setItems.filter(
+      (item: CommonType.TsetItem) => {
+        return item.type === "decor";
+      },
+    );
+    if (!currenetDecor?.length) {
+      return "";
+    }
+
+    return `${Config.IMAGE_URL}/decor/${currenetDecor?.[0].image}`;
+  }, [fetchUser?.setItems]);
+
+  const characterImage = useCallback(() => {
+    const currentCharacter = fetchUser?.setItems.filter(
+      (item: CommonType.TsetItem) => {
+        return item.type === "character";
+      },
+    );
+    if (!currentCharacter?.length) {
+      return "";
+    }
+
+    return `${Config.IMAGE_URL}/character/${currentCharacter?.[0].image}`;
+  }, [fetchUser?.setItems]);
   return (
     <SafeAreaView className="bg-deepgreen w-full h-full">
       <View className="w-full h-fit bg-green items-center">
@@ -147,11 +195,45 @@ function Inventory({ route }: InventoryProps) {
             <WithLocalSvg width={42} height={42} asset={closeInventory} />
           </TouchableOpacity>
         </View>
+        <View
+          className="absolute top-[18px] w-12 h-12
+       left-2 rounded-full bg-white border-2 border-black justify-center items-center"
+        >
+          <View className="absolute z-10">
+            <Image
+              source={InventoryShop as ImageSourcePropType}
+              className="w-10 h-10 bg-black rounded-full"
+            />
+          </View>
+        </View>
 
-        <View className="w-full h-[340px] flex flex-col justify-center items-center mt-4">
+        <View className="w-full h-[300px] flex flex-col justify-center items-center mt-4">
           <View className="w-1/4 h-fit items-center mt-5">
             <Animated.View style={[animatedStyles]}>
-              <Image source={myCharacter} />
+              {isFetchUserLoading ? (
+                <ActivityIndicator size="large" />
+              ) : (
+                <>
+                  {fetchUser && fetchUser.setItems.length ? (
+                    <>
+                      <Image
+                        source={{
+                          uri: decorImage(),
+                        }}
+                        className="absolute top-[-32px] left-[-20px] w-20 h-20 z-10"
+                      />
+                      <Image
+                        source={{
+                          uri: characterImage(),
+                        }}
+                        className="w-48 h-44"
+                      />
+                    </>
+                  ) : (
+                    <Image source={myCharacter} className="w-48 h-44" />
+                  )}
+                </>
+              )}
             </Animated.View>
           </View>
           <View
@@ -190,7 +272,9 @@ function Inventory({ route }: InventoryProps) {
             <View key={category}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSelectCategory(category)}
+                onPress={() => {
+                  disabledApply(category);
+                }}
                 className={categoryStyle(category)}
               >
                 <Text className="text-white px-3 py-[2px] font-PretendardMedium text-[18px]">
@@ -200,7 +284,7 @@ function Inventory({ route }: InventoryProps) {
             </View>
           ))}
         </View>
-        {isLoading ? (
+        {isInventoryLoading ? (
           <ActivityIndicator size="large" color="gray" className="top-20" />
         ) : (
           <Carousel
@@ -210,6 +294,7 @@ function Inventory({ route }: InventoryProps) {
             pageWidth={screenWidth - (55 + 75) * 2}
             setSelectItem={setSelectItem}
             component="Inventory"
+            category={selectCategory}
           />
         )}
         <CompleteModal

@@ -1,34 +1,89 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { CommonType } from "../types/CommonType";
-import {
-  View,
-  ScrollView,
-  Text,
-  ImageBackground,
-  ImageSourcePropType,
-  Image,
-} from "react-native";
-import MyPageBackground from "../assets/images/mypageBackground.png";
-import MyPageIcon from "../assets/images/mypageIcon.png";
+import { useEffect, useState } from "react";
+import { View, Text, ImageBackground } from "react-native";
+import Config from "react-native-config";
+
+import reactotron from "reactotron-react-native";
+
+import CustomModal from "../components/CustomModal";
 import NavigationButton from "../components/NavigationButton";
-import AccountBox from "../components/AccountBox";
+import SettingAccountBox from "../components/SettingAccountBox";
 
-const accounts = Array(10).fill(0);
+import fetchApi from "../utils/tokenUtils";
+import { getAsyncData } from "../utils/common";
+
+import { queryClient } from "../../queryClient";
+
 function SettingAccount() {
-  const mypageBackground: ImageSourcePropType =
-    MyPageBackground as ImageSourcePropType;
-  const analysisIcon: ImageSourcePropType = MyPageIcon as ImageSourcePropType;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [tempEmail, setTempEmail] = useState("");
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
+    null,
+  );
 
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const getEmail = await getAsyncData<string>("email");
+        const email = getEmail;
+        if (email) {
+          setTempEmail(email);
+        }
+      } catch (error) {
+        reactotron.log!(error);
+      }
+    };
+
+    fetchData();
+  }, [tempEmail]);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleSelectAccountId = (accountId: number) => {
+    setSelectedAccountId(accountId);
+  };
+
+  const submitSelect = async () => {
+    if (!selectedAccountId) {
+      setModalText("계좌를 선택해주세요");
+      openModal();
+      return;
+    }
+
+    if (selectedAccountId !== null) {
+      const sendBE = {
+        email: tempEmail,
+        virtualAccountId: selectedAccountId,
+      };
+      try {
+        await fetchApi.post(`${Config.API_URL}/account`, sendBE);
+        queryClient.invalidateQueries(["fetchUserInfo"]);
+      } catch (error) {
+        reactotron.log!(error);
+      }
+    }
+  };
 
   return (
-    <View className="flex">
+    <View className="flex w-screen h-screen">
       <ImageBackground
-        source={mypageBackground}
+        source={{
+          uri: `${Config.IMAGE_URL}/asset/mypageBackground.png`,
+        }}
         resizeMode="cover"
         className="flex w-screen h-screen"
       >
+        <CustomModal
+          alertText={modalText}
+          visible={modalVisible}
+          closeModal={closeModal}
+        />
         <View className="z-10 flex flex-col">
           <View className="flex justify-between items-center px-4">
             <View className="m-7 p-[2px] flex flex-row h-fill w-[140px] justify-center items-center bg-white70 border-solid border-[3px] rounded-xl border-darkgray">
@@ -37,45 +92,18 @@ function SettingAccount() {
               </Text>
             </View>
           </View>
-          <View className="flex w-full justify-center items-center">
-            <View className="overflow-hidden flex flex-col bg-white70 h-fill w-[380px] rounded-3xl border-solid border-[3px] border-darkgray">
-              <View className="p-5 flex flex-row items-end justify-between bg-white70 w-fill border-b-[3px] border-darkgray border-solid">
-                <View className="gap-4 flex flex-row items-center">
-                  <View className="z-10 flex justify-center items-center h-[50px] w-fill p-[3px] bg-white70 border-solid border-[3px] border-darkgray rounded-full">
-                    <View className="bg-darkgray h-fill w-fill rounded-full">
-                      <Image source={analysisIcon} className="h-10 w-10" />
-                    </View>
-                  </View>
-                  <View className="flex felx-col">
-                    <Text className="mr-1 text-sub01 text-xs font-PretendardExtraBold">
-                      연동한 계좌정보는 저희가
-                    </Text>
-
-                    <View className="flex flex-row">
-                      <Text className="text-darkgray text-xs font-PretendardExtraBold">
-                        안전하게 보관
-                      </Text>
-                      <Text className="text-sub01 text-xs font-PretendardExtraBold">
-                        할게요.
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <Text className="text-darkgray50 text-sm font-PretendardExtraBold">
-                  3/3
-                </Text>
-              </View>
-              <ScrollView className="h-[570px] w-fill p-3">
-                {accounts.map((e: number) => {
-                  return <AccountBox key={e} />;
-                })}
-              </ScrollView>
-            </View>
+          <View className="flex w-full justify-start items-center">
+            <SettingAccountBox
+              numberVisible={true}
+              selectedAccountId={selectedAccountId}
+              setSelectedAccountId={setSelectedAccountId}
+              onSelectId={handleSelectAccountId}
+            />
           </View>
         </View>
-        <View className="z-0 w-full h-full absolute pb-10 flex justify-end items-center">
+        <View className="z-10 w-full h-fill bottom-0 absolute pb-10 flex justify-end items-center">
           <NavigationButton
-            screenName="SettingName"
+            handleFunction={submitSelect}
             text="다 음"
             height="lg"
             width="lg"

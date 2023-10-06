@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginDto {
     private Long id;
+    private String email;
 }

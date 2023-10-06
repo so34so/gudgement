@@ -14,7 +14,7 @@ import { CommonType } from "../types/CommonType";
 import Slider from "@react-native-community/slider";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
-import { IresponseParams, MEMBER_ID } from "../pages/Shop";
+import { IresponseParams } from "../pages/Shop";
 
 function BuyConsumptionModal({
   item,
@@ -23,6 +23,7 @@ function BuyConsumptionModal({
   quantity,
   setQuantity,
   buyConsumable,
+  memberId,
 }: {
   item?: CommonType.Titem;
   modalVisible: {
@@ -43,6 +44,7 @@ function BuyConsumptionModal({
     IresponseParams,
     unknown
   >;
+  memberId: number | undefined;
 }) {
   const closeModal: ImageSourcePropType = CloseIcon as ImageSourcePropType;
   return (
@@ -103,7 +105,19 @@ function BuyConsumptionModal({
               y="30"
               textAnchor="middle"
             >
-              {item?.price} 티끌
+              {item!.price * quantity}
+            </SvgText>
+            <SvgText
+              fill="#ffb800"
+              stroke="black"
+              strokeWidth={2}
+              fontSize="28"
+              fontFamily="Pretendard-ExtraBold"
+              x="90"
+              y="30"
+              textAnchor="middle"
+            >
+              티끌
             </SvgText>
           </Svg>
 
@@ -122,16 +136,19 @@ function BuyConsumptionModal({
           </Text>
 
           <TouchableOpacity
-            className="w-32 flex justify-center items-center h-12 bg-buy rounded-[10px] border-2 border-[#6f530d]"
+            className={`w-32 flex justify-center items-center h-12 ${
+              quantity <= 0 ? "bg-sub02" : "bg-buy"
+            } rounded-[10px] border-2 border-[#6f530d]`}
             onPress={() => {
               setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
               buyConsumable({
                 itemId: item!.id,
-                memberId: MEMBER_ID,
+                memberId: memberId!,
                 quantity: quantity,
               });
               setQuantity(0);
             }}
+            disabled={quantity <= 0}
           >
             <Text className="font-PretendardExtraBold text-black text-[24px] top-[-1]">
               구매하기

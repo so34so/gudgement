@@ -135,7 +135,7 @@ public class KakaoService implements OauthService{
         params.add("redirect_uri", REDIRECT_URI);
         params.add("client_id", CLIENT_ID);
         params.add("code", code);
-//        params.add("client_secret", CLIENT_SECRET);
+        params.add("client_secret", CLIENT_SECRET);
 
         WebClient wc = WebClient.create(TOKEN_URI);
 

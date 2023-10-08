@@ -25,7 +25,6 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class JwtProvider {
 
-    private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     // 시크릿 키, 나중에 yml에 넣고 가져오는 형식으로 할 예정

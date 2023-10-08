@@ -298,9 +298,10 @@ public class    MemberServiceImpl implements MemberService {
 
         return LocalDateTime.ofEpochSecond(randomEpochSecond, 0, ZoneOffset.UTC);
     }
+
     @Override
     @Scheduled(cron = "0 0 0 1 * ?")
-    public void updateGradeauto() {
+    public void updateGradeAuto() {
         List<Member> members = memberRepository.findAll();
 
         for (Member member : members) {

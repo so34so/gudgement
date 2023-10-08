@@ -30,7 +30,7 @@ spring:
     auth-code-expiration-millis: 600000
 
   redis:
-    host: myredis
+    host: localhost
     port: 6379
 
   main:
@@ -48,21 +48,10 @@ spring:
 
   # datasource
   datasource:
-#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    # 한국시간으로 DB저장되게 !!
-#    url: jdbc:mysql://localhost:3306/gudgement?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
-#    username: root
-#    password: ssafy
-
     url: jdbc:mysql://database-1.cjfyk8ntjeyl.ap-northeast-2.rds.amazonaws.com:3306/gudgement?useSSL=false&serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
     username: gudgement
     password: d106gudgement
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-#    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-#    username: root
-#    password: 1234
-#    driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Jpa
   jpa:
@@ -94,7 +83,7 @@ spring:
           client-authentication-method: POST
           authorization-grant-type: authorization_code
           scope: account_email
-          client-secret: IxXm1l2rPYcLXojdZmL9MXr8bmTkEmPQ
+          client-secret: q9QbZnp79iKuzIPgFxLhTU0xoqx0vArI
           token-uri: https://kauth.kakao.com/oauth/token
           user-info-uri: https://kapi.kakao.com
 
@@ -118,4 +107,3 @@ jwt:
 #spring.jpa.show-sql=true
 #spring.hibernate.ddl-auto=none
 
-# yml push 안되게 설정 2트.

@@ -68,43 +68,21 @@ public class Member implements Serializable {
     @Column
     private String refreshToken;
 
+    /* 연결 관계 */
+    // 계좌 연동
+    @Column
+    private Long virtualAccountId;
 
-    //계좌 연동을 위한 노아가 작성한 코드
-//    @OneToOne(mappedBy = "member")
-//    private VirtualAccount virtualAccount;
-    @Column(nullable = true)
-    private Long virtualAccountId; // This replaces the VirtualAccount field
-
-    public void setVirtualAccountId(Long virtualAccountId) {
-        this.virtualAccountId = virtualAccountId;
-    }
-
-
-    // 연결 관계
-//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<Item> set_item = new ArrayList<Item>();
     @Lob
     @Column
     private String firebaseToken;
 
-    /* 연결 관계 */
     // 상점, 진행도 관련
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Inventory> setItem = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Progress> progresses = new ArrayList<>();
-
-    // 미구현
-    // 게임, 계좌 관련
-//     @OneToOne(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private GameRoom roomId;
-//
-//    @OneToMany(mappedBy = "memberId", cascade = CascadeType.REMOVE)
-//    private List<PaymentHistory> paymentHistoryList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE)
-//    private List<Account> accounts = new ArrayList<>();
 
     @Builder
     public Member(Long id, String email, int gender, int age, String nickname, String refreshToken) {
@@ -151,10 +129,6 @@ public class Member implements Serializable {
         this.firebaseToken = token;
     }
 
-    public void addTiggle(long tiggle) {
-        this.tiggle += tiggle;
-    }
-
     public void subtractTiggle(long tiggle) {
         if (this.tiggle < tiggle) {
             throw new IllegalArgumentException("The user does not have enough money");
@@ -162,23 +136,20 @@ public class Member implements Serializable {
         this.tiggle -= tiggle;
     }
 
-    public void addExp(long exp) {
-        this.exp += exp;
-        
-        // Calculate the total experience required for the next level.
-        long requiredExpForNextLevel = (long) Math.pow(2, this.level);
-
-        // Check if the user has enough experience to level up.
-        while (this.exp >= requiredExpForNextLevel) {
-            this.level++;
-            requiredExpForNextLevel = (long) Math.pow(2, this.level);  // Update the requirement for the next level.
-        }
+    public void setVirtualAccountId(Long virtualAccountId) {
+        this.virtualAccountId = virtualAccountId;
     }
 
+    public void addExp(long exp) {
+        this.exp += exp;
 
+        long requiredExpForNextLevel = (long) Math.pow(2, this.level);
 
-
-
+        while (this.exp >= requiredExpForNextLevel) {
+            this.level++;
+            requiredExpForNextLevel = (long) Math.pow(2, this.level);
+        }
+    }
 
     public void updateGrade(Grade grade) {
         this.grade = grade;

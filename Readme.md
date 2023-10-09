@@ -153,7 +153,6 @@ Virtual Device <br>
  <td align="center">백엔드</td>
  <td>
   <img src="https://img.shields.io/badge/Java-orange?style=for-the-badge&logo=Java&logoColor=white"/>
-  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=ffffff"/> 
   <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=ffffff"/> 
   <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=ffffff"/>
   <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=ffffff"/>
@@ -250,6 +249,6 @@ mattermost 7.8.6 <br>
 
 ## ERD
 
-<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/erd.png" width="1500"/>
+<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/erd.jpg" width="1500"/>
 
 <br>

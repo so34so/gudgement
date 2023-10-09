@@ -204,6 +204,6 @@ Jenkins 2.414.1 <br>
 
 ## ERD
 
-<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/erd.png" width="1500"/>
+<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/erd.jpg" width="1500"/>
 
 <br>

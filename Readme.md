@@ -1,10 +1,8 @@
 # 거지먼트 Gudgement
 
-<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/asset/appicon.png" width="180"/>
+<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/asset/appicon.png" width="150"/>
 
-개발 기간 : 2023.08.21 ~ 2023.10.06 ( 7weeks ) </br>
-
-개발 인원 : 6명
+개발 기간 : 2023.08.21 ~ 2023.10.06</br> 개발 인원 : 6명
 
 <br>
 

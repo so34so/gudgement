@@ -81,10 +81,10 @@ public class MyPageController {
             throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
         }
 
-
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
             throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
         });
+
         return member;
     }
 }

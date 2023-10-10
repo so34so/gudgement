@@ -7,75 +7,41 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-
-import CustomModal from "../components/CustomModal";
 
 import { Config } from "react-native-config";
 
 import { CommonType } from "../types/CommonType";
 import { ANALYZE_MONTH_IMAGE, textShadow } from "../utils/common";
 import TagBoxSmall from "../components/TagBoxSmall";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-type AnalyzeDetailProps = NativeStackScreenProps<
-  CommonType.RootStackParamList,
-  "AnalyzeDetail"
->;
-
-function AnalyzeDetail({ route }: AnalyzeDetailProps) {
-  const navigation =
-    useNavigation<NavigationProp<CommonType.RootStackParamList>>();
-
-  const { errorMessage } = route.params;
+function AnalyzeDetail() {
+  // const { errorMessage } = route.params;
 
   const { data: userData } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
   });
 
   const { data: userAnalyzeMonth } = useQuery<CommonType.TanalyzeMonth>({
-    queryKey: ["userAnalyzeMonth", route.params.year, route.params.month],
+    queryKey: ["userAnalyzeMonth"],
   });
 
-  useEffect(() => {
-    if (errorMessage) {
-      if (errorMessage === "Request failed with status code 500") {
-        setModalText("잠시 후 시도해주세요.");
-      } else if (errorMessage === "Request failed with status code 404") {
-        setModalText("거래 내역이 없어 분석이 불가능합니다.");
-      } else {
-        setModalText(errorMessage);
-      }
-      openModal();
-    }
-  }, [errorMessage]);
-
   const [userSpend, setUserSpend] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState("");
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    navigation.goBack();
-    setModalVisible(false);
-  };
-
-  if (userAnalyzeMonth && userAnalyzeMonth.ranking !== null) {
-    const calculate = userAnalyzeMonth.ranking / userAnalyzeMonth.totalMember;
-    if (calculate < 0.2) {
-      setUserSpend(1);
+  useEffect(() => {
+    if (userAnalyzeMonth && userAnalyzeMonth.ranking !== null) {
+      const calculate = userAnalyzeMonth.ranking / userAnalyzeMonth.totalMember;
+      if (calculate < 0.2) {
+        setUserSpend(1);
+      }
+      if (calculate < 0.6 && calculate >= 0.2) {
+        setUserSpend(2);
+      }
+      if (calculate <= 1 && calculate >= 0.6) {
+        setUserSpend(3);
+      }
     }
-    if (calculate < 0.6 && calculate >= 0.2) {
-      setUserSpend(2);
-    }
-    if (calculate <= 1 && calculate >= 0.6) {
-      setUserSpend(3);
-    }
-  }
+  }, [userAnalyzeMonth]);
 
   const userGudge = ["초보 거지", "찐 거지", "무난한 거지", "분발해야 할 거지"];
 
@@ -88,11 +54,6 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
         resizeMode="cover"
         className="flex w-full h-full"
       >
-        <CustomModal
-          alertText={modalText}
-          visible={modalVisible}
-          closeModal={closeModal}
-        />
         <View className="absolute bg-black30 w-screen h-screen" />
         <ScrollView className="mx-4 space-y-2">
           <SafeAreaView className="mt-4 space-y-2 py-4 flex flex-col overflow-hidden justify-start items-center w-fill h-fill rounded-3xl bg-white90 border-solid border-[3px] border-darkgray">
@@ -445,11 +406,10 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   <Text
                     className="font-PretendardBold text-white90 text-2xs mt-2"
                     style={{
-                      paddingLeft: `${
-                        userAnalyzeMonth?.lastMonthAmountRate || 0 > 100
+                      paddingLeft: `${userAnalyzeMonth?.lastMonthAmountRate || 0 > 100
                           ? 76
                           : userAnalyzeMonth?.lastMonthAmountRate || 0 - 6
-                      }%`,
+                        }%`,
                     }}
                   >
                     {userAnalyzeMonth?.lastMonthAmountRate} %
@@ -500,11 +460,10 @@ function AnalyzeDetail({ route }: AnalyzeDetailProps) {
                   <Text
                     className="font-PretendardBold text-white90 text-2xs mt-2"
                     style={{
-                      paddingLeft: `${
-                        userAnalyzeMonth?.thisMonthAmountRate || 0 > 100
+                      paddingLeft: `${userAnalyzeMonth?.thisMonthAmountRate || 0 > 100
                           ? 76
                           : userAnalyzeMonth?.thisMonthAmountRate || 0 - 6
-                      }%`,
+                        }%`,
                     }}
                   >
                     {userAnalyzeMonth?.thisMonthAmountRate} %

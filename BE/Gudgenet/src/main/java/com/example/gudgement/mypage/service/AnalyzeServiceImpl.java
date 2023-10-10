@@ -67,7 +67,9 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         // 목표 금액 찾아 오기
         Long monthOverconsumption = -1L;
         if (nowDate.getMonth().getValue() == month) {
-            monthOverconsumption = member.getMonthOverconsumption();
+            if (member.getMonthOverconsumption() != null) {
+                monthOverconsumption = member.getMonthOverconsumption();
+            }
         } else if (nowDate.getMonth().getValue() > month) {
             for (int i = 0; i < chartList.size(); i++) {
                 if (chartList.get(i).getMonthOverconsumption() != null) {
@@ -145,6 +147,7 @@ public class AnalyzeServiceImpl implements AnalyzeService{
         return dayData;
     }
 
+    // Flask, python 으로 DB 분석 및 저장 요청
     @Override
     @Transactional
     public void flaskPostRequest(AnalyzeRequestDto analyzeRequestDto, Long monthOverconsumption) {

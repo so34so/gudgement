@@ -107,22 +107,41 @@
 
 ## 기술 스택 ∙ 개발 환경
 
+
 <table>
 <tr>
  <td align="center">프론트엔드</td>
  <td>
-  React-Native CLI: 0.72.4 <br>
-  ANDROID SDK & NDK VERSION <br>
-  └─ MIN_SDK: 26 <br>
-  └─ COMPILE_SDK: 34 <br>
-  └─ NDK_VERSION: 23.1.7779620 <br>
-  Virtual Device <br>
-  └─ Pixel 7 <br>
-  └─ API 33 <br>
+  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/React_Native-61DAFB?style=for-the-badge&logo=React&logoColor=ffffff"/>  <img src="https://img.shields.io/badge/androidstudio-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=ffffff"/> <br>
+
+  <img src="https://img.shields.io/badge/reactquery-FF4154?style=for-the-badge&logo=reactquery&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=ffffff"/>  <br>
+
+React-Native CLI: 0.72.4 <br>
+
+ANDROID SDK & NDK VERSION <br>
+└─ MIN_SDK: 26 <br>
+└─ COMPILE_SDK: 34 <br>
+└─ NDK_VERSION: 23.1.7779620 <br>
+Virtual Device <br>
+└─ Pixel 7 <br>
+└─ API 33 <br>
+
 </tr>
 <tr>
  <td align="center">백엔드</td>
  <td>
+  <img src="https://img.shields.io/badge/Java-orange?style=for-the-badge&logo=Java&logoColor=white"/>
+  <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=ffffff"/> 
+  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=ffffff"/>
+
+  <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=ffffff"/><br>
   Java 11 <br>
   └─ java OpenJDK <br>
   └─ Spring Boot <br>
@@ -134,12 +153,17 @@
   │　└─ Lombok <br>
   │　└─ SpringDocs <br>
   └─ Gradle 8.2.1 <br>
-  Python 3.10 <br>
-  └─ Flask <br>
+
+Python 3.10 <br>
+└─ Flask <br>
+
 </tr>
 <tr>
  <td align="center">서버</td>
  <td>
+  <img src="https://img.shields.io/badge/ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=ffffff"/><br>
 Ubuntu 20.04 <br>
 Docker 24.0.5 <br>
 Docker-Compose 1.25.0 <br>
@@ -148,6 +172,7 @@ Jenkins 2.414.1 <br>
 <tr>
  <td align="center">데이터베이스</td>
  <td>
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=ffffff"/><br>
   MySQL 8.0.33
   </td>
 </tr>
@@ -162,8 +187,8 @@ Jenkins 2.414.1 <br>
 <tr>
  <td align="center">IDE</td>
  <td>
-  Visual Studio Code <br>
-  IntelliJ IDEA <br>
+  <img src="https://img.shields.io/badge/visualstudiocode-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=ffffff"/> 
+  <img src="https://img.shields.io/badge/intellijidea-000000?style=for-the-badge&logo=intellijidea&logoColor=ffffff"/> 
  </td>
 </tr>
 <tr>
@@ -184,15 +209,20 @@ Jenkins 2.414.1 <br>
 <tr>
  <td align="center">기타</td>
  <td>
-  S3 2.2.6 <br>
-  FireBase <br>
-  <img src="https://img.shields.io/badge/Mattermost-0058CC?style=for-the-badge&logo=Mattermost&logoColor=white"/> <br>
-  mattermost 7.8.6 <br>
-  postman 10.17.0 <br>
-    <img src="https://img.shields.io/badge/swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=white"/>
+<img src="https://img.shields.io/badge/firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white"/>
+<img src="https://img.shields.io/badge/postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"/>
+<img src="https://img.shields.io/badge/swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=white"/>
+  <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"/>
+<img src="https://img.shields.io/badge/Mattermost-0058CC?style=for-the-badge&logo=Mattermost&logoColor=white"/> <br>
+S3 2.2.6 <br>
+postman 10.17.0 <br>
+mattermost 7.8.6 <br>
+
  </td>
 </tr>
 </table>
+
+
 
 <br>
 

@@ -15,9 +15,10 @@
 
 ## 서비스 주요 기능
 
-- 접근성 좋은 게임을 통한 과소비 지양에 주안점을 둠 (게임을 하면 할수록 소비 습관이 개선되는 효과)
+- 접근성 좋은 게임을 통한 과소비 지양에 주안점을 둠<br>
+  (게임을 하면 할수록 소비 습관이 개선되는 효과)
 - 소비 내역 기반으로 인디언 포커를 진행하여 소비 내역 인지와 소비 습관 개선을 기대
-- 목표 소비 금액을 설정하여 소비 내용 및 패턴 조회
+- 목표 소비 금액을 설정하여 소비 내역 분석 및 소비 패턴 조회
 - 상점 기능을 통해 캐릭터 커스터마이징
 - 랭킹 기능을 통한 경쟁 심리 자극
 - 만보기 기능 및 만보기로만 얻을 수 있는 게임 리워드 구현
@@ -26,44 +27,60 @@
 
 ## 구현 기능 목록
 
-- 로그인
-  카카오 인증 로그인
+### 1. 카카오 인증 로그인 후 계좌 등록
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotLogin.png" width="150"/>
-
-- 계좌 등록
-
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotReaccount.png" width="150"/>
 
-- 인디언 포커 게임
-  최대 베팅량 선택 기능, 대전 자동 매칭 기능, 소비내역 기반의 인디언 포커 게임 기능, 소비 아이템 기능 (게임 변수 창출), 1:1 채팅 기능
+<br>
+
+### 2. 인디언 포커 게임
+
+- 최대 베팅량 선택 기능
+- 대전 자동 매칭 기능
+- 소비내역 기반의 인디언 포커 게임 플레이
+- 소비 아이템 기능 (게임 변수 창출)
+- 1:1 채팅 기능
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotPlay.png" width="150"/>
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotMatch.png" width="150"/>
 
-- 마이 페이지
-  소비 진행 그래프 : 목표 소비 금액 / 전체 기간을 하여 하루 할당 금액 이상 사용시 빨강, 이하 사용시 초록
-  분석 기능 : 소비 목표에 따라 위험도 추가 표시(안정, 경고, 위험 등)
-  월별 결산 기능 : 소비 목표에 따른 순위 및 빈도, 고가 기준으로 어디에 가장 많이, 크게 소비하였는지 점검
-  만보기 기능 : 걸음 수 측정 및 전용 리워드 구현
+  <br>
+
+### 3. 내 정보
+
+- 소비 진행 그래프 : 목표 소비 금액 / 전체 기간을 계산하여 하루 할당 금액 이상 사용시 빨강, 이하 사용시 초록
+- 분석 : 소비 목표에 따라 위험도 추가 표시(안정, 위험, 초과 등)
+- 월별 결산 :
+  - 해당 달의 비슷한 과소비 기준(+-10만원)을 가진 전체인원 중 나의 소비율 등수 확인
+  - 빈도 또는 고가 기준으로 어디에 제일 자주 또는 큰 금액을 소비하였는지 점검
+  - 이전 달과 비교하여 소비 목표에 따른 점검
+- 만보기 : 걸음 수 측정 및 전용 리워드 보상
+- 설정 : 목표 소비 금액 설정 및 주계좌 재설정
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotAnaylsis.png" width="150"/>
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotAnalysisMonth.png" width="150"/>
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotGoal.png" width="150"/>
 
-- 상점
-  캐릭터, 칭호, 치장 아이템 구현, 업적 달성 시 해금 기능
+<br>
+
+### 4. 상점
+
+- 캐릭터, 칭호, 치장 아이템 구현
+- 업적 달성 시 해금 기능
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotShop.png" width="150"/>
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotShopInvent.png" width="150"/>
 
-- 홈
-  캐릭터 외형 조회, 현재 소비 금액 확인 기능,
+### 5. 홈
+
+- 캐릭터 외형 조회 및 현재 소비 금액 확인 기능
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotHome.png" width="150"/>
 
-- 랭킹
-  내 순위 및 상위권 유저 랭킹 조회 기능
+### 6. 랭킹
+
+- 내 순위 및 상위권 유저 랭킹 조회 기능
 
   <img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/readme/screenshotRanking.png" width="150"/>
 
@@ -77,13 +94,13 @@
 
 - 간편한 카카오 로그인을 통한 회원가입
 
-- 일별 소비내역을 분석해 과소비시 FCM 알림을 전달
+- JWT를 활용한 소셜 로그인
 
 - 소켓 통신을 통한 1:1매칭 게임 구현
 
-- 앱 내 걸음 수를 불러와서 일정 걸음수 이상 달성했을 시 앱 내 재화 지급
+- 주차별 소비 차트를 통한 데이터 시각화와 목표 소비 금액에 따른 월별 결산
 
-- JWT를 활용한 소셜 로그인
+- 앱 내 걸음 수를 불러와서 일정 걸음수 이상 달성했을 시 앱 내 재화 지급
 
 - react-query를 통해 서버의 상태를 불러오고, 캐싱하며, 지속적으로 동기화 및 업데이트
 

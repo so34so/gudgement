@@ -399,11 +399,13 @@ public class ChartServiceImpl implements ChartService {
         return chart;
     }
 
+    // 과소비 여부 판단
     public boolean Overconsumption(long overAmountRate, long amount) {
         if (amount <= overAmountRate) return true;
         return false;
     }
 
+    // 월 기준 몇 주차인지
     public int getWeekOfMonth(LocalDate localdate) {
         LocalDate firstDayOfMonth = localdate.with(TemporalAdjusters.firstDayOfMonth());
         int weekOfCurrentMonth;

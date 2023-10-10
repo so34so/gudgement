@@ -84,23 +84,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.loadInfo(member.getMemberId()));
     }
 
-    private Member getMember(HttpServletRequest httpServletRequest) {
-        String header = httpServletRequest.getHeader("Authorization");
-        String bearer = header.substring(7);
-
-        Long memberId;
-        try {
-            memberId = (Long) jwtProvider.getClaims(bearer).get("id");
-        } catch (ExpiredJwtException e) {
-            throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
-        }
-
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
-            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
-        });
-        return member;
-    }
-
     @PutMapping("/update/grade")
     @Operation(summary = "유저 등급 결정", description = "이전 달 소비 내역기준으로 산정 \n" +
             "[100 이하] : Gold\n            " + "100~200 Silver\n            " + "300이상 Bronze")
@@ -120,5 +103,22 @@ public class MemberController {
     @Operation(summary = "멤버 탈퇴", description = "해당 이메일을 가지고 있는 회원을 탈퇴시킵니다.")
     public void deleteMember(@PathVariable(name = "email") String email) {
         memberService.deleteMember(email);
+    }
+
+    private Member getMember(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("Authorization");
+        String bearer = header.substring(7);
+
+        Long memberId;
+        try {
+            memberId = (Long) jwtProvider.getClaims(bearer).get("id");
+        } catch (ExpiredJwtException e) {
+            throw new BaseErrorException(ErrorCode.ACCESS_TOKEN_EXPIRATION);
+        }
+
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> {
+            throw new BaseErrorException(ErrorCode.NOT_FOUND_MEMBER);
+        });
+        return member;
     }
 }

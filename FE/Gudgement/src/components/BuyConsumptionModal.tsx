@@ -105,7 +105,7 @@ function BuyConsumptionModal({
               y="30"
               textAnchor="middle"
             >
-              {item!.price * quantity}
+              {item?.price && item.price * quantity}
             </SvgText>
             <SvgText
               fill="#ffb800"
@@ -136,9 +136,8 @@ function BuyConsumptionModal({
           </Text>
 
           <TouchableOpacity
-            className={`w-32 flex justify-center items-center h-12 ${
-              quantity <= 0 ? "bg-sub02" : "bg-buy"
-            } rounded-[10px] border-2 border-[#6f530d]`}
+            className={`w-32 flex justify-center items-center h-12 ${quantity <= 0 ? "bg-sub02" : "bg-buy"
+              } rounded-[10px] border-2 border-[#6f530d]`}
             onPress={() => {
               setModalVisible({ ...modalVisible, buy: !modalVisible.buy });
               buyConsumable({

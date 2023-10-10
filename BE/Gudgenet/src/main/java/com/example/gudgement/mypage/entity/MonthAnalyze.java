@@ -56,9 +56,4 @@ public class MonthAnalyze {
 
     @Column
     private Double thisMonthAmountRate;
-
-
-
-
-
 }

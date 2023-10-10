@@ -48,7 +48,7 @@ export declare module CommonType {
     Pedometer: undefined;
     Analyze: undefined;
     AnalyzeGoal: undefined;
-    AnalyzeDetail: { year?: number; month?: number; errorMessage?: string };
+    AnalyzeDetail: undefined;
     ReSettingAccount: undefined;
 
     /**

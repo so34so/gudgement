@@ -1,8 +1,9 @@
 # 거지먼트 Gudgement
 
-<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/asset/appicon.png" width="150"/>
+<img src="https://gudgement.s3.ap-northeast-2.amazonaws.com/asset/appicon.png" width="180"/>
 
-개발 기간 : 2023.08.21 ~ 2023.10.06</br>
+개발 기간 : 2023.08.21 ~ 2023.10.06 ( 7weeks ) </br>
+
 개발 인원 : 6명
 
 <br>
@@ -15,9 +16,10 @@
 
 ## 서비스 주요 기능
 
-- 접근성 좋은 게임을 통한 과소비 지양에 주안점을 둠<br>
-  (게임을 하면 할수록 소비 습관이 개선되는 효과)
-- 소비 내역 기반으로 인디언 포커를 진행하여 소비 내역 인지와 소비 습관 개선을 기대
+- 접근성 좋은 게임을 통한 과소비 지양에 주안점을 둠<br> (게임을 하면 할수록 소비
+  습관이 개선되는 효과)
+- 소비 내역 기반으로 인디언 포커를 진행하여 소비 내역 인지와 소비 습관 개선을 기
+  대
 - 목표 소비 금액을 설정하여 소비 내역 분석 및 소비 패턴 조회
 - 상점 기능을 통해 캐릭터 커스터마이징
 - 랭킹 기능을 통한 경쟁 심리 자극
@@ -49,10 +51,12 @@
 
 ### 3. 내 정보
 
-- 소비 진행 그래프 : 목표 소비 금액 / 전체 기간을 계산하여 하루 할당 금액 이상 사용시 빨강, 이하 사용시 초록
+- 소비 진행 그래프 : 목표 소비 금액 / 전체 기간을 계산하여 하루 할당 금액 이상
+  사용시 빨강, 이하 사용시 초록
 - 분석 : 소비 목표에 따라 위험도 추가 표시(안정, 위험, 초과 등)
 - 월별 결산 :
-  - 해당 달의 비슷한 과소비 기준(+-10만원)을 가진 전체인원 중 나의 소비율 등수 확인
+  - 해당 달의 비슷한 과소비 기준(+-10만원)을 가진 전체인원 중 나의 소비율 등수
+    확인
   - 빈도 또는 고가 기준으로 어디에 제일 자주 또는 큰 금액을 소비하였는지 점검
   - 이전 달과 비교하여 소비 목표에 따른 점검
 - 만보기 : 걸음 수 측정 및 전용 리워드 보상
@@ -102,7 +106,8 @@
 
 - 앱 내 걸음 수를 불러와서 일정 걸음수 이상 달성했을 시 앱 내 재화 지급
 
-- react-query를 통해 서버의 상태를 불러오고, 캐싱하며, 지속적으로 동기화 및 업데이트
+- react-query를 통해 서버의 상태를 불러오고, 캐싱하며, 지속적으로 동기화 및 업데
+  이트
 
 <br>
 
@@ -124,7 +129,6 @@
 
 ## 기술 스택 ∙ 개발 환경
 
-
 <table>
 <tr>
  <td align="center">프론트엔드</td>
@@ -140,13 +144,9 @@
 
 React-Native CLI: 0.72.4 <br>
 
-ANDROID SDK & NDK VERSION <br>
-└─ MIN_SDK: 26 <br>
-└─ COMPILE_SDK: 34 <br>
-└─ NDK_VERSION: 23.1.7779620 <br>
-Virtual Device <br>
-└─ Pixel 7 <br>
-└─ API 33 <br>
+ANDROID SDK & NDK VERSION <br> └─ MIN_SDK: 26 <br> └─ COMPILE_SDK: 34 <br> └─
+NDK_VERSION: 23.1.7779620 <br> Virtual Device <br> └─ Pixel 7 <br> └─ API 33
+<br>
 
 </tr>
 <tr>
@@ -171,8 +171,7 @@ Virtual Device <br>
   │　└─ SpringDocs <br>
   └─ Gradle 8.2.1 <br>
 
-Python 3.10 <br>
-└─ Flask <br>
+Python 3.10 <br> └─ Flask <br>
 
 </tr>
 <tr>
@@ -238,8 +237,6 @@ mattermost 7.8.6 <br>
  </td>
 </tr>
 </table>
-
-
 
 <br>
 

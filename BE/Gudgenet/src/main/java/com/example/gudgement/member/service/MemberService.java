@@ -9,6 +9,7 @@ import com.example.gudgement.member.entity.Member;
 import org.springframework.scheduling.annotation.Scheduled;
 
 public interface MemberService {
+    // Test 계정 생성
     MemberResponseDto memberCreate(MemberCreateDto memberCreateDto);
     MemberVerifyResponseDto verifyMember(LoginDto loginDto);
     MemberResponseDto loadInfo(Long id);
@@ -19,7 +20,7 @@ public interface MemberService {
     boolean validNickname(String nickname);
 
     @Scheduled(cron = "0 0 0 1 * ?")
-    void updateGradeauto();
+    void updateGradeAuto();
 
     void updateGrade(Member member);
     void addTiggle(Long id);

@@ -35,18 +35,16 @@ function Analyze() {
   );
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
 
-  const { data: userData, refetch: refetchUser } = useQuery<CommonType.Tuser>({
+  const { data: userData } = useQuery<CommonType.Tuser>({
     queryKey: ["fetchUserInfo"],
-    enabled: false,
   });
 
-  const { data: userAnalyzeMonth, isError } = useQuery({
-    queryKey: ["userAnalyzeMonth", selectedYear, selectedMonth],
-    queryFn: () => fetchAnalyzeMonth(selectedYear, selectedMonth),
+  const { data: userAnalyzeMonth } = useQuery({
+    queryKey: ["userAnalyzeMonth"],
+    queryFn: fetchAnalyzeMonth,
   });
 
   useEffect(() => {
-    refetchUser();
     if (selectedYear > 0 && selectedMonth > 0 && selectedDay > 0) {
       fetchAnalyzeChart();
     }
@@ -143,7 +141,14 @@ function Analyze() {
           `${Config.API_URL}/mypage/${selectedYear}-${selectedMonth}-${selectedDay}`,
           null,
         );
-      setChartData(response.data);
+      if (response.data) {
+        setChartData(response.data);
+      } else {
+        setModalText(
+          `${selectedYear}-${selectedMonth}-${selectedDay} 날짜 그래프 불러오기에 실패하였습니다. 다시 시도해주세요.`,
+        );
+        openModal();
+      }
     } catch (error) {
       setModalText(
         `${selectedYear}-${selectedMonth}-${selectedDay} 날짜 그래프 불러오기에 실패하였습니다. 다시 시도해주세요.`,
@@ -160,7 +165,7 @@ function Analyze() {
     setModalVisible(false);
   };
 
-  const fetchAnalyzeMonth = async (year: number, month: number) => {
+  async function fetchAnalyzeMonth() {
     if (
       (selectedYear === currentDate.getFullYear() &&
         selectedMonth > currentDate.getMonth() + 1) ||
@@ -168,12 +173,13 @@ function Analyze() {
         selectedMonth >= currentDate.getMonth() + 1 &&
         selectedDay > currentDate.getDate())
     ) {
+      console.log("return");
       return;
     }
     try {
       const sendBE = {
-        year: year,
-        month: month,
+        year: selectedYear,
+        month: selectedMonth,
         virtualAccountId: userData?.virtualAccountId,
         monthOverconsumption: userData?.monthOverconsumption,
       };
@@ -186,18 +192,24 @@ function Analyze() {
         setErrorMonth(axiosError.message);
       }
     }
-  };
+  }
 
   const handleFetchAnalyze = async () => {
-    if (isError) {
-      navigation.navigate("AnalyzeDetail", { errorMessage: errorMonth });
+    if (userAnalyzeMonth) {
+      console.log("user", userAnalyzeMonth);
+      navigation.navigate("AnalyzeDetail");
     } else {
-      navigation.navigate("AnalyzeDetail", {
-        year: selectedYear,
-        month: selectedMonth,
-      });
+      console.log("error");
+      setModalText("해당 날짜에 데이터 없습니다.");
+      openModal();
     }
   };
+  // useEffect(() => {
+  //   if (!userAnalyzeMonth) {
+  //     setModalText("해당 날짜에 데이터 없습니다.");
+  //     openModal();
+  //   }
+  // }, [userAnalyzeMonth]);
 
   const getDropdownStyle = (): ViewStyle => ({
     backgroundColor: "#79B4FF",

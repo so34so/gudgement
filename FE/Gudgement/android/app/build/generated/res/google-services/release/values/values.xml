@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">920348548951</string>
+    <string name="google_api_key" translatable="false">AIzaSyCU5XhJ75aFcgC9UfislG4Iav1L-dRl1xc</string>
+    <string name="google_app_id" translatable="false">1:920348548951:android:bdd163e2d02f9383672812</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCU5XhJ75aFcgC9UfislG4Iav1L-dRl1xc</string>
+    <string name="google_storage_bucket" translatable="false">gudgement-342e3.appspot.com</string>
+    <string name="project_id" translatable="false">gudgement-342e3</string>
+</resources>

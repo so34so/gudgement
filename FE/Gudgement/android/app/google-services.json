@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "920348548951",
+    "project_id": "gudgement-342e3",
+    "storage_bucket": "gudgement-342e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920348548951:android:bdd163e2d02f9383672812",
+        "android_client_info": {
+          "package_name": "com.dontspend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU5XhJ75aFcgC9UfislG4Iav1L-dRl1xc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

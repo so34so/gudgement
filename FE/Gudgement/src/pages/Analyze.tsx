@@ -176,7 +176,6 @@ function Analyze() {
       console.log("return");
       return;
     }
-    console.log("analyze");
     try {
       const sendBE = {
         year: selectedYear,

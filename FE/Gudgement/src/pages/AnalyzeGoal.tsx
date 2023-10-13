@@ -59,6 +59,7 @@ function AnalyzeGoal() {
   const currentDate = new Date();
 
   const openModal = () => {
+    console.log("true");
     setModalVisible(true);
   };
 

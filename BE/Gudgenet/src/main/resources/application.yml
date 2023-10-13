@@ -107,3 +107,4 @@ jwt:
 #spring.jpa.show-sql=true
 #spring.hibernate.ddl-auto=none
 
+

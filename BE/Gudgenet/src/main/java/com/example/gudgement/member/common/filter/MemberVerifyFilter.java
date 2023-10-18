@@ -1,6 +1,5 @@
 package com.example.gudgement.member.common.filter;
 
-import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.exception.ErrorResponse;
 import com.example.gudgement.member.dto.request.LoginDto;

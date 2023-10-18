@@ -5,7 +5,6 @@ import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.member.dto.AccessTokenDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
-import com.example.gudgement.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

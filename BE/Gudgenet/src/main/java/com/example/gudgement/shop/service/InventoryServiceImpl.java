@@ -1,6 +1,5 @@
 package com.example.gudgement.shop.service;
 
-import com.example.gudgement.exception.BaseErrorException;
 import com.example.gudgement.exception.ErrorCode;
 import com.example.gudgement.exception.NotFoundItemException;
 import com.example.gudgement.member.entity.Member;
@@ -8,7 +7,6 @@ import com.example.gudgement.shop.dto.EquippedDto;
 import com.example.gudgement.shop.dto.InventoryDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.repository.InventoryRepository;
-import com.example.gudgement.shop.repository.ItemRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

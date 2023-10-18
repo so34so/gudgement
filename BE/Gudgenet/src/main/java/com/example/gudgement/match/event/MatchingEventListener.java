@@ -4,16 +4,16 @@ import com.example.gudgement.game.service.GameService;
 import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Random;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

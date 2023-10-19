@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Git Clone') {
             steps {
-                git branch: 'feature-flask', url: 'https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D106.git', credentialsId: 'gitlab-noah-credentials'
+                git branch: 'master', url: 'https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D106.git', credentialsId: 'kmsToken'
             }
         }
         stage('Build and Deploy'){
